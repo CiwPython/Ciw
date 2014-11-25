@@ -7,13 +7,13 @@ class Node:
     """
     Class for a node on our network
     """
-    def __init__(self, lmbda, mu, c, transition_matrix_row, id_number):
+    def __init__(self, lmbda, mu, c, transition_matrix_row, id_number, simulation):
         """
         Initialise a node.
 
         Here is an example::
 
-            >>> N = Node(5, 10, 1, [.2, .5], 1)
+            >>> N = Node(5, 10, 1, [.2, .5], 1, False)
             >>> N.lmbda
             5
             >>> N.mu
@@ -48,7 +48,7 @@ class Node:
         """
         Representation of a node::
 
-            >>> N = Node(5, 10, 1, [.2, .5], 1)
+            >>> N = Node(5, 10, 1, [.2, .5], 1, False)
             >>> N.id_number
             1
         """
@@ -68,7 +68,7 @@ class Node:
         """
         Accepts a new customer to the queue
 
-            >>> N = Node(5, 10, 1, [.2, .5], 1)
+            >>> N = Node(5, 10, 1, [.2, .5], 1, False)
             >>> next_individual = 1
             >>> N.accept(next_individual)
             >>> N.individuals
@@ -80,12 +80,14 @@ class Node:
         pass
 
     def next_node(self):
+        """
+        Finds the next node according the random distribution.
+        """
         rnd_num = random.random()
         for p in range(len(cum_transition_row)):
             if rnd_num < cum_transition_row[p]:
-                break
-        n = p
-        return n
+                return self.simulation.nodes[p]
+        return self.simulation.nodes[p]
 
 
 
@@ -117,7 +119,7 @@ class Simulation:
         self.mu = mu
         self.c = c
         self.transition_matrix = transition_matrix
-        self.nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1) for i in range(len(self.lmbda))]
+        self.nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
 
     def find_next_active_node(self):
         """
