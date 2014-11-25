@@ -1,6 +1,7 @@
 """
 A simulation of a Qing networ
 """
+from random import random
 
 class Node:
     """
@@ -23,6 +24,8 @@ class Node:
             [0.2, 0.5]
             >>> N.next_event_time
             0
+            >>> M.individuals
+            []
             >>> N.id_number
             1
         """
@@ -31,6 +34,7 @@ class Node:
         self.c = c
         self.transition_row = transition_matrix_row
         self.next_event_time = 0
+        self.individuals = []
         self.id_number = id_number
 
     def __repr__(self):
@@ -42,6 +46,25 @@ class Node:
             1
         """
         return 'Node %s' % self.id_number
+
+    def have_event(self):
+        """
+        Update node when a service happens.
+        """
+        self.individuals.sort(key=lambda x: x.end_service_date)
+        next_individual = self.individuals.pop(0)
+        next_node = self.next_node()
+        next_node.accept(next_individual)
+        self.update_next_event_date()
+
+    def accept(self):
+
+    def update_next_event_date(self):
+
+    def next_node(self):
+        [0] + [self.transition_row[i] + self.transition_row]
+        ...
+
 
 class Simulation:
     """
@@ -94,8 +117,12 @@ class Simulation:
         return min(self.nodes, key=lambda x: x.next_active_time)
 
     def simulate(self, max_simulation_time):
+        """
+        Run the actual simulation.
+
+        NEEDS DOCTESTS OR EVERYTHING WILL BE TERRIBLE.
+        """
         next_active_node = find_next_active_node()
         while next_active_node.next_event_time < max_simulation_time:
             next_active_node.have_event()
             next_active_node = find_next_active_node()
-
