@@ -1,7 +1,24 @@
 """
 A simulation of a Qing networ
 """
-from random import random, seed
+from random import random, seed, expovariate
+
+class Individual:
+    """
+    Class for an individual
+    """
+    def __init__(self, id_number):
+        self.in_service = False
+        self.end_service_date = False
+        self.id_number = id_number
+
+    def __repr__(self):
+        """
+        >>> i = Individual(3)
+        >>> i
+        Individual 3
+        """
+        return 'Individual %s' % self.id_number
 
 class Node:
     """
@@ -62,23 +79,34 @@ class Node:
         self.individuals.sort(key=lambda x: x.end_service_date)
         next_individual = self.individuals.pop(0)
         next_node = self.next_node()
-        next_node.accept(next_individual)
+        next_node.accept(next_individual, self.next_event_time)
         self.update_next_event_date()
 
-    def accept(self, next_individual):
+    def accept(self, next_individual, current_time):
         """
         Accepts a new customer to the queue
 
             >>> N = Node(5, 10, 1, [.2, .5], 1, False)
-            >>> next_individual = 1
+            >>> next_individual = Individual(5)
             >>> N.accept(next_individual)
             >>> N.individuals
-            [1]
+            [Individual 5]
+
+            >>> N.next_event_time
+            0
+            >>> N.accept(Individual(10))
+            >>> N.next_event_time
         """
+        if len(self.individuals) <= self.c:
+            next_individual.end_service_date = current_time + expovariate(self.mu)
+        else:
+            self.individuals.sort(key=lambda x: x.end_service_date)
+            next_individual.end_service_date = self.individuals[-self.c].end_service_date + expovariate(self.mu)
         self.individuals.append(next_individual)
+        self.update_next_event_date()
 
     def update_next_event_date(self):
-        pass
+        if len(self.individuals)
 
     def next_node(self):
         """
