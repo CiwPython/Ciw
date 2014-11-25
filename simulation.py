@@ -1,7 +1,7 @@
 """
 A simulation of a Qing networ
 """
-from random import random
+from random import random, seed
 
 class Node:
     """
@@ -42,6 +42,7 @@ class Node:
             sum_p += p
             cum_transition_row.append(sum_p)
         self.cum_transition_row = cum_transition_row
+        self.simulation = simulation
 
 
     def __repr__(self):
@@ -82,10 +83,20 @@ class Node:
     def next_node(self):
         """
         Finds the next node according the random distribution.
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]])
+            >>> node = Q.nodes[0]
+            >>> node.next_node()
+            Node 1
+            >>> node.next_node()
+            Node 2
+            >>> node.next_node()
+            Node 2
         """
-        rnd_num = random.random()
-        for p in range(len(cum_transition_row)):
-            if rnd_num < cum_transition_row[p]:
+        rnd_num = random()
+        for p in range(len(self.cum_transition_row)):
+            if rnd_num < self.cum_transition_row[p]:
                 return self.simulation.nodes[p]
         return self.simulation.nodes[p]
 
