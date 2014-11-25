@@ -92,3 +92,10 @@ class Simulation:
             Node 2
         """
         return min(self.nodes, key=lambda x: x.next_active_time)
+
+    def simulate(self, max_simulation_time):
+        next_active_node = find_next_active_node()
+        while next_active_node.next_event_time < max_simulation_time:
+            next_active_node.have_event()
+            next_active_node = find_next_active_node()
+
