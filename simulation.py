@@ -24,7 +24,7 @@ class Node:
             [0.2, 0.5]
             >>> N.next_event_time
             0
-            >>> M.individuals
+            >>> N.individuals
             []
             >>> N.id_number
             1
@@ -36,6 +36,13 @@ class Node:
         self.next_event_time = 0
         self.individuals = []
         self.id_number = id_number
+        sum_p = 0
+        cum_transition_row = []
+        for p in self.transition_row:
+            sum_p += p
+            cum_transition_row.append(sum_p)
+        self.cum_transition_row = cum_transition_row
+
 
     def __repr__(self):
         """
@@ -57,13 +64,31 @@ class Node:
         next_node.accept(next_individual)
         self.update_next_event_date()
 
-    def accept(self):
+    def accept(self, next_individual):
+        """
+        Accepts a new customer to the queue
+
+            >>> N = Node(5, 10, 1, [.2, .5], 1)
+            >>> next_individual = 1
+            >>> N.accept(next_individual)
+            >>> N.individuals
+            [1]
+        """
+        self.individuals.append(next_individual)
 
     def update_next_event_date(self):
+        pass
 
     def next_node(self):
-        [0] + [self.transition_row[i] + self.transition_row]
-        ...
+        rnd_num = random.random()
+        for p in range(len(cum_transition_row)):
+            if rnd_num < cum_transition_row[p]:
+                break
+        n = p
+        return n
+
+
+
 
 
 class Simulation:
