@@ -181,6 +181,111 @@ class Node:
                 return self.simulation.nodes[p]
         return self.simulation.nodes[-1]
 
+class ArrivalNode:
+    """
+    Class for the arrival node on our network
+    """
+    def __init__(self, lmbda, transition_row, simulation):
+        """
+        Initialise a node.
+
+        Here is an example::
+
+            >>> N = ArrivalNode(5, [.5, .5], False)
+            >>> N.lmbda
+            5
+            >>> N.transition_row
+            [0.5, 0.5]
+            >>> sum(N.transition_row)
+            1.0
+            >>> N.next_event_time
+            0
+            >>> N.number_of_individuals
+            0
+        """
+        self.lmbda = lmbda
+        self.transition_row = transition_row
+        self.next_event_time = 0
+        self.number_of_individuals = 0
+        sum_p = 0
+        cum_transition_row = []
+        for p in self.transition_row:
+            sum_p += p
+            cum_transition_row.append(sum_p)
+        self.cum_transition_row = cum_transition_row
+        self.simulation = simulation
+
+    def __repr__(self):
+        """
+        Representation of a node::
+
+            >>> N = ArrivalNode(5, [.5, .5], False)
+            >>> N
+            Arrival Node
+        """
+        return 'Arrival Node'
+
+    def have_event(self):
+        """
+        Update node when a service happens.
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q.nodes[0].individuals
+            []
+            >>> Q.nodes[1].individuals
+            []
+            >>> N = ArrivalNode(8, [.625, .375], Q)
+            >>> N.next_event_time
+            0
+            >>> N.have_event()
+            >>> Q.nodes[0].individuals
+            [Individual 1]
+            >>> Q.nodes[1].individuals
+            []
+            >>> round(N.next_event_time,5)
+            0.18037
+        """
+        self.number_of_individuals += 1
+        next_individual = Individual(self.number_of_individuals)
+        next_node = self.next_node()
+        next_node.accept(next_individual, self.next_event_time)
+        self.update_next_event_date()
+
+    def update_next_event_date(self):
+        """
+        Finds the time of the next event at this node
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> N = ArrivalNode(8, [.625, .375], Q)
+            >>> N.next_event_time
+            0
+            >>> N.update_next_event_date()
+            >>> round(N.next_event_time, 5)
+            0.01804
+        """
+        self.next_event_time += expovariate(self.lmbda)
+
+    def next_node(self):
+        """
+        Finds the next node according the random distribution.
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> N = ArrivalNode(8, [.625, .375], Q)
+            >>> N.next_node()
+            Node 1
+            >>> N.next_node()
+            Node 2
+            >>> N.next_node()
+            Node 2
+        """
+        rnd_num = random()
+        for p in range(len(self.cum_transition_row)):
+            if rnd_num < self.cum_transition_row[p]:
+                return self.simulation.nodes[p]
+        return self.simulation.nodes[-1]
 
 class ExitNode:
     """
