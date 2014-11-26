@@ -87,12 +87,20 @@ class Node:
             []
             >>> N.id_number
             1
+            >>> N.cum_transition_row
+            [0.2, 0.7]
+            >>> N.simulation
+            False
 
         Here is another example::
 
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
             >>> N.next_event_time
+            50
+            >>> N.cum_transition_row
+            [0.2, 0.7]
+            >>> N.simulation.max_simulation_time
             50
 
         """
@@ -179,11 +187,16 @@ class Node:
             >>> N.individuals
             [Individual 5]
 
-            >>> N.next_event_time
-            1.014429106410951
+            >>> next_individual.arrival_date
+            1
+            >>> round(next_individual.service_time, 5)
+            0.01443
+
+            >>> round(N.next_event_time, 5)
+            1.01443
             >>> N.accept(Individual(10), 1)
-            >>> N.next_event_time
-            1.014429106410951
+            >>> round(N.next_event_time, 5)
+            1.01443
         """
         next_individual.arrival_date = current_time
         next_individual.service_time = expovariate(self.mu)
@@ -214,8 +227,8 @@ class Node:
             >>> ind = Individual(10)
             >>> node.accept(ind, 1)
             >>> node.update_next_event_date()
-            >>> node.next_event_time
-            1.014429106410951
+            >>> round(node.next_event_time, 5)
+            1.01443
         """
         if len(self.individuals) == 0:
             self.next_event_time = self.simulation.max_simulation_time
@@ -258,6 +271,30 @@ class Node:
         - Service date
         - Service time
         - Exit date
+
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.35, .35], [.4, .4]], 50)
+            >>> N = Q.transitive_nodes[0]
+            >>> ind = Individual(6)
+            >>> N.accept(ind, 3)
+            >>> N.write_individual_record(ind)
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'exit_date'
+            >>> ind.exit_date = 7
+            >>> N.write_individual_record(ind)
+            >>> ind.data_records[1][0].arrival_date
+            3
+            >>> round(ind.data_records[1][0].wait, 5)
+            3.81198
+            >>> round(ind.data_records[1][0].service_date, 5)
+            6.81198
+            >>> round(ind.data_records[1][0].service_time, 5)
+            0.18802
+            >>> ind.data_records[1][0].exit_date
+            7
+            >>> ind.data_records[1][0].node
+            1
+
         """
         record = DataRecord(individual.arrival_date, individual.service_time, individual.exit_date, self.id_number)
         if self.id_number in individual.data_records:
@@ -288,6 +325,10 @@ class ArrivalNode:
             0
             >>> N.number_of_individuals
             0
+            >>> N.cum_transition_row
+            [0.5, 1.0]
+            >>> N.simulation
+            False
         """
         self.lmbda = lmbda
         self.transition_row = transition_row
