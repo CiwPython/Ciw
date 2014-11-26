@@ -296,30 +296,30 @@ class ExitNode:
     """
     Class for the exit node on our network
     """
-    def __init__(self):
+    def __init__(self, max_simulation_time):
         """
         Initialise a node.
 
         Here is an example::
 
-            >>> N = ExitNode()
+            >>> N = ExitNode(100)
             >>> N.individuals
             []
             >>> N.id_number
             -1
             >>> N.next_event_time
-            False
+            100
         """
         self.individuals = []
         self.id_number = -1
-        self.next_event_time = False
+        self.next_event_time = max_simulation_time
 
 
     def __repr__(self):
         """
         Representation of a node::
 
-            >>> N = ExitNode()
+            >>> N = ExitNode(500)
             >>> N
             Exit Node
         """
@@ -329,17 +329,17 @@ class ExitNode:
         """
         Accepts a new customer to the queue
 
-            >>> N = ExitNode()
+            >>> N = ExitNode(200)
             >>> N.individuals
             []
             >>> N.next_event_time
-            False
+            200
             >>> next_individual = Individual(5)
             >>> N.accept(next_individual, 1)
             >>> N.individuals
             [Individual 5]
             >>> N.next_event_time
-            False
+            200
         """
         self.individuals.append(next_individual)
 
@@ -347,12 +347,12 @@ class ExitNode:
         """
         Finds the time of the next event at this node
 
-            >>> N = ExitNode()
+            >>> N = ExitNode(25)
             >>> N.next_event_time
-            False
+            25
             >>> N.update_next_event_date()
             >>> N.next_event_time
-            False
+            25
 
         """
         pass
@@ -390,7 +390,7 @@ class Simulation:
         self.transition_matrix = transition_matrix
         self.max_simulation_time = max_simulation_time
         self.transitive_nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
-        self.nodes = [ArrivalNode(sum(lmbda), [l/sum(lmbda) for l in lmbda], self)] + self.transitive_nodes + [ExitNode()]
+        self.nodes = [ArrivalNode(sum(lmbda), [l/sum(lmbda) for l in lmbda], self)] + self.transitive_nodes + [ExitNode(self.max_simulation_time)]
 
     def find_next_active_node(self):
         """
@@ -398,15 +398,15 @@ class Simulation:
 
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> i = 0
-            >>> for node in Q.nodes:
+            >>> for node in Q.nodes[:-1]:
             ...     node.next_event_time = i
             ...     i += 1
             >>> Q.find_next_active_node()
-            Node 1
+            Arrival Node
 
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
-            >>> i = 0
-            >>> for node in Q.nodes:
+            >>> i = 10
+            >>> for node in Q.nodes[:-1]:
             ...     node.next_event_time = i
             ...     i -= 1
             >>> Q.find_next_active_node()
