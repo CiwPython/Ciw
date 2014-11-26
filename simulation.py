@@ -46,6 +46,8 @@ class Individual:
         False
         >>> i.id_number
         22
+        >>> i.data_records
+        {}
         """
         self.in_service = False
         self.end_service_date = False
@@ -129,8 +131,32 @@ class Node:
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
             >>> i = Individual(2)
+            >>> i.arrival_date
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'arrival_date'
+            >>> i.service_time
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'service_time'
             >>> N.accept(i, 1)
+            >>> i.arrival_date
+            1
+            >>> round(i.service_time, 5)
+            0.01443
+            >>> i.data_records[N.id_number]
+            Traceback (most recent call last):
+            ...
+            KeyError: 1
+            >>> i.exit_date
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'exit_date'
             >>> N.have_event()
+            >>> round(i.exit_date, 5)
+            1.01443
+            >>> i.data_records[N.id_number][0].wait
+            0.0
         """
         self.individuals.sort(key=lambda x: x.end_service_date)
         next_individual = self.individuals.pop(0)
