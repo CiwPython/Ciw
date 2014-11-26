@@ -547,13 +547,31 @@ class Simulation:
             next_active_node.have_event()
             next_active_node = self.find_next_active_node()
 
+    def get_all_individuals(self):
+        """
+        Returns list of all individuals with at least one record
+        """
+        return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
+
+    def get_individuals_by_node(self):
+        """
+        Return a dictionary with keys nodes and values: lists of players who have a complete record for that node.
+        """
+        return {node.id_number:[individual for individual in self.get_all_individuals() if node.id_number in individual.data_records] for node in self.transitive_nodes}
+
+    def get_records_by_node(self):
+        """
+        Returns all records of an individual
+        """
+        individuals_by_node = self.get_individuals_by_node()
+        return {node_id:[record for individual in individuals_by_node[node_id] for record in individual.data_records[node_id]] for node_id in individuals_by_node}
+
     def mean_waits(self):
         """
         A method to return the mean wait in the system (after simulation has been run)
         """
-        all_individuals = [individual for node in self.nodes[1:] for individual in node.individuals]
-        mean_waits = [round(r.wait,10) for individual in all_individuals for r in individual.data_records[1]]
-        #mean_waits = {node : mean([record.wait for individual in all_individuals for record in individual.data_records[node.id_number] if record.arrival_date > self.warm_up and node in individual.data_records]) for node in self.transitive_nodes}
+        records_by_node = self.get_records_by_node()
+        mean_waits = {node_id:mean([r.wait for r in records_by_node[node_id] if r.arrival_date > self.warm_up]) for node_id in records_by_node}
         return mean_waits
 
     def records(self):
@@ -569,6 +587,6 @@ class Simulation:
 
 
 if __name__ == '__main__':
-    Q = Simulation([1], [2], [1], [[0]], 100, 0)
+    Q = Simulation([1,2], [2,1], [5,5], [[.2,.3],[.6,.1]], 1000, 200)
     Q.simulate()
-    Q.records()
+    print Q.mean_waits()
