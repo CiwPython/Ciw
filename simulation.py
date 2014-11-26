@@ -139,7 +139,21 @@ class Node:
         """
         Finds the time of the next event at this node
 
-        NEED TESTS, CAN'T WORK THEM OUT ATM
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.nodes[0]
+            >>> node.individuals
+            []
+            >>> node.next_event_time
+            50
+            >>> node.update_next_event_date()
+            >>> node.next_event_time
+            50
+            >>> ind = Individual(10)
+            >>> node.accept(ind, 1)
+            >>> node.update_next_event_date()
+            >>> node.next_event_time
+            1.014429106410951
         """
         if len(self.individuals) == 0:
             self.next_event_time = self.simulation.max_simulation_time
@@ -165,10 +179,73 @@ class Node:
         for p in range(len(self.cum_transition_row)):
             if rnd_num < self.cum_transition_row[p]:
                 return self.simulation.nodes[p]
-        return self.simulation.nodes[p]
+        return self.simulation.nodes[-1]
 
 
+class ExitNode:
+    """
+    Class for the exit node on our network
+    """
+    def __init__(self):
+        """
+        Initialise a node.
 
+        Here is an example::
+
+            >>> N = ExitNode()
+            >>> N.individuals
+            []
+            >>> N.id_number
+            -1
+            >>> N.next_event_time
+            False
+        """
+        self.individuals = []
+        self.id_number = -1
+        self.next_event_time = False
+
+
+    def __repr__(self):
+        """
+        Representation of a node::
+
+            >>> N = ExitNode()
+            >>> N
+            Exit Node
+        """
+        return 'Exit Node'
+
+    def accept(self, next_individual, current_time):
+        """
+        Accepts a new customer to the queue
+
+            >>> N = ExitNode()
+            >>> N.individuals
+            []
+            >>> N.next_event_time
+            False
+            >>> next_individual = Individual(5)
+            >>> N.accept(next_individual, 1)
+            >>> N.individuals
+            [Individual 5]
+            >>> N.next_event_time
+            False
+        """
+        self.individuals.append(next_individual)
+
+    def update_next_event_date(self):
+        """
+        Finds the time of the next event at this node
+
+            >>> N = ExitNode()
+            >>> N.next_event_time
+            False
+            >>> N.update_next_event_date()
+            >>> N.next_event_time
+            False
+
+        """
+        pass
 
 
 class Simulation:
