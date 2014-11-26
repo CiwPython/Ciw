@@ -56,6 +56,14 @@ class Node:
             []
             >>> N.id_number
             1
+
+        Here is another example::
+
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> N = Q.nodes[0]
+            >>> N.next_event_time
+            50
+
         """
         self.lmbda = lmbda
         self.mu = mu
@@ -71,6 +79,8 @@ class Node:
             cum_transition_row.append(sum_p)
         self.cum_transition_row = cum_transition_row
         self.simulation = simulation
+        if self.simulation:
+            self.next_event_time = self.simulation.max_simulation_time
 
 
     def __repr__(self):
@@ -189,8 +199,8 @@ class Simulation:
         self.mu = mu
         self.c = c
         self.transition_matrix = transition_matrix
-        self.nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
         self.max_simulation_time = max_simulation_time
+        self.nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
 
     def find_next_active_node(self):
         """
