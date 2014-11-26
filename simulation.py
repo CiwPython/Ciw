@@ -3,6 +3,33 @@ A simulation of a Qing networ
 """
 from __future__ import division
 from random import random, seed, expovariate
+from numpy import mean
+
+class DataRecord:
+    """
+    A class for a data record
+    """
+    def __init__(self, arrival_date, service_time, exit_date, node):
+        """
+
+            >>> r = DataRecord(2, 3, 5, 3)
+            >>> r.arrival_date
+            2
+            >>> r.wait
+            0
+            >>> r.service_date
+            2
+            >>> r.service_time
+            3
+            >>> r.exit_date
+            5
+        """
+        self.arrival_date = arrival_date
+        self.service_time = service_time
+        self.exit_date = exit_date
+        self.service_date = exit_date - service_time
+        self.wait = self.service_date - arrival_date
+        self.node = node
 
 class Individual:
     """
@@ -23,6 +50,7 @@ class Individual:
         self.in_service = False
         self.end_service_date = False
         self.id_number = id_number
+        self.data_records = {}
 
     def __repr__(self):
         """
@@ -83,7 +111,6 @@ class Node:
         if self.simulation:
             self.next_event_time = self.simulation.max_simulation_time
 
-
     def __repr__(self):
         """
         Representation of a node::
@@ -107,6 +134,10 @@ class Node:
         """
         self.individuals.sort(key=lambda x: x.end_service_date)
         next_individual = self.individuals.pop(0)
+
+        next_individual.exit_date = self.next_event_time
+        self.write_individual_record(next_individual)
+
         next_node = self.next_node()
         next_node.accept(next_individual, self.next_event_time)
         self.update_next_event_date()
@@ -128,13 +159,16 @@ class Node:
             >>> N.next_event_time
             1.014429106410951
         """
+        next_individual.arrival_date = current_time
+        next_individual.service_time = expovariate(self.mu)
+
         if len(self.individuals) <= self.c:
-            next_individual.end_service_date = current_time + expovariate(self.mu)
+            next_individual.end_service_date = current_time + next_individual.service_time
         else:
             self.individuals.sort(key=lambda x: x.end_service_date)
-            next_individual.end_service_date = self.individuals[-self.c].end_service_date + expovariate(self.mu)
+            next_individual.end_service_date = self.individuals[-self.c].end_service_date + next_individual.service_time
+
         self.individuals.append(next_individual)
-        #self.insert_individual(next_individual)
         self.update_next_event_date()
 
     def update_next_event_date(self):
@@ -188,6 +222,24 @@ class Node:
             if rnd_num < self.cum_transition_row[p]:
                 return self.simulation.transitive_nodes[p]
         return self.simulation.nodes[-1]
+
+    def write_individual_record(self, individual):
+        """
+        Write a data record for an individual:
+
+        - Arrival date
+        - Wait
+        - Service date
+        - Service time
+        - Exit date
+        """
+        record = DataRecord(individual.arrival_date, individual.service_time, individual.exit_date, self.id_number)
+        if self.id_number in individual.data_records:
+            individual.data_records[self.id_number].append(record)
+        else:
+            individual.data_records[self.id_number] = [record]
+
+
 
 class ArrivalNode:
     """
@@ -364,13 +416,13 @@ class Simulation:
     """
     Overall simulation class
     """
-    def __init__(self, lmbda, mu, c, transition_matrix, max_simulation_time):
+    def __init__(self, lmbda, mu, c, transition_matrix, max_simulation_time, warm_up=0):
         """
         Initialise a queue instance.
 
         Here is an example::
 
-            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50, 10)
             >>> Q.lmbda
             [5, 3]
             >>> Q.mu
@@ -385,12 +437,15 @@ class Simulation:
             [Node 1, Node 2]
             >>> Q.max_simulation_time
             50
+            >>> Q.warm_up
+            10
         """
         self.lmbda = lmbda
         self.mu = mu
         self.c = c
         self.transition_matrix = transition_matrix
         self.max_simulation_time = max_simulation_time
+        self.warm_up = warm_up
         self.transitive_nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
         self.nodes = [ArrivalNode(sum(lmbda), [l/sum(lmbda) for l in lmbda], self)] + self.transitive_nodes + [ExitNode(self.max_simulation_time)]
 
@@ -425,7 +480,28 @@ class Simulation:
             next_active_node.have_event()
             next_active_node = self.find_next_active_node()
 
+    def mean_waits(self):
+        """
+        A method to return the mean wait in the system (after simulation has been run)
+        """
+        all_individuals = [individual for node in self.nodes[1:] for individual in node.individuals]
+        mean_waits = [round(r.wait,10) for individual in all_individuals for r in individual.data_records[1]]
+        #mean_waits = {node : mean([record.wait for individual in all_individuals for record in individual.data_records[node.id_number] if record.arrival_date > self.warm_up and node in individual.data_records]) for node in self.transitive_nodes}
+        return mean_waits
+
+    def records(self):
+        """
+        Return all records
+        """
+        all_individuals = sorted([individual for node in self.nodes[1:] for individual in node.individuals], key=lambda x:x.id_number)
+        for ind in all_individuals:
+            if 1 in ind.data_records:
+                record = ind.data_records[1][0]
+                print ind.id_number, record.arrival_date, record.wait, record.service_date, record.service_time, record.exit_date, record.node
+
+
 
 if __name__ == '__main__':
-    Q = Simulation([5], [10], [1], [[0]], 500)
+    Q = Simulation([1], [2], [1], [[0]], 100, 0)
     Q.simulate()
+    Q.records()
