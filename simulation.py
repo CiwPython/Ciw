@@ -60,7 +60,7 @@ class Node:
         Here is another example::
 
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
-            >>> N = Q.nodes[0]
+            >>> N = Q.transitive_nodes[0]
             >>> N.next_event_time
             50
 
@@ -77,7 +77,7 @@ class Node:
         for p in self.transition_row:
             sum_p += p
             cum_transition_row.append(sum_p)
-        self.cum_transition_row = cum_transition_row
+        self.cum_transition_row = cum_transition_row  # Adding zero for countability (represents never going back to arrival node)
         self.simulation = simulation
         if self.simulation:
             self.next_event_time = self.simulation.max_simulation_time
@@ -99,7 +99,7 @@ class Node:
 
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
-            >>> N = Q.nodes[0]
+            >>> N = Q.transitive_nodes[0]
             >>> i = Individual(2)
             >>> N.accept(i, 1)
             >>> N.have_event()
@@ -141,7 +141,7 @@ class Node:
 
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
-            >>> node = Q.nodes[0]
+            >>> node = Q.transitive_nodes[0]
             >>> node.individuals
             []
             >>> node.next_event_time
@@ -165,20 +165,26 @@ class Node:
         """
         Finds the next node according the random distribution.
 
-            >>> seed(1)
-            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
-            >>> node = Q.nodes[0]
+            >>> seed(6)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.35, .35], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.next_node()
+            Exit Node
+            >>> node.next_node()
+            Exit Node
+            >>> node.next_node()
+            Node 2
             >>> node.next_node()
             Node 1
             >>> node.next_node()
-            Node 2
+            Node 1
             >>> node.next_node()
             Node 2
         """
         rnd_num = random()
         for p in range(len(self.cum_transition_row)):
             if rnd_num < self.cum_transition_row[p]:
-                return self.simulation.nodes[p]
+                return self.simulation.transitive_nodes[p]
         return self.simulation.nodes[-1]
 
 class ArrivalNode:
@@ -231,17 +237,17 @@ class ArrivalNode:
 
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
-            >>> Q.nodes[0].individuals
+            >>> Q.transitive_nodes[0].individuals
             []
-            >>> Q.nodes[1].individuals
+            >>> Q.transitive_nodes[1].individuals
             []
             >>> N = ArrivalNode(8, [.625, .375], Q)
             >>> N.next_event_time
             0
             >>> N.have_event()
-            >>> Q.nodes[0].individuals
+            >>> Q.transitive_nodes[0].individuals
             [Individual 1]
-            >>> Q.nodes[1].individuals
+            >>> Q.transitive_nodes[1].individuals
             []
             >>> round(N.next_event_time,5)
             0.18037
@@ -284,8 +290,7 @@ class ArrivalNode:
         rnd_num = random()
         for p in range(len(self.cum_transition_row)):
             if rnd_num < self.cum_transition_row[p]:
-                return self.simulation.nodes[p]
-        return self.simulation.nodes[-1]
+                return self.simulation.transitive_nodes[p]
 
 class ExitNode:
     """
@@ -373,6 +378,8 @@ class Simulation:
             >>> Q.transition_matrix
             [[0.2, 0.5], [0.4, 0.4]]
             >>> Q.nodes
+            [Arrival Node, Node 1, Node 2, Exit Node]
+            >>> Q.transitive_nodes
             [Node 1, Node 2]
             >>> Q.max_simulation_time
             50
@@ -382,7 +389,8 @@ class Simulation:
         self.c = c
         self.transition_matrix = transition_matrix
         self.max_simulation_time = max_simulation_time
-        self.nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
+        self.transitive_nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
+        self.nodes = [ArrivalNode(sum(lmbda), [l/sum(lmbda) for l in lmbda], self)] + self.transitive_nodes + [ExitNode()]
 
     def find_next_active_node(self):
         """
