@@ -201,7 +201,7 @@ class Node:
         next_individual.arrival_date = current_time
         next_individual.service_time = expovariate(self.mu)
 
-        if len(self.individuals) <= self.c:
+        if len(self.individuals) < self.c:
             next_individual.end_service_date = current_time + next_individual.service_time
         else:
             self.individuals.sort(key=lambda x: x.end_service_date)
