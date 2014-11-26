@@ -1,6 +1,7 @@
 """
 A simulation of a Qing networ
 """
+from __future__ import division
 from random import random, seed, expovariate
 
 class Individual:
@@ -133,6 +134,7 @@ class Node:
             self.individuals.sort(key=lambda x: x.end_service_date)
             next_individual.end_service_date = self.individuals[-self.c].end_service_date + expovariate(self.mu)
         self.individuals.append(next_individual)
+        #self.insert_individual(next_individual)
         self.update_next_event_date()
 
     def update_next_event_date(self):
@@ -417,10 +419,13 @@ class Simulation:
     def simulate(self):
         """
         Run the actual simulation.
-
-        NEEDS DOCTESTS OR EVERYTHING WILL BE TERRIBLE.
         """
-        next_active_node = find_next_active_node()
+        next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
             next_active_node.have_event()
-            next_active_node = find_next_active_node()
+            next_active_node = self.find_next_active_node()
+
+
+if __name__ == '__main__':
+    Q = Simulation([5], [10], [1], [[0]], 500)
+    Q.simulate()
