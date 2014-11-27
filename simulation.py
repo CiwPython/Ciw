@@ -244,7 +244,7 @@ class Node:
         """
         return 'Node %s' % self.id_number
 
-    def have_event(self):
+    def release(self):
         """
         Update node when a service happens.
 
@@ -274,7 +274,7 @@ class Node:
             Traceback (most recent call last):
             ...
             AttributeError: Individual instance has no attribute 'exit_date'
-            >>> N.have_event()
+            >>> N.release()
             >>> round(i.exit_date, 5)
             1.01443
             >>> i.data_records[N.id_number][0].wait
@@ -306,7 +306,7 @@ class Node:
             Traceback (most recent call last):
             ...
             AttributeError: Individual instance has no attribute 'exit_date'
-            >>> N.have_event()
+            >>> N.release()
             >>> round(i.exit_date, 5)
             3.17519
             >>> i.data_records[N.id_number][0].wait
@@ -316,7 +316,7 @@ class Node:
             >>> seed(2)
             >>> Q = Simulation([2], [3], [1], [[0]], 20)
             >>> N = Q.transitive_nodes[0]
-            >>> N.have_event()
+            >>> N.release()
             Traceback (most recent call last):
             ...
             IndexError: pop from empty list
@@ -673,7 +673,7 @@ class ArrivalNode:
         """
         return 'Arrival Node'
 
-    def have_event(self):
+    def release(self):
         """
         Update node when a service happens.
 
@@ -687,7 +687,7 @@ class ArrivalNode:
             >>> N = ArrivalNode(8, [.625, .375], Q)
             >>> N.next_event_time
             0
-            >>> N.have_event()
+            >>> N.release()
             >>> Q.transitive_nodes[0].individuals
             [Individual 1]
             >>> Q.transitive_nodes[1].individuals
@@ -705,7 +705,7 @@ class ArrivalNode:
             >>> N = ArrivalNode(90, [.1, .9], Q)
             >>> N.next_event_time
             0
-            >>> N.have_event()
+            >>> N.release()
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -721,7 +721,7 @@ class ArrivalNode:
             >>> Q.transitive_nodes[1].individuals
             []
             >>> N = ArrivalNode(-3, [0, 0], Q)
-            >>> N.have_event()
+            >>> N.release()
             Traceback (most recent call last):
             ...
             AttributeError: 'NoneType' object has no attribute 'accept'
@@ -1042,7 +1042,7 @@ class Simulation:
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
-            next_active_node.have_event()
+            next_active_node.release()
             next_active_node = self.find_next_active_node()
 
     def get_all_individuals(self):
