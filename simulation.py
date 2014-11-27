@@ -326,7 +326,6 @@ class Node:
             ...
             IndexError: pop from empty list
         """
-        self.individuals.sort(key=lambda x: x.end_service_date)
         next_individual = self.individuals.pop(0)
 
         next_individual.exit_date = self.next_event_time
@@ -389,7 +388,6 @@ class Node:
         if len(self.individuals) < self.c:
             next_individual.end_service_date = current_time + next_individual.service_time
         else:
-            self.individuals.sort(key=lambda x: x.end_service_date)
             next_individual.end_service_date = self.individuals[-self.c].end_service_date + next_individual.service_time
 
         #self.individuals.append(next_individual)
@@ -505,7 +503,6 @@ class Node:
         if len(self.individuals) == 0:
             self.next_event_time = self.simulation.max_simulation_time
         else:
-            self.individuals.sort(key=lambda x: x.end_service_date)
             self.next_event_time = self.individuals[0].end_service_date
 
     def next_node(self):
