@@ -392,8 +392,69 @@ class Node:
             self.individuals.sort(key=lambda x: x.end_service_date)
             next_individual.end_service_date = self.individuals[-self.c].end_service_date + next_individual.service_time
 
-        self.individuals.append(next_individual)
+        #self.individuals.append(next_individual)
+        self.include_individual(next_individual)
         self.update_next_event_date()
+
+    def find_index_for_individual(self, individual):
+        """
+        Returns the index of the position that the new individual will take
+
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = [Individual(i) for i in range(10)]
+            >>> end_date = 2
+            >>> for ind in node.individuals:
+            ...     ind.end_service_date = end_date
+            ...     end_date += 2
+            >>> [ind.end_service_date for ind in node.individuals]
+            [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+            >>> ind = Individual(10)
+            >>> ind.end_service_date = 17
+            >>> node.find_index_for_individual(ind)
+            -2
+            >>> ind = Individual(11)
+            >>> ind.end_service_date = 67
+            >>> node.find_index_for_individual(ind)
+            False
+        """
+        for i, ind in enumerate(self.individuals[-self.c:]):
+                if individual.end_service_date < ind.end_service_date:
+                    return -self.c + i
+        return False
+
+    def include_individual(self, individual):
+        """
+        Geraint to write test
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = [Individual(i) for i in range(10)]
+            >>> end_date = 2
+            >>> for ind in node.individuals:
+            ...     ind.end_service_date = end_date
+            ...     end_date += 2
+            >>> node.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9]
+            >>> [ind.end_service_date for ind in node.individuals]
+            [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+            >>> ind = Individual(10)
+            >>> ind.end_service_date = 17
+            >>> node.include_individual(ind)
+            >>> node.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 10, Individual 8, Individual 9]
+            >>> [ind.end_service_date for ind in node.individuals]
+            [2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 20]
+        """
+        index = self.find_index_for_individual(individual)
+        if index:
+            self.individuals.insert(self.find_index_for_individual(individual), individual)
+        else:
+            self.individuals.append(individual)
+
+
 
     def update_next_event_date(self):
         """
