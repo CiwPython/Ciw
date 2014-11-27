@@ -1487,9 +1487,46 @@ class Simulation:
                 record = ind.data_records[1][0]
                 print ind.id_number, record.arrival_date, record.wait, record.service_date, record.service_time, record.exit_date, record.node
 
+    def find_times_in_state(self):
+        """
+        Returns a list of dictionaries for each node, with the amount of time that node spent in each state
+
+            TESTS 1
+            >>> Q = Simulation([3, 3], [7, 7], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
+            >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
+            >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
+            >>> Q.find_times_in_state()
+            [{0: 3, 1: 7, 2: 1}, {0: 3, 1: 8, 2: 6}]
+
+            TESTS 2
+            >>> Q = Simulation([3, 3, 1], [7, 7, 2], [1, 1, 1], [[0.1, 0.5, 0.1], [0.1, 0.2, 0.1], [0.3, 0.5, 0.1]], 0.5)
+            >>> Q.nodes[1].numbers_in_node = [[0, 0], [0.3, 1], [0.4, 2], [0.7, 1], [1.1, 0], [1.6, 1], [1.7, 2], [1.9, 3], [2.4, 2], [2.5, 1], [2.7, 2], [2.8, 1], [3, 0]]
+            >>> Q.nodes[2].numbers_in_node = [[0, 0], [0.1, 1], [0.3, 0], [0.8, 1], [1.0, 2], [1.2, 3], [1.6, 2], [1.9, 3], [2.4, 4], [2.5, 3], [2.7, 2]]
+            >>> Q.nodes[3].numbers_in_node = [[0, 0], [0.6, 1], [0.8, 0], [1.7, 1], [2.3, 2], [2.4, 1], [2.6, 1], [2.9, 0]]
+            >>> Q.find_times_in_state()
+            [{0: 0.8, 1: 1.0000000000000004, 2: 0.6999999999999996, 3: 0.5}, {0: 0.6, 1: 0.3999999999999999, 2: 0.4999999999999998, 3: 1.1000000000000003, 4: 0.10000000000000009}, {0: 1.5, 1: 1.2999999999999998, 2: 0.10000000000000009}]
+        """
+
+        return [{j:sum([node.numbers_in_node[i+1][0] - node.numbers_in_node[i][0] for i in range(len(node.numbers_in_node)-1) if node.numbers_in_node[i][1]==j]) for j in range(max([node.numbers_in_node[k][1] for k in range(len(node.numbers_in_node))])+1)} for node in self.transitive_nodes]
+
+    def mean_customers(self):
+        """
+        Returns a dictionary of the mean number of customers at each node
+
+            TESTS 1
+            >>> Q = Simulation([3, 3], [7, 7], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
+            >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
+            >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
+            >>> Q.mean_customers()
+            {1: 0.8181818181818182, 2: 1.1764705882352942}
+        """
+
+        return {node.id_number:(sum([(self.find_times_in_state()[node.id_number-1][i]*i) for i in range(len(self.find_times_in_state()[node.id_number-1]))]))/self.nodes[node.id_number].numbers_in_node[-1][0] for node in self.transitive_nodes}
+
 
 
 if __name__ == '__main__':
     Q = Simulation([1,2], [2,1], [5,5], [[.2,.3],[.6,.1]], 1000, 200)
     Q.simulate()
     print Q.mean_waits()
+    print Q.mean_customers()
