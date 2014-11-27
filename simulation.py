@@ -6,6 +6,10 @@ from random import random, seed, expovariate
 from numpy import mean as np_mean
 
 def mean(lst):
+    """
+    A function to find the mean of a list, returns false if em
+    """
+
     if len(lst) == 0:
         return False
     return np_mean(lst)
@@ -417,10 +421,67 @@ class Node:
             >>> ind.end_service_date = 67
             >>> node.find_index_for_individual(ind)
             False
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [5, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = [Individual(i) for i in range(2)]
+            >>> end_date = 1
+            >>> for ind in node.individuals:
+            ...     ind.end_service_date = end_date
+            ...     end_date += 4
+            >>> [ind.end_service_date for ind in node.individuals]
+            [1, 5]
+            >>> ind = Individual(3)
+            >>> ind.end_service_date = 3
+            >>> node.find_index_for_individual(ind)
+            -1
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = [Individual(i) for i in range(3)]
+            >>> end_date = 1
+            >>> for ind in node.individuals:
+            ...     ind.end_service_date = end_date
+            ...     end_date += 4
+            >>> [ind.end_service_date for ind in node.individuals]
+            [1, 5, 9]
+            >>> ind = Individual(3)
+            >>> ind.end_service_date = 3
+            >>> node.find_index_for_individual(ind)
+            -2
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [400, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = [Individual(i) for i in range(3)]
+            >>> end_date = 1
+            >>> for ind in node.individuals:
+            ...     ind.end_service_date = end_date
+            ...     end_date += 4
+            >>> [ind.end_service_date for ind in node.individuals]
+            [1, 5, 9]
+            >>> ind = Individual(3)
+            >>> ind.end_service_date = 3
+            >>> node.find_index_for_individual(ind)
+            -2
+
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [400, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = []
+            >>> end_date = 1
+            >>> [ind.end_service_date for ind in node.individuals]
+            []
+            >>> ind = Individual(3)
+            >>> ind.end_service_date = 3
+            >>> node.find_index_for_individual(ind)
+            False
         """
         for i, ind in enumerate(self.individuals[-self.c:]):
                 if individual.end_service_date < ind.end_service_date:
-                    return -self.c + i
+                    return -min(self.c,len(self.individuals)) + i
         return False
 
     def include_individual(self, individual):
