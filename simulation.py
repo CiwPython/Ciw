@@ -811,13 +811,30 @@ class ArrivalNode:
         self.transition_row = transition_row
         self.next_event_time = 0
         self.number_of_individuals = 0
+        self.cum_transition_row = self.find_cumulative_transition_row()
+        self.simulation = simulation
+
+    def find_cumulative_transition_row(self):
+        """
+        Finds the cumulative transition row for the arrival node
+
+            TESTS 1
+            >>> N = ArrivalNode(6, [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], False)
+            >>> N.cum_transition_row
+            [0.125, 0.325, 0.575, 0.725, 0.895, 0.995]
+
+            TESTS 2
+            >>> Q = Simulation([5, 10, 25], [20, 30, 30], [1, 2, 2], [[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]], 100)
+            >>> N = Q.nodes[0]
+            >>> N.cum_transition_row
+            [0.125, 0.375, 1.0]
+        """
         sum_p = 0
         cum_transition_row = []
         for p in self.transition_row:
             sum_p += p
             cum_transition_row.append(sum_p)
-        self.cum_transition_row = cum_transition_row
-        self.simulation = simulation
+        return cum_transition_row
 
     def __repr__(self):
         """
