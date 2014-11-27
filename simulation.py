@@ -3,7 +3,12 @@ A simulation of a Qing network
 """
 from __future__ import division
 from random import random, seed, expovariate
-from numpy import mean
+from numpy import mean as np_mean
+
+def mean(lst):
+    if len(lst) == 0:
+        return False
+    return np_mean(lst)
 
 class DataRecord:
     """
@@ -485,14 +490,15 @@ class Node:
             Node 2
 
             TESTS 3 (PARAMETERS DON't MAKE SENSE)
-            >>> Q = Simulation([3, 3], [4, 5], [2, 1], [[0.1, 0.2], [1.3, 0.1]], 30)
+            >>> seed(23)
+            >>> Q = Simulation([3, 3], [4, 5], [2, 1], [[0.1, 0.2], [0.3, 0.1]], 30)
             >>> node = Q.transitive_nodes[1]
             >>> node.next_node()
-            Node 1
+            Exit Node
             >>> node.next_node()
-            Node 1
+            Exit Node
             >>> node.next_node()
-            Node 1
+            Exit Node
             >>> node.next_node()
             Node 1
 
@@ -563,22 +569,6 @@ class Node:
             >>> ind.data_records[1][0].node
             1
 
-            TESTS 3
-            >>> seed(4)
-            >>> Q = Simulation([-3], [-3], [3], [[0.3]], 30)
-            >>> N = Q.transitive_nodes[0]
-            >>> ind = Individual(33)
-            >>> ind.exit_date = 3.3
-            >>> N.accept(ind, 3)
-            >>> N.write_individual_record(ind)
-            >>> ind.data_records[1][0].arrival_date
-            3
-            >>> round(ind.data_records[1][0].service_time, 5)
-            -0.08975
-            >>> round(ind.data_records[1][0].service_date)
-            3.0
-            >>> ind.data_records[1][0].exit_date
-            3.3
         """
         record = DataRecord(individual.arrival_date, individual.service_time, individual.exit_date, self.id_number)
         if self.id_number in individual.data_records:
@@ -628,16 +618,6 @@ class ArrivalNode:
             [0.375, 0.625, 1.0]
             >>> N.simulation.max_simulation_time
             100
-
-            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
-            >>> Q = Simulation([4, -5, -1], [8, 8, 8], [1, 1, 1], [[.1, .1, .1], [.2, .2, .2], [.3, .3, .3]], 40)
-            >>> N = Q.nodes[0]
-            >>> N.lmbda
-            -2
-            >>> N.transition_row
-            [-2.0, 2.5, 0.5]
-            >>> sum(N.transition_row)
-            1.0
         """
         self.lmbda = lmbda
         self.transition_row = transition_row
@@ -964,12 +944,71 @@ class Simulation:
             >>> Q.warm_up
             250
 
-            TESTS 3 (PARAMETERS DON't MAKE SENSE)
-            >>> Q = Simulation([4, 2], [5, 4], [1, 1], [[0.2, 0.2]], 300, 35)
+            TESTS 3
+            >>> Q = Simulation([4, 2], [5, 4], [1, 1], [[.2, .5]], 300, 35)
             Traceback (most recent call last):
             ...
-            IndexError: list index out of range
+            ValueError: Transition matrix must have same number of rows and columns as nodes (2)
+
+            TESTS 4
+            >>> Q = Simulation([4, 2], [5, 4], [1, 1], [[.2], [.5]], 300, 35)
+            Traceback (most recent call last):
+            ...
+            ValueError: Transition matrix must have same number of rows and columns as nodes (2)
+
+        If a negative arrival rate is passed as an argument then the simulation
+        raises an error::
+
+            >>> Q = Simulation([-1, 2], [5, 4], [1, 1], [[0.2, 0.2], [.3, .2]], 300, 35)
+            Traceback (most recent call last):
+            ...
+            ValueError: All arrival rates must be positive
+
+        Similarly if a negative service rate is passed as an argument then the simulation
+        raises an error::
+
+            >>> Q = Simulation([1, 2], [5, -4], [1, 1], [[0.2, 0.2], [.6, .2]], 300, 35)
+            Traceback (most recent call last):
+            ...
+            ValueError: All service rates must be positive
+
+        All server number must be integers::
+
+            >>> Q = Simulation([1, 2], [5, 4], [1.2, 1], [[0.2, 0.2], [.5, .3]], 300, 35)
+            Traceback (most recent call last):
+            ...
+            ValueError: All servers must be positive integer number
+
+        All server number must be positive::
+
+            >>> Q = Simulation([1, 2], [5, 4], [-2, 1], [[0.2, 0.2], [.3, .2]], 300, 35)
+            Traceback (most recent call last):
+            ...
+            ValueError: All servers must be positive integer number
+
+        All transition rows must sum to less than or equal one::
+
+            >>> Q = Simulation([1, 2], [5, 4], [2, 1], [[0.9, 0.2], [.4, .2]], 300, 35)
+            Traceback (most recent call last):
+            ...
+            ValueError: All transition rows must have sum less than or equal to 1
         """
+
+        if len(transition_matrix) != len(lmbda) or any(len(row) != len(lmbda) for row in transition_matrix):
+            raise ValueError('Transition matrix must have same number of rows and columns as nodes (%s)' % len(lmbda))
+
+        if any(l <= 0 for l in lmbda):
+            raise ValueError('All arrival rates must be positive')
+
+        if any(m <= 0 for m in mu):
+            raise ValueError('All service rates must be positive')
+
+        if any(type(k) is not int or k <= 0 for k in c):
+            raise ValueError('All servers must be positive integer number')
+
+        if any(sum(row) > 1 for row in transition_matrix):
+            raise ValueError('All transition rows must have sum less than or equal to 1')
+
         self.lmbda = lmbda
         self.mu = mu
         self.c = c
@@ -1031,14 +1070,6 @@ class Simulation:
             1.78606
             >>> round(Q.mean_waits()[2], 5)
             4.2586
-
-            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
-            >>> seed(222)
-            >>> Q = Simulation([1], [2], [0], [[0]], 20, 5)
-            >>> Q.simulate()
-            Traceback (most recent call last):
-            ...
-            IndexError: list index out of range
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
@@ -1161,10 +1192,25 @@ class Simulation:
             ...
             KeyError: 0
 
-            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
-            WANT TO TEST WHAT HAPPENS IS THERE ARE NO OBSERVATIONS, GETTING A STRANGE ERROR
+            TESTS 3
+            >>> seed(25)
+            >>> Q = Simulation([5, 7], [6, 7], [1, 2], [[0.1, 0.1], [0.2, 0.1]], 0, 0)
+            >>> Q.simulate()
+            >>> round(Q.mean_waits()[1], 5)
+            Traceback (most recent call last):
+            ...
+            ValueError: No data simulated
+
+            TESTS 4
+            >>> seed(1)
+            >>> Q = Simulation([0.00005, 7], [6, 7], [1, 2], [[0, 0.1], [0, 0.1]], 10, 0)
+            >>> Q.simulate()
+            >>> Q.mean_waits()[1]
+            False
         """
         records_by_node = self.get_records_by_node()
+        if all(len(r) == 0 for r in records_by_node.values()):
+            raise ValueError("No data simulated")
         mean_waits = {node_id:mean([r.wait for r in records_by_node[node_id] if r.arrival_date > self.warm_up]) for node_id in records_by_node}
         return mean_waits
 
@@ -1186,15 +1232,6 @@ class Simulation:
             >>> Q.records()
             1 0 0.0 0.0 0.468280502531 0.468280502531 1
             2 0.0450178591967 0.423262643334 0.468280502531 0.0127191018503 0.480999604381 1
-
-            TESTS 3 (PARAMETERS DON't MAKE SENSE)
-            >>> seed(5)
-            >>> Q = Simulation([2], [-2], [1], [[0]], 1)
-            >>> Q.simulate()
-            >>> Q.records()
-            1 0 0.0 0.0 -0.67698520584 -0.67698520584 1
-            2 0.792844984087 0.0 0.792844984087 -1.27761089039 -0.4847659063 1
-            3 0.807562081656 0.0 0.807562081656 -0.523448279979 0.284113801676 1
         """
         all_individuals = sorted([individual for node in self.nodes[1:] for individual in node.individuals], key=lambda x:x.id_number)
         for ind in all_individuals:
