@@ -210,10 +210,8 @@ class Node:
             TESTS 2
             >>> Q = Simulation([5, 3], [4, 3], [5, 5], [[0.2, 0.5], [0.1, 0.7]], 100)
             >>> N = Q.nodes[2]
-            >>> N.cum_transition_row
+            >>> [round(k,1) for k in N.cum_transition_row]
             [0.1, 0.8]
-
-
         """
 
         sum_p = 0
@@ -728,7 +726,7 @@ class ArrivalNode:
             ...
             AttributeError: 'NoneType' object has no attribute 'accept'
 
-            
+
 
         """
         self.number_of_individuals += 1
