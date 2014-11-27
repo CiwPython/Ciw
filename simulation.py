@@ -217,6 +217,7 @@ class Node:
         self.simulation = simulation
         if self.simulation:
             self.next_event_time = self.simulation.max_simulation_time
+        self.numbers_in_node = [[0.0,0]]
 
     def find_cum_transition_row(self):
         """
@@ -342,6 +343,7 @@ class Node:
             IndexError: pop from empty list
         """
         next_individual = self.individuals.pop(0)
+        self.count_down(self.next_event_time)
 
         next_individual.exit_date = self.next_event_time
         self.write_individual_record(next_individual)
@@ -405,8 +407,8 @@ class Node:
         else:
             next_individual.end_service_date = self.individuals[-self.c].end_service_date + next_individual.service_time
 
-        #self.individuals.append(next_individual)
         self.include_individual(next_individual)
+        self.count_up(current_time)
         self.update_next_event_date()
 
     def find_index_for_individual(self, individual):
@@ -763,6 +765,33 @@ class Node:
             individual.data_records[self.id_number].append(record)
         else:
             individual.data_records[self.id_number] = [record]
+
+    def count_up(self, current_time):
+        """
+        Records the time that the node gains an individual and the current number of individuals
+
+            TESTS 1
+            >>> N = Node(4, 5, 2, [0.1, 0.5, 0.2], 1, False)
+            >>> N.numbers_in_node
+            [[0.0, 0]]
+            >>> N.count_up(4.2)
+            >>> N.numbers_in_node
+            [[0.0, 0], [4.2, 1]]
+        """
+        self.numbers_in_node.append([current_time, self.numbers_in_node[-1][1] + 1])
+
+    def count_down(self,current_time):
+        """
+        Recored the time that the node loses an individual and the current number of individuals
+
+            TESTS 1
+            >>> N = Node(7, 19, 1, [0.3, 0.2], 2, False)
+            >>> N.numbers_in_node = [[0.0, 0], [0.3, 1], [0.5, 2]]
+            >>> N.count_down(0.9)
+            >>> N.numbers_in_node
+            [[0.0, 0], [0.3, 1], [0.5, 2], [0.9, 1]]
+        """
+        self.numbers_in_node.append([current_time, self.numbers_in_node[-1][1] - 1])
 
 
 
@@ -1282,6 +1311,13 @@ class Simulation:
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
             0.0
+
+            TESTS 4 a quiet m/m/c queue
+            >>> seed(9)
+            >>> Q = Simulation([4], [3], [3], [[0]], 50)
+            >>> Q.simulate()
+            >>> round(Q.mean_waits()[1], 5)
+            0.03382
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
