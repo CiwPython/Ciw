@@ -1,5 +1,5 @@
 """
-A simulation of a Qing networ
+A simulation of a Qing network
 """
 from __future__ import division
 from random import random, seed, expovariate
@@ -11,7 +11,7 @@ class DataRecord:
     """
     def __init__(self, arrival_date, service_time, exit_date, node):
         """
-
+            TESTS 1
             >>> r = DataRecord(2, 3, 5, 3)
             >>> r.arrival_date
             2
@@ -23,6 +23,38 @@ class DataRecord:
             3
             >>> r.exit_date
             5
+            >>> r.node
+            3
+
+            TESTS 2
+            >>> r = DataRecord(5.7, 2.1, 8.2, 1)
+            >>> r.arrival_date
+            5.7
+            >>> round(r.wait, 5)
+            0.4
+            >>> r.service_date
+            6.1
+            >>> r.service_time
+            2.1
+            >>> r.exit_date
+            8.2
+            >>> r.node
+            1
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> r = DataRecord(4, 2.5, 3, -3)
+            >>> r.arrival_date
+            4
+            >>> r.wait
+            -3.5
+            >>> r.service_date
+            0.5
+            >>> r.service_time
+            2.5
+            >>> r.exit_date
+            3
+            >>> r.node
+            -3
         """
         self.arrival_date = arrival_date
         self.service_time = service_time
@@ -39,15 +71,38 @@ class Individual:
         """
         Initialise an individual
 
-        >>> i = Individual(22)
-        >>> i.in_service
-        False
-        >>> i.end_service_date
-        False
-        >>> i.id_number
-        22
-        >>> i.data_records
-        {}
+            TESTS 1
+            >>> i = Individual(22)
+            >>> i.in_service
+            False
+            >>> i.end_service_date
+            False
+            >>> i.id_number
+            22
+            >>> i.data_records
+            {}
+
+            TESTS 2
+            >>> i = Individual(5)
+            >>> i.in_service
+            False
+            >>> i.end_service_date
+            False
+            >>> i.id_number
+            5
+            >>> i.data_records
+            {}
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> i = Individual(-4.6)
+            >>> i.in_service
+            False
+            >>> i.end_service_date
+            False
+            >>> i.id_number
+            -4.6
+            >>> i.data_records
+            {}
         """
         self.in_service = False
         self.end_service_date = False
@@ -56,9 +111,21 @@ class Individual:
 
     def __repr__(self):
         """
-        >>> i = Individual(3)
-        >>> i
-        Individual 3
+            TESTS 1
+            >>> i = Individual(3)
+            >>> i
+            Individual 3
+
+            TESTS 2
+            >>> i = Individual(93)
+            >>> i
+            Individual 93
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> i = Individual(twelve)
+            Traceback (most recent call last):
+            ...
+            NameError: name 'twelve' is not defined
         """
         return 'Individual %s' % self.id_number
 
@@ -70,8 +137,7 @@ class Node:
         """
         Initialise a node.
 
-        Here is an example::
-
+            TESTS 1
             >>> N = Node(5, 10, 1, [.2, .5], 1, False)
             >>> N.lmbda
             5
@@ -92,17 +158,33 @@ class Node:
             >>> N.simulation
             False
 
-        Here is another example::
-
+            TESTS 2
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
-            >>> N = Q.transitive_nodes[0]
+            >>> N = Q.transitive_nodes[1]
+            >>> N.lmbda
+            3
+            >>> N.mu
+            10
+            >>> N.c
+            1
+            >>> N.transition_row
+            [0.4, 0.4]
+            >>> N.individuals
+            []
+            >>> N.id_number
+            2
             >>> N.next_event_time
             50
             >>> N.cum_transition_row
-            [0.2, 0.7]
+            [0.4, 0.8]
             >>> N.simulation.max_simulation_time
             50
 
+            TESTS 3 (PARAMETERS DON't MAKE SENSE)
+            >>> N = Node(2, 7, 2, [[0.6, 0.1], [0.2, 0.5]], 3, False)
+            Traceback (most recent call last):
+            ...
+            TypeError: unsupported operand type(s) for +=: 'int' and 'list'
         """
         self.lmbda = lmbda
         self.mu = mu
@@ -116,7 +198,7 @@ class Node:
         for p in self.transition_row:
             sum_p += p
             cum_transition_row.append(sum_p)
-        self.cum_transition_row = cum_transition_row  # Adding zero for countability (represents never going back to arrival node)
+        self.cum_transition_row = cum_transition_row
         self.simulation = simulation
         if self.simulation:
             self.next_event_time = self.simulation.max_simulation_time
@@ -125,9 +207,22 @@ class Node:
         """
         Representation of a node::
 
+            TESTS 1
             >>> N = Node(5, 10, 1, [.2, .5], 1, False)
             >>> N.id_number
             1
+
+            TESTS 2
+            >>> Q = Simulation([5, 2, 1], [8, 8, 3], [1, 2, 1], [[0.2, 0.1, 0.1], [0.1, 0.4, 0.3], [0.3, 0.1, 0.1]], 300)
+            >>> N = Q.transitive_nodes[2]
+            >>> N.id_number
+            3
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> N = Node(3, 4, 3, [[0.4, 0.3], [0.1, 0.2]], 2, False)
+            Traceback (most recent call last):
+            ...
+            TypeError: unsupported operand type(s) for +=: 'int' and 'list'
         """
         return 'Node %s' % self.id_number
 
@@ -135,6 +230,7 @@ class Node:
         """
         Update node when a service happens.
 
+            TESTS 1
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
@@ -165,6 +261,47 @@ class Node:
             1.01443
             >>> i.data_records[N.id_number][0].wait
             0.0
+
+            TESTS 2
+            >>> seed(6)
+            >>> Q = Simulation([7, 4], [9, 11], [2, 1], [[.3, .2], [.1, .4]], 60)
+            >>> N = Q.transitive_nodes[0]
+            >>> i = Individual(4)
+            >>> i.arrival_date
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'arrival_date'
+            >>> i.service_time
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'service_time'
+            >>> N.accept(i, 3)
+            >>> i.arrival_date
+            3
+            >>> round(i.service_time, 5)
+            0.17519
+            >>> i.data_records[N.id_number]
+            Traceback (most recent call last):
+            ...
+            KeyError: 1
+            >>> i.exit_date
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'exit_date'
+            >>> N.have_event()
+            >>> round(i.exit_date, 5)
+            3.17519
+            >>> i.data_records[N.id_number][0].wait
+            0.0
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(2)
+            >>> Q = Simulation([2], [3], [1], [[0]], 20)
+            >>> N = Q.transitive_nodes[0]
+            >>> N.have_event()
+            Traceback (most recent call last):
+            ...
+            IndexError: pop from empty list
         """
         self.individuals.sort(key=lambda x: x.end_service_date)
         next_individual = self.individuals.pop(0)
@@ -180,23 +317,48 @@ class Node:
         """
         Accepts a new customer to the queue
 
+            TESTS 1
             >>> seed(1)
             >>> N = Node(5, 10, 1, [.2, .5], 1, False)
             >>> next_individual = Individual(5)
             >>> N.accept(next_individual, 1)
             >>> N.individuals
             [Individual 5]
-
             >>> next_individual.arrival_date
             1
             >>> round(next_individual.service_time, 5)
             0.01443
-
             >>> round(N.next_event_time, 5)
             1.01443
             >>> N.accept(Individual(10), 1)
             >>> round(N.next_event_time, 5)
             1.01443
+
+            TESTS 2
+            >>> seed(4)
+            >>> N = Node(2, 2, 2, [.3, .3], 3, False)
+            >>> next_individual = Individual(6)
+            >>> N.accept(next_individual, 8.2)
+            >>> N.individuals
+            [Individual 6]
+            >>> next_individual.arrival_date
+            8.2
+            >>> round(next_individual.service_time, 5)
+            0.13463
+            >>> round(N.next_event_time, 5)
+            8.33463
+            >>> N.accept(Individual(10), 1)
+            >>> round(N.next_event_time, 5)
+            1.05444
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(2)
+            >>> N = Node(1, 2, -1, [.2, .1], 1, False)
+            >>> next_individual = Individual(2)
+            >>> N.accept(next_individual, 8.2)
+            Traceback (most recent call last):
+            ...
+            IndexError: list index out of range
         """
         next_individual.arrival_date = current_time
         next_individual.service_time = expovariate(self.mu)
@@ -214,6 +376,7 @@ class Node:
         """
         Finds the time of the next event at this node
 
+            TESTS 1
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
@@ -229,6 +392,31 @@ class Node:
             >>> node.update_next_event_date()
             >>> round(node.next_event_time, 5)
             1.01443
+
+            TESTS 2
+            >>> seed(8)
+            >>> Q = Simulation([3, 3, 1], [6, 12, 2], [1, 1, 3], [[.2, .4, .4], [.4, .4, .1], [.1, .1, .1]], 40)
+            >>> node = Q.transitive_nodes[1]
+            >>> node.individuals
+            []
+            >>> node.next_event_time
+            40
+            >>> node.update_next_event_date()
+            >>> node.next_event_time
+            40
+            >>> ind = Individual(2)
+            >>> node.accept(ind, 1)
+            >>> node.update_next_event_date()
+            >>> round(node.next_event_time, 5)
+            1.02142
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(3)
+            >>> node = Node(2, 2, 2, [.3, .3], 3, False)
+            >>> node.update_next_event_date()
+            Traceback (most recent call last):
+            ...
+            AttributeError: 'bool' object has no attribute 'max_simulation_time'
         """
         if len(self.individuals) == 0:
             self.next_event_time = self.simulation.max_simulation_time
@@ -240,6 +428,7 @@ class Node:
         """
         Finds the next node according the random distribution.
 
+            TESTS 1
             >>> seed(6)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.35, .35], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
@@ -255,6 +444,40 @@ class Node:
             Node 1
             >>> node.next_node()
             Node 2
+
+            TESTS 2
+            >>> seed(54)
+            >>> Q = Simulation([4, 5, 6], [12, 5, 9], [1, 3, 2], [[0.1, 0.2, 0.5], [0.4, 0.2, 0.2], [0.3, 0.3, 0.3]], 80)
+            >>> node = Q.transitive_nodes[2]
+            >>> node.next_node()
+            Exit Node
+            >>> node.next_node()
+            Node 1
+            >>> node.next_node()
+            Node 2
+            >>> node.next_node()
+            Node 2
+            >>> node.next_node()
+            Exit Node
+            >>> node.next_node()
+            Node 2
+            >>> node.next_node()
+            Node 2
+            >>> node.next_node()
+            Node 2
+
+            TESTS 3 (PARAMETERS DON't MAKE SENSE)
+            >>> Q = Simulation([3, 3], [4, 5], [2, 1], [[0.1, 0.2], [1.3, 0.1]], 30)
+            >>> node = Q.transitive_nodes[1]
+            >>> node.next_node()
+            Node 1
+            >>> node.next_node()
+            Node 1
+            >>> node.next_node()
+            Node 1
+            >>> node.next_node()
+            Node 1
+
         """
         rnd_num = random()
         for p in range(len(self.cum_transition_row)):
@@ -272,6 +495,8 @@ class Node:
         - Service time
         - Exit date
 
+            TESTS 1
+            >>> seed(7)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.35, .35], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(6)
@@ -285,16 +510,57 @@ class Node:
             >>> ind.data_records[1][0].arrival_date
             3
             >>> round(ind.data_records[1][0].wait, 5)
-            3.81198
+            3.96087
             >>> round(ind.data_records[1][0].service_date, 5)
-            6.81198
+            6.96087
             >>> round(ind.data_records[1][0].service_time, 5)
-            0.18802
+            0.03913
             >>> ind.data_records[1][0].exit_date
             7
             >>> ind.data_records[1][0].node
             1
 
+            TESTS 2
+            >>> seed(12)
+            >>> Q = Simulation([2, 1], [6, 3], [1, 2], [[.4, .3], [.2, .7]], 70)
+            >>> N = Q.transitive_nodes[0]
+            >>> ind = Individual(28)
+            >>> N.accept(ind, 6)
+            >>> N.write_individual_record(ind)
+            Traceback (most recent call last):
+            ...
+            AttributeError: Individual instance has no attribute 'exit_date'
+            >>> ind.exit_date = 9
+            >>> N.write_individual_record(ind)
+            >>> ind.data_records[1][0].arrival_date
+            6
+            >>> round(ind.data_records[1][0].wait, 5)
+            2.89274
+            >>> round(ind.data_records[1][0].service_date, 5)
+            8.89274
+            >>> round(ind.data_records[1][0].service_time, 5)
+            0.10726
+            >>> ind.data_records[1][0].exit_date
+            9
+            >>> ind.data_records[1][0].node
+            1
+
+            TESTS 3
+            >>> seed(4)
+            >>> Q = Simulation([-3], [-3], [3], [[0.3]], 30)
+            >>> N = Q.transitive_nodes[0]
+            >>> ind = Individual(33)
+            >>> ind.exit_date = 3.3
+            >>> N.accept(ind, 3)
+            >>> N.write_individual_record(ind)
+            >>> ind.data_records[1][0].arrival_date
+            3
+            >>> round(ind.data_records[1][0].service_time, 5)
+            -0.08975
+            >>> round(ind.data_records[1][0].service_date)
+            3.0
+            >>> ind.data_records[1][0].exit_date
+            3.3
         """
         record = DataRecord(individual.arrival_date, individual.service_time, individual.exit_date, self.id_number)
         if self.id_number in individual.data_records:
@@ -314,6 +580,7 @@ class ArrivalNode:
 
         Here is an example::
 
+            TESTS 1
             >>> N = ArrivalNode(5, [.5, .5], False)
             >>> N.lmbda
             5
@@ -329,6 +596,30 @@ class ArrivalNode:
             [0.5, 1.0]
             >>> N.simulation
             False
+
+            TESTS 2
+            >>> Q = Simulation([3, 2, 3], [4, 5, 3], [2, 1, 2], [[.1, .1, .1], [.3, .4, .1], [.2, .2, .5]], 100)
+            >>> N = Q.nodes[0]
+            >>> N.lmbda
+            8
+            >>> N.transition_row
+            [0.375, 0.25, 0.375]
+            >>> sum(N.transition_row)
+            1.0
+            >>> N.cum_transition_row
+            [0.375, 0.625, 1.0]
+            >>> N.simulation.max_simulation_time
+            100
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> Q = Simulation([4, -5, -1], [8, 8, 8], [1, 1, 1], [[.1, .1, .1], [.2, .2, .2], [.3, .3, .3]], 40)
+            >>> N = Q.nodes[0]
+            >>> N.lmbda
+            -2
+            >>> N.transition_row
+            [-2.0, 2.5, 0.5]
+            >>> sum(N.transition_row)
+            1.0
         """
         self.lmbda = lmbda
         self.transition_row = transition_row
@@ -346,7 +637,19 @@ class ArrivalNode:
         """
         Representation of a node::
 
+            TESTS 1
             >>> N = ArrivalNode(5, [.5, .5], False)
+            >>> N
+            Arrival Node
+
+            TESTS 2
+            >>> Q = Simulation([4], [4], [2], [[0.5]], 40)
+            >>> N = Q.nodes[0]
+            >>> N
+            Arrival Node
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> N = ArrivalNode(-5, [0.2, 1.3], False)
             >>> N
             Arrival Node
         """
@@ -356,6 +659,7 @@ class ArrivalNode:
         """
         Update node when a service happens.
 
+            TESTS 1
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> Q.transitive_nodes[0].individuals
@@ -372,6 +676,40 @@ class ArrivalNode:
             []
             >>> round(N.next_event_time,5)
             0.18037
+
+            TESTS 2
+            >>> seed(12)
+            >>> Q = Simulation([8, 1], [10, 3], [1, 1], [[.1, .5], [.4, .3]], 50)
+            >>> Q.transitive_nodes[0].individuals
+            []
+            >>> Q.transitive_nodes[1].individuals
+            []
+            >>> N = ArrivalNode(90, [.1, .9], Q)
+            >>> N.next_event_time
+            0
+            >>> N.have_event()
+            >>> Q.transitive_nodes[0].individuals
+            []
+            >>> Q.transitive_nodes[1].individuals
+            [Individual 1]
+            >>> round(N.next_event_time,5)
+            0.0122
+
+            TESTS 3 (PARAMETERS DON't MAKE SENSE)
+            >>> seed(1)
+            >>> Q = Simulation([8, 1], [10, 3], [1, 1], [[.1, .5], [.4, .3]], 50)
+            >>> Q.transitive_nodes[0].individuals
+            []
+            >>> Q.transitive_nodes[1].individuals
+            []
+            >>> N = ArrivalNode(-3, [0, 0], Q)
+            >>> N.have_event()
+            Traceback (most recent call last):
+            ...
+            AttributeError: 'NoneType' object has no attribute 'accept'
+
+            
+
         """
         self.number_of_individuals += 1
         next_individual = Individual(self.number_of_individuals)
@@ -398,6 +736,7 @@ class ArrivalNode:
         """
         Finds the next node according the random distribution.
 
+            TESTS 1
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = ArrivalNode(8, [.625, .375], Q)
@@ -407,6 +746,23 @@ class ArrivalNode:
             Node 2
             >>> N.next_node()
             Node 2
+
+            TESTS 2
+            >>> seed(401)
+            >>> Q = Simulation([2, 9], [7, 9], [1, 3], [[.2, .5], [.4, .4]], 50)
+            >>> N = Q.nodes[0]
+            >>> N.next_node()
+            Node 2
+            >>> N.next_node()
+            Node 2
+            >>> N.next_node()
+            Node 2
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(84)
+            >>> Q = Simulation([2, 9], [7, 9], [1, 3], [[.2, .5], [.4, .4]], 50)
+            >>> N = ArrivalNode(20, [0.0, 0.0], False)
+            >>> N.next_node()
         """
         rnd_num = random()
         for p in range(len(self.cum_transition_row)):
@@ -421,8 +777,7 @@ class ExitNode:
         """
         Initialise a node.
 
-        Here is an example::
-
+            TESTS 1
             >>> N = ExitNode(100)
             >>> N.individuals
             []
@@ -430,6 +785,19 @@ class ExitNode:
             -1
             >>> N.next_event_time
             100
+
+            TESTS 2
+            >>> N = ExitNode(4)
+            >>> N.id_number
+            -1
+            >>> N.next_event_time
+            4
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> N = ExitNode()
+            Traceback (most recent call last):
+            ...
+            TypeError: __init__() takes exactly 2 arguments (1 given)
         """
         self.individuals = []
         self.id_number = -1
@@ -439,10 +807,21 @@ class ExitNode:
     def __repr__(self):
         """
         Representation of a node::
-
+            TESTS 1
             >>> N = ExitNode(500)
             >>> N
             Exit Node
+
+            TESTS 2
+            >>> N = ExitNode(320)
+            >>> N
+            Exit Node
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> N = ExitNode(2, 6, -1, False)
+            Traceback (most recent call last):
+            ...
+            TypeError: __init__() takes exactly 2 arguments (5 given)
         """
         return 'Exit Node'
 
@@ -450,6 +829,7 @@ class ExitNode:
         """
         Accepts a new customer to the queue
 
+            TESTS 1
             >>> N = ExitNode(200)
             >>> N.individuals
             []
@@ -461,6 +841,28 @@ class ExitNode:
             [Individual 5]
             >>> N.next_event_time
             200
+
+            TESTS 2
+            >>> Q = Simulation([2, 9], [7, 9], [1, 3], [[.2, .5], [.4, .4]], 12)
+            >>> N = Q.nodes[-1]
+            >>> N.individuals
+            []
+            >>> N.next_event_time
+            12
+            >>> next_individual = Individual(3)
+            >>> N.accept(next_individual, 3)
+            >>> N.individuals
+            [Individual 3]
+            >>> N.next_event_time
+            12
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> N = ExitNode(-5)
+            >>> N.accept(Individual(4), 2)
+            >>> N.individuals
+            [Individual 4]
+            >>> N.next_event_time
+            -5
         """
         self.individuals.append(next_individual)
 
@@ -468,6 +870,7 @@ class ExitNode:
         """
         Finds the time of the next event at this node
 
+            TESTS 1
             >>> N = ExitNode(25)
             >>> N.next_event_time
             25
@@ -475,6 +878,22 @@ class ExitNode:
             >>> N.next_event_time
             25
 
+            TESTS 2
+            >>> Q = Simulation([4, 1], [2, 4], [5, 1], [[.8, .1], [.3, .25]], 60)
+            >>> N = Q.nodes[-1]
+            >>> N.next_event_time
+            60
+            >>> N.update_next_event_date()
+            >>> N.next_event_time
+            60
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> N = ExitNode(False)
+            >>> N.next_event_time
+            False
+            >>> N.update_next_event_date()
+            >>> N.next_event_time
+            False
         """
         pass
 
@@ -489,6 +908,7 @@ class Simulation:
 
         Here is an example::
 
+            TESTS 1
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50, 10)
             >>> Q.lmbda
             [5, 3]
@@ -506,6 +926,31 @@ class Simulation:
             50
             >>> Q.warm_up
             10
+
+            TESTS 2
+            >>> Q = Simulation([5.5], [12.2], [1], [[0]], 600, 250)
+            >>> Q.lmbda
+            [5.5]
+            >>> Q.mu
+            [12.2]
+            >>> Q.c
+            [1]
+            >>> Q.transition_matrix
+            [[0]]
+            >>> Q.nodes
+            [Arrival Node, Node 1, Exit Node]
+            >>> Q.transitive_nodes
+            [Node 1]
+            >>> Q.max_simulation_time
+            600
+            >>> Q.warm_up
+            250
+
+            TESTS 3 (PARAMETERS DON't MAKE SENSE)
+            >>> Q = Simulation([4, 2], [5, 4], [1, 1], [[0.2, 0.2]], 300, 35)
+            Traceback (most recent call last):
+            ...
+            IndexError: list index out of range
         """
         self.lmbda = lmbda
         self.mu = mu
@@ -520,6 +965,7 @@ class Simulation:
         """
         Return the next active node:
 
+            TESTS 2
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> i = 0
             >>> for node in Q.nodes[:-1]:
@@ -528,6 +974,7 @@ class Simulation:
             >>> Q.find_next_active_node()
             Arrival Node
 
+            TESTS 2
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> i = 10
             >>> for node in Q.nodes[:-1]:
@@ -535,12 +982,45 @@ class Simulation:
             ...     i -= 1
             >>> Q.find_next_active_node()
             Node 2
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> i = 10
+            >>> for node in Q.nodes[:-1]:
+            ...     node.next_event_time = False
+            ...     i -= 1
+            >>> Q.find_next_active_node()
+            Arrival Node
         """
         return min(self.nodes, key=lambda x: x.next_event_time)
 
     def simulate(self):
         """
         Run the actual simulation.
+
+            TESTS 1
+            >>> seed(99)
+            >>> Q = Simulation([1], [2], [1], [[0]], 20, 5)
+            >>> Q.simulate()
+            >>> round(Q.mean_waits()[1], 5)
+            0.31442
+
+            TESTS 2
+            >>> seed(2)
+            >>> Q = Simulation([2, 3], [2, 5], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 60, 10)
+            >>> Q.simulate()
+            >>> round(Q.mean_waits()[1], 5)
+            1.78606
+            >>> round(Q.mean_waits()[2], 5)
+            4.2586
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(222)
+            >>> Q = Simulation([1], [2], [0], [[0]], 20, 5)
+            >>> Q.simulate()
+            Traceback (most recent call last):
+            ...
+            IndexError: list index out of range
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
@@ -550,18 +1030,91 @@ class Simulation:
     def get_all_individuals(self):
         """
         Returns list of all individuals with at least one record
+
+            TESTS 1
+            >>> seed(1)
+            >>> Q = Simulation([1], [2], [1], [[0]], 5)
+            >>> Q.simulate()
+            >>> Q.get_all_individuals()
+            [Individual 1, Individual 2, Individual 3, Individual 4]
+
+            TESTS 2
+            >>> seed(10)
+            >>> Q = Simulation([2, 3], [2, 5], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 2)
+            >>> Q.simulate()
+            >>> Q.get_all_individuals()
+            [Individual 4, Individual 9, Individual 2, Individual 3, Individual 6, Individual 1, Individual 8, Individual 7, Individual 5, Individual 10]
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(100)
+            >>> Q = Simulation([1], [2], [1], [[0]], -2)
+            >>> Q.simulate()
+            >>> Q.get_all_individuals()
+            []
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
     def get_individuals_by_node(self):
         """
         Return a dictionary with keys nodes and values: lists of players who have a complete record for that node.
+
+            TESTS 1
+            >>> seed(1)
+            >>> Q = Simulation([1], [2], [1], [[0]], 5)
+            >>> Q.simulate()
+            >>> len(Q.get_individuals_by_node()[1])
+            4
+
+            TESTS 2
+            >>> seed(10)
+            >>> Q = Simulation([2, 3], [2, 5], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 2)
+            >>> Q.simulate()
+            >>> len(Q.get_individuals_by_node()[1])
+            6
+            >>> Q.get_individuals_by_node()[2]
+            [Individual 4, Individual 9, Individual 2, Individual 3, Individual 1, Individual 5]
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(2)
+            >>> Q = Simulation([1], [0.01], [1], [[0]], 5)
+            >>> Q.simulate()
+            >>> Q.get_individuals_by_node()[1]
+            []
         """
         return {node.id_number:[individual for individual in self.get_all_individuals() if node.id_number in individual.data_records] for node in self.transitive_nodes}
 
     def get_records_by_node(self):
         """
         Returns all records of an individual
+
+            TESTS 1
+            >>> seed(1)
+            >>> Q = Simulation([1], [2], [1], [[0]], 5)
+            >>> Q.simulate()
+            >>> Q.get_records_by_node()[1][0].wait
+            0.0
+            >>> round(Q.get_records_by_node()[1][1].arrival_date, 5)
+            1.44297
+
+            TESTS 2
+            >>> seed(3)
+            >>> Q = Simulation([1, 2], [2, 2], [1, 2], [[0.2, 0.2], [0.2, 0.2]], 5)
+            >>> Q.simulate()
+            >>> round(Q.get_records_by_node()[1][0].wait, 5)
+            0.0
+            >>> round(Q.get_records_by_node()[1][1].service_date, 5)
+            0.39288
+            >>> round(Q.get_records_by_node()[2][1].wait, 5)
+            0.0
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            >>> seed(2)
+            >>> Q = Simulation([8], [8], [2], [[0]], 5)
+            >>> Q.simulate()
+            >>> Q.get_records_by_node()[0][0].wait
+            Traceback (most recent call last):
+            ...
+            KeyError: 0
         """
         individuals_by_node = self.get_individuals_by_node()
         return {node_id:[record for individual in individuals_by_node[node_id] for record in individual.data_records[node_id]] for node_id in individuals_by_node}
@@ -569,6 +1122,29 @@ class Simulation:
     def mean_waits(self):
         """
         A method to return the mean wait in the system (after simulation has been run)
+
+            TESTS 1
+            >>> seed(11)
+            >>> Q = Simulation([6], [12], [1], [[0]], 25)
+            >>> Q.simulate()
+            >>> round(Q.mean_waits()[1], 5)
+            0.15754
+
+            TESTS 2
+            >>> seed(18)
+            >>> Q = Simulation([5, 7], [6, 7], [1, 2], [[0.1, 0.1], [0.2, 0.1]], 30)
+            >>> Q.simulate()
+            >>> round(Q.mean_waits()[1], 5)
+            4.51115
+            >>> round(Q.mean_waits()[2], 5)
+            0.03058
+            >>> round(Q.mean_waits()[0], 5)
+            Traceback (most recent call last):
+            ...
+            KeyError: 0
+
+            TESTS 3 (PARAMETERS DON'T MAKE SENSE)
+            WANT TO TEST WHAT HAPPENS IS THERE ARE NO OBSERVATIONS, GETTING A STRANGE ERROR
         """
         records_by_node = self.get_records_by_node()
         mean_waits = {node_id:mean([r.wait for r in records_by_node[node_id] if r.arrival_date > self.warm_up]) for node_id in records_by_node}
@@ -577,6 +1153,30 @@ class Simulation:
     def records(self):
         """
         Return all records
+
+            TESTS 1
+            >>> seed(1)
+            >>> Q = Simulation([11, 2], [4, 3], [4, 2], [[0.6, 0.1], [0.3, 0.1]], 0.2824)
+            >>> Q.simulate()
+            >>> Q.records()
+            2 0.110997609642 -2.77555756156e-17 0.110997609642 0.171014694915 0.282012304557 1
+
+            TESTS 2
+            >>> seed(8)
+            >>> Q = Simulation([3], [7], [1], [[0]], 0.5)
+            >>> Q.simulate()
+            >>> Q.records()
+            1 0 0.0 0.0 0.468280502531 0.468280502531 1
+            2 0.0450178591967 0.423262643334 0.468280502531 0.0127191018503 0.480999604381 1
+
+            TESTS 3 (PARAMETERS DON't MAKE SENSE)
+            >>> seed(5)
+            >>> Q = Simulation([2], [-2], [1], [[0]], 1)
+            >>> Q.simulate()
+            >>> Q.records()
+            1 0 0.0 0.0 -0.67698520584 -0.67698520584 1
+            2 0.792844984087 0.0 0.792844984087 -1.27761089039 -0.4847659063 1
+            3 0.807562081656 0.0 0.807562081656 -0.523448279979 0.284113801676 1
         """
         all_individuals = sorted([individual for node in self.nodes[1:] for individual in node.individuals], key=lambda x:x.id_number)
         for ind in all_individuals:
