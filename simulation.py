@@ -7,7 +7,18 @@ from numpy import mean as np_mean
 
 def mean(lst):
     """
-    A function to find the mean of a list, returns false if em
+    A function to find the mean of a list, returns false if empty
+
+        TESTS 1
+        >>> AList = [6, 6, 4, 6, 8]
+        >>> mean(AList)
+        6.0
+
+        TESTS 2
+        >>> AnotherList = []
+        >>> mean(AnotherList)
+        False
+
     """
 
     if len(lst) == 0:
@@ -506,6 +517,64 @@ class Node:
             [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 10, Individual 8, Individual 9]
             >>> [ind.end_service_date for ind in node.individuals]
             [2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 20]
+
+            TESTS 2
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [7, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = [Individual(i) for i in range(3)]
+            >>> end_date = 2
+            >>> for ind in node.individuals:
+            ...     ind.end_service_date = end_date
+            ...     end_date += 2
+            >>> node.individuals
+            [Individual 0, Individual 1, Individual 2]
+            >>> [ind.end_service_date for ind in node.individuals]
+            [2, 4, 6]
+            >>> ind = Individual(10)
+            >>> ind.end_service_date = 17
+            >>> node.include_individual(ind)
+            >>> node.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 10]
+            >>> [ind.end_service_date for ind in node.individuals]
+            [2, 4, 6, 17]
+
+            TESTS 3
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [8, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals = [Individual(i) for i in range(6)]
+            >>> end_date = 2
+            >>> for ind in node.individuals:
+            ...     ind.end_service_date = end_date
+            ...     end_date += 2
+            >>> node.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5]
+            >>> [ind.end_service_date for ind in node.individuals]
+            [2, 4, 6, 8, 10, 12]
+            >>> ind = Individual(33)
+            >>> ind.end_service_date = 7
+            >>> node.include_individual(ind)
+            >>> node.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 33, Individual 3, Individual 4, Individual 5]
+            >>> [ind.end_service_date for ind in node.individuals]
+            [2, 4, 6, 7, 8, 10, 12]
+
+            TESTS 3
+            >>> seed(1)
+            >>> Q = Simulation([5, 3], [10, 10], [2, 1], [[.2, .5], [.4, .4]], 50)
+            >>> node = Q.transitive_nodes[0]
+            >>> node.individuals
+            []
+            >>> [ind.end_service_date for ind in node.individuals]
+            []
+            >>> ind = Individual(1)
+            >>> ind.end_service_date = 3.5
+            >>> node.include_individual(ind)
+            >>> node.individuals
+            [Individual 1]
+            >>> [ind.end_service_date for ind in node.individuals]
+            [3.5]
         """
         index = self.find_index_for_individual(individual)
         if index:
@@ -1189,6 +1258,13 @@ class Simulation:
             1.78606
             >>> round(Q.mean_waits()[2], 5)
             4.2586
+
+            TESTS 3
+            >>> seed(99)
+            >>> Q = Simulation([2, 3], [4, 5], [500, 1], [[0.2, 0.2], [0.3, 0.3]], 60, 10)
+            >>> Q.simulate()
+            >>> round(Q.mean_waits()[1], 5)
+            0.0
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
