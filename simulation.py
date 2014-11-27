@@ -193,15 +193,35 @@ class Node:
         self.next_event_time = 0
         self.individuals = []
         self.id_number = id_number
+        self.cum_transition_row = self.find_cum_transition_row()
+        self.simulation = simulation
+        if self.simulation:
+            self.next_event_time = self.simulation.max_simulation_time
+
+    def find_cum_transition_row(self):
+        """
+        Finds the cumulative transition row for the node
+
+            TESTS 1
+            >>> N = Node(6, 6, 3, [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], 1, False)
+            >>> N.cum_transition_row
+            [0.125, 0.325, 0.575, 0.725, 0.895, 0.995]
+
+            TESTS 2
+            >>> Q = Simulation([5, 3], [4, 3], [5, 5], [[0.2, 0.5], [0.1, 0.7]], 100)
+            >>> N = Q.nodes[2]
+            >>> N.cum_transition_row
+            [0.1, 0.8]
+
+
+        """
+
         sum_p = 0
         cum_transition_row = []
         for p in self.transition_row:
             sum_p += p
             cum_transition_row.append(sum_p)
-        self.cum_transition_row = cum_transition_row
-        self.simulation = simulation
-        if self.simulation:
-            self.next_event_time = self.simulation.max_simulation_time
+        return cum_transition_row
 
     def __repr__(self):
         """
