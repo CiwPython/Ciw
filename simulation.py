@@ -87,12 +87,12 @@ class Individual:
     """
     Class for an individual
     """
-    def __init__(self, id_number):
+    def __init__(self, id_number, number_of_nodes):
         """
         Initialise an individual
 
             TESTS 1
-            >>> i = Individual(22)
+            >>> i = Individual(22, 3)
             >>> i.in_service
             False
             >>> i.end_service_date
@@ -103,7 +103,7 @@ class Individual:
             {}
 
             TESTS 2
-            >>> i = Individual(5)
+            >>> i = Individual(5, 1)
             >>> i.in_service
             False
             >>> i.end_service_date
@@ -114,7 +114,7 @@ class Individual:
             {}
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
-            >>> i = Individual(-4.6)
+            >>> i = Individual(-4.6, 1)
             >>> i.in_service
             False
             >>> i.end_service_date
@@ -128,21 +128,22 @@ class Individual:
         self.end_service_date = False
         self.id_number = id_number
         self.data_records = {}
+        self.number_of_visits = {i+1:0 for i in range(number_of_nodes)}
 
     def __repr__(self):
         """
             TESTS 1
-            >>> i = Individual(3)
+            >>> i = Individual(3, 6)
             >>> i
             Individual 3
 
             TESTS 2
-            >>> i = Individual(93)
+            >>> i = Individual(93, 2)
             >>> i
             Individual 93
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
-            >>> i = Individual(twelve)
+            >>> i = Individual(twelve, 2)
             Traceback (most recent call last):
             ...
             NameError: name 'twelve' is not defined
@@ -273,7 +274,7 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
-            >>> i = Individual(2)
+            >>> i = Individual(2, 1)
             >>> i.arrival_date
             Traceback (most recent call last):
             ...
@@ -305,7 +306,7 @@ class Node:
             >>> seed(6)
             >>> Q = Simulation([7, 4], [9, 11], [2, 1], [[.3, .2], [.1, .4]], 60)
             >>> N = Q.transitive_nodes[0]
-            >>> i = Individual(4)
+            >>> i = Individual(4, 1)
             >>> i.arrival_date
             Traceback (most recent call last):
             ...
@@ -359,7 +360,7 @@ class Node:
             TESTS 1
             >>> seed(1)
             >>> N = Node(5, 10, 1, [.2, .5], 1, False)
-            >>> next_individual = Individual(5)
+            >>> next_individual = Individual(5, 3)
             >>> N.accept(next_individual, 1)
             >>> N.individuals
             [Individual 5]
@@ -369,14 +370,14 @@ class Node:
             0.01443
             >>> round(N.next_event_time, 5)
             1.01443
-            >>> N.accept(Individual(10), 1)
+            >>> N.accept(Individual(10, 3), 1)
             >>> round(N.next_event_time, 5)
             1.01443
 
             TESTS 2
             >>> seed(4)
             >>> N = Node(2, 2, 2, [.3, .3], 3, False)
-            >>> next_individual = Individual(6)
+            >>> next_individual = Individual(6, 1)
             >>> N.accept(next_individual, 8.2)
             >>> N.individuals
             [Individual 6]
@@ -386,14 +387,14 @@ class Node:
             0.13463
             >>> round(N.next_event_time, 5)
             8.33463
-            >>> N.accept(Individual(10), 1)
+            >>> N.accept(Individual(10, 1), 1)
             >>> round(N.next_event_time, 5)
             1.05444
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(2)
             >>> N = Node(1, 2, -1, [.2, .1], 1, False)
-            >>> next_individual = Individual(2)
+            >>> next_individual = Individual(2, 1)
             >>> N.accept(next_individual, 8.2)
             Traceback (most recent call last):
             ...
@@ -419,18 +420,18 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i) for i in range(10)]
+            >>> node.individuals = [Individual(i, 2) for i in range(10)]
             >>> end_date = 2
             >>> for ind in node.individuals:
             ...     ind.end_service_date = end_date
             ...     end_date += 2
             >>> [ind.end_service_date for ind in node.individuals]
             [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-            >>> ind = Individual(10)
+            >>> ind = Individual(10, 2)
             >>> ind.end_service_date = 17
             >>> node.find_index_for_individual(ind)
             -2
-            >>> ind = Individual(11)
+            >>> ind = Individual(11, 2)
             >>> ind.end_service_date = 67
             >>> node.find_index_for_individual(ind)
             False
@@ -438,14 +439,14 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [5, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i) for i in range(2)]
+            >>> node.individuals = [Individual(i, 2) for i in range(2)]
             >>> end_date = 1
             >>> for ind in node.individuals:
             ...     ind.end_service_date = end_date
             ...     end_date += 4
             >>> [ind.end_service_date for ind in node.individuals]
             [1, 5]
-            >>> ind = Individual(3)
+            >>> ind = Individual(3, 2)
             >>> ind.end_service_date = 3
             >>> node.find_index_for_individual(ind)
             -1
@@ -453,14 +454,14 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i) for i in range(3)]
+            >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 1
             >>> for ind in node.individuals:
             ...     ind.end_service_date = end_date
             ...     end_date += 4
             >>> [ind.end_service_date for ind in node.individuals]
             [1, 5, 9]
-            >>> ind = Individual(3)
+            >>> ind = Individual(3, 2)
             >>> ind.end_service_date = 3
             >>> node.find_index_for_individual(ind)
             -2
@@ -468,14 +469,14 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [400, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i) for i in range(3)]
+            >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 1
             >>> for ind in node.individuals:
             ...     ind.end_service_date = end_date
             ...     end_date += 4
             >>> [ind.end_service_date for ind in node.individuals]
             [1, 5, 9]
-            >>> ind = Individual(3)
+            >>> ind = Individual(3, 2)
             >>> ind.end_service_date = 3
             >>> node.find_index_for_individual(ind)
             -2
@@ -487,7 +488,7 @@ class Node:
             >>> end_date = 1
             >>> [ind.end_service_date for ind in node.individuals]
             []
-            >>> ind = Individual(3)
+            >>> ind = Individual(3, 2)
             >>> ind.end_service_date = 3
             >>> node.find_index_for_individual(ind)
             False
@@ -503,7 +504,7 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i) for i in range(10)]
+            >>> node.individuals = [Individual(i, 2) for i in range(10)]
             >>> end_date = 2
             >>> for ind in node.individuals:
             ...     ind.end_service_date = end_date
@@ -512,7 +513,7 @@ class Node:
             [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9]
             >>> [ind.end_service_date for ind in node.individuals]
             [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-            >>> ind = Individual(10)
+            >>> ind = Individual(10, 2)
             >>> ind.end_service_date = 17
             >>> node.include_individual(ind)
             >>> node.individuals
@@ -524,7 +525,7 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [7, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i) for i in range(3)]
+            >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 2
             >>> for ind in node.individuals:
             ...     ind.end_service_date = end_date
@@ -533,7 +534,7 @@ class Node:
             [Individual 0, Individual 1, Individual 2]
             >>> [ind.end_service_date for ind in node.individuals]
             [2, 4, 6]
-            >>> ind = Individual(10)
+            >>> ind = Individual(10, 2)
             >>> ind.end_service_date = 17
             >>> node.include_individual(ind)
             >>> node.individuals
@@ -545,7 +546,7 @@ class Node:
             >>> seed(1)
             >>> Q = Simulation([5, 3], [10, 10], [8, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i) for i in range(6)]
+            >>> node.individuals = [Individual(i, 2) for i in range(6)]
             >>> end_date = 2
             >>> for ind in node.individuals:
             ...     ind.end_service_date = end_date
@@ -554,7 +555,7 @@ class Node:
             [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5]
             >>> [ind.end_service_date for ind in node.individuals]
             [2, 4, 6, 8, 10, 12]
-            >>> ind = Individual(33)
+            >>> ind = Individual(33, 2)
             >>> ind.end_service_date = 7
             >>> node.include_individual(ind)
             >>> node.individuals
@@ -570,7 +571,7 @@ class Node:
             []
             >>> [ind.end_service_date for ind in node.individuals]
             []
-            >>> ind = Individual(1)
+            >>> ind = Individual(1, 2)
             >>> ind.end_service_date = 3.5
             >>> node.include_individual(ind)
             >>> node.individuals
@@ -601,7 +602,7 @@ class Node:
             >>> node.update_next_event_date()
             >>> node.next_event_time
             50
-            >>> ind = Individual(10)
+            >>> ind = Individual(10, 2)
             >>> node.accept(ind, 1)
             >>> node.update_next_event_date()
             >>> round(node.next_event_time, 5)
@@ -618,7 +619,7 @@ class Node:
             >>> node.update_next_event_date()
             >>> node.next_event_time
             40
-            >>> ind = Individual(2)
+            >>> ind = Individual(2, 3)
             >>> node.accept(ind, 1)
             >>> node.update_next_event_date()
             >>> round(node.next_event_time, 5)
@@ -713,7 +714,7 @@ class Node:
             >>> seed(7)
             >>> Q = Simulation([5, 3], [10, 10], [1, 1], [[.35, .35], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
-            >>> ind = Individual(6)
+            >>> ind = Individual(6, 2)
             >>> N.accept(ind, 3)
             >>> N.write_individual_record(ind)
             Traceback (most recent call last):
@@ -738,7 +739,7 @@ class Node:
             >>> seed(12)
             >>> Q = Simulation([2, 1], [6, 3], [1, 2], [[.4, .3], [.2, .7]], 70)
             >>> N = Q.transitive_nodes[0]
-            >>> ind = Individual(28)
+            >>> ind = Individual(28, 2)
             >>> N.accept(ind, 6)
             >>> N.write_individual_record(ind)
             Traceback (most recent call last):
@@ -761,6 +762,7 @@ class Node:
 
         """
         record = DataRecord(individual.arrival_date, individual.service_time, individual.exit_date, self.id_number)
+        individual.number_of_visits[self.id_number] += 1
         if self.id_number in individual.data_records:
             individual.data_records[self.id_number].append(record)
         else:
@@ -944,7 +946,7 @@ class ArrivalNode:
 
         """
         self.number_of_individuals += 1
-        next_individual = Individual(self.number_of_individuals)
+        next_individual = Individual(self.number_of_individuals, self.simulation.number_of_nodes)
         next_node = self.next_node()
         next_node.accept(next_individual, self.next_event_time)
         self.update_next_event_date()
@@ -1067,7 +1069,7 @@ class ExitNode:
             []
             >>> N.next_event_time
             200
-            >>> next_individual = Individual(5)
+            >>> next_individual = Individual(5, 1)
             >>> N.accept(next_individual, 1)
             >>> N.individuals
             [Individual 5]
@@ -1081,7 +1083,7 @@ class ExitNode:
             []
             >>> N.next_event_time
             12
-            >>> next_individual = Individual(3)
+            >>> next_individual = Individual(3, 2)
             >>> N.accept(next_individual, 3)
             >>> N.individuals
             [Individual 3]
@@ -1090,7 +1092,7 @@ class ExitNode:
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> N = ExitNode(-5)
-            >>> N.accept(Individual(4), 2)
+            >>> N.accept(Individual(4, 1), 2)
             >>> N.individuals
             [Individual 4]
             >>> N.next_event_time
@@ -1251,6 +1253,7 @@ class Simulation:
         self.warm_up = warm_up
         self.transitive_nodes = [Node(self.lmbda[i], self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.lmbda))]
         self.nodes = [ArrivalNode(sum(lmbda), [l/sum(lmbda) for l in lmbda], self)] + self.transitive_nodes + [ExitNode(self.max_simulation_time)]
+        self.number_of_nodes = len(self.transitive_nodes)
 
     def find_next_active_node(self):
         """
@@ -1518,16 +1521,33 @@ class Simulation:
             >>> Q = Simulation([3, 3], [7, 7], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
             >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
             >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
-            >>> Q.mean_customers()
+            >>> Q.mean_customers() 
             {1: 0.8181818181818182, 2: 1.1764705882352942}
         """
 
         return {node.id_number:(sum([(self.find_times_in_state()[node.id_number-1][i]*i) for i in range(len(self.find_times_in_state()[node.id_number-1]))]))/self.nodes[node.id_number].numbers_in_node[-1][0] for node in self.transitive_nodes}
 
+    def mean_visits(self):
+        """
+        Returns the mean visits per node
+
+            TESTS 1
+            >>> Q = Simulation([1], [2], [1], [[0]], 100)
+            >>> Q.simulate()
+            >>> Q.mean_visits()
+            {1: 1.0}
+
+            TESTS 2
+            >>> Q = Simulation([1, 2], [2, 5], [1, 2], [[0.0, 1.0], [0.0, 0.5]], 100)
+            >>> Q.simulate()
+            >>> Q.mean_visits()
+            {1: 1.0, 2: 1.979933110367893}
+        """
+        return {node.id_number:mean([ind.number_of_visits[node.id_number] for ind in self.get_individuals_by_node()[node.id_number]]) for node in self.transitive_nodes}
 
 
 if __name__ == '__main__':
-    Q = Simulation([5], [7], [2], [[0.0]], 1000, 200)
+    Q = Simulation([5, 2, 3], [7, 1, 5], [2, 2, 2], [[0.1, 0.4, 0.1], [0.3, 0.2, 0.2], [0.1, 0.1, 0.5]], 1000, 200)
     Q.simulate()
     print Q.mean_waits()
-    print Q.mean_customers()
+    print Q.mean_visits()
