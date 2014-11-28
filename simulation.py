@@ -1507,7 +1507,8 @@ class Simulation:
             [{0: 0.8, 1: 1.0000000000000004, 2: 0.6999999999999996, 3: 0.5}, {0: 0.6, 1: 0.3999999999999999, 2: 0.4999999999999998, 3: 1.1000000000000003, 4: 0.10000000000000009}, {0: 1.5, 1: 1.2999999999999998, 2: 0.10000000000000009}]
         """
 
-        return [{j:sum([node.numbers_in_node[i+1][0] - node.numbers_in_node[i][0] for i in range(len(node.numbers_in_node)-1) if node.numbers_in_node[i][1]==j]) for j in range(max([node.numbers_in_node[k][1] for k in range(len(node.numbers_in_node))])+1)} for node in self.transitive_nodes]
+        max_customers_per_node = [max([node.numbers_in_node[k][1] for k in range(len(node.numbers_in_node))])+1 for node in self.transitive_nodes]
+        return [{j:sum([node.numbers_in_node[i+1][0] - node.numbers_in_node[i][0] for i in range(len(node.numbers_in_node)-1) if node.numbers_in_node[i][1]==j]) for j in range(max_customers_per_node[node.id_number-1])} for node in self.transitive_nodes]
 
     def mean_customers(self):
         """
@@ -1526,7 +1527,7 @@ class Simulation:
 
 
 if __name__ == '__main__':
-    Q = Simulation([1,2], [2,1], [5,5], [[.2,.3],[.6,.1]], 1000, 200)
+    Q = Simulation([5], [7], [2], [[0.0]], 1000, 200)
     Q.simulate()
     print Q.mean_waits()
     print Q.mean_customers()
