@@ -1489,6 +1489,20 @@ class Simulation:
             if 1 in ind.data_records:
                 record = ind.data_records[1][0]
                 print ind.id_number, record.arrival_date, record.wait, record.service_date, record.service_time, record.exit_date, record.node
+    
+    def max_customers_per_node(self):
+        """
+        Returns the maximum number of customers that have visited that node at aty time
+
+            TESTS 1
+            >>> Q = Simulation([3, 3], [7, 7], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
+            >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
+            >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
+            >>> Q.max_customers_per_node()
+            [2, 2]
+        """
+
+        return [max([node.numbers_in_node[k][1] for k in range(len(node.numbers_in_node))]) for node in self.transitive_nodes]
 
     def find_times_in_state(self):
         """
@@ -1510,8 +1524,8 @@ class Simulation:
             [{0: 0.8, 1: 1.0000000000000004, 2: 0.6999999999999996, 3: 0.5}, {0: 0.6, 1: 0.3999999999999999, 2: 0.4999999999999998, 3: 1.1000000000000003, 4: 0.10000000000000009}, {0: 1.5, 1: 1.2999999999999998, 2: 0.10000000000000009}]
         """
 
-        max_customers_per_node = [max([node.numbers_in_node[k][1] for k in range(len(node.numbers_in_node))])+1 for node in self.transitive_nodes]
-        return [{j:sum([node.numbers_in_node[i+1][0] - node.numbers_in_node[i][0] for i in range(len(node.numbers_in_node)-1) if node.numbers_in_node[i][1]==j]) for j in range(max_customers_per_node[node.id_number-1])} for node in self.transitive_nodes]
+        max_cust_node = self.max_customers_per_node()
+        return [{j:sum([node.numbers_in_node[i+1][0] - node.numbers_in_node[i][0] for i in range(len(node.numbers_in_node)-1) if node.numbers_in_node[i][1]==j]) for j in range(max_cust_node[node.id_number-1]+1)} for node in self.transitive_nodes]
 
     def mean_customers(self):
         """
@@ -1524,30 +1538,37 @@ class Simulation:
             >>> Q.mean_customers() 
             {1: 0.8181818181818182, 2: 1.1764705882352942}
         """
-
-        return {node.id_number:(sum([(self.find_times_in_state()[node.id_number-1][i]*i) for i in range(len(self.find_times_in_state()[node.id_number-1]))]))/self.nodes[node.id_number].numbers_in_node[-1][0] for node in self.transitive_nodes}
+        max_cust_node = self.max_customers_per_node()
+        times_in_state = self.find_times_in_state()
+        return {node.id_number:(sum([times_in_state[node.id_number-1][i]*i for i in range(max_cust_node[node.id_number-1]+1)]))/node.numbers_in_node[-1][0] for node in self.transitive_nodes}
 
     def mean_visits(self):
         """
         Returns the mean visits per node
 
             TESTS 1
+            >>> seed(5)
             >>> Q = Simulation([1], [2], [1], [[0]], 100)
             >>> Q.simulate()
             >>> Q.mean_visits()
             {1: 1.0}
 
             TESTS 2
+            >>> seed(9)
             >>> Q = Simulation([1, 2], [2, 5], [1, 2], [[0.0, 1.0], [0.0, 0.5]], 100)
             >>> Q.simulate()
             >>> Q.mean_visits()
-            {1: 1.0, 2: 1.979933110367893}
+            {1: 1.0, 2: 1.8039867109634551}
         """
         return {node.id_number:mean([ind.number_of_visits[node.id_number] for ind in self.get_individuals_by_node()[node.id_number]]) for node in self.transitive_nodes}
 
 
 if __name__ == '__main__':
-    Q = Simulation([5, 2, 3], [7, 1, 5], [2, 2, 2], [[0.1, 0.4, 0.1], [0.3, 0.2, 0.2], [0.1, 0.1, 0.5]], 1000, 200)
+    Q = Simulation([5, 2, 3, 8], [7, 3, 5, 12], [2, 4, 3, 2], [[0.1, 0.4, 0.1, 0.2], [0.3, 0.2, 0.2, 0.0], [0.1, 0.1, 0.5, 0.2], [0.3, 0.1, 0.0, 0.5]], 50, 20)
     Q.simulate()
+    print 'Mean waiting times: '
     print Q.mean_waits()
+    print 'Mean number of visits: '
     print Q.mean_visits()
+    print 'Mean number of customers: '
+    print Q.mean_customers()
