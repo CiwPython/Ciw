@@ -18,7 +18,6 @@ def mean(lst):
         >>> AnotherList = []
         >>> mean(AnotherList)
         False
-
     """
 
     if len(lst) == 0:
@@ -162,9 +161,9 @@ class Node:
         Initialise a node.
 
             TESTS 1
-            >>> N = Node(10, 1, [.2, .5], 1, False)
+            >>> N = Node([[10, 12]], 1, [.2, .5], 1, False)
             >>> N.mu
-            10
+            [[10, 12]]
             >>> N.c
             1
             >>> N.transition_row
@@ -181,10 +180,10 @@ class Node:
             False
 
             TESTS 2
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[1]
             >>> N.mu
-            10
+            [[10, 10]]
             >>> N.c
             1
             >>> N.transition_row
@@ -201,7 +200,7 @@ class Node:
             50
 
             TESTS 3 (PARAMETERS DON't MAKE SENSE)
-            >>> N = Node(7, 2, [[0.6, 0.1], [0.2, 0.5]], 3, False)
+            >>> N = Node([[7, 8]], 2, [[0.6, 0.1], [0.2, 0.5]], 3, False)
             Traceback (most recent call last):
             ...
             TypeError: unsupported operand type(s) for +=: 'int' and 'list'
@@ -224,12 +223,12 @@ class Node:
         Finds the cumulative transition row for the node
 
             TESTS 1
-            >>> N = Node(6, 3, [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], 1, False)
+            >>> N = Node([[6, 4, 2, 2, 6, 5]], 3, [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], 1, False)
             >>> N.cum_transition_row
             [0.125, 0.325, 0.575, 0.725, 0.895, 0.995]
 
             TESTS 2
-            >>> Q = Simulation([[5, 3]], [4, 3], [5, 5], [[0.2, 0.5], [0.1, 0.7]], 100)
+            >>> Q = Simulation([[5, 3]], [[4, 3]], [5, 5], [[0.2, 0.5], [0.1, 0.7]], 100)
             >>> N = Q.nodes[2]
             >>> [round(k,1) for k in N.cum_transition_row]
             [0.1, 0.8]
@@ -247,18 +246,18 @@ class Node:
         Representation of a node::
 
             TESTS 1
-            >>> N = Node(10, 1, [.2, .5], 1, False)
+            >>> N = Node([[10, 3]], 1, [.2, .5], 1, False)
             >>> N.id_number
             1
 
             TESTS 2
-            >>> Q = Simulation([[5, 2, 1]], [8, 8, 3], [1, 2, 1], [[0.2, 0.1, 0.1], [0.1, 0.4, 0.3], [0.3, 0.1, 0.1]], 300)
+            >>> Q = Simulation([[5, 2, 1]], [[8, 8, 3]], [1, 2, 1], [[0.2, 0.1, 0.1], [0.1, 0.4, 0.3], [0.3, 0.1, 0.1]], 300)
             >>> N = Q.transitive_nodes[2]
             >>> N.id_number
             3
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
-            >>> N = Node(4, 3, [[0.4, 0.3], [0.1, 0.2]], 2, False)
+            >>> N = Node([[4, 5]], 3, [[0.4, 0.3], [0.1, 0.2]], 2, False)
             Traceback (most recent call last):
             ...
             TypeError: unsupported operand type(s) for +=: 'int' and 'list'
@@ -271,7 +270,7 @@ class Node:
 
             TESTS 1
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
             >>> i = Individual(2, 1)
             >>> i.arrival_date
@@ -303,7 +302,7 @@ class Node:
 
             TESTS 2
             >>> seed(6)
-            >>> Q = Simulation([[7, 4]], [9, 11], [2, 1], [[.3, .2], [.1, .4]], 60)
+            >>> Q = Simulation([[7, 4]], [[9, 11]], [2, 1], [[.3, .2], [.1, .4]], 60)
             >>> N = Q.transitive_nodes[0]
             >>> i = Individual(4, 1)
             >>> i.arrival_date
@@ -335,7 +334,7 @@ class Node:
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(2)
-            >>> Q = Simulation([[2]], [3], [1], [[0]], 20)
+            >>> Q = Simulation([[2]], [[3]], [1], [[0]], 20)
             >>> N = Q.transitive_nodes[0]
             >>> N.release()
             Traceback (most recent call last):
@@ -358,7 +357,7 @@ class Node:
 
             TESTS 1
             >>> seed(1)
-            >>> N = Node(10, 1, [.2, .5], 1, False)
+            >>> N = Node([[10, 8]], 1, [.2, .5], 1, False)
             >>> next_individual = Individual(5, 3)
             >>> N.accept(next_individual, 1)
             >>> N.individuals
@@ -375,7 +374,7 @@ class Node:
 
             TESTS 2
             >>> seed(4)
-            >>> N = Node(2, 2, [.3, .3], 3, False)
+            >>> N = Node([[2, 8, 2]], 2, [.3, .3, .1], 3, False)
             >>> next_individual = Individual(6, 1)
             >>> N.accept(next_individual, 8.2)
             >>> N.individuals
@@ -392,7 +391,7 @@ class Node:
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(2)
-            >>> N = Node(2, -1, [.2, .1], 1, False)
+            >>> N = Node([[2, 7]], -1, [.2, .1], 1, False)
             >>> next_individual = Individual(2, 1)
             >>> N.accept(next_individual, 8.2)
             Traceback (most recent call last):
@@ -400,7 +399,7 @@ class Node:
             IndexError: list index out of range
         """
         next_individual.arrival_date = current_time
-        next_individual.service_time = expovariate(self.mu)
+        next_individual.service_time = expovariate(self.mu[next_individual.customer_class][self.id_number-1])
 
         if len(self.individuals) < self.c:
             next_individual.end_service_date = current_time + next_individual.service_time
@@ -417,7 +416,7 @@ class Node:
 
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(10)]
             >>> end_date = 2
@@ -436,7 +435,7 @@ class Node:
             False
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [5, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [5, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(2)]
             >>> end_date = 1
@@ -451,7 +450,7 @@ class Node:
             -1
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 1
@@ -466,7 +465,7 @@ class Node:
             -2
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [400, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [400, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 1
@@ -481,7 +480,7 @@ class Node:
             -2
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [400, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [400, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = []
             >>> end_date = 1
@@ -501,7 +500,7 @@ class Node:
         """
         Geraint to write test
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [4, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(10)]
             >>> end_date = 2
@@ -522,7 +521,7 @@ class Node:
 
             TESTS 2
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [7, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [7, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 2
@@ -543,7 +542,7 @@ class Node:
 
             TESTS 3
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [8, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [8, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(6)]
             >>> end_date = 2
@@ -564,7 +563,7 @@ class Node:
 
             TESTS 3
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [2, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [2, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals
             []
@@ -592,7 +591,7 @@ class Node:
 
             TESTS 1
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals
             []
@@ -609,7 +608,7 @@ class Node:
 
             TESTS 2
             >>> seed(8)
-            >>> Q = Simulation([[3, 3, 1]], [6, 12, 2], [1, 1, 3], [[.2, .4, .4], [.4, .4, .1], [.1, .1, .1]], 40)
+            >>> Q = Simulation([[3, 3, 1]], [[6, 12, 2]], [1, 1, 3], [[.2, .4, .4], [.4, .4, .1], [.1, .1, .1]], 40)
             >>> node = Q.transitive_nodes[1]
             >>> node.individuals
             []
@@ -626,7 +625,7 @@ class Node:
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(3)
-            >>> node = Node(2, 2, [.3, .3], 3, False)
+            >>> node = Node([[2, 7]], 2, [.3, .3], 3, False)
             >>> node.update_next_event_date()
             Traceback (most recent call last):
             ...
@@ -643,7 +642,7 @@ class Node:
 
             TESTS 1
             >>> seed(6)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.35, .35], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.35, .35], [.4, .4]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.next_node()
             Exit Node
@@ -660,7 +659,7 @@ class Node:
 
             TESTS 2
             >>> seed(54)
-            >>> Q = Simulation([[4, 5, 6]], [12, 5, 9], [1, 3, 2], [[0.1, 0.2, 0.5], [0.4, 0.2, 0.2], [0.3, 0.3, 0.3]], 80)
+            >>> Q = Simulation([[4, 5, 6]], [[12, 5, 9]], [1, 3, 2], [[0.1, 0.2, 0.5], [0.4, 0.2, 0.2], [0.3, 0.3, 0.3]], 80)
             >>> node = Q.transitive_nodes[2]
             >>> node.next_node()
             Exit Node
@@ -681,7 +680,7 @@ class Node:
 
             TESTS 3 (PARAMETERS DON't MAKE SENSE)
             >>> seed(23)
-            >>> Q = Simulation([[3, 3]], [4, 5], [2, 1], [[0.1, 0.2], [0.3, 0.1]], 30)
+            >>> Q = Simulation([[3, 3]], [[4, 5]], [2, 1], [[0.1, 0.2], [0.3, 0.1]], 30)
             >>> node = Q.transitive_nodes[1]
             >>> node.next_node()
             Exit Node
@@ -711,7 +710,7 @@ class Node:
 
             TESTS 1
             >>> seed(7)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.35, .35], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.35, .35], [.4, .4]], 50)
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(6, 2)
             >>> N.accept(ind, 3)
@@ -736,7 +735,7 @@ class Node:
 
             TESTS 2
             >>> seed(12)
-            >>> Q = Simulation([[2, 1]], [6, 3], [1, 2], [[.4, .3], [.2, .7]], 70)
+            >>> Q = Simulation([[2, 1]], [[6, 3]], [1, 2], [[.4, .3], [.2, .7]], 70)
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(28, 2)
             >>> N.accept(ind, 6)
@@ -772,7 +771,7 @@ class Node:
         Records the time that the node gains an individual and the current number of individuals
 
             TESTS 1
-            >>> N = Node(5, 2, [0.1, 0.5, 0.2], 1, False)
+            >>> N = Node([[5, 4, 5]], 2, [0.1, 0.5, 0.2], 1, False)
             >>> N.numbers_in_node
             [[0.0, 0]]
             >>> N.count_up(4.2)
@@ -786,7 +785,7 @@ class Node:
         Recored the time that the node loses an individual and the current number of individuals
 
             TESTS 1
-            >>> N = Node(19, 1, [0.3, 0.2], 2, False)
+            >>> N = Node([[19, 12]], 1, [0.3, 0.2], 2, False)
             >>> N.numbers_in_node = [[0.0, 0], [0.3, 1], [0.5, 2]]
             >>> N.count_down(0.9)
             >>> N.numbers_in_node
@@ -820,9 +819,11 @@ class ArrivalNode:
             [[0.5, 1.0]]
             >>> N.simulation
             False
+            >>> N.cum_class_probs
+            [1.0]
 
             TESTS 2
-            >>> Q = Simulation([[3, 2, 3]], [4, 5, 3], [2, 1, 2], [[.1, .1, .1], [.3, .4, .1], [.2, .2, .5]], 100)
+            >>> Q = Simulation([[3, 2, 3]], [[4, 5, 3]], [2, 1, 2], [[.1, .1, .1], [.3, .4, .1], [.2, .2, .5]], 100)
             >>> N = Q.nodes[0]
             >>> N.lmbda
             8
@@ -839,6 +840,7 @@ class ArrivalNode:
         self.next_event_time = 0
         self.number_of_individuals = 0
         self.cum_transition_row = self.find_cumulative_transition_row()
+        self.cum_class_probs = self.find_cumulative_class_probs()
         self.simulation = simulation
 
     def find_cumulative_transition_row(self):
@@ -851,11 +853,12 @@ class ArrivalNode:
             [[0.125, 0.325, 0.575, 0.725, 0.895, 0.995]]
 
             TESTS 2
-            >>> Q = Simulation([[5, 10, 25]], [20, 30, 30], [1, 2, 2], [[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]], 100)
+            >>> Q = Simulation([[5, 10, 25]], [[20, 30, 30]], [1, 2, 2], [[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]], 100)
             >>> N = Q.nodes[0]
             >>> N.cum_transition_row
             [[0.125, 0.375, 1.0]]
         """
+
         cum_transition_row = []
         for cls in range(len(self.transition_row_given_class)):
             sum_p = 0
@@ -864,6 +867,30 @@ class ArrivalNode:
                 sum_p += p
                 cum_transition_row[cls].append(sum_p)
         return cum_transition_row
+
+
+    def find_cumulative_class_probs(self):
+        """
+        Returns the cumulative class probs
+
+            TESTS 1
+            >>> N = ArrivalNode(20, [0.3, 0.1, 0.6], [[0.3, 0.7], [0.2, 0.8], [0.6, 0.4]], False)
+            >>> N.find_cumulative_class_probs()
+            [0.3, 0.4, 1.0]
+
+            TESTS 2
+            >>> N = ArrivalNode(4, [0.2, 0.6, 0.1, 0.1], [[1.0], [1.0], [1.0], [1.0]], False)
+            >>> N.find_cumulative_class_probs()
+            [0.2, 0.8, 0.9, 1.0]
+        """
+
+        cum_class_probs = []
+        sum_p = 0
+        for p in self.class_probs:
+            sum_p += p
+            cum_class_probs.append(sum_p)
+        return cum_class_probs
+
 
     def __repr__(self):
         """
@@ -875,7 +902,7 @@ class ArrivalNode:
             Arrival Node
 
             TESTS 2
-            >>> Q = Simulation([[4]], [4], [2], [[0.5]], 40)
+            >>> Q = Simulation([[4]], [[4]], [2], [[0.5]], 40)
             >>> N = Q.nodes[0]
             >>> N
             Arrival Node
@@ -893,7 +920,7 @@ class ArrivalNode:
 
             TESTS 1
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -903,15 +930,15 @@ class ArrivalNode:
             0
             >>> N.release()
             >>> Q.transitive_nodes[0].individuals
-            [Individual 1]
-            >>> Q.transitive_nodes[1].individuals
             []
+            >>> Q.transitive_nodes[1].individuals
+            [Individual 1]
             >>> round(N.next_event_time,5)
-            0.18037
+            0.03681
 
             TESTS 2
             >>> seed(12)
-            >>> Q = Simulation([[8, 1]], [10, 3], [1, 1], [[.1, .5], [.4, .3]], 50)
+            >>> Q = Simulation([[8, 1]], [[10, 3]], [1, 1], [[.1, .5], [.4, .3]], 50)
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -925,26 +952,10 @@ class ArrivalNode:
             >>> Q.transitive_nodes[1].individuals
             [Individual 1]
             >>> round(N.next_event_time,5)
-            0.0122
-
-            TESTS 3 (PARAMETERS DON't MAKE SENSE)
-            >>> seed(1)
-            >>> Q = Simulation([[8, 1]], [10, 3], [1, 1], [[.1, .5], [.4, .3]], 50)
-            >>> Q.transitive_nodes[0].individuals
-            []
-            >>> Q.transitive_nodes[1].individuals
-            []
-            >>> N = ArrivalNode(-3, [0.0], [[0, 0]], Q)
-            >>> N.release()
-            Traceback (most recent call last):
-            ...
-            AttributeError: 'NoneType' object has no attribute 'accept'
-
-
-
+            0.00171
         """
         self.number_of_individuals += 1
-        next_individual = Individual(self.number_of_individuals, self.simulation.number_of_nodes, 0)
+        next_individual = Individual(self.number_of_individuals, self.simulation.number_of_nodes, self.choose_class())
         next_node = self.next_node(next_individual.customer_class)
         next_node.accept(next_individual, self.next_event_time)
         self.update_next_event_date()
@@ -954,7 +965,7 @@ class ArrivalNode:
         Finds the time of the next event at this node
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = ArrivalNode(8, [1.0], [[.625, .375]], Q)
             >>> N.next_event_time
             0
@@ -970,7 +981,7 @@ class ArrivalNode:
 
             TESTS 1
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.nodes[0]
             >>> N.cum_transition_row
             [[0.625, 1.0]]
@@ -983,7 +994,7 @@ class ArrivalNode:
 
             TESTS 2
             >>> seed(401)
-            >>> Q = Simulation([[2, 9]], [7, 9], [1, 3], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[2, 9]], [[7, 9]], [1, 3], [[.2, .5], [.4, .4]], 50)
             >>> N = Q.nodes[0]
             >>> N.next_node(0)
             Node 2
@@ -994,7 +1005,7 @@ class ArrivalNode:
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(84)
-            >>> Q = Simulation([[2, 9]], [7, 9], [1, 3], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[2, 9]], [[7, 9]], [1, 3], [[.2, .5], [.4, .4]], 50)
             >>> N = ArrivalNode(20, [0.0], [[0.0, 0.0]], False)
             >>> N.next_node(0)
         """
@@ -1002,6 +1013,23 @@ class ArrivalNode:
         for p in range(len(self.cum_transition_row[customer_class])):
             if rnd_num < self.cum_transition_row[customer_class][p]:
                 return self.simulation.transitive_nodes[p]
+
+    def choose_class(self):
+        """
+        Returns the customer's class from the class probabilities
+
+            TESTS 1
+            >>> seed(6)
+            >>> N = ArrivalNode(7, [0.4, 0.2, 0.4], [[1.0], [1.0], [1.0]], False)
+            >>> N.choose_class()
+            2
+        """
+
+        rnd_num = random()
+        for p in range(len(self.cum_class_probs)):
+            if rnd_num < self.cum_class_probs[p]:
+                return p
+
 
 class ExitNode:
     """
@@ -1077,7 +1105,7 @@ class ExitNode:
             200
 
             TESTS 2
-            >>> Q = Simulation([[2, 9]], [7, 9], [1, 3], [[.2, .5], [.4, .4]], 12)
+            >>> Q = Simulation([[2, 9]], [[7, 9]], [1, 3], [[.2, .5], [.4, .4]], 12)
             >>> N = Q.nodes[-1]
             >>> N.individuals
             []
@@ -1113,7 +1141,7 @@ class ExitNode:
             25
 
             TESTS 2
-            >>> Q = Simulation([[4, 1]], [2, 4], [5, 1], [[.8, .1], [.3, .25]], 60)
+            >>> Q = Simulation([[4, 1]], [[2, 4]], [5, 1], [[.8, .1], [.3, .25]], 60)
             >>> N = Q.nodes[-1]
             >>> N.next_event_time
             60
@@ -1143,11 +1171,11 @@ class Simulation:
         Here is an example::
 
             TESTS 1
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50, 10)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50, 10)
             >>> Q.lmbda
             [[5, 3]]
             >>> Q.mu
-            [10, 10]
+            [[10, 10]]
             >>> Q.c
             [1, 1]
             >>> Q.transition_matrix
@@ -1162,11 +1190,11 @@ class Simulation:
             10
 
             TESTS 2
-            >>> Q = Simulation([[5.5]], [12.2], [1], [[0]], 600, 250)
+            >>> Q = Simulation([[5.5]], [[12.2]], [1], [[0]], 600, 250)
             >>> Q.lmbda
             [[5.5]]
             >>> Q.mu
-            [12.2]
+            [[12.2]]
             >>> Q.c
             [1]
             >>> Q.transition_matrix
@@ -1190,7 +1218,7 @@ class Simulation:
         self.transition_matrix = transition_matrix
         self.max_simulation_time = max_simulation_time
         self.warm_up = warm_up
-        self.transitive_nodes = [Node(self.mu[i], self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.c))]
+        self.transitive_nodes = [Node(self.mu, self.c[i], self.transition_matrix[i], i + 1, self) for i in range(len(self.c))]
         self.nodes = [ArrivalNode(self.overall_lmbda, self.class_probs, self.node_given_class_probs, self)] + self.transitive_nodes + [ExitNode(self.max_simulation_time)]
         self.number_of_nodes = len(self.transitive_nodes)
 
@@ -1199,7 +1227,7 @@ class Simulation:
         Return the next active node:
 
             TESTS 2
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> i = 0
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_time = i
@@ -1208,7 +1236,7 @@ class Simulation:
             Arrival Node
 
             TESTS 2
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> i = 10
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_time = i
@@ -1217,7 +1245,7 @@ class Simulation:
             Node 2
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
-            >>> Q = Simulation([[5, 3]], [10, 10], [1, 1], [[.2, .5], [.4, .4]], 50)
+            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[.2, .5], [.4, .4]], 50)
             >>> i = 10
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_time = False
@@ -1233,33 +1261,33 @@ class Simulation:
 
             TESTS 1
             >>> seed(99)
-            >>> Q = Simulation([[1]], [2], [1], [[0]], 20, 5)
+            >>> Q = Simulation([[1]], [[2]], [1], [[0]], 50, 5)
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
-            0.31442
+            0.76087
 
             TESTS 2
             >>> seed(2)
-            >>> Q = Simulation([[2, 3]], [2, 5], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 60, 10)
+            >>> Q = Simulation([[2, 3]], [[2, 5]], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 60, 10)
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
-            1.78606
+            4.39175
             >>> round(Q.mean_waits()[2], 5)
-            4.2586
+            4.07729
 
             TESTS 3
             >>> seed(99)
-            >>> Q = Simulation([[2, 3]], [4, 5], [500, 1], [[0.2, 0.2], [0.3, 0.3]], 60, 10)
+            >>> Q = Simulation([[2, 3]], [[4, 5]], [500, 1], [[0.2, 0.2], [0.3, 0.3]], 60, 10)
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
             0.0
 
             TESTS 4 a quiet m/m/c queue
             >>> seed(9)
-            >>> Q = Simulation([[4]], [3], [3], [[0]], 50)
+            >>> Q = Simulation([[4]], [[3]], [3], [[0]], 100)
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
-            0.03382
+            0.03224
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
@@ -1272,21 +1300,21 @@ class Simulation:
 
             TESTS 1
             >>> seed(1)
-            >>> Q = Simulation([[1]], [2], [1], [[0]], 5)
+            >>> Q = Simulation([[1]], [[2]], [1], [[0]], 5)
             >>> Q.simulate()
             >>> Q.get_all_individuals()
             [Individual 1, Individual 2, Individual 3, Individual 4]
 
             TESTS 2
             >>> seed(10)
-            >>> Q = Simulation([[2, 3]], [2, 5], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 2)
+            >>> Q = Simulation([[2, 3]], [[2, 5]], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 2)
             >>> Q.simulate()
             >>> Q.get_all_individuals()
-            [Individual 4, Individual 9, Individual 2, Individual 3, Individual 6, Individual 1, Individual 8, Individual 7, Individual 5, Individual 10]
+            [Individual 9, Individual 1, Individual 2, Individual 5, Individual 6, Individual 4, Individual 3, Individual 8, Individual 7, Individual 11]
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(100)
-            >>> Q = Simulation([[1]], [2], [1], [[0]], -2)
+            >>> Q = Simulation([[1]], [[2]], [1], [[0]], -2)
             >>> Q.simulate()
             >>> Q.get_all_individuals()
             []
@@ -1299,23 +1327,23 @@ class Simulation:
 
             TESTS 1
             >>> seed(1)
-            >>> Q = Simulation([[1]], [2], [1], [[0]], 5)
+            >>> Q = Simulation([[1]], [[2]], [1], [[0]], 5)
             >>> Q.simulate()
             >>> len(Q.get_individuals_by_node()[1])
             4
 
             TESTS 2
             >>> seed(10)
-            >>> Q = Simulation([[2, 3]], [2, 5], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 2)
+            >>> Q = Simulation([[2, 3]], [[2, 5]], [2, 1], [[0.2, 0.2], [0.3, 0.3]], 2)
             >>> Q.simulate()
             >>> len(Q.get_individuals_by_node()[1])
-            6
+            5
             >>> Q.get_individuals_by_node()[2]
-            [Individual 4, Individual 9, Individual 2, Individual 3, Individual 1, Individual 5]
+            [Individual 9, Individual 1, Individual 2, Individual 5, Individual 6, Individual 7]
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(2)
-            >>> Q = Simulation([[1]], [0.01], [1], [[0]], 5)
+            >>> Q = Simulation([[1]], [[0.01]], [1], [[0]], 5)
             >>> Q.simulate()
             >>> Q.get_individuals_by_node()[1]
             []
@@ -1328,27 +1356,27 @@ class Simulation:
 
             TESTS 1
             >>> seed(1)
-            >>> Q = Simulation([[1]], [2], [1], [[0]], 5)
+            >>> Q = Simulation([[1]], [[2]], [1], [[0]], 5)
             >>> Q.simulate()
             >>> Q.get_records_by_node()[1][0].wait
             0.0
             >>> round(Q.get_records_by_node()[1][1].arrival_date, 5)
-            1.44297
+            0.29446
 
             TESTS 2
-            >>> seed(3)
-            >>> Q = Simulation([[1, 2]], [2, 2], [1, 2], [[0.2, 0.2], [0.2, 0.2]], 5)
+            >>> seed(5)
+            >>> Q = Simulation([[1, 2]], [[2, 2]], [1, 2], [[0.2, 0.2], [0.2, 0.2]], 5)
             >>> Q.simulate()
             >>> round(Q.get_records_by_node()[1][0].wait, 5)
-            0.0
+            1.45746
             >>> round(Q.get_records_by_node()[1][1].service_date, 5)
-            0.39288
+            0.9517
             >>> round(Q.get_records_by_node()[2][1].wait, 5)
-            0.0
+            0.21825
 
             TESTS 3 (PARAMETERS DON'T MAKE SENSE)
             >>> seed(2)
-            >>> Q = Simulation([[8]], [8], [2], [[0]], 5)
+            >>> Q = Simulation([[8]], [[8]], [2], [[0]], 5)
             >>> Q.simulate()
             >>> Q.get_records_by_node()[0][0].wait
             Traceback (most recent call last):
@@ -1364,19 +1392,19 @@ class Simulation:
 
             TESTS 1
             >>> seed(11)
-            >>> Q = Simulation([[6]], [12], [1], [[0]], 25)
+            >>> Q = Simulation([[6]], [[12]], [1], [[0]], 25)
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
-            0.15754
+            0.06419
 
             TESTS 2
             >>> seed(18)
-            >>> Q = Simulation([[5, 7]], [6, 7], [1, 2], [[0.1, 0.1], [0.2, 0.1]], 30)
+            >>> Q = Simulation([[5, 7]], [[6, 7]], [1, 2], [[0.1, 0.1], [0.2, 0.1]], 30)
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
-            4.51115
+            1.32958
             >>> round(Q.mean_waits()[2], 5)
-            0.03058
+            0.03866
             >>> round(Q.mean_waits()[0], 5)
             Traceback (most recent call last):
             ...
@@ -1384,7 +1412,7 @@ class Simulation:
 
             TESTS 3
             >>> seed(25)
-            >>> Q = Simulation([[5, 7]], [6, 7], [1, 2], [[0.1, 0.1], [0.2, 0.1]], 0, 0)
+            >>> Q = Simulation([[5, 7]], [[6, 7]], [1, 2], [[0.1, 0.1], [0.2, 0.1]], 0, 0)
             >>> Q.simulate()
             >>> round(Q.mean_waits()[1], 5)
             Traceback (most recent call last):
@@ -1393,7 +1421,7 @@ class Simulation:
 
             TESTS 4
             >>> seed(1)
-            >>> Q = Simulation([[0.00005, 7]], [6, 7], [1, 2], [[0, 0.1], [0, 0.1]], 10, 0)
+            >>> Q = Simulation([[0.00005, 7]], [[6, 7]], [1, 2], [[0, 0.1], [0, 0.1]], 10, 0)
             >>> Q.simulate()
             >>> Q.mean_waits()[1]
             False
@@ -1409,19 +1437,20 @@ class Simulation:
         Return all records
 
             TESTS 1
-            >>> seed(1)
-            >>> Q = Simulation([[11, 2]], [4, 3], [4, 2], [[0.6, 0.1], [0.3, 0.1]], 0.2824)
+            >>> seed(2)
+            >>> Q = Simulation([[11, 2]], [[4, 3]], [4, 2], [[0.6, 0.1], [0.3, 0.1]], 0.2824)
             >>> Q.simulate()
             >>> Q.records()
-            2 0.110997609642 -2.77555756156e-17 0.110997609642 0.171014694915 0.282012304557 1
+            3 0.0351582971806 0.0 0.0351582971806 0.0431075208553 0.0782658180359 1
+            5 0.123759750491 1.38777878078e-17 0.123759750491 0.0069571257192 0.13071687621 1
 
             TESTS 2
             >>> seed(8)
-            >>> Q = Simulation([[3]], [7], [1], [[0]], 0.5)
+            >>> Q = Simulation([[3]], [[7]], [1], [[0]], 0.5)
             >>> Q.simulate()
             >>> Q.records()
-            1 0 0.0 0.0 0.468280502531 0.468280502531 1
-            2 0.0450178591967 0.423262643334 0.468280502531 0.0127191018503 0.480999604381 1
+            1 0 0.0 0.0 0.0192933682271 0.0192933682271 1
+            2 0.406719838233 0.0 0.406719838233 0.0335657332557 0.440285571489 1
         """
         all_individuals = sorted([individual for node in self.nodes[1:] for individual in node.individuals], key=lambda x:x.id_number)
         for ind in all_individuals:
@@ -1434,7 +1463,7 @@ class Simulation:
         Returns the maximum number of customers that have visited that node at aty time
 
             TESTS 1
-            >>> Q = Simulation([[3, 3]], [7, 7], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
+            >>> Q = Simulation([[3, 3]], [[7, 7]], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
             >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
             >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
             >>> Q.max_customers_per_node()
@@ -1448,14 +1477,14 @@ class Simulation:
         Returns a list of dictionaries for each node, with the amount of time that node spent in each state
 
             TESTS 1
-            >>> Q = Simulation([[3, 3]], [7, 7], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
+            >>> Q = Simulation([[3, 3]], [[7, 7]], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
             >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
             >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
             >>> Q.find_times_in_state()
             [{0: 3, 1: 7, 2: 1}, {0: 3, 1: 8, 2: 6}]
 
             TESTS 2
-            >>> Q = Simulation([[3, 3, 1]], [7, 7, 2], [1, 1, 1], [[0.1, 0.5, 0.1], [0.1, 0.2, 0.1], [0.3, 0.5, 0.1]], 0.5)
+            >>> Q = Simulation([[3, 3, 1]], [[7, 7, 2]], [1, 1, 1], [[0.1, 0.5, 0.1], [0.1, 0.2, 0.1], [0.3, 0.5, 0.1]], 0.5)
             >>> Q.nodes[1].numbers_in_node = [[0, 0], [0.3, 1], [0.4, 2], [0.7, 1], [1.1, 0], [1.6, 1], [1.7, 2], [1.9, 3], [2.4, 2], [2.5, 1], [2.7, 2], [2.8, 1], [3, 0]]
             >>> Q.nodes[2].numbers_in_node = [[0, 0], [0.1, 1], [0.3, 0], [0.8, 1], [1.0, 2], [1.2, 3], [1.6, 2], [1.9, 3], [2.4, 4], [2.5, 3], [2.7, 2]]
             >>> Q.nodes[3].numbers_in_node = [[0, 0], [0.6, 1], [0.8, 0], [1.7, 1], [2.3, 2], [2.4, 1], [2.6, 1], [2.9, 0]]
@@ -1471,7 +1500,7 @@ class Simulation:
         Returns a dictionary of the mean number of customers at each node
 
             TESTS 1
-            >>> Q = Simulation([[3, 3]], [7, 7], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
+            >>> Q = Simulation([[3, 3]], [[7, 7]], [1, 1], [[0.1, 0.5], [0.1, 0.2]], 0.5)
             >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
             >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
             >>> Q.mean_customers() 
@@ -1487,23 +1516,23 @@ class Simulation:
 
             TESTS 1
             >>> seed(5)
-            >>> Q = Simulation([[1]], [2], [1], [[0]], 100)
+            >>> Q = Simulation([[1]], [[2]], [1], [[0]], 100)
             >>> Q.simulate()
             >>> Q.mean_visits()
             {1: 1.0}
 
             TESTS 2
             >>> seed(9)
-            >>> Q = Simulation([[1, 2]], [2, 5], [1, 2], [[0.0, 1.0], [0.0, 0.5]], 100)
+            >>> Q = Simulation([[1, 2]], [[2, 5]], [1, 2], [[0.0, 1.0], [0.0, 0.5]], 100)
             >>> Q.simulate()
             >>> Q.mean_visits()
-            {1: 1.0, 2: 1.8039867109634551}
+            {1: 1.0, 2: 2.0167224080267561}
         """
         return {node.id_number:mean([ind.number_of_visits[node.id_number] for ind in self.get_individuals_by_node()[node.id_number]]) for node in self.transitive_nodes}
 
 
 if __name__ == '__main__':
-    Q = Simulation([[5, 2, 3, 8]], [7, 3, 5, 12], [2, 4, 3, 2], [[0.1, 0.4, 0.1, 0.2], [0.3, 0.2, 0.2, 0.0], [0.1, 0.1, 0.5, 0.2], [0.3, 0.1, 0.0, 0.5]], 50, 20)
+    Q = Simulation([[7, 2, 6, 9]], [[7, 3, 5, 12]], [2, 4, 3, 2], [[0.1, 0.4, 0.1, 0.2], [0.3, 0.2, 0.2, 0.0], [0.1, 0.1, 0.5, 0.2], [0.3, 0.1, 0.0, 0.5]], 50, 20)
     Q.simulate()
     print 'Mean waiting times: '
     print Q.mean_waits()
