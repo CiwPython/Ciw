@@ -5,6 +5,10 @@ A simulation of a Queueing network
 from __future__ import division
 from random import random, seed, expovariate
 from numpy import mean as np_mean
+from datetime import datetime
+import os
+from csv import writer
+import yaml
 
 def mean(lst):
     """
@@ -1499,7 +1503,7 @@ class Simulation:
             if 1 in ind.data_records:
                 record = ind.data_records[1][0]
                 print ind.id_number, record.arrival_date, record.wait, record.service_date, record.service_time, record.exit_date, record.node
-    
+
     def max_customers_per_node(self):
         """
         Returns the maximum number of customers that have visited that node at any time
@@ -1545,7 +1549,7 @@ class Simulation:
             >>> Q = Simulation([[3, 3]], [[7, 7]], [1, 1], [[[0.1, 0.5], [0.1, 0.2]]], 0.5)
             >>> Q.nodes[1].numbers_in_node = [[0, 1], [3, 2], [4, 1], [6, 0], [9, 1], [11, 0]]
             >>> Q.nodes[2].numbers_in_node = [[0, 0], [2, 1], [4, 0], [5, 1], [8, 2], [12, 1], [13, 2], [15, 1], [17, 0]]
-            >>> Q.mean_customers() 
+            >>> Q.mean_customers()
             {1: 0.5454545454545454, 2: 1.1764705882352942}
         """
         max_cust_node = self.max_customers_per_node()
@@ -1573,6 +1577,65 @@ class Simulation:
         individuals_by_node = self.get_individuals_by_node()
         return {node.id_number:mean([ind.number_of_visits[node.id_number] for ind in individuals_by_node[node.id_number]]) for node in self.transitive_nodes}
 
+    def create_data_directory(self, directory_name=False):
+        """
+        A method to output the simulation data to a directory with two files:
+
+        - A csv file with the data
+        - A parameters file with the input parameters
+
+        Tests::
+
+            >>> Q = Simulation([[1, 2], [3,2]], [[5, 1],[6,4]], [1, 2], [[[0.0, 1.0], [0.0, 0.5]],[[.3,.3],[.2,.2]]], 100)
+
+
+            >>> Q.simulate()
+            >>> from glob import glob
+            >>> './logs_test' in [x[0] for x in os.walk('./')]
+            False
+            >>> Q.create_data_directory('test')
+            >>> './logs_test' in [x[0] for x in os.walk('./')]
+            True
+            >>> #import shutil
+            >>> #shutil.rmtree('./logs_test')  # Removing the test directory
+            >>> #'./logs_test' in [x[0] for x in os.walk('./')]
+            False
+
+        """
+        basename = "logs"
+        if not directory_name:
+            suffix = datetime.now().strftime("%y%m%d_%H%M%S")
+        else:
+            suffix = directory_name
+        directory = "_".join([basename, suffix]) # e.g. 'mylogfile_120508_171442'
+        if not os.path.exists('./' + directory):
+                os.makedirs('./' + directory)
+
+        data_file = open('./%s/data.csv' % directory, 'w')
+        csv_wrtr = writer(data_file)
+        for individual in self.get_all_individuals():
+            for node in individual.data_records:
+                for record in individual.data_records[node]:
+                    csv_wrtr.writerow([individual.id_number,
+                                       individual.customer_class,
+                                       node,
+                                       record.arrival_date,
+                                       record.wait,
+                                       record.service_date,
+                                       record.service_time,
+                                       record.exit_date])
+        data_file.close()
+
+        parameters_file = open('./%s/parameters.yml' % directory, 'w')
+        parameters = {'Number_of_nodes': self.number_of_nodes,
+                      'Number_of_classes': len(self.lmbda),
+                      'Simulation_time': self.max_simulation_time,
+                      'Arrival_rates': {'Class %s' % c:self.lmbda[c] for c in range(len(self.lmbda))},
+                      'Service_rates': {'Class %s' % c:self.mu[c] for c in range(len(self.mu))},
+                      'Number_of_servers': self.c,
+                      'Transition_matrices': {'Class %s' % c:self.transition_matrix[c] for c in range(len(self.mu))}}
+        parameters_file.write(yaml.dump(parameters, default_flow_style=False))
+        parameters_file.close()
 
 if __name__ == '__main__':
     Q = Simulation([[5.0, 2.0, 4.0], [3.0, 7.0, 4.0]], [[8.0, 9.0, 6.0], [5.0, 4.0, 9.0]], [8, 6, 6], [[[0.2, 0.3, 0.4], [0.2, 0.1, 0.1], [0.2, 0.7, 0.1]], [[0.5, 0.1, 0.1], [0.3, 0.1, 0.1], [0.8, 0.1, 0.0]]], 2000, 500)
