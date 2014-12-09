@@ -3,7 +3,7 @@ A simulation of a Queueing network
 """
 
 from __future__ import division
-from random import random, seed, expovariate
+from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
 from numpy import mean as np_mean
 from datetime import datetime
 import os
@@ -161,10 +161,10 @@ class Node:
         Initialise a node.
 
         An example of initialising a node.
-            >>> Q = Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> N = Node(1, Q)
             >>> N.mu
-            [10]
+            [['Exponential', 10]]
             >>> N.c
             4
             >>> N.transition_row
@@ -179,10 +179,10 @@ class Node:
             [[0.2, 0.7]]
 
         Another example, now with multi-classes
-            >>> Q = Simulation([[5, 3], [5, 3]], [[10, 10], [8, 8]], [4, 1], [[[.2, .5], [.4, .4]], [[.1, .1], [.1, .1]]], 50)
+            >>> Q = Simulation([[5, 3], [5, 3]], [[['Exponential', 10], ['Exponential', 10]], [['Exponential', 8], ['Exponential', 8]]], [4, 1], [[[.2, .5], [.4, .4]], [[.1, .1], [.1, .1]]], 50)
             >>> N = Q.transitive_nodes[1]
             >>> N.mu
-            [10, 8]
+            [['Exponential', 10], ['Exponential', 8]]
             >>> N.c
             1
             >>> N.transition_row
@@ -199,7 +199,7 @@ class Node:
             50
 
         A node's id number must conform with how many nodes are in the simulation.
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Normal', 10, 3], ['Uniform', 10, 15]]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> N = Node(3, Q)
             Traceback (most recent call last):
             ...
@@ -220,13 +220,13 @@ class Node:
         Finds the cumulative transition row for the node
 
         An exmaple of finding the cumulative transition row of a node.
-            >>> Q = Simulation([[2, 1, 2, 2, 1, 2]], [[6, 3, 6, 6, 6, 2]], [1, 2, 2, 2, 2, 2], [[[0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1]]], 70)
+            >>> Q = Simulation([[2, 1, 2, 2, 1, 2]], [[['Exponential', 6], ['Exponential', 3], ['Exponential', 6], ['Exponential', 6], ['Exponential', 6], ['Exponential', 2]]], [1, 2, 2, 2, 2, 2], [[[0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1], [0.125, 0.200, 0.250, 0.150, 0.170, 0.1]]], 70)
             >>> N = Node(1, Q)
             >>> N.cum_transition_row
             [[0.125, 0.325, 0.575, 0.725, 0.895, 0.995]]
 
         Another example, with multi-classes
-            >>> Q = Simulation([[4, 5], [1, 2]], [[7, 8], [4, 5]], [2, 1], [[[0.2, 0.5], [0.1, 0.7]], [[0.2, 0.6], [0.6, 0.2]]], 100)
+            >>> Q = Simulation([[4, 5], [1, 2]], [[['Exponential', 7], ['Exponential', 8]], [['Exponential', 4], ['Exponential', 5]]], [2, 1], [[[0.2, 0.5], [0.1, 0.7]], [[0.2, 0.6], [0.6, 0.2]]], 100)
             >>> N = Q.nodes[1]
             >>> N.cum_transition_row
             [[0.2, 0.7], [0.2, 0.8]]
@@ -252,7 +252,7 @@ class Node:
             Node 1
 
         Another example.
-            >>> Q = Simulation([[5, 2, 1]], [[8, 8, 3]], [1, 2, 1], [[[0.2, 0.1, 0.1], [0.1, 0.4, 0.3], [0.3, 0.1, 0.1]]], 300)
+            >>> Q = Simulation([[5, 2, 1]], [[['Triangular', 0.8, 1.2, 0.9], ['Exponential', 8], ['Gamma', 3, 3]]], [1, 2, 1], [[[0.2, 0.1, 0.1], [0.1, 0.4, 0.3], [0.3, 0.1, 0.1]]], 300)
             >>> N = Q.transitive_nodes[2]
             >>> N
             Node 3
@@ -265,13 +265,58 @@ class Node:
         """
         return 'Node %s' % self.id_number
 
+    def find_service_time(self, customer_class):
+        """
+        A method to find the service time based on the given distribution and parameters
+
+        Here's an example
+            >>> seed(2)
+            >>> Q = Simulation([[5, 4]], [[['Exponential', 8], ['Normal', 9, 3]]], [2, 2], [[[0.2, 0.5], [0.1, 0.7]]], 100)
+            >>> n = Q.nodes[1]
+            >>> round(n.find_service_time(0), 5)
+            0.39054
+            >>> n = Q.nodes[2]
+            >>> round(n.find_service_time(0), 5)
+            9.96913
+
+        Another example with multi-classes
+            >>> seed(9)
+            >>> Q = Simulation([[6, 3], [5, 5]], [[['Weibull', 3, 2], ['Gamma', 0.5, 2]], [['Triangular', 0.2, 0.7, 0.6], ['Uniform', 0.8, 1.4]]], [7, 7], [[[0.4, 0.2], [0.4, 0.4]], [[0.1, 0.8], [0.3, 0.1]]], 200)
+            >>> n = Q.nodes[1]
+            >>> round(n.find_service_time(0), 5)
+            2.36557
+            >>> round(n.find_service_time(1), 5)
+            0.47324
+            >>> n = Q.nodes[2]
+            >>> round(n.find_service_time(0), 5)
+            0.05381
+            >>> round(n.find_service_time(1), 5)
+            0.80386
+        """
+        if self.mu[customer_class][0] == 'Uniform':
+            return uniform(self.mu[customer_class][1], self.mu[customer_class][2])
+        elif self.mu[customer_class][0] == 'Triangular':
+            return triangular(self.mu[customer_class][1], self.mu[customer_class][2], self.mu[customer_class][3])
+        elif self.mu[customer_class][0] == 'Exponential':
+            return expovariate(self.mu[customer_class][1])
+        elif self.mu[customer_class][0] == 'Gamma':
+            return gammavariate(self.mu[customer_class][1], self.mu[customer_class][2])
+        elif self.mu[customer_class][0] == 'Normal':
+            return gauss(self.mu[customer_class][1], self.mu[customer_class][2])
+        elif self.mu[customer_class][0] == 'Lognormal':
+            return lognormvariate(self.mu[customer_class][1], self.mu[customer_class][2])
+        elif self.mu[customer_class][0] == 'Weibull':
+            return weibullvariate(self.mu[customer_class][1], self.mu[customer_class][2])
+        else:
+            return False
+
     def release(self):
         """
         Update node when a service happens.
 
         Once an individual is released, his exit date will be updated.
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> N = Q.transitive_nodes[0]
             >>> i = Individual(2, 0)
             >>> i.arrival_date
@@ -303,7 +348,7 @@ class Node:
 
         Another example of an individual being released, now with multi-classes.
             >>> seed(6)
-            >>> Q = Simulation([[7, 4], [5, 2]], [[9, 11], [9, 10]], [2, 1], [[[.3, .2], [.1, .4]], [[0.1, 0.8], [0.5, 0.5]]], 60)
+            >>> Q = Simulation([[7, 4], [5, 2]], [[['Exponential', 9], ['Exponential', 11]], [['Exponential', 9], ['Exponential', 10]]], [2, 1], [[[.3, .2], [.1, .4]], [[0.1, 0.8], [0.5, 0.5]]], 60)
             >>> N = Q.transitive_nodes[0]
             >>> i = Individual(4, 0)
             >>> i.arrival_date
@@ -335,7 +380,7 @@ class Node:
 
         A node can only release if it has an individual to release.
             >>> seed(2)
-            >>> Q = Simulation([[2]], [[3]], [1], [[[0]]], 20)
+            >>> Q = Simulation([[2]], [[['Exponential', 3]]], [1], [[[0]]], 20)
             >>> N = Q.transitive_nodes[0]
             >>> N.release()
             Traceback (most recent call last):
@@ -357,7 +402,7 @@ class Node:
 
         Accepting an individual updates a nodes next event date and appends that individual to its list of customers.
             >>> seed(1)
-            >>> Q = Simulation([[7, 4]], [[9, 11]], [2, 1], [[[.3, .2], [.1, .4]]], 60)
+            >>> Q = Simulation([[7, 4]], [[['Exponential', 9], ['Exponential', 11]]], [2, 1], [[[.3, .2], [.1, .4]]], 60)
             >>> N = Node(1, Q)
             >>> next_individual = Individual(5, 0)
             >>> N.accept(next_individual, 1)
@@ -375,7 +420,7 @@ class Node:
 
         Another example of accepting an individual, with multi-classes
             >>> seed(4)
-            >>> Q = Simulation([[5, 3, 2], [5, 5, 1], [6, 7, 6]], [[9, 6, 8], [9, 9, 9], [8, 14, 12]], [2, 2, 1], [[[.3, .2, .1], [.1, .4, .3], [.7, .1, .1]], [[0.2, 0.2, 0.2], [0.5, 0.5, 0.0], [0.1, 0.7, 0.1]], [[0.3, 0.3, 0.1], [0.7, 0.0, 0.0], [0.8, 0.1, 0.1]]], 60)
+            >>> Q = Simulation([[5, 3, 2], [5, 5, 1], [6, 7, 6]], [[['Exponential', 9], ['Exponential', 6], ['Exponential', 8]], [['Exponential', 9], ['Exponential', 9], ['Exponential', 9]], [['Exponential', 8], ['Exponential', 14], ['Exponential', 12]]], [2, 2, 1], [[[.3, .2, .1], [.1, .4, .3], [.7, .1, .1]], [[0.2, 0.2, 0.2], [0.5, 0.5, 0.0], [0.1, 0.7, 0.1]], [[0.3, 0.3, 0.1], [0.7, 0.0, 0.0], [0.8, 0.1, 0.1]]], 60)
             >>> N = Node(3, Q)
             >>> next_individual = Individual(6, 2)
             >>> N.accept(next_individual, 8.2)
@@ -393,7 +438,7 @@ class Node:
 
         """
         next_individual.arrival_date = current_time
-        next_individual.service_time = expovariate(self.mu[next_individual.customer_class])
+        next_individual.service_time = self.find_service_time(next_individual.customer_class)
 
         if len(self.individuals) < self.c:
             next_individual.end_service_date = current_time + next_individual.service_time
@@ -401,7 +446,7 @@ class Node:
             next_individual.end_service_date = self.individuals[-self.c].end_service_date + next_individual.service_time
 
         self.include_individual(next_individual)
-        self.update_next_event_date()
+        self.update_next_event_date() 
 
     def find_index_for_individual(self, individual):
         """
@@ -409,7 +454,7 @@ class Node:
 
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(10)]
             >>> end_date = 2
@@ -428,7 +473,7 @@ class Node:
             False
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [5, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [5, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(2)]
             >>> end_date = 1
@@ -443,7 +488,7 @@ class Node:
             -1
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 1
@@ -458,7 +503,7 @@ class Node:
             -2
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [400, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [400, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 1
@@ -473,7 +518,7 @@ class Node:
             -2
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [400, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [400, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = []
             >>> end_date = 1
@@ -494,7 +539,7 @@ class Node:
         Inserts that individual into the correct position in the list of individuals.
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [4, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(10)]
             >>> end_date = 2
@@ -515,7 +560,7 @@ class Node:
 
             TESTS 2
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [7, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [7, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(3)]
             >>> end_date = 2
@@ -536,7 +581,7 @@ class Node:
 
             TESTS 3
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [8, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [8, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals = [Individual(i, 2) for i in range(6)]
             >>> end_date = 2
@@ -557,7 +602,7 @@ class Node:
 
             TESTS 3
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [2, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [2, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals
             []
@@ -585,7 +630,7 @@ class Node:
 
         A example of finding the next event time before and after accepting an individual.
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.individuals
             []
@@ -602,7 +647,7 @@ class Node:
 
         And again.
             >>> seed(8)
-            >>> Q = Simulation([[3, 3, 1]], [[6, 12, 2]], [1, 1, 3], [[[.2, .4, .4], [.4, .4, .1], [.1, .1, .1]]], 40)
+            >>> Q = Simulation([[3, 3, 1]], [[['Exponential', 6], ['Exponential', 12], ['Exponential', 2]]], [1, 1, 3], [[[.2, .4, .4], [.4, .4, .1], [.1, .1, .1]]], 40)
             >>> node = Q.transitive_nodes[1]
             >>> node.individuals
             []
@@ -628,7 +673,7 @@ class Node:
 
         An example showing a node choosing both nodes and exit node randomly.
             >>> seed(6)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.35, .35], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.35, .35], [.4, .4]]], 50)
             >>> node = Q.transitive_nodes[0]
             >>> node.next_node(0)
             Exit Node
@@ -645,7 +690,7 @@ class Node:
 
         Another example.
             >>> seed(54)
-            >>> Q = Simulation([[4, 5, 6]], [[12, 5, 9]], [1, 3, 2], [[[0.1, 0.2, 0.5], [0.4, 0.2, 0.2], [0.3, 0.3, 0.3]]], 80)
+            >>> Q = Simulation([[4, 5, 6]], [[['Exponential', 12], ['Exponential', 5], ['Exponential', 9]]], [1, 3, 2], [[[0.1, 0.2, 0.5], [0.4, 0.2, 0.2], [0.3, 0.3, 0.3]]], 80)
             >>> node = Q.transitive_nodes[2]
             >>> node.next_node(0)
             Exit Node
@@ -683,7 +728,7 @@ class Node:
 
         An example showing the data records written; can only write records once an exit date has been determined.
             >>> seed(7)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.35, .35], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.35, .35], [.4, .4]]], 50)
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(6)
             >>> N.accept(ind, 3)
@@ -708,7 +753,7 @@ class Node:
 
         Another example.
             >>> seed(12)
-            >>> Q = Simulation([[2, 1]], [[6, 3]], [1, 2], [[[.4, .3], [.2, .7]]], 70)
+            >>> Q = Simulation([[2, 1]], [[['Exponential', 6], ['Exponential', 3]]], [1, 2], [[[.4, .3], [.2, .7]]], 70)
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(28)
             >>> N.accept(ind, 6)
@@ -748,7 +793,7 @@ class ArrivalNode:
         Initialise a node.
 
         Here is an example::
-            >>> Q = Simulation([[5, 10, 25]], [[20, 30, 30]], [1, 2, 2], [[[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]]], 100)
+            >>> Q = Simulation([[5, 10, 25]], [[['Exponential', 20], ['Exponential', 30], ['Exponential', 30]]], [1, 2, 2], [[[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]]], 100)
             >>> N = ArrivalNode(Q)
             >>> N.lmbda
             40
@@ -764,7 +809,7 @@ class ArrivalNode:
             [1.0]
 
         And another example::
-            >>> Q = Simulation([[3, 2, 3]], [[4, 5, 3]], [2, 1, 2], [[[.1, .1, .1], [.3, .4, .1], [.2, .2, .5]]], 100)
+            >>> Q = Simulation([[3, 2, 3]], [[['Exponential', 4], ['Exponential', 5], ['Exponential', 3]]], [2, 1, 2], [[[.1, .1, .1], [.3, .4, .1], [.2, .2, .5]]], 100)
             >>> N = Q.nodes[0]
             >>> N.lmbda
             8
@@ -790,13 +835,13 @@ class ArrivalNode:
         Finds the cumulative transition row for the arrival node
 
         An example of finding the cumulative transition row of an arrival node.
-            >>> Q = Simulation([[3, 5, 7, 4, 5, 1]], [[6, 7, 8, 8, 6, 5]], [1, 2, 2, 1, 2, 2], [[[0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]], 500)
+            >>> Q = Simulation([[3, 5, 7, 4, 5, 1]], [[['Exponential', 6], ['Exponential', 7], ['Exponential', 8], ['Exponential', 8], ['Exponential', 6], ['Exponential', 5]]], [1, 2, 2, 1, 2, 2], [[[0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]], 500)
             >>> N = ArrivalNode(Q)
             >>> [[round(pr, 2) for pr in N.cum_transition_row[cls]] for cls in range(len(N.cum_transition_row))]
             [[0.12, 0.32, 0.6, 0.76, 0.96, 1.0]]
 
         Another example.
-            >>> Q = Simulation([[5, 10, 25]], [[20, 30, 30]], [1, 2, 2], [[[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]]], 100)
+            >>> Q = Simulation([[5, 10, 25]], [[['Exponential', 20], ['Exponential', 30], ['Exponential', 30]]], [1, 2, 2], [[[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]]], 100)
             >>> N = Q.nodes[0]
             >>> N.cum_transition_row
             [[0.125, 0.375, 1.0]]
@@ -817,13 +862,13 @@ class ArrivalNode:
         Returns the cumulative class probs
 
         An example of finding the cumulative probabilities of a new customer being in each class.
-            >>> Q = Simulation([[5, 10, 25], [10, 20, 30]], [[20, 30, 30], [10, 13, 10]], [1, 2, 2], [[[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]], [[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]]], 100)
+            >>> Q = Simulation([[5, 10, 25], [10, 20, 30]], [[['Exponential', 20], ['Exponential', 30], ['Exponential', 30]], [['Exponential', 10], ['Exponential', 13], ['Exponential', 10]]], [1, 2, 2], [[[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]], [[0.1, 0.3, 0.1], [0.2, 0.2, 0.2], [0.6, 0.1, 0.1]]], 100)
             >>> N = ArrivalNode(Q)
             >>> N.find_cumulative_class_probs()
             [0.4, 1.0]
 
         Another example.
-            >>> Q = Simulation([[30, 10], [5, 5]], [[20, 30], [40, 10]], [1, 2], [[[0.1, 0.3], [0.2, 0.2]], [[0.4, 0.1], [0.7, 0.1]]], 100)
+            >>> Q = Simulation([[30, 10], [5, 5]], [[['Exponential', 20], ['Exponential', 30]], [['Exponential', 40], ['Exponential', 10]]], [1, 2], [[[0.1, 0.3], [0.2, 0.2]], [[0.4, 0.1], [0.7, 0.1]]], 100)
             >>> N = ArrivalNode(Q)
             >>> N.find_cumulative_class_probs()
             [0.8, 1.0]
@@ -842,13 +887,13 @@ class ArrivalNode:
         Representation of a node::
 
         An example showing how an arrival node is represented.
-            >>> Q = Simulation([[2, 2]], [[3, 3]], [1, 1], [[[1.0, 0.0], [0.0, 1.0]]], 500)
+            >>> Q = Simulation([[2, 2]], [[['Exponential', 3], ['Exponential', 3]]], [1, 1], [[[1.0, 0.0], [0.0, 1.0]]], 500)
             >>> N = ArrivalNode(Q)
             >>> N
             Arrival Node
 
         Another example.
-            >>> Q = Simulation([[4]], [[4]], [2], [[[0.5]]], 40)
+            >>> Q = Simulation([[4]], [[['Exponential', 4]]], [2], [[[0.5]]], 40)
             >>> N = Q.nodes[0]
             >>> N
             Arrival Node
@@ -862,7 +907,7 @@ class ArrivalNode:
 
         An example of creating an individual instance, releasing it to a node, and then updating its next event time.
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -882,7 +927,7 @@ class ArrivalNode:
 
         Another example.
             >>> seed(12)
-            >>> Q = Simulation([[8, 1]], [[10, 3]], [1, 1], [[[.1, .5], [.4, .3]]], 50)
+            >>> Q = Simulation([[8, 1]], [[['Exponential', 10], ['Exponential', 3]]], [1, 1], [[[.1, .5], [.4, .3]]], 50)
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -909,7 +954,7 @@ class ArrivalNode:
         Finds the time of the next event at this node
 
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> N = ArrivalNode(Q)
             >>> N.next_event_time
             0
@@ -925,7 +970,7 @@ class ArrivalNode:
 
         An example of finding the individual's starting node.
             >>> seed(1)
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> N = Q.nodes[0]
             >>> N.cum_transition_row
             [[0.625, 1.0]]
@@ -938,7 +983,7 @@ class ArrivalNode:
 
         And another example.
             >>> seed(401)
-            >>> Q = Simulation([[2, 9]], [[7, 9]], [1, 3], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[2, 9]], [[['Exponential', 7], ['Exponential', 9]]], [1, 3], [[[.2, .5], [.4, .4]]], 50)
             >>> N = Q.nodes[0]
             >>> N.next_node(0)
             Node 2
@@ -957,7 +1002,7 @@ class ArrivalNode:
         Returns the customer's class from the class probabilities
 
             >>> seed(6)
-            >>> Q = Simulation([[7, 6, 5]], [[10, 12, 10]], [2, 2, 2], [[[0.5, 0.2, 0.2], [0.2, 0.5, 0.2], [0.2, 0.2, 0.5]]], 100)
+            >>> Q = Simulation([[7, 6, 5]], [[['Exponential', 10], ['Exponential', 12], ['Exponential', 10]]], [2, 2, 2], [[[0.5, 0.2, 0.2], [0.2, 0.5, 0.2], [0.2, 0.2, 0.5]]], 100)
             >>> N = ArrivalNode(Q)
             >>> N.choose_class()
             0
@@ -1032,7 +1077,7 @@ class ExitNode:
             200
 
         Another example.
-            >>> Q = Simulation([[2, 9]], [[7, 9]], [1, 3], [[[.2, .5], [.4, .4]]], 12)
+            >>> Q = Simulation([[2, 9]], [[['Exponential', 7], ['Exponential', 9]]], [1, 3], [[[.2, .5], [.4, .4]]], 12)
             >>> N = Q.nodes[-1]
             >>> N.individuals
             []
@@ -1060,7 +1105,7 @@ class ExitNode:
             25
 
         And again.
-            >>> Q = Simulation([[4, 1]], [[2, 4]], [5, 1], [[[.8, .1], [.3, .25]]], 60)
+            >>> Q = Simulation([[4, 1]], [[['Exponential', 2], ['Exponential', 4]]], [5, 1], [[[.8, .1], [.3, .25]]], 60)
             >>> N = Q.nodes[-1]
             >>> N.next_event_time
             60
@@ -1090,11 +1135,11 @@ class Simulation:
         Here is an example::
 
         An example of creating a simulation instance.
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50, 10)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50, 10)
             >>> Q.lmbda
             [[5, 3]]
             >>> Q.mu
-            [[10, 10]]
+            [[['Exponential', 10], ['Exponential', 10]]]
             >>> Q.c
             [1, 1]
             >>> Q.transition_matrix
@@ -1109,11 +1154,11 @@ class Simulation:
             10
 
         Another example of creating a simulation instance.
-            >>> Q = Simulation([[5.5]], [[12.2]], [1], [[[0]]], 600, 250)
+            >>> Q = Simulation([[5.5]], [[['Exponential', 12.2]]], [1], [[[0]]], 600, 250)
             >>> Q.lmbda
             [[5.5]]
             >>> Q.mu
-            [[12.2]]
+            [[['Exponential', 12.2]]]
             >>> Q.c
             [1]
             >>> Q.transition_matrix
@@ -1128,77 +1173,72 @@ class Simulation:
             250
 
         Some tests to raise errors.
-            >>> Q = Simulation([[10, 8], [9, 11]], [[5, 5]], [7, 7], [[[0.5, 0.2], [0.3, 0.1]]], 500)
+            >>> Q = Simulation([[10, 8], [9, 11]], [[['Exponential', 5], ['Exponential', 5]]], [7, 7], [[[0.5, 0.2], [0.3, 0.1]]], 500)
             Traceback (most recent call last):
             ...
             ValueError: Lambda, Mu and the Transition Matrix should all have the same number of classes
 
-            >>> Q = Simulation([[7, 7], [15]], [[6], [7]], [10], [[0.0], [0.0]], 50)
+            >>> Q = Simulation([[7, 7], [15]], [[['Exponential', 6]], [['Exponential', 7]]], [10], [[0.0], [0.0]], 50)
             Traceback (most recent call last):
             ...
             ValueError: Lambda should have same length as c for every class
 
-            >>> Q = Simulation([[5, 6]], [[5, 3, 6]], [3, 3], [[[0.5, 0.3], [0.1, 0.1]]], 100)
+            >>> Q = Simulation([[5, 6]], [[['Exponential', 5], ['Exponential', 3], ['Exponential', 6]]], [3, 3], [[[0.5, 0.3], [0.1, 0.1]]], 100)
             Traceback (most recent call last):
             ...
             ValueError: Mu should have same length as c for every class
 
-            >>> Q = Simulation([[10, 10]], [[12, 12]], [3, 3], [[[0.1, 0.1, 0.3], [0.1, 0.1]]], 50)
+            >>> Q = Simulation([[10, 10]], [[['Exponential', 12], ['Exponential', 12]]], [3, 3], [[[0.1, 0.1, 0.3], [0.1, 0.1]]], 50)
             Traceback (most recent call last):
             ...
             ValueError: Transition matrix should be square matrix of length c for every class
 
-            >>> Q = Simulation([[30, 30]], [[20, 20]], [4, 4], [[[0.4, 0.1], [0.4, 0.1], [0.4, 0.1]]], 500)
+            >>> Q = Simulation([[30, 30]], [[['Exponential', 20], ['Exponential', 20]]], [4, 4], [[[0.4, 0.1], [0.4, 0.1], [0.4, 0.1]]], 500)
             Traceback (most recent call last):
             ...
             ValueError: Transition matrix should be square matrix of length c for every class
 
-            >>> Q = Simulation([[-4]], [[5]], [2], [[[0.6]]], 100)
+            >>> Q = Simulation([[-4]], [[['Exponential', 5]]], [2], [[[0.6]]], 100)
             Traceback (most recent call last):
             ...
             ValueError: All arrival rates should be positive
 
-            >>> Q = Simulation([[4, 8], [5, 6]], [[5, 7], [-1, 2]], [2, 3], [[[0.6, 0.1], [0.1, 0.1]], [[0.2, 0.2], [0.1, 0.4]]], 100)
-            Traceback (most recent call last):
-            ...
-            ValueError: All service rates should be positive
-
-            >>> Q = Simulation([[6]], [[7]], [4.5], [[[0.0]]], 100)
+            >>> Q = Simulation([[6]], [[['Exponential', 7]]], [4.5], [[[0.0]]], 100)
             Traceback (most recent call last):
             ...
             ValueError: All servers must be positive integer number
 
-            >>> Q = Simulation([[6]], [[7]], [-4], [[[0.0]]], 100)
+            >>> Q = Simulation([[6]], [[['Exponential', 7]]], [-4], [[[0.0]]], 100)
             Traceback (most recent call last):
             ...
             ValueError: All servers must be positive integer number
 
-            >>> Q = Simulation([[6, 7]], [[7, 7]], [2, 2], [[[0.1, 0.4], [1.2, 0.2]]], 100)
+            >>> Q = Simulation([[6, 7]], [[['Exponential', 7], ['Exponential', 7]]], [2, 2], [[[0.1, 0.4], [1.2, 0.2]]], 100)
             Traceback (most recent call last):
             ...
             ValueError: All transition matrix entries should be probabilities 0<=p<=1 and all transition matrix rows should sum to 1 or less
 
-            >>> Q = Simulation([[6, 7]], [[7, 7]], [2, 2], [[[0.1, 0.4], [0.2, -0.2]]], 100)
+            >>> Q = Simulation([[6, 7]], [[['Exponential', 7], ['Exponential', 7]]], [2, 2], [[[0.1, 0.4], [0.2, -0.2]]], 100)
             Traceback (most recent call last):
             ...
             ValueError: All transition matrix entries should be probabilities 0<=p<=1 and all transition matrix rows should sum to 1 or less
 
-            >>> Q = Simulation([[6, 7]], [[7, 7]], [2, 2], [[[0.6, 0.7], [0.2, 0.2]]], 100)
+            >>> Q = Simulation([[6, 7]], [[['Exponential', 7], ['Exponential', 7]]], [2, 2], [[[0.6, 0.7], [0.2, 0.2]]], 100)
             Traceback (most recent call last):
             ...
             ValueError: All transition matrix entries should be probabilities 0<=p<=1 and all transition matrix rows should sum to 1 or less
 
-            >>> Q = Simulation([[5.5]], [[12.2]], [1], [[[0]]], 600, -250)
+            >>> Q = Simulation([[5.5]], [[['Exponential', 12.2]]], [1], [[[0]]], 600, -250)
             Traceback (most recent call last):
             ...
             ValueError: Warm up period should be positive or 0
 
-            >>> Q = Simulation([[5.5]], [[12.2]], [1], [[[0]]], 200, 250)
+            >>> Q = Simulation([[5.5]], [[['Exponential', 12.2]]], [1], [[[0]]], 200, 250)
             Traceback (most recent call last):
             ...
             ValueError: Maximum simulation time should be positive, and greater than the warm up period
 
-            >>> Q = Simulation([[5.5]], [[12.2]], [1], [[[0]]], -30)
+            >>> Q = Simulation([[5.5]], [[['Exponential', 12.2]]], [1], [[[0]]], -30)
             Traceback (most recent call last):
             ...
             ValueError: Maximum simulation time should be positive, and greater than the warm up period
@@ -1221,9 +1261,6 @@ class Simulation:
 
         if any(l < 0 for lmbdaclass in lmbda for l in lmbdaclass):
             raise ValueError('All arrival rates should be positive')
-
-        if any(m <= 0 for muclass in mu for m in muclass):
-            raise ValueError('All service rates should be positive')
 
         if any(type(k) is not int or k <= 0 for k in c):
             raise ValueError('All servers must be positive integer number')
@@ -1255,7 +1292,7 @@ class Simulation:
         Return the next active node:
 
         A mock example testing if this method works.
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> i = 0
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_time = i
@@ -1264,7 +1301,7 @@ class Simulation:
             Arrival Node
 
         And again.
-            >>> Q = Simulation([[5, 3]], [[10, 10]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
+            >>> Q = Simulation([[5, 3]], [[['Exponential', 10], ['Exponential', 10]]], [1, 1], [[[.2, .5], [.4, .4]]], 50)
             >>> i = 10
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_time = i
@@ -1280,14 +1317,14 @@ class Simulation:
 
         An example of simulating the simulation.
             >>> seed(99)
-            >>> Q = Simulation([[1]], [[2]], [1], [[[0]]], 50, 5)
+            >>> Q = Simulation([[1]], [[['Exponential', 2]]], [1], [[[0]]], 50, 5)
             >>> Q.simulate()
             >>> Q.get_all_individuals()[0]
             Individual 1
 
         Another example of simulating a simulation.
             >>> seed(2)
-            >>> Q = Simulation([[2, 3]], [[2, 5]], [2, 1], [[[0.2, 0.2], [0.3, 0.3]]], 60, 10)
+            >>> Q = Simulation([[2, 3]], [[['Exponential', 2], ['Exponential', 5]]], [2, 1], [[[0.2, 0.2], [0.3, 0.3]]], 60, 10)
             >>> Q.simulate()
             >>> Q.get_all_individuals()[0]
             Individual 220
@@ -1296,14 +1333,14 @@ class Simulation:
 
         And another, with two classes.
             >>> seed(99)
-            >>> Q = Simulation([[2, 3], [4, 5]], [[4, 5], [4, 5]], [5, 5], [[[0.2, 0.2], [0.3, 0.3]], [[0.1, 0.0], [0.5, 0.2]]], 60, 10)
+            >>> Q = Simulation([[2, 3], [4, 5]], [[['Exponential', 4], ['Exponential', 5]], [['Exponential', 4], ['Exponential', 5]]], [5, 5], [[[0.2, 0.2], [0.3, 0.3]], [[0.1, 0.0], [0.5, 0.2]]], 60, 10)
             >>> Q.simulate()
             >>> Q.get_all_individuals()[102].customer_class
             1
 
         And an example of simulating a simple M/M/c queue.
             >>> seed(9)
-            >>> Q = Simulation([[4]], [[3]], [3], [[[0]]], 100)
+            >>> Q = Simulation([[4]], [[['Exponential', 3]]], [3], [[[0]]], 100)
             >>> Q.simulate()
             >>> Q.get_all_individuals()[0].customer_class
             0
@@ -1319,14 +1356,14 @@ class Simulation:
 
         An example of obtaining the list of all individuals who completed service.
             >>> seed(1)
-            >>> Q = Simulation([[1]], [[2]], [1], [[[0]]], 5)
+            >>> Q = Simulation([[1]], [[['Exponential', 2]]], [1], [[[0]]], 5)
             >>> Q.simulate()
             >>> Q.get_all_individuals()
             [Individual 1, Individual 2, Individual 3, Individual 4]
 
         Another example.
             >>> seed(10)
-            >>> Q = Simulation([[2, 3]], [[2, 5]], [2, 1], [[[0.2, 0.2], [0.3, 0.3]]], 2)
+            >>> Q = Simulation([[2, 3]], [[['Exponential', 2], ['Exponential', 5]]], [2, 1], [[[0.2, 0.2], [0.3, 0.3]]], 2)
             >>> Q.simulate()
             >>> Q.get_all_individuals()
             [Individual 9, Individual 1, Individual 2, Individual 5, Individual 6, Individual 4, Individual 3, Individual 8, Individual 7, Individual 11]
@@ -1340,14 +1377,14 @@ class Simulation:
 
         An example of obtaining the number of individuals who completed service at that node.
             >>> seed(1)
-            >>> Q = Simulation([[1]], [[2]], [1], [[[0]]], 5)
+            >>> Q = Simulation([[1]], [[['Exponential', 2]]], [1], [[[0]]], 5)
             >>> Q.simulate()
             >>> len(Q.get_individuals_by_node()[1])
             4
 
         An example of obtaining the list of all individuals who completed service at that node.
             >>> seed(10)
-            >>> Q = Simulation([[2, 3]], [[2, 5]], [2, 1], [[[0.2, 0.2], [0.3, 0.3]]], 2)
+            >>> Q = Simulation([[2, 3]], [[['Exponential', 2], ['Exponential', 5]]], [2, 1], [[[0.2, 0.2], [0.3, 0.3]]], 2)
             >>> Q.simulate()
             >>> len(Q.get_individuals_by_node()[1])
             5
@@ -1356,7 +1393,7 @@ class Simulation:
 
         An example where no individual competed service at that node.
             >>> seed(2)
-            >>> Q = Simulation([[1]], [[0.01]], [1], [[[0]]], 5)
+            >>> Q = Simulation([[1]], [[['Exponential', 0.01]]], [1], [[[0]]], 5)
             >>> Q.simulate()
             >>> Q.get_individuals_by_node()[1]
             []
@@ -1370,7 +1407,7 @@ class Simulation:
 
         An example of obtaining a dictionart of the records of everyone who has completed service at that node, for each node.
             >>> seed(1)
-            >>> Q = Simulation([[1]], [[2]], [1], [[[0]]], 5)
+            >>> Q = Simulation([[1]], [[['Exponential', 2]]], [1], [[[0]]], 5)
             >>> Q.simulate()
             >>> Q.get_records_by_node()[1][0].wait
             0.0
@@ -1379,7 +1416,7 @@ class Simulation:
 
         Another example.
             >>> seed(5)
-            >>> Q = Simulation([[1, 2]], [[2, 2]], [1, 2], [[[0.2, 0.2], [0.2, 0.2]]], 5)
+            >>> Q = Simulation([[1, 2]], [[['Exponential', 2], ['Exponential', 2]]], [1, 2], [[[0.2, 0.2], [0.2, 0.2]]], 5)
             >>> Q.simulate()
             >>> round(Q.get_records_by_node()[1][0].wait, 5)
             1.45746
@@ -1390,7 +1427,7 @@ class Simulation:
 
         Keys of the dictionary are the node id numbers, can only call on transitive nodes.
             >>> seed(2)
-            >>> Q = Simulation([[8]], [[8]], [2], [[[0]]], 5)
+            >>> Q = Simulation([[8]], [[['Exponential', 8]]], [2], [[[0]]], 5)
             >>> Q.simulate()
             >>> Q.get_records_by_node()[0][0].wait
             Traceback (most recent call last):
@@ -1410,7 +1447,7 @@ class Simulation:
 
         Tests::
 
-            >>> Q = Simulation([[1, 2], [3,2]], [[5, 1],[6,4]], [1, 2], [[[0.0, 1.0], [0.0, 0.5]],[[.3,.3],[.2,.2]]], 100)
+            >>> Q = Simulation([[1, 2], [3,2]], [[['Exponential', 5], ['Exponential', 1]], [['Exponential', 6], ['Exponential', 4]]], [1, 2], [[[0.0, 1.0], [0.0, 0.5]],[[.3,.3],[.2,.2]]], 100)
 
 
             >>> Q.simulate()
@@ -1441,7 +1478,7 @@ class Simulation:
         """
         Writes the records for all individuals to a csv file
 
-            >>> Q = Simulation([[1, 2], [3,2]], [[5, 1],[6,4]], [1, 2], [[[0.0, 1.0], [0.0, 0.5]],[[.3,.3],[.2,.2]]], 100)
+            >>> Q = Simulation([[1, 2], [3, 2]], [[['Exponential', 5], ['Exponential', 1]], [['Exponential', 6], ['Exponential', 4]]], [1, 2], [[[0.0, 1.0], [0.0, 0.5]], [[.3, .3],[.2, .2]]], 100)
             >>> Q.simulate()
             >>> from glob import glob
             >>> Q.create_data_directory('test')
@@ -1471,7 +1508,7 @@ class Simulation:
         """
         Writes the records for all individuals to a csv file
 
-            >>> Q = Simulation([[1, 2], [3,2]], [[5, 1], [6,4]], [1, 2], [[[0.0, 1.0], [0.0, 0.5]],[[.3,.3],[.2,.2]]], 100)
+            >>> Q = Simulation([[1, 2], [3, 2]], [[['Exponential', 5], ['Exponential', 1]], [['Exponential', 6], ['Exponential', 4]]], [1, 2], [[[0.0, 1.0], [0.0, 0.5]],[[.3,.3],[.2,.2]]], 100)
             >>> Q.simulate()
             >>> from glob import glob
             >>> Q.create_data_directory('test')
@@ -1497,7 +1534,7 @@ class Simulation:
         """
         Outputs a directory containing yml file with all the model parameters and a csv file with all the model results
 
-            >>> Q = Simulation([[2, 3], [4, 5]], [[4, 5], [4, 5]], [5, 5], [[[0.2, 0.2], [0.3, 0.3]], [[0.1, 0.0], [0.5, 0.2]]], 600)
+            >>> Q = Simulation([[2, 3], [4, 5]], [[['Exponential', 4], ['Exponential', 5]], [['Exponential', 4], ['Exponential', 5]]], [5, 5], [[[0.2, 0.2], [0.3, 0.3]], [[0.1, 0.0], [0.5, 0.2]]], 600)
             >>> Q.simulate()
             >>> Q.create_data_records('test')
             >>> './logs_test' in [x[0] for x in os.walk('./')]
