@@ -165,3 +165,5 @@ class Data():
 
 
 d = Data('logs_141210_123602')
+d.find_summary_statistics()
+print d.summary_statistics
