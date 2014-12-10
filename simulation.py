@@ -292,9 +292,20 @@ class Node:
             0.05381
             >>> round(n.find_service_time(1), 5)
             0.80386
+
+        Another example to show other distributions
+            >>> Q = Simulation([[7, 8]], [[['Deterministic', 0.2], ['Lognormal', 0.5, 0.2]]], [3, 3], [[[0.3, 0.3], [0.4, 0.2]]], 300)
+            >>> n = Q.nodes[1]
+            >>> n.find_service_time(0)
+            0.2
+            >>> n = Q.nodes[2]
+            >>> round(n.find_service_time(0), 5)
+            1.66427
         """
         if self.mu[customer_class][0] == 'Uniform':
             return uniform(self.mu[customer_class][1], self.mu[customer_class][2])
+        elif self.mu[customer_class][0] == 'Deterministic':
+            return self.mu[customer_class][1]
         elif self.mu[customer_class][0] == 'Triangular':
             return triangular(self.mu[customer_class][1], self.mu[customer_class][2], self.mu[customer_class][3])
         elif self.mu[customer_class][0] == 'Exponential':
@@ -1551,6 +1562,6 @@ class Simulation:
 
 
 if __name__ == '__main__':
-    Q = Simulation([[5.0, 2.0, 4.0], [3.0, 7.0, 4.0]], [[8.0, 9.0, 6.0], [5.0, 4.0, 9.0]], [8, 6, 6], [[[0.2, 0.3, 0.4], [0.2, 0.1, 0.1], [0.2, 0.7, 0.1]], [[0.5, 0.1, 0.1], [0.3, 0.1, 0.1], [0.8, 0.1, 0.0]]], 2000, 500)
+    Q = Simulation([[5.0, 2.0, 4.0], [3.0, 7.0, 4.0]], [[['Exponential', 8.0], ['Exponential', 9.0], ['Exponential', 6.0]], [['Exponential', 5.0], ['Exponential', 4.0], ['Exponential', 9.0]]], [8, 6, 6], [[[0.2, 0.3, 0.4], [0.2, 0.1, 0.1], [0.2, 0.7, 0.1]], [[0.5, 0.1, 0.1], [0.3, 0.1, 0.1], [0.8, 0.1, 0.0]]], 2000, 500)
     Q.simulate()
-    Q.create_data_records()
+    Q.create_data_records('test_for_analyse')
