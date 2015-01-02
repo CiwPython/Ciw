@@ -25,13 +25,13 @@ class Data():
 			>>> d.data_file
 			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/logs_test_for_analyse/data.csv'
 			>>> d.data[0]
-			['50359', '1', '2', '1999.7443661524796', '0.13308885758260658', '1999.8774550100622', '0.025921384417214175', '1999.9033763944794']
+			['49550', '1', '1', '1998.8271311945539', '0.0', '1998.8271311945539', '0.30795032988104515', '1999.135081524435']
 			>>> d.data_per_node[1][0]
-			['50352', '1', '1', '1999.5118337158333', '0.0', '1999.5118337158333', '0.07836194498760167', '1999.5901956608209']
+			['49550', '1', '1', '1998.8271311945539', '0.0', '1998.8271311945539', '0.30795032988104515', '1999.135081524435']
 			>>> d.data_per_class[0][0]
-			['50332', '0', '1', '1998.4555520726726', '0.0', '1998.4555520726726', '0.26478695690745796', '1998.7203390295801']
+			['49579', '0', '1', '1999.5959655305433', '0.04805547072646732', '1999.6440210012697', '0.030292701843023837', '1999.6743137031128']
 			>>> d.data_per_node_per_class[2][1][0]
-			['50359', '1', '2', '1999.7443661524796', '0.13308885758260658', '1999.8774550100622', '0.025921384417214175', '1999.9033763944794']
+			['49577', '1', '2', '1999.5707281903663', '0.02837872052327839', '1999.5991069108895', '0.12455572244198199', '1999.7236626333315']
 		"""
 		self.directory = os.path.dirname(os.path.realpath(__file__)) + '/' + directory_name + '/'
 		self.parameter_file = self.directory + 'parameters.yml'
@@ -64,7 +64,7 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> d.data[0]
-			['50359', '1', '2', '1999.7443661524796', '0.13308885758260658', '1999.8774550100622', '0.025921384417214175', '1999.9033763944794']
+			['49550', '1', '1', '1998.8271311945539', '0.0', '1998.8271311945539', '0.30795032988104515', '1999.135081524435']
 		"""
 		data_array = []
 		data_file = open(self.data_file, 'r')
@@ -98,9 +98,9 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> round(d.mean_waits(d.data), 5)
-			0.05958
+			0.0509
 			>>> round(d.mean_waits(d.data_per_node[1]), 5)
-			0.08674
+			0.07047
 		"""
 		return sum([float(data_point[4]) for data_point in data]) / len(data)
 
@@ -111,9 +111,9 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> round(d.mean_visits(d.data_per_node[3]), 5)
-			1.46107
+			1.46241
 			>>> round(d.mean_visits(d.data_per_node_per_class[1][1]), 5)
-			2.6662
+			2.67734
 		"""
 		visits_per_customer = {}
 		for data_point in data:
@@ -130,7 +130,7 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> round(d.mean_customers(d.data_per_node[1]), 5)
-			10.26873
+			9.57917
 		"""
 		arrivals_and_exits = [[float(datapoint[3]), 'a'] for datapoint in data] + [[float(datapoint[7]), 'd'] for datapoint in data]
 		sorted_arrivals_and_exits = sorted(arrivals_and_exits, key=lambda data_point: data_point[0])
@@ -153,7 +153,7 @@ class Data():
 			>>> d = Data('logs_test_for_analyse')
 			>>> d.find_summary_statistics()
 			>>> d.summary_statistics
-			{'Mean_Visits_per_Node': {1: 2.302018238899686, 2: 1.4304280556988138}, 'Mean_Customers_Overall': 19.83493819543286, 'Mean_Waiting_Times_Overall': 0.05957745472321155, 'Mean_Waiting_Times_per_Node': {1: 0.08674002964863309, 2: 0.06159968388285421}, 'Mean_Waiting_Times_per_Node_per_Class': {1: {0: 0.08624344804990342, 1: 0.08700978025811745}, 2: {0: 0.06120378613866512, 1: 0.06216585910776624}}, 'Mean_Customers_per_Node': {1: 10.268726632090543, 2: 6.43425954346275}, 'Mean_Waiting_Times_per_Class': {1: 0.0661709436923146}}
+			{'Mean_Visits_per_Node': {1: 2.306031093097816, 2: 1.4329465624753335}, 'Mean_Customers_Overall': 18.91298666192671, 'Mean_Waiting_Times_Overall': 0.0508975327857673, 'Mean_Waiting_Times_per_Node': {1: 0.07047319043616357, 2: 0.057219857096981554}, 'Mean_Waiting_Times_per_Node_per_Class': {1: {0: 0.06938783154956935, 1: 0.07104604713243338}, 2: {0: 0.05692141827730052, 1: 0.05764063483544386}}, 'Mean_Customers_per_Node': {1: 9.579171109940033, 2: 6.207344918656069}, 'Mean_Waiting_Times_per_Class': {1: 0.055928548511235736}}
 		"""
 		self.summary_statistics['Mean_Waiting_Times_Overall'] = self.mean_waits(self.data)
 		self.summary_statistics['Mean_Waiting_Times_per_Node'] = {node:self.mean_waits(self.data_per_node[node]) for node in range(1,self.parameters['Number_of_nodes'])}
