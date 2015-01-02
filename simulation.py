@@ -246,7 +246,7 @@ class Node:
         Representation of a node::
 
         An example of how a node is represented.
-            >>> Q = Simulation([[5, 4]], [[8, 9]], [2, 2], [[[0.2, 0.5], [0.1, 0.7]]], 100)
+            >>> Q = Simulation([[5, 4]], [[['Deterministic', 8], ['Deterministic', 9]]], [2, 2], [[[0.2, 0.5], [0.1, 0.7]]], 100)
             >>> N = Node(1, Q)
             >>> N
             Node 1
@@ -264,62 +264,6 @@ class Node:
             AttributeError: 'bool' object has no attribute 'mu'
         """
         return 'Node %s' % self.id_number
-
-    def find_service_time(self, customer_class):
-        """
-        A method to find the service time based on the given distribution and parameters
-
-        Here's an example
-            >>> seed(2)
-            >>> Q = Simulation([[5, 4]], [[['Exponential', 8], ['Normal', 9, 3]]], [2, 2], [[[0.2, 0.5], [0.1, 0.7]]], 100)
-            >>> n = Q.nodes[1]
-            >>> round(n.find_service_time(0), 5)
-            0.39054
-            >>> n = Q.nodes[2]
-            >>> round(n.find_service_time(0), 5)
-            9.96913
-
-        Another example with multi-classes
-            >>> seed(9)
-            >>> Q = Simulation([[6, 3], [5, 5]], [[['Weibull', 3, 2], ['Gamma', 0.5, 2]], [['Triangular', 0.2, 0.7, 0.6], ['Uniform', 0.8, 1.4]]], [7, 7], [[[0.4, 0.2], [0.4, 0.4]], [[0.1, 0.8], [0.3, 0.1]]], 200)
-            >>> n = Q.nodes[1]
-            >>> round(n.find_service_time(0), 5)
-            2.36557
-            >>> round(n.find_service_time(1), 5)
-            0.47324
-            >>> n = Q.nodes[2]
-            >>> round(n.find_service_time(0), 5)
-            0.05381
-            >>> round(n.find_service_time(1), 5)
-            0.80386
-
-        Another example to show other distributions
-            >>> Q = Simulation([[7, 8]], [[['Deterministic', 0.2], ['Lognormal', 0.5, 0.2]]], [3, 3], [[[0.3, 0.3], [0.4, 0.2]]], 300)
-            >>> n = Q.nodes[1]
-            >>> n.find_service_time(0)
-            0.2
-            >>> n = Q.nodes[2]
-            >>> round(n.find_service_time(0), 5)
-            1.66427
-        """
-        if self.mu[customer_class][0] == 'Uniform':
-            return uniform(self.mu[customer_class][1], self.mu[customer_class][2])
-        elif self.mu[customer_class][0] == 'Deterministic':
-            return self.mu[customer_class][1]
-        elif self.mu[customer_class][0] == 'Triangular':
-            return triangular(self.mu[customer_class][1], self.mu[customer_class][2], self.mu[customer_class][3])
-        elif self.mu[customer_class][0] == 'Exponential':
-            return expovariate(self.mu[customer_class][1])
-        elif self.mu[customer_class][0] == 'Gamma':
-            return gammavariate(self.mu[customer_class][1], self.mu[customer_class][2])
-        elif self.mu[customer_class][0] == 'Normal':
-            return gauss(self.mu[customer_class][1], self.mu[customer_class][2])
-        elif self.mu[customer_class][0] == 'Lognormal':
-            return lognormvariate(self.mu[customer_class][1], self.mu[customer_class][2])
-        elif self.mu[customer_class][0] == 'Weibull':
-            return weibullvariate(self.mu[customer_class][1], self.mu[customer_class][2])
-        else:
-            return False
 
     def release(self):
         """
@@ -449,7 +393,7 @@ class Node:
 
         """
         next_individual.arrival_date = current_time
-        next_individual.service_time = self.find_service_time(next_individual.customer_class)
+        next_individual.service_time = self.simulation.service_times[self.id_number][next_individual.customer_class]()
 
         if len(self.individuals) < self.c:
             next_individual.end_service_date = current_time + next_individual.service_time
@@ -1297,6 +1241,7 @@ class Simulation:
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode(self.max_simulation_time)]
         self.number_of_nodes = len(self.transitive_nodes)
+        self.service_times = self.find_service_time_dictionary()
 
     def find_next_active_node(self):
         """
@@ -1321,6 +1266,36 @@ class Simulation:
             Node 2
         """
         return min(self.nodes, key=lambda x: x.next_event_time)
+
+    def find_service_time(self, n, c):
+        """
+        Finds the service time function
+        """
+
+        if self.mu[c][n][0] == 'Uniform':
+            return lambda : uniform(self.mu[c][n][1], self.mu[c][n][2])
+        if self.mu[c][n][0] == 'Deterministic':
+            return lambda : self.mu[c][n][1]
+        if self.mu[c][n][0] == 'Triangular':
+            return lambda : triangular(self.mu[c][n][1], self.mu[c][n][2], self.mu[c][n][3])
+        if self.mu[c][n][0] == 'Exponential':
+            return lambda : expovariate(self.mu[c][n][1])
+        if self.mu[c][n][0] == 'Gamma':
+            return lambda : gammavariate(self.mu[c][n][1], self.mu[c][n][2])
+        if self.mu[c][n][0] == 'Normal':
+            return lambda : gauss(self.mu[c][n][1], self.mu[c][n][2])
+        if self.mu[c][n][0] == 'Lognormal':
+            return lambda : lognormvariate(self.mu[c][n][1], self.mu[c][n][2])
+        if self.mu[c][n][0] == 'Weibull':
+            return lambda : weibullvariate(self.mu[c][n][1], self.mu[c][n][2])
+        return False
+        
+        
+    def find_service_time_dictionary(self):
+        """
+        Finds the dictionary of service time functions for each node for each class
+        """
+        return {node+1:{customer_class:self.find_service_time(node, customer_class) for customer_class in range(len(self.lmbda))} for node in range(self.number_of_nodes)}
 
     def simulate(self):
         """
