@@ -52,3 +52,6 @@ arguments = docopt.docopt(__doc__)
 dirname = arguments['<dir_name>']
 directory_name = create_data_directory(dirname)
 shutil.move('parameters.yml', directory_name)
+
+
+print 'Directory created: ' + directory_name

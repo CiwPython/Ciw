@@ -1,19 +1,25 @@
 """
-Script to analyse a data directory
+Usage: analyse.py <dir_name> [<sffx>]
+
+Arguments
+    dir_name    : name of the directory from which to read in parameters and write data files
+    suff        : optional suffix to add to the data file name
+
+Options
+    -h          : displays this help file
 """
 import os
 import yaml
 from sys import argv
 from csv import reader
-
-directory_name = 'logs_141209_134914'
+import docopt
 
 class Data():
 	"""
 	A class to hold the data
 	"""
 
-	def __init__(self, directory_name):
+	def __init__(self, directory_name, sffx):
 		"""
 		Initialises the data
 
@@ -34,14 +40,21 @@ class Data():
 			['49577', '1', '2', '1999.5707281903663', '0.02837872052327839', '1999.5991069108895', '0.12455572244198199', '1999.7236626333315']
 		"""
 		self.directory = os.path.dirname(os.path.realpath(__file__)) + '/' + directory_name + '/'
+		self.sffx = sffx
 		self.parameter_file = self.directory + 'parameters.yml'
-		self.data_file = self.directory + 'data.csv'
+		self.data_file = self.find_data_file()
 		self.parameters = self.load_parameters()
 		self.data = self.load_data()
 		self.data_per_node = self.find_data_per_node()
 		self.data_per_class = self.find_data_per_class()
 		self.data_per_node_per_class = self.find_data_per_node_per_class()
 		self.summary_statistics = {}
+
+	def find_data_file(self):
+		if self.sffx:
+			return self.directory + 'data_' + self.sffx + '.csv'
+		else:
+			return self.directory + 'data.csv'
 
 	def load_parameters(self):
 		"""
@@ -163,7 +176,18 @@ class Data():
 		self.summary_statistics['Mean_Customers_per_Node'] = {node:self.mean_customers(self.data_per_node[node]) for node in range(1,self.parameters['Number_of_nodes'])}
 		self.summary_statistics['Mean_Customers_Overall'] = self.mean_customers(self.data)
 
+	def write_results_to_file(self):
+		if sffx:
+			results_file = open('%sresults_' %self.directory + self.sffx + '.yml', 'w')
+		else:
+			results_file = open('%sresults.yml' % self.directory, 'w')
+		results_file.write(yaml.dump(self.summary_statistics, default_flow_style=False))
+		results_file.close()
 
-d = Data('logs_141210_123602')
+
+arguments = docopt.docopt(__doc__)
+dirname = arguments['<dir_name>']
+sffx = arguments['<sffx>']
+d = Data(dirname, sffx)
 d.find_summary_statistics()
-print d.summary_statistics
+d.write_results_to_file()
