@@ -51,6 +51,9 @@ class Data():
 		self.summary_statistics = {}
 
 	def find_data_file(self):
+		"""
+		Finds the data file and directory based on the name given
+		"""
 		if self.sffx:
 			return self.directory + 'data_' + self.sffx + '.csv'
 		else:
@@ -177,6 +180,9 @@ class Data():
 		self.summary_statistics['Mean_Customers_Overall'] = self.mean_customers(self.data)
 
 	def write_results_to_file(self):
+		"""
+		Takes the summary statistics and writes them into a .yml file
+		"""
 		if sffx:
 			results_file = open('%sresults_' %self.directory + self.sffx + '.yml', 'w')
 		else:
