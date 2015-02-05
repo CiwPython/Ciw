@@ -458,8 +458,6 @@ class Node:
         else:
             self.individuals.append(individual)
 
-
-
     def update_next_event_date(self):
         """
         Finds the time of the next event at this node
@@ -1107,55 +1105,6 @@ class Simulation:
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
-    def get_individuals_by_node(self):
-        """
-        Return a dictionary with keys nodes and values: lists of players who have a complete record for that node.
-
-        An example of obtaining the number of individuals who completed service at that node.
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> Q.simulate()
-            >>> len(Q.get_individuals_by_node()[1])
-            48517
-
-        An example of obtaining the list of all individuals who completed service at that node.
-            >>> seed(10)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> Q.max_simulation_time = 2
-            >>> Q.simulate()
-            >>> len(Q.get_individuals_by_node()[1])
-            25
-            >>> Q.get_individuals_by_node()[2]
-            [Individual 53, Individual 36, Individual 54, Individual 9, Individual 19, Individual 51, Individual 10, Individual 8, Individual 3, Individual 17, Individual 24, Individual 31, Individual 32, Individual 5, Individual 18, Individual 20, Individual 26, Individual 38, Individual 43, Individual 39, Individual 35, Individual 29, Individual 40, Individual 47, Individual 13, Individual 37, Individual 52, Individual 57, Individual 11, Individual 14, Individual 33, Individual 50, Individual 66]
-        """
-        all_individuals = self.get_all_individuals()
-        return {node.id_number:[individual for individual in all_individuals if node.id_number in individual.data_records] for node in self.transitive_nodes}
-
-    def get_records_by_node(self):
-        """
-        Returns all records of an individual
-
-        An example of obtaining a dictionary of the records of everyone who has completed service at that node, for each node.
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> Q.simulate()
-            >>> Q.get_records_by_node()[1][0].wait
-            0.04496266466640009
-            >>> round(Q.get_records_by_node()[1][1].arrival_date, 5)
-            2499.7062
-
-        Keys of the dictionary are the node id numbers, can only call on transitive nodes.
-            >>> seed(2)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> Q.simulate()
-            >>> Q.get_records_by_node()[0][0].wait
-            Traceback (most recent call last):
-            ...
-            KeyError: 0
-        """
-        individuals_by_node = self.get_individuals_by_node()
-        return {node_id:[record for individual in individuals_by_node[node_id] for record in individual.data_records[node_id]] for node_id in individuals_by_node}
-        
     def write_records_to_file(self):
         """
         Writes the records for all individuals to a csv file
