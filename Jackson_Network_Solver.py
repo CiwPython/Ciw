@@ -38,53 +38,36 @@ class JacksonNetwork:
 
             >>> J = JacksonNetwork('logs_test_for_jackson_networks')
             >>> J.number_of_classes
-            3
+            2
             >>> J.number_of_nodes
-            4
+            3
             >>> print J.external_arrival_rates
-            [[ 2.   1.   2.   0.5]
-             [ 2.   3.   6.   4. ]
-             [ 3.   7.   4.   1. ]]
+            [[3 7 4]
+             [5 2 4]]
             >>> print J.service_distributions
-            [[['Exponential' '13.0']
-              ['Exponential' '6.0']
-              ['Exponential' '8.0']
+            [[['Exponential' '5.0']
+              ['Exponential' '4.0']
               ['Exponential' '9.0']]
             <BLANKLINE>
-             [['Exponential' '7.0']
-              ['Exponential' '10.0']
-              ['Exponential' '8.0']
-              ['Exponential' '5.0']]
-            <BLANKLINE>
-             [['Exponential' '7.0']
-              ['Exponential' '7.0']
+             [['Exponential' '8.0']
               ['Exponential' '9.0']
-              ['Exponential' '0.5']]]
+              ['Exponential' '6.0']]]
             >>> print J.number_of_servers
-            [ 9 10  8  8]
+            [8 6 6]
             >>> print J.routing_matrix
-            [[[ 0.   0.   0.4  0.3]
-              [ 0.1  0.1  0.1  0.1]
-              [ 0.1  0.3  0.2  0.2]
-              [ 0.   0.   0.   0.3]]
+            [[[ 0.5  0.1  0.1]
+              [ 0.3  0.1  0.1]
+              [ 0.8  0.1  0. ]]
             <BLANKLINE>
-             [[ 0.6  0.   0.   0.2]
-              [ 0.1  0.1  0.2  0.2]
-              [ 0.9  0.   0.   0. ]
-              [ 0.2  0.1  0.1  0.1]]
-            <BLANKLINE>
-             [[ 0.1  0.2  0.1  0.4]
-              [ 0.2  0.2  0.   0.1]
-              [ 0.   0.8  0.1  0.1]
-              [ 0.4  0.1  0.1  0. ]]]
+             [[ 0.2  0.3  0.4]
+              [ 0.2  0.1  0.1]
+              [ 0.2  0.7  0.1]]]
             >>> print J.service_rates
-            [[ 13.    6.    8.    9. ]
-             [  7.   10.    8.    5. ]
-             [  7.    7.    9.    0.5]]
+            [[ 5.  4.  9.]
+             [ 8.  9.  6.]]
             >>> print J.service_times
-            [[ 0.07692308  0.16666667  0.125       0.11111111]
-             [ 0.14285714  0.1         0.125       0.2       ]
-             [ 0.14285714  0.14285714  0.11111111  2.        ]]
+            [[ 0.2         0.25        0.11111111]
+             [ 0.125       0.11111111  0.16666667]]
         """
         self.directory = os.path.dirname(os.path.realpath(__file__)) + '/' + directory_name + '/'
         self.parameters = self.load_parameters()
@@ -112,11 +95,9 @@ class JacksonNetwork:
 
             >>> J = JacksonNetwork('logs_test_for_jackson_networks')
             >>> J.find_service_rates_and_times()
-            (array([[ 13. ,   6. ,   8. ,   9. ],
-                   [  7. ,  10. ,   8. ,   5. ],
-                   [  7. ,   7. ,   9. ,   0.5]]), array([[ 0.07692308,  0.16666667,  0.125     ,  0.11111111],
-                   [ 0.14285714,  0.1       ,  0.125     ,  0.2       ],
-                   [ 0.14285714,  0.14285714,  0.11111111,  2.        ]]))
+            (array([[ 5.,  4.,  9.],
+                   [ 8.,  9.,  6.]]), array([[ 0.2       ,  0.25      ,  0.11111111],
+                   [ 0.125     ,  0.11111111,  0.16666667]]))
         """
         service_rates = np.array([[float(self.service_distributions[cls][nd][1]) for nd in range(self.number_of_nodes)] for cls in range(self.number_of_classes)])
         service_times = np.divide(1, service_rates)
@@ -129,9 +110,8 @@ class JacksonNetwork:
             >>> J = JacksonNetwork('logs_test_for_jackson_networks')
             >>> J.solve_traffic_equations()
             >>> print J.lmbdas
-            [[  2.6635514    2.49221184   4.14330218   3.39563863]
-             [ 30.7203718    4.70178156   8.17195972  12.31603408]
-             [ 11.15001159  19.11662416   6.57546951   8.029214  ]]
+            [[ 25.09036145  11.41566265   7.65060241]
+             [ 13.31683168  16.11386139  12.15346535]]
         """
         lmbdas = np.empty((self.number_of_classes, self.number_of_nodes))
         for cls in range(self.number_of_classes):
@@ -149,18 +129,17 @@ class JacksonNetwork:
             >>> J.solve_traffic_equations()
             >>> J.aggregate_over_classes()
             >>> print J.aggregate_lmbdas
-            [ 44.5339348   26.31061756  18.89073141  23.74088672]
+            [ 38.40719313  27.52952404  19.80406776]
             >>> print J.aggregate_service_times
-            [ 0.13891366  0.13745375  0.12016557  0.7960498 ]
+            [ 0.17399543  0.16870414  0.14520474]
             >>> print J.aggregate_service_rates
-            [ 7.19871605  7.27517426  8.32185143  1.25620282]
+            [ 5.74727724  5.92753677  6.88682757]
             >>> print J.aggregate_external_arrival_rates
-            [[  7.   11.   12.    5.5]]
+            [[8 9 8]]
             >>> print J.aggregate_routing_matrix
-            [[ 0.43892875  0.05007423  0.0489609   0.25605517]
-             [ 0.17265745  0.17265745  0.04521283  0.11787028]
-             [ 0.41126486  0.34426228  0.07867389  0.07867389]
-             [ 0.23903456  0.08569709  0.08569709  0.09478563]]
+            [[ 0.39598174  0.16934551  0.20401826]
+             [ 0.24146698  0.1         0.1       ]
+             [ 0.43178882  0.46821118  0.06136853]]
         """
         self.aggregate_lmbdas = sum(self.lmbdas)
         self.aggregate_service_times = sum(np.multiply(np.divide(self.lmbdas, self.aggregate_lmbdas), self.service_times))
@@ -176,10 +155,9 @@ class JacksonNetwork:
             >>> J.solve_traffic_equations()
             >>> J.aggregate_over_classes()
             >>> J.find_aggregate_routing_matrix(J.aggregate_lmbdas)
-            array([[ 0.43892875,  0.05007423,  0.0489609 ,  0.25605517],
-                   [ 0.17265745,  0.17265745,  0.04521283,  0.11787028],
-                   [ 0.41126486,  0.34426228,  0.07867389,  0.07867389],
-                   [ 0.23903456,  0.08569709,  0.08569709,  0.09478563]])
+            array([[ 0.39598174,  0.16934551,  0.20401826],
+                   [ 0.24146698,  0.1       ,  0.1       ],
+                   [ 0.43178882,  0.46821118,  0.06136853]])
         """
         agg_rout_matrx = []
         for i in range(self.number_of_nodes):

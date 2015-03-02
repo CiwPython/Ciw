@@ -28,6 +28,7 @@ def create_data_directory(directory_name=False):
         >>> './logs_test' in [x[0] for x in os.walk('./')]
         False
         >>> create_data_directory('test')
+	'logs_test'
         >>> './logs_test' in [x[0] for x in os.walk('./')]
         True
         >>> shutil.rmtree('./logs_test')  # Removing the test directory
@@ -47,11 +48,8 @@ def create_data_directory(directory_name=False):
     return directory_name
 
 
-
-arguments = docopt.docopt(__doc__)
-dirname = arguments['<dir_name>']
-directory_name = create_data_directory(dirname)
-shutil.move('parameters.yml', directory_name)
-
-
-print 'Directory created: ' + directory_name
+if __name__ == '__main__':
+	arguments = docopt.docopt(__doc__)
+	dirname = arguments['<dir_name>']
+	directory_name = create_data_directory(dirname)
+	shutil.move('parameters.yml', directory_name)

@@ -19,7 +19,7 @@ class Data():
 	A class to hold the data
 	"""
 
-	def __init__(self, directory_name, sffx):
+	def __init__(self, directory_name, sffx=None):
 		"""
 		Initialises the data
 
@@ -30,14 +30,14 @@ class Data():
 			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/logs_test_for_analyse/parameters.yml'
 			>>> d.data_file
 			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/logs_test_for_analyse/data.csv'
-			>>> d.data[0]
-			['49550', '1', '1', '1998.8271311945539', '0.0', '1998.8271311945539', '0.30795032988104515', '1999.135081524435']
-			>>> d.data_per_node[1][0]
-			['49550', '1', '1', '1998.8271311945539', '0.0', '1998.8271311945539', '0.30795032988104515', '1999.135081524435']
-			>>> d.data_per_class[0][0]
-			['49579', '0', '1', '1999.5959655305433', '0.04805547072646732', '1999.6440210012697', '0.030292701843023837', '1999.6743137031128']
-			>>> d.data_per_node_per_class[2][1][0]
-			['49577', '1', '2', '1999.5707281903663', '0.02837872052327839', '1999.5991069108895', '0.12455572244198199', '1999.7236626333315']
+            >>> d.data[0]
+            ['50132', '0', '3', '1999.8061066137873', '0.0', '1999.8061066137873', '0.1923943987059666', '1999.9985010124933']
+            >>> d.data_per_node[1][0]
+            ['50102', '1', '1', '1999.0025591060407', '0.0', '1999.0025591060407', '0.6092886795003283', '1999.6118477855412']
+            >>> d.data_per_class[0][0]
+            ['50132', '0', '3', '1999.8061066137873', '0.0', '1999.8061066137873', '0.1923943987059666', '1999.9985010124933']
+            >>> d.data_per_node_per_class[2][1][0]
+            ['50102', '1', '2', '1998.6969428179862', '0.14433402242707416', '1998.8412768404132', '0.1612822656274953', '1999.0025591060407']
 		"""
 		self.directory = os.path.dirname(os.path.realpath(__file__)) + '/' + directory_name + '/'
 		self.sffx = sffx
@@ -80,7 +80,7 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> d.data[0]
-			['49550', '1', '1', '1998.8271311945539', '0.0', '1998.8271311945539', '0.30795032988104515', '1999.135081524435']
+			['50132', '0', '3', '1999.8061066137873', '0.0', '1999.8061066137873', '0.1923943987059666', '1999.9985010124933']
 		"""
 		data_array = []
 		data_file = open(self.data_file, 'r')
@@ -114,9 +114,9 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> round(d.mean_waits(d.data), 5)
-			0.0509
+			0.05566
 			>>> round(d.mean_waits(d.data_per_node[1]), 5)
-			0.07047
+			0.07253
 		"""
 		return sum([float(data_point[4]) for data_point in data]) / len(data)
 
@@ -127,9 +127,9 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> round(d.mean_visits(d.data_per_node[3]), 5)
-			1.46241
+			1.46328
 			>>> round(d.mean_visits(d.data_per_node_per_class[1][1]), 5)
-			2.67734
+			2.69957
 		"""
 		visits_per_customer = {}
 		for data_point in data:
@@ -146,7 +146,7 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> round(d.mean_customers(d.data_per_node[1]), 5)
-			9.57917
+			9.78516
 		"""
 		arrivals_and_exits = [[float(datapoint[3]), 'a'] for datapoint in data] + [[float(datapoint[7]), 'd'] for datapoint in data]
 		sorted_arrivals_and_exits = sorted(arrivals_and_exits, key=lambda data_point: data_point[0])
@@ -169,7 +169,7 @@ class Data():
 			>>> d = Data('logs_test_for_analyse')
 			>>> d.find_summary_statistics()
 			>>> d.summary_statistics
-			{'Mean_Visits_per_Node': {1: 2.306031093097816, 2: 1.4329465624753335}, 'Mean_Customers_Overall': 18.91298666192671, 'Mean_Waiting_Times_Overall': 0.0508975327857673, 'Mean_Waiting_Times_per_Node': {1: 0.07047319043616357, 2: 0.057219857096981554}, 'Mean_Waiting_Times_per_Node_per_Class': {1: {0: 0.06938783154956935, 1: 0.07104604713243338}, 2: {0: 0.05692141827730052, 1: 0.05764063483544386}}, 'Mean_Customers_per_Node': {1: 9.579171109940033, 2: 6.207344918656069}, 'Mean_Waiting_Times_per_Class': {1: 0.055928548511235736}}
+			{'Mean_Visits_per_Node': {1: 2.3176760690443254, 2: 1.4333203581159983}, 'Mean_Customers_Overall': 19.62536579897305, 'Mean_Waiting_Times_Overall': 0.055657249979677685, 'Mean_Waiting_Times_per_Node': {1: 0.07252886678329462, 2: 0.06900929721381453}, 'Mean_Waiting_Times_per_Node_per_Class': {1: {0: 0.07296209330440638, 1: 0.07229676234027073}, 2: {0: 0.06776830971106831, 1: 0.07077829841382609}}, 'Mean_Customers_per_Node': {1: 9.785161997806162, 2: 6.673346315685424}, 'Mean_Waiting_Times_per_Class': {1: 0.06011290147533826}}
 		"""
 		self.summary_statistics['Mean_Waiting_Times_Overall'] = self.mean_waits(self.data)
 		self.summary_statistics['Mean_Waiting_Times_per_Node'] = {node:self.mean_waits(self.data_per_node[node]) for node in range(1,self.parameters['Number_of_nodes'])}
@@ -191,9 +191,10 @@ class Data():
 		results_file.close()
 
 
-arguments = docopt.docopt(__doc__)
-dirname = arguments['<dir_name>']
-sffx = arguments['<sffx>']
-d = Data(dirname, sffx)
-d.find_summary_statistics()
-d.write_results_to_file()
+if __name__ == '__main__':
+    arguments = docopt.docopt(__doc__)
+    dirname = arguments['<dir_name>']
+    sffx = arguments['<sffx>']
+    d = Data(dirname, sffx)
+    d.find_summary_statistics()
+    d.write_results_to_file()
