@@ -42,49 +42,45 @@ class DataRecord:
     """
     A class for a data record
     """
-    def __init__(self, arrival_date, service_time, exit_date, node):
+    def __init__(self, arrival_date, service_time, service_start_date, exit_date, node):
         """
         An example of a data record instance.
-            >>> r = DataRecord(2, 3, 5, 3)
+            >>> r = DataRecord(2, 3, 2, 8, 1)
             >>> r.arrival_date
             2
             >>> r.wait
             0
-            >>> r.service_date
+            >>> r.service_start_date
             2
             >>> r.service_time
             3
-            >>> r.exit_date
+            >>> r.service_end_date
             5
-            >>> r.node
+            >>> r.blocked
             3
-
-        Another example of a data record instance.
-            >>> r = DataRecord(5.7, 2.1, 8.2, 1)
-            >>> r.arrival_date
-            5.7
-            >>> round(r.wait, 5)
-            0.4
-            >>> r.service_date
-            6.1
-            >>> r.service_time
-            2.1
             >>> r.exit_date
-            8.2
+            8
             >>> r.node
             1
 
-        If parameters don't make sense, errors occur.
-            >>> r = DataRecord(4, 2.5, 3, 3)
-            Traceback (most recent call last):
-            ...
-            ValueError: Arrival date should preceed exit date
-
-            >>> r = DataRecord(4, -2, 7, 1)
-            Traceback (most recent call last):
-            ...
-            ValueError: Service time should be positive
-
+        Another example of a data record instance.
+            >>> r = DataRecord(5.7, 2.1, 8.2, 10.3, 1)
+            >>> r.arrival_date
+            5.7
+            >>> round(r.wait, 5)
+            2.5
+            >>> r.service_start_date
+            8.2
+            >>> r.service_time
+            2.1
+            >>> round(r.service_end_date, 5)
+            10.3
+            >>> round(r.blocked, 5)
+            0.0
+            >>> r.exit_date
+            10.3
+            >>> r.node
+            1
         """
         if exit_date < arrival_date:
             raise ValueError('Arrival date should preceed exit date')
@@ -94,9 +90,12 @@ class DataRecord:
 
         self.arrival_date = arrival_date
         self.service_time = service_time
+        self.service_start_date = service_start_date
         self.exit_date = exit_date
-        self.service_date = exit_date - service_time
-        self.wait = self.service_date - arrival_date
+
+        self.service_end_date = service_start_date + service_time
+        self.wait = service_start_date - arrival_date
+        self.blocked = exit_date - self.service_end_date
         self.node = node
 
 class Individual:
@@ -133,7 +132,6 @@ class Individual:
             >>> i.data_records
             {}
         """
-        self.in_service = False
         self.end_service_date = False
         self.id_number = id_number
         self.data_records = {}
@@ -860,7 +858,6 @@ class ExitNode:
         self.individuals = []
         self.id_number = -1
         self.next_event_time = max_simulation_time
-
 
     def __repr__(self):
         """
