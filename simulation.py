@@ -11,7 +11,6 @@ Options
 
 from __future__ import division
 from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
-from numpy import mean as np_mean
 from datetime import datetime
 import os
 from csv import writer
@@ -19,24 +18,6 @@ import yaml
 import shutil
 import docopt
 
-def mean(lst):
-    """
-    A function to find the mean of a list, returns false if empty
-
-    Tests with a full list.
-        >>> AList = [6, 6, 4, 6, 8]
-        >>> mean(AList)
-        6.0
-
-     Tests with an empty list.
-        >>> AnotherList = []
-        >>> mean(AnotherList)
-        False
-    """
-
-    if len(lst) == 0:
-        return False
-    return np_mean(lst)
 
 class DataRecord:
     """
@@ -205,6 +186,7 @@ class Node:
         self.id_number = id_number
         self.cum_transition_row = self.find_cum_transition_row()
         self.next_event_time = self.simulation.max_simulation_time
+        self.event_is_release = False
 
     def find_cum_transition_row(self):
         """
@@ -244,272 +226,71 @@ class Node:
         """
         return 'Node %s' % self.id_number
 
-    def release(self):
+    def have_event(self):
         """
-        Update node when a service happens.
-
-        Once an individual is released, his exit date will be updated.
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> N = Q.transitive_nodes[0]
-            >>> i = Individual(2, 0)
-            >>> i.arrival_date
-            Traceback (most recent call last):
-            ...
-            AttributeError: Individual instance has no attribute 'arrival_date'
-            >>> i.service_time
-            Traceback (most recent call last):
-            ...
-            AttributeError: Individual instance has no attribute 'service_time'
-            >>> N.accept(i, 1)
-            >>> i.arrival_date
-            1
-            >>> round(i.service_time, 5)
-            0.02061
-            >>> i.data_records[N.id_number]
-            Traceback (most recent call last):
-            ...
-            KeyError: 1
-            >>> i.exit_date
-            Traceback (most recent call last):
-            ...
-            AttributeError: Individual instance has no attribute 'exit_date'
-            >>> N.release()
-            >>> round(i.exit_date, 5)
-            1.02061
-            >>> i.data_records[N.id_number][0].wait
-            0.0
-
-        A node can only release if it has an individual to release.
-            >>> seed(2)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> N = Q.transitive_nodes[0]
-            >>> N.release()
-            Traceback (most recent call last):
-            ...
-            IndexError: pop from empty list
+        Has an event
         """
-        next_individual = self.individuals.pop(0)
+        if self.event_is_release:
+            self.release()
+        else:
+            self.finish_service()
 
-        next_individual.exit_date = self.next_event_time
-        self.write_individual_record(next_individual)
+    def finish_service(self):
+        """
+        The next individual finishes service
+        """
+        next_individual = min(self.individuals[:self.c], key=lambda x: x.service_end_date)
+        next_individual_index = self.individuals.index(next_individual)
 
         next_node = self.next_node(next_individual.customer_class)
+
+        if len(next_node.individuals) < "inf":
+            self.release(next_individual_index, next_node)
+
+    def release(self, next_individual_index, next_node):
+        """
+        Update node when an individual is released.
+        """
+        next_individual = self.individuals.pop(next_individual_index)
+
+        next_individual.exit_date = self.next_event_time
+
+        if len(self.individuals) >= self.c:
+            self.individuals[self.c].service_start_date = self.next_event_time
+
+        self.write_individual_record(next_individual)
+
         next_node.accept(next_individual, self.next_event_time)
         self.update_next_event_date()
 
     def accept(self, next_individual, current_time):
         """
         Accepts a new customer to the queue
-
-        Accepting an individual updates a nodes next event date and appends that individual to its list of customers.
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> N = Node(1, Q)
-            >>> next_individual = Individual(5, 0)
-            >>> N.accept(next_individual, 1)
-            >>> N.individuals
-            [Individual 5]
-            >>> next_individual.arrival_date
-            1
-            >>> round(next_individual.service_time, 5)
-            0.02061
-            >>> round(N.next_event_time, 5)
-            1.02061
-            >>> N.accept(Individual(10), 1)
-            >>> round(N.next_event_time, 5)
-            1.02061
         """
         next_individual.arrival_date = current_time
         next_individual.service_time = self.simulation.service_times[self.id_number][next_individual.customer_class]()
 
         if len(self.individuals) < self.c:
-            next_individual.end_service_date = current_time + next_individual.service_time
-        else:
-            next_individual.end_service_date = self.individuals[-self.c].end_service_date + next_individual.service_time
+            next_individual.service_end_date = current_time + next_individual.service_time
 
-        self.include_individual(next_individual)
+        self.individuals.append(next_individual)
         self.update_next_event_date()
-
-    def find_index_for_individual(self, individual):
-        """
-        Returns the index of the position that the new individual will take
-
-
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i, 2) for i in range(10)]
-            >>> end_date = 2
-            >>> for ind in node.individuals:
-            ...     ind.end_service_date = end_date
-            ...     end_date += 2
-            >>> [ind.end_service_date for ind in node.individuals]
-            [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-            >>> ind = Individual(10)
-            >>> ind.end_service_date = 17
-            >>> node.find_index_for_individual(ind)
-            -2
-            >>> ind = Individual(11)
-            >>> ind.end_service_date = 67
-            >>> node.find_index_for_individual(ind)
-            False
-
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i, 2) for i in range(2)]
-            >>> end_date = 1
-            >>> for ind in node.individuals:
-            ...     ind.end_service_date = end_date
-            ...     end_date += 4
-            >>> [ind.end_service_date for ind in node.individuals]
-            [1, 5]
-            >>> ind = Individual(3)
-            >>> ind.end_service_date = 3
-            >>> node.find_index_for_individual(ind)
-            -1
-
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i, 2) for i in range(3)]
-            >>> end_date = 1
-            >>> for ind in node.individuals:
-            ...     ind.end_service_date = end_date
-            ...     end_date += 4
-            >>> [ind.end_service_date for ind in node.individuals]
-            [1, 5, 9]
-            >>> ind = Individual(3)
-            >>> ind.end_service_date = 3
-            >>> node.find_index_for_individual(ind)
-            -2
-
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i, 2) for i in range(3)]
-            >>> end_date = 1
-            >>> for ind in node.individuals:
-            ...     ind.end_service_date = end_date
-            ...     end_date += 4
-            >>> [ind.end_service_date for ind in node.individuals]
-            [1, 5, 9]
-            >>> ind = Individual(3)
-            >>> ind.end_service_date = 3
-            >>> node.find_index_for_individual(ind)
-            -2
-
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = []
-            >>> end_date = 1
-            >>> [ind.end_service_date for ind in node.individuals]
-            []
-            >>> ind = Individual(3)
-            >>> ind.end_service_date = 3
-            >>> node.find_index_for_individual(ind)
-            False
-        """
-        for i, ind in enumerate(self.individuals[-self.c:]):
-                if individual.end_service_date < ind.end_service_date:
-                    return -min(self.c,len(self.individuals)) + i
-        return False
-
-    def include_individual(self, individual):
-        """
-        Inserts that individual into the correct position in the list of individuals.
-
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i, 2) for i in range(10)]
-            >>> end_date = 2
-            >>> for ind in node.individuals:
-            ...     ind.end_service_date = end_date
-            ...     end_date += 2
-            >>> node.individuals
-            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9]
-            >>> [ind.end_service_date for ind in node.individuals]
-            [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
-            >>> ind = Individual(10)
-            >>> ind.end_service_date = 17
-            >>> node.include_individual(ind)
-            >>> node.individuals
-            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 10, Individual 8, Individual 9]
-            >>> [ind.end_service_date for ind in node.individuals]
-            [2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 20]
-
-            TESTS 2
-            >>> seed(67)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals = [Individual(i, 2) for i in range(3)]
-            >>> end_date = 2
-            >>> for ind in node.individuals:
-            ...     ind.end_service_date = end_date
-            ...     end_date += 2
-            >>> node.individuals
-            [Individual 0, Individual 1, Individual 2]
-            >>> [ind.end_service_date for ind in node.individuals]
-            [2, 4, 6]
-            >>> ind = Individual(10)
-            >>> ind.end_service_date = 17
-            >>> node.include_individual(ind)
-            >>> node.individuals
-            [Individual 0, Individual 1, Individual 2, Individual 10]
-            >>> [ind.end_service_date for ind in node.individuals]
-            [2, 4, 6, 17]
-        """
-        index = self.find_index_for_individual(individual)
-        if index:
-            self.individuals.insert(self.find_index_for_individual(individual), individual)
-        else:
-            self.individuals.append(individual)
 
     def update_next_event_date(self):
         """
         Finds the time of the next event at this node
-
-        A example of finding the next event time before and after accepting an individual.
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[0]
-            >>> node.individuals
-            []
-            >>> node.next_event_time
-            2500
-            >>> node.update_next_event_date()
-            >>> node.next_event_time
-            2500
-            >>> ind = Individual(10)
-            >>> node.accept(ind, 1)
-            >>> node.update_next_event_date()
-            >>> round(node.next_event_time, 5)
-            1.02061
-
-        And again.
-            >>> seed(8)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> node = Q.transitive_nodes[1]
-            >>> node.individuals
-            []
-            >>> node.next_event_time
-            2500
-            >>> node.update_next_event_date()
-            >>> node.next_event_time
-            2500
-            >>> ind = Individual(2)
-            >>> node.accept(ind, 1)
-            >>> node.update_next_event_date()
-            >>> round(node.next_event_time, 5)
-            1.03673
         """
         if len(self.individuals) == 0:
-            self.next_event_time = self.simulation.max_simulation_time
+            self.next_event_date = self.simulation.max_simulation_time
+            self.event_is_release = False
+        elif len([i for i in self.individuals if i.exit_date]) == 0:
+            self.next_event_date = min([i.service_end_date for i in self.individuals])
+            self.event_is_release = False
         else:
-            self.next_event_time = self.individuals[0].end_service_date
+            next_individual_with_release = min([i for i in self.individuals if i.exit_date], key=lambda x: x.exit_date)
+            next_individual_with_end_service = min([i for i in self.individuals if i.service_end_date > current_time], key=lambda x: x.service_end_date)
+            self.next_event_date = min(next_individual_with_release.exit_date, next_individual_with_end_service.service_end_date)
+            self.event_is_release = next_individual_with_release.exit_date == self.next_event_time
 
     def next_node(self, customer_class):
         """
@@ -566,8 +347,10 @@ class Node:
 
         - Arrival date
         - Wait
-        - Service date
+        - Service start date
         - Service time
+        - Service end date
+        - Blocked
         - Exit date
 
         An example showing the data records written; can only write records once an exit date has been determined.
@@ -576,52 +359,25 @@ class Node:
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(6)
             >>> N.accept(ind, 3)
-            >>> N.write_individual_record(ind)
-            Traceback (most recent call last):
-            ...
-            AttributeError: Individual instance has no attribute 'exit_date'
-            >>> ind.exit_date = 7
-            >>> N.write_individual_record(ind)
-            >>> ind.data_records[1][0].arrival_date
-            3
-            >>> round(ind.data_records[1][0].wait, 5)
-            3.9441
-            >>> round(ind.data_records[1][0].service_date, 5)
-            6.9441
-            >>> round(ind.data_records[1][0].service_time, 5)
-            0.0559
-            >>> ind.data_records[1][0].exit_date
-            7
-            >>> ind.data_records[1][0].node
-            1
-
-        Another example.
-            >>> seed(12)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> N = Q.transitive_nodes[0]
-            >>> ind = Individual(28)
-            >>> N.accept(ind, 6)
-            >>> N.write_individual_record(ind)
-            Traceback (most recent call last):
-            ...
-            AttributeError: Individual instance has no attribute 'exit_date'
+            >>> ind.service_start_date = 3.5
             >>> ind.exit_date = 9
             >>> N.write_individual_record(ind)
             >>> ind.data_records[1][0].arrival_date
-            6
-            >>> round(ind.data_records[1][0].wait, 5)
-            2.90807
-            >>> round(ind.data_records[1][0].service_date, 5)
-            8.90807
+            3
+            >>> ind.data_records[1][0].wait
+            0.5
+            >>> ind.data_records[1][0].service_start_date
+            3.5
             >>> round(ind.data_records[1][0].service_time, 5)
-            0.09193
+            0.0559
+            >>> round(ind.data_records[1][0].service_end_date, 5)
+            3.5559
+            >>> round(ind.data_records[1][0].blocked, 5)
+            5.4441
             >>> ind.data_records[1][0].exit_date
             9
-            >>> ind.data_records[1][0].node
-            1
-
         """
-        record = DataRecord(individual.arrival_date, individual.service_time, individual.exit_date, self.id_number)
+        record = DataRecord(individual.arrival_date, individual.service_time, individual.service_start_date, individual.exit_date, self.id_number)
         if self.id_number in individual.data_records:
             individual.data_records[self.id_number].append(record)
         else:
@@ -682,7 +438,6 @@ class ArrivalNode:
                 cum_transition_row[cls].append(sum_p)
         return cum_transition_row
 
-
     def find_cumulative_class_probs(self):
         """
         Returns the cumulative class probs
@@ -701,7 +456,6 @@ class ArrivalNode:
             cum_class_probs.append(sum_p)
         return cum_class_probs
 
-
     def __repr__(self):
         """
         Representation of a node::
@@ -714,7 +468,7 @@ class ArrivalNode:
         """
         return 'Arrival Node'
 
-    def release(self):
+    def have_event(self):
         """
         Update node when a service happens.
 
@@ -734,7 +488,7 @@ class ArrivalNode:
             35.5
             >>> N.next_event_time
             0
-            >>> N.release()
+            >>> N.have_event()
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -760,7 +514,7 @@ class ArrivalNode:
             >>> N = ArrivalNode(Q)
             >>> N.next_event_time
             0
-            >>> N.release()
+            >>> N.have_event()
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -1024,6 +778,9 @@ class Simulation:
             raise ValueError('Maximum simulation time should be positive')
 
     def load_parameters(self):
+        """
+        Loads the parameters into the model
+        """
         parameter_file_name = self.directory + 'parameters.yml'
         parameter_file = open(parameter_file_name, 'r')
         parameters = yaml.load(parameter_file)
@@ -1086,31 +843,15 @@ class Simulation:
     def simulate(self):
         """
         Run the actual simulation.
-
-        An example of simulating the simulation.
-            >>> seed(99)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> Q.simulate()
-            >>> Q.get_all_individuals()[0]
-            Individual 88781
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_time < self.max_simulation_time:
-            next_active_node.release()
+            next_active_node.have_event
             next_active_node = self.find_next_active_node()
 
     def get_all_individuals(self):
         """
         Returns list of all individuals with at least one record
-
-        An example of obtaining the list of all individuals who completed service.
-            >>> seed(1)
-            >>> Q = Simulation('logs_test_for_simulation')
-            >>> Q.max_simulation_time = 0.5
-            >>> Q.simulate()
-            >>> Q.get_all_individuals()
-            [Individual 12, Individual 2, Individual 1, Individual 3, Individual 7, Individual 4, Individual 5, Individual 6, Individual 14, Individual 9]
-
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
