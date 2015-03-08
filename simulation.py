@@ -108,9 +108,13 @@ class Individual:
 
         An example of an Individual instance.
             >>> i = Individual(22, 3)
-            >>> i.in_service
+            >>> i.arrival_date
             False
-            >>> i.end_service_date
+            >>> i.service_start_date
+            False
+            >>> i.service_time
+            False
+            >>> i.service_end_date
             False
             >>> i.id_number
             22
@@ -121,18 +125,26 @@ class Individual:
 
         Another example of an individual instance.
             >>> i = Individual(5)
-            >>> i.in_service
+            >>> i.arrival_date
             False
-            >>> i.end_service_date
+            >>> i.service_start_date
+            False
+            >>> i.service_time
+            False
+            >>> i.service_end_date
             False
             >>> i.id_number
             5
-            >>> i.customer_class
-            0
             >>> i.data_records
             {}
+            >>> i.customer_class
+            0
         """
-        self.end_service_date = False
+        self.arrival_date = False
+        self.service_start_date = False
+        self.service_time = False
+        self.service_end_date = False
+        self.exit_date = False
         self.id_number = id_number
         self.data_records = {}
         self.customer_class = customer_class
