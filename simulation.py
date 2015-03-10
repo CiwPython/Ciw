@@ -246,21 +246,44 @@ class Node:
 
         if len(next_node.individuals) < "inf":
             self.release(next_individual_index, next_node, current_time)
+        else:
+            pass # needs to find when exit date is
 
     def release(self, next_individual_index, next_node, current_time):
         """
         Update node when an individual is released.
+
+            >>> seed(4)
+            >>> Q = Simulation('logs_test_for_simulation')
+            >>> N = Q.transitive_nodes[0]
+            >>> inds = [Individual(i+1) for i in range(3)]
+            >>> for current_time in [0.01, 0.02, 0.03]:
+            ...     N.accept(inds[int(current_time*100 - 1)], current_time)
+            >>> N.individuals
+            [Individual 1, Individual 2, Individual 3]
+            >>> N.update_next_event_date(0.03)
+            >>> round(N.next_event_date, 5)
+            0.03555
+            >>> N.individuals[1].exit_date = 0.04
+            >>> N.update_next_event_date(0.039)
+            >>> N.next_event_date
+            0.04
+            >>> N.release(1, Q.transitive_nodes[1], 0.04)
+            >>> N.individuals
+            [Individual 1, Individual 3]
+            >>> N.update_next_event_date(N.next_event_date)
+            >>> round(N.next_event_date, 5)
+            0.04846
+
         """
         next_individual = self.individuals.pop(next_individual_index)
 
-        next_individual.exit_date = self.next_event_time
-
         if len(self.individuals) >= self.c:
-            self.individuals[self.c-1].service_start_date = self.next_event_time
+            self.individuals[self.c-1].service_start_date = self.next_event_date
 
         self.write_individual_record(next_individual)
 
-        next_node.accept(next_individual, self.next_event_time)
+        next_node.accept(next_individual, self.next_event_date)
         self.update_next_event_date(current_time)
 
     def accept(self, next_individual, current_time):
