@@ -79,6 +79,7 @@ class DataRecord:
         self.blocked = exit_date - self.service_end_date
         self.node = node
 
+
 class Individual:
     """
     Class for an individual
@@ -150,6 +151,7 @@ class Individual:
             Individual twelve
         """
         return 'Individual %s' % self.id_number
+
 
 class Node:
     """
@@ -233,23 +235,39 @@ class Node:
         if self.event_is_release:
             self.release(current_time)
         else:
-            self.finish_service(current_time)
+            self.finish_service()
 
-    def finish_service(self, current_time):
+    def finish_service(self):
         """
         The next individual finishes service
+
+            >>> seed(4)
+            >>> Q = Simulation('logs_test_for_simulation')
+            >>> N = Q.transitive_nodes[0]
+            >>> inds = [Individual(i+1) for i in range(3)]
+            >>> for current_time in [0.01, 0.02, 0.03]:
+            ...     N.accept(inds[int(current_time*100 - 1)], current_time)
+            >>> N.individuals
+            [Individual 1, Individual 2, Individual 3]
+            >>> round(N.next_event_date, 5)
+            0.03555
+            >>> N.finish_service()
+            >>> N.individuals
+            [Individual 1, Individual 3]
         """
         next_individual = min(self.individuals[:self.c], key=lambda x: x.service_end_date)
+        next_individual.service_end_date = self.next_event_date
         next_individual_index = self.individuals.index(next_individual)
 
         next_node = self.next_node(next_individual.customer_class)
 
-        if len(next_node.individuals) < "inf":
-            self.release(next_individual_index, next_node, current_time)
+        if len(next_node.individuals) < "inf": # this will be the length of the queue allowed at the next node
+            next_individual.exit_date = self.next_event_date
+            self.release(next_individual_index, next_node)
         else:
             pass # needs to find when exit date is
 
-    def release(self, next_individual_index, next_node, current_time):
+    def release(self, next_individual_index, next_node):
         """
         Update node when an individual is released.
 
@@ -261,22 +279,21 @@ class Node:
             ...     N.accept(inds[int(current_time*100 - 1)], current_time)
             >>> N.individuals
             [Individual 1, Individual 2, Individual 3]
-            >>> N.update_next_event_date(0.03)
             >>> round(N.next_event_date, 5)
             0.03555
             >>> N.individuals[1].exit_date = 0.04
-            >>> N.update_next_event_date(0.039)
+            >>> N.update_next_event_date()
             >>> N.next_event_date
             0.04
-            >>> N.release(1, Q.transitive_nodes[1], 0.04)
+            >>> N.release(1, Q.transitive_nodes[1])
             >>> N.individuals
             [Individual 1, Individual 3]
-            >>> N.update_next_event_date(N.next_event_date)
             >>> round(N.next_event_date, 5)
             0.04846
 
         """
         next_individual = self.individuals.pop(next_individual_index)
+        next_individual.exit_date = self.next_event_date
 
         if len(self.individuals) >= self.c:
             self.individuals[self.c-1].service_start_date = self.next_event_date
@@ -284,14 +301,17 @@ class Node:
         self.write_individual_record(next_individual)
 
         next_node.accept(next_individual, self.next_event_date)
-        self.update_next_event_date(current_time)
+        self.update_next_event_date()
 
     def accept(self, next_individual, current_time):
         """
         Accepts a new customer to the queue
 
+            >>> seed(6)
+
             >>> Q = Simulation('logs_test_for_simulation')
             >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date = 0.0
             >>> N.individuals
             []
             >>> ind1 = Individual(1)
@@ -305,46 +325,48 @@ class Node:
             >>> ind9 = Individual(9)
             >>> ind10 = Individual(10)
 
-            >>> N.accept(ind1, 1.2)
+            >>> N.accept(ind1, 0.01)
             >>> N.individuals
             [Individual 1]
             >>> ind1.arrival_date
-            1.2
+            0.01
             >>> ind1.service_start_date
-            1.2
+            0.01
             >>> round(ind1.service_time, 5)
-            0.26859
+            0.22524
             >>> round(ind1.service_end_date, 5)
-            1.46859
+            0.23524
 
-            >>> N.accept(ind2, 1.21)
-            >>> N.accept(ind3, 1.22)
-            >>> N.accept(ind4, 1.23)
+            >>> N.accept(ind2, 0.02)
+            >>> N.accept(ind3, 0.03)
+            >>> N.accept(ind4, 0.04)
             >>> N.individuals
             [Individual 1, Individual 2, Individual 3, Individual 4]
-            >>> ind4.arrival_date
-            1.23
-            >>> ind4.service_start_date
-            1.23
+            >>> round(ind4.arrival_date, 5)
+            0.04
+            >>> round(ind4.service_start_date, 5)
+            0.04
             >>> round(ind4.service_time, 5)
-            0.09772
+            0.04333
             >>> round(ind4.service_end_date, 5)
-            1.32772
+            0.08333
 
-            >>> N.accept(ind5, 1.24)
-            >>> N.accept(ind6, 1.25)
-            >>> N.accept(ind7, 1.26)
-            >>> N.accept(ind8, 1.27)
-            >>> N.accept(ind9, 1.28)
-            >>> N.accept(ind10, 1.29)
+            >>> N.accept(ind5, 0.05)
+            >>> N.accept(ind6, 0.06)
+            >>> N.accept(ind7, 0.07)
+            >>> N.accept(ind8, 0.08)
+            >>> N.accept(ind9, 0.09)
+            >>> round(N.next_event_date, 5)
+            0.12481
+            >>> N.accept(ind10, 0.1)
             >>> N.individuals
             [Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10]
-            >>> ind10.arrival_date
-            1.29
+            >>> round(ind10.arrival_date, 5)
+            0.1
             >>> ind10.service_start_date
             False
             >>> round(ind10.service_time, 5)
-            0.25807
+            0.21004
         """
         next_individual.arrival_date = current_time
         next_individual.service_time = self.simulation.service_times[self.id_number][next_individual.customer_class]()
@@ -356,7 +378,7 @@ class Node:
         self.individuals.append(next_individual)
         self.update_next_event_date(current_time)
 
-    def update_next_event_date(self, current_time):
+    def update_next_event_date(self, current_time=False):
         """
         Finds the time of the next event at this node
 
@@ -366,7 +388,7 @@ class Node:
         2500
         >>> N.individuals
         []
-        >>> N.update_next_event_date(0.1)
+        >>> N.update_next_event_date()
         >>> N.next_event_date
         2500
         >>> N.event_is_release
@@ -376,9 +398,9 @@ class Node:
         >>> ind1.arrival_date = 0.3
         >>> ind1.service_time = 0.2
         >>> ind1.service_end_date = 0.5
-
+        >>> N.next_event_date = 0.3
         >>> N.individuals = [ind1]
-        >>> N.update_next_event_date(0.35)
+        >>> N.update_next_event_date()
         >>> N.next_event_date
         0.5
         >>> N.event_is_release
@@ -391,38 +413,33 @@ class Node:
         >>> ind2.exit_date = 0.9
 
         >>> N.individuals = [ind1, ind2]
-        >>> N.update_next_event_date(0.7)
+        >>> N.update_next_event_date()
+        >>> N.next_event_date
+        0.6
+        >>> N.event_is_release
+        False
+
+        >>> N.update_next_event_date()
         >>> N.next_event_date
         0.9
         >>> N.event_is_release
         True
-
-        >>> ind3 = Individual(3)
-        >>> ind3.arrival_date = 0.45
-        >>> ind3.service_time = 0.3
-        >>> ind3.service_end_date = 0.75
-
-        >>> N.individuals = [ind1, ind2, ind3]
-        >>> N.update_next_event_date(0.71)
-        >>> N.next_event_date
-        0.75
-        >>> N.event_is_release
-        False
-
-
         """
+
+        the_current_time = current_time + self.next_event_date*(not current_time)
+
         if len(self.individuals) == 0:
             self.next_event_date = self.simulation.max_simulation_time
             self.event_is_release = False
         elif len([i for i in self.individuals if i.exit_date]) == 0:
-            self.next_event_date = min([i.service_end_date for i in self.individuals])
+            self.next_event_date = min([i.service_end_date for i in self.individuals if i.service_end_date > the_current_time])
             self.event_is_release = False
-        elif len([i for i in self.individuals if i.service_end_date > current_time]) == 0:
+        elif len([i for i in self.individuals if i.service_end_date > the_current_time]) == 0:
             self.next_event_date = min([i.exit_date for i in self.individuals if i.exit_date])
             self.event_is_release = True
         else:
             next_individual_with_release = min([i for i in self.individuals if i.exit_date], key=lambda x: x.exit_date)
-            next_individual_with_end_service = min([i for i in self.individuals if i.service_end_date > current_time], key=lambda x: x.service_end_date)
+            next_individual_with_end_service = min([i for i in self.individuals if i.service_end_date > the_current_time], key=lambda x: x.service_end_date)
             self.next_event_date = min(next_individual_with_release.exit_date, next_individual_with_end_service.service_end_date)
             self.event_is_release = next_individual_with_release.exit_date == self.next_event_date
 
@@ -663,7 +680,7 @@ class ArrivalNode:
         self.number_of_individuals += 1
         next_individual = Individual(self.number_of_individuals, self.choose_class())
         next_node = self.next_node(next_individual.customer_class)
-        next_node.accept(next_individual, self.next_event_time)
+        next_node.accept(next_individual)
         self.update_next_event_date()
 
     def update_next_event_date(self):
