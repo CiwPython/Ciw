@@ -378,7 +378,7 @@ class Node:
         self.individuals.append(next_individual)
         self.update_next_event_date(current_time)
 
-    def update_next_event_date(self, current_time=False):
+    def update_next_event_date(self, current_time=None):
         """
         Finds the time of the next event at this node
 
@@ -425,8 +425,10 @@ class Node:
         >>> N.event_is_release
         True
         """
-
-        the_current_time = current_time + self.next_event_date*(not current_time)
+        if current_time == None:
+            the_current_time = self.next_event_date
+        else:
+            the_current_time = current_time
 
         if len(self.individuals) == 0:
             self.next_event_date = self.simulation.max_simulation_time
@@ -550,8 +552,8 @@ class ArrivalNode:
             35.5
             >>> N.transition_row_given_class
             [[0.2, 0.4666666666666667, 0.26666666666666666, 0.06666666666666667], [0.13333333333333333, 0.2, 0.4, 0.26666666666666666], [0.36363636363636365, 0.18181818181818182, 0.36363636363636365, 0.09090909090909091]]
-            >>> N.next_event_time
-            0
+            >>> N.next_event_date
+            0.0
             >>> N.number_of_individuals
             0
             >>> N.cum_transition_row
@@ -564,7 +566,7 @@ class ArrivalNode:
         self.lmbda = self.simulation.overall_lmbda
         self.class_probs = self.simulation.class_probs
         self.transition_row_given_class = self.simulation.node_given_class_probs
-        self.next_event_time = 0
+        self.next_event_date = 0.0
         self.number_of_individuals = 0
         self.cum_transition_row = self.find_cumulative_transition_row()
         self.cum_class_probs = self.find_cumulative_class_probs()
@@ -637,8 +639,8 @@ class ArrivalNode:
             >>> N = ArrivalNode(Q)
             >>> N.lmbda
             35.5
-            >>> N.next_event_time
-            0
+            >>> N.next_event_date
+            0.0
             >>> N.have_event()
             >>> Q.transitive_nodes[0].individuals
             []
@@ -648,7 +650,7 @@ class ArrivalNode:
             [Individual 1]
             >>> Q.transitive_nodes[3].individuals
             []
-            >>> round(N.next_event_time,5)
+            >>> round(N.next_event_date,5)
             0.01927
 
         Another example.
@@ -663,8 +665,8 @@ class ArrivalNode:
             >>> Q.transitive_nodes[3].individuals
             []
             >>> N = ArrivalNode(Q)
-            >>> N.next_event_time
-            0
+            >>> N.next_event_date
+            0.0
             >>> N.have_event()
             >>> Q.transitive_nodes[0].individuals
             []
@@ -674,13 +676,13 @@ class ArrivalNode:
             [Individual 1]
             >>> Q.transitive_nodes[3].individuals
             []
-            >>> round(N.next_event_time,5)
+            >>> round(N.next_event_date,5)
             0.00433
         """
         self.number_of_individuals += 1
         next_individual = Individual(self.number_of_individuals, self.choose_class())
         next_node = self.next_node(next_individual.customer_class)
-        next_node.accept(next_individual)
+        next_node.accept(next_individual, self.next_event_date)
         self.update_next_event_date()
 
     def update_next_event_date(self):
@@ -690,13 +692,13 @@ class ArrivalNode:
             >>> seed(1)
             >>> Q = Simulation('logs_test_for_simulation')
             >>> N = ArrivalNode(Q)
-            >>> N.next_event_time
-            0
+            >>> N.next_event_date
+            0.0
             >>> N.update_next_event_date()
-            >>> round(N.next_event_time, 5)
+            >>> round(N.next_event_date, 5)
             0.00406
         """
-        self.next_event_time += expovariate(self.lmbda)
+        self.next_event_date += expovariate(self.lmbda)
 
     def next_node(self, customer_class):
         """
@@ -762,19 +764,19 @@ class ExitNode:
             []
             >>> N.id_number
             -1
-            >>> N.next_event_time
+            >>> N.next_event_date
             100
 
         And another.
             >>> N = ExitNode(4)
             >>> N.id_number
             -1
-            >>> N.next_event_time
+            >>> N.next_event_date
             4
         """
         self.individuals = []
         self.id_number = -1
-        self.next_event_time = max_simulation_time
+        self.next_event_date = max_simulation_time
 
     def __repr__(self):
         """
@@ -800,13 +802,13 @@ class ExitNode:
             >>> N = ExitNode(200)
             >>> N.individuals
             []
-            >>> N.next_event_time
+            >>> N.next_event_date
             200
             >>> next_individual = Individual(5, 1)
             >>> N.accept(next_individual, 1)
             >>> N.individuals
             [Individual 5]
-            >>> N.next_event_time
+            >>> N.next_event_date
             200
 
         Another example.
@@ -814,13 +816,13 @@ class ExitNode:
             >>> N = Q.nodes[-1]
             >>> N.individuals
             []
-            >>> N.next_event_time
+            >>> N.next_event_date
             2500
             >>> next_individual = Individual(3)
             >>> N.accept(next_individual, 3)
             >>> N.individuals
             [Individual 3]
-            >>> N.next_event_time
+            >>> N.next_event_date
             2500
         """
         self.individuals.append(next_individual)
@@ -831,27 +833,27 @@ class ExitNode:
 
         An example showing that this method does nothing.
             >>> N = ExitNode(25)
-            >>> N.next_event_time
+            >>> N.next_event_date
             25
             >>> N.update_next_event_date()
-            >>> N.next_event_time
+            >>> N.next_event_date
             25
 
         And again.
             >>> Q = Simulation('logs_test_for_simulation')
             >>> N = Q.nodes[-1]
-            >>> N.next_event_time
+            >>> N.next_event_date
             2500
             >>> N.update_next_event_date()
-            >>> N.next_event_time
+            >>> N.next_event_date
             2500
 
         And again, even when parameters don't make sense.
             >>> N = ExitNode(False)
-            >>> N.next_event_time
+            >>> N.next_event_date
             False
             >>> N.update_next_event_date()
-            >>> N.next_event_time
+            >>> N.next_event_date
             False
         """
         pass
@@ -946,7 +948,7 @@ class Simulation:
             >>> Q = Simulation('logs_test_for_simulation')
             >>> i = 0
             >>> for node in Q.nodes[:-1]:
-            ...     node.next_event_time = i
+            ...     node.next_event_date = i
             ...     i += 1
             >>> Q.find_next_active_node()
             Arrival Node
@@ -955,12 +957,12 @@ class Simulation:
             >>> Q = Simulation('logs_test_for_simulation')
             >>> i = 10
             >>> for node in Q.nodes[:-1]:
-            ...     node.next_event_time = i
+            ...     node.next_event_date = i
             ...     i -= 1
             >>> Q.find_next_active_node()
             Node 4
         """
-        return min(self.nodes, key=lambda x: x.next_event_time)
+        return min(self.nodes, key=lambda x: x.next_event_date)
 
     def find_service_time(self, n, c):
         """
@@ -996,7 +998,7 @@ class Simulation:
         Run the actual simulation.
         """
         next_active_node = self.find_next_active_node()
-        while next_active_node.next_event_time < self.max_simulation_time:
+        while next_active_node.next_event_date < self.max_simulation_time:
             next_active_node.have_event(next_active_node.next_event_date)
             next_active_node = self.find_next_active_node()
 
