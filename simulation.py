@@ -130,6 +130,7 @@ class Individual:
         self.id_number = id_number
         self.data_records = {}
         self.customer_class = customer_class
+        self.next_node = False
 
     def __repr__(self):
         """
@@ -228,12 +229,14 @@ class Node:
         """
         return 'Node %s' % self.id_number
 
-    def have_event(self, current_time):
+    def have_event(self):
         """
         Has an event
         """
         if self.event_is_release:
-            self.release(current_time)
+            next_individual_index = [ind.exit_date for ind in self.individuals].index(self.next_event_date)
+            next_node = self.individuals[next_individual_index].next_node
+            self.release(next_individual_index, next_node)
         else:
             self.finish_service()
 
@@ -253,16 +256,15 @@ class Node:
             0.03555
             >>> N.finish_service()
             >>> N.individuals
-            [Individual 1, Individual 3]
+            [Individual 1, Individual 3, Individual 2]
         """
-        next_individual = min(self.individuals[:self.c], key=lambda x: x.service_end_date)
+        next_individual = min([ind for ind in self.individuals if ind.service_end_date], key=lambda x: x.service_end_date)
         next_individual.service_end_date = self.next_event_date
         next_individual_index = self.individuals.index(next_individual)
 
         next_node = self.next_node(next_individual.customer_class)
 
         if len(next_node.individuals) < "inf": # this will be the length of the queue allowed at the next node
-            next_individual.exit_date = self.next_event_date
             self.release(next_individual_index, next_node)
         else:
             pass # needs to find when exit date is
@@ -290,18 +292,21 @@ class Node:
             [Individual 1, Individual 3]
             >>> round(N.next_event_date, 5)
             0.04846
-
         """
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = self.next_event_date
 
         if len(self.individuals) >= self.c:
             self.individuals[self.c-1].service_start_date = self.next_event_date
+            self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
 
         self.write_individual_record(next_individual)
 
+        next_node = self.next_node(next_individual.customer_class)
         next_node.accept(next_individual, self.next_event_date)
-        self.update_next_event_date()
+
+        if next_node.id_number != self.id_number:
+            self.update_next_event_date()
 
     def accept(self, next_individual, current_time):
         """
@@ -342,6 +347,8 @@ class Node:
             >>> N.accept(ind4, 0.04)
             >>> N.individuals
             [Individual 1, Individual 2, Individual 3, Individual 4]
+            >>> round(N.next_event_date, 5)
+            0.08333
             >>> round(ind4.arrival_date, 5)
             0.04
             >>> round(ind4.service_start_date, 5)
@@ -368,6 +375,7 @@ class Node:
             >>> round(ind10.service_time, 5)
             0.21004
         """
+        next_individual.exit_date = False
         next_individual.arrival_date = current_time
         next_individual.service_time = self.simulation.service_times[self.id_number][next_individual.customer_class]()
 
@@ -382,48 +390,48 @@ class Node:
         """
         Finds the time of the next event at this node
 
-        >>> Q = Simulation('logs_test_for_simulation')
-        >>> N = Q.transitive_nodes[0]
-        >>> N.next_event_date
-        2500
-        >>> N.individuals
-        []
-        >>> N.update_next_event_date()
-        >>> N.next_event_date
-        2500
-        >>> N.event_is_release
-        False
+            >>> Q = Simulation('logs_test_for_simulation')
+            >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date
+            2500
+            >>> N.individuals
+            []
+            >>> N.update_next_event_date()
+            >>> N.next_event_date
+            2500
+            >>> N.event_is_release
+            False
 
-        >>> ind1 = Individual(1)
-        >>> ind1.arrival_date = 0.3
-        >>> ind1.service_time = 0.2
-        >>> ind1.service_end_date = 0.5
-        >>> N.next_event_date = 0.3
-        >>> N.individuals = [ind1]
-        >>> N.update_next_event_date()
-        >>> N.next_event_date
-        0.5
-        >>> N.event_is_release
-        False
+            >>> ind1 = Individual(1)
+            >>> ind1.arrival_date = 0.3
+            >>> ind1.service_time = 0.2
+            >>> ind1.service_end_date = 0.5
+            >>> N.next_event_date = 0.3
+            >>> N.individuals = [ind1]
+            >>> N.update_next_event_date()
+            >>> N.next_event_date
+            0.5
+            >>> N.event_is_release
+            False
 
-        >>> ind2 = Individual(2)
-        >>> ind2.arrival_date = 0.4
-        >>> ind2.service_time = 0.2
-        >>> ind2.service_end_date = 0.6
-        >>> ind2.exit_date = 0.9
+            >>> ind2 = Individual(2)
+            >>> ind2.arrival_date = 0.4
+            >>> ind2.service_time = 0.2
+            >>> ind2.service_end_date = 0.6
+            >>> ind2.exit_date = 0.9
 
-        >>> N.individuals = [ind1, ind2]
-        >>> N.update_next_event_date()
-        >>> N.next_event_date
-        0.6
-        >>> N.event_is_release
-        False
+            >>> N.individuals = [ind1, ind2]
+            >>> N.update_next_event_date()
+            >>> N.next_event_date
+            0.6
+            >>> N.event_is_release
+            False
 
-        >>> N.update_next_event_date()
-        >>> N.next_event_date
-        0.9
-        >>> N.event_is_release
-        True
+            >>> N.update_next_event_date()
+            >>> N.next_event_date
+            0.9
+            >>> N.event_is_release
+            True
         """
         if current_time == None:
             the_current_time = self.next_event_date
@@ -440,10 +448,10 @@ class Node:
             self.next_event_date = min([i.exit_date for i in self.individuals if i.exit_date])
             self.event_is_release = True
         else:
-            next_individual_with_release = min([i for i in self.individuals if i.exit_date], key=lambda x: x.exit_date)
-            next_individual_with_end_service = min([i for i in self.individuals if i.service_end_date > the_current_time], key=lambda x: x.service_end_date)
-            self.next_event_date = min(next_individual_with_release.exit_date, next_individual_with_end_service.service_end_date)
-            self.event_is_release = next_individual_with_release.exit_date == self.next_event_date
+            next_release = min([i.exit_date for i in self.individuals if i.exit_date])
+            next_end_service = min([i.service_end_date for i in self.individuals if i.service_end_date > the_current_time] + [self.simulation.max_simulation_time])
+            self.next_event_date = min(next_release, next_end_service)
+            self.event_is_release = next_release < next_end_service
 
     def next_node(self, customer_class):
         """
@@ -535,6 +543,12 @@ class Node:
             individual.data_records[self.id_number].append(record)
         else:
             individual.data_records[self.id_number] = [record]
+
+        individual.arrival_date = False
+        individual.service_time = False
+        individual.service_start_date = False
+        individual.service_end_date = False
+        individual.exit_date = False
 
 
 class ArrivalNode:
@@ -996,10 +1010,13 @@ class Simulation:
     def simulate(self):
         """
         Run the actual simulation.
+
+            >>> Q = Simulation('logs_test_for_simulation')
+            >>> Q.simulate()
         """
         next_active_node = self.find_next_active_node()
         while next_active_node.next_event_date < self.max_simulation_time:
-            next_active_node.have_event(next_active_node.next_event_date)
+            next_active_node.have_event()
             next_active_node = self.find_next_active_node()
 
     def get_all_individuals(self):
@@ -1032,9 +1049,11 @@ class Simulation:
 
 
 if __name__ == '__main__':
-    arguments = docopt.docopt(__doc__)
-    dirname = arguments['<dir_name>']
-    sffx = arguments['<sffx>']
-    Q = Simulation(dirname, sffx)
+    # arguments = docopt.docopt(__doc__)
+    # dirname = arguments['<dir_name>']
+    # sffx = arguments['<sffx>']
+    # Q = Simulation(dirname, sffx)
+    # Q.simulate()
+    # Q.write_records_to_file()
+    Q = Simulation('logs_test_for_simulation')
     Q.simulate()
-    Q.write_records_to_file()
