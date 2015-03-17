@@ -234,7 +234,7 @@ class Node:
         Has an event
         """
         if self.event_is_release:
-            next_individual_index = [ind.exit_date for ind in self.individuals].index(self.next_event_date)
+            next_individual_index = [ind.exit_date for ind in self.individuals[:self.c]].index(self.next_event_date)
             next_node = self.individuals[next_individual_index].next_node
             self.release(next_individual_index, next_node)
         else:
@@ -258,9 +258,8 @@ class Node:
             >>> N.individuals
             [Individual 1, Individual 3, Individual 2]
         """
-        next_individual = min([ind for ind in self.individuals if ind.service_end_date], key=lambda x: x.service_end_date)
-        next_individual.service_end_date = self.next_event_date
-        next_individual_index = self.individuals.index(next_individual)
+        next_individual_index = [ind.service_end_date for ind in self.individuals[:self.c]].index(self.next_event_date)
+        next_individual = self.individuals[next_individual_index]
 
         next_node = self.next_node(next_individual.customer_class)
 
@@ -284,7 +283,7 @@ class Node:
             >>> round(N.next_event_date, 5)
             0.03555
             >>> N.individuals[1].exit_date = 0.04
-            >>> N.update_next_event_date()
+            >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.04
             >>> N.release(1, Q.transitive_nodes[1])
@@ -306,7 +305,7 @@ class Node:
         next_node.accept(next_individual, self.next_event_date)
 
         if next_node.id_number != self.id_number:
-            self.update_next_event_date()
+            self.update_next_event_date(self.next_event_date)
 
     def accept(self, next_individual, current_time):
         """
@@ -386,7 +385,7 @@ class Node:
         self.individuals.append(next_individual)
         self.update_next_event_date(current_time)
 
-    def update_next_event_date(self, current_time=None):
+    def update_next_event_date(self, current_time):
         """
         Finds the time of the next event at this node
 
@@ -396,7 +395,7 @@ class Node:
             2500
             >>> N.individuals
             []
-            >>> N.update_next_event_date()
+            >>> N.update_next_event_date(0.0)
             >>> N.next_event_date
             2500
             >>> N.event_is_release
@@ -408,7 +407,7 @@ class Node:
             >>> ind1.service_end_date = 0.5
             >>> N.next_event_date = 0.3
             >>> N.individuals = [ind1]
-            >>> N.update_next_event_date()
+            >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.5
             >>> N.event_is_release
@@ -418,40 +417,24 @@ class Node:
             >>> ind2.arrival_date = 0.4
             >>> ind2.service_time = 0.2
             >>> ind2.service_end_date = 0.6
-            >>> ind2.exit_date = 0.9
+            >>> ind2.exit_date = False
 
             >>> N.individuals = [ind1, ind2]
-            >>> N.update_next_event_date()
+            >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.6
             >>> N.event_is_release
             False
 
-            >>> N.update_next_event_date()
+            >>> ind2.exit_date = 0.9
+
+            >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.9
             >>> N.event_is_release
             True
         """
-        if current_time == None:
-            the_current_time = self.next_event_date
-        else:
-            the_current_time = current_time
-
-        if len(self.individuals) == 0:
-            self.next_event_date = self.simulation.max_simulation_time
-            self.event_is_release = False
-        elif len([i for i in self.individuals if i.exit_date]) == 0:
-            self.next_event_date = min([i.service_end_date for i in self.individuals if i.service_end_date > the_current_time])
-            self.event_is_release = False
-        elif len([i for i in self.individuals if i.service_end_date > the_current_time]) == 0:
-            self.next_event_date = min([i.exit_date for i in self.individuals if i.exit_date])
-            self.event_is_release = True
-        else:
-            next_release = min([i.exit_date for i in self.individuals if i.exit_date])
-            next_end_service = min([i.service_end_date for i in self.individuals if i.service_end_date > the_current_time] + [self.simulation.max_simulation_time])
-            self.next_event_date = min(next_release, next_end_service)
-            self.event_is_release = next_release < next_end_service
+        (self.next_event_date, self.event_is_release) = min([(max(ind.exit_date, ind.service_end_date), ind.exit_date>ind.service_end_date) for ind in self.individuals[:self.c] if max(ind.service_end_date, ind.exit_date)>current_time] + [(self.simulation.max_simulation_time, False)], key=lambda x: x[0])
 
     def next_node(self, customer_class):
         """
