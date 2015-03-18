@@ -189,7 +189,9 @@ class Node:
         self.id_number = id_number
         self.cum_transition_row = self.find_cum_transition_row()
         self.next_event_date = self.simulation.max_simulation_time
-        self.event_is_release = False
+        self.event_is_service_end = False
+        self.queue_capacity = "Inf"
+        self.blocked_queue = []
 
     def find_cum_transition_row(self):
         """
@@ -233,12 +235,7 @@ class Node:
         """
         Has an event
         """
-        if self.event_is_release:
-            next_individual_index = [ind.exit_date for ind in self.individuals[:self.c]].index(self.next_event_date)
-            next_node = self.individuals[next_individual_index].next_node
-            self.release(next_individual_index, next_node)
-        else:
-            self.finish_service()
+        self.finish_service()
 
     def finish_service(self):
         """
@@ -263,10 +260,10 @@ class Node:
 
         next_node = self.next_node(next_individual.customer_class)
 
-        if len(next_node.individuals) < "inf": # this will be the length of the queue allowed at the next node
+        if len(next_node.individuals) < next_node.queue_capacity:
             self.release(next_individual_index, next_node)
         else:
-            pass # needs to find when exit date is
+            next_node.blocked_queue.append((self.id_number, next_individual.id_number))
 
     def release(self, next_individual_index, next_node):
         """
@@ -294,6 +291,12 @@ class Node:
         """
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = self.next_event_date
+
+        if len(self.blocked_queue) > 0:
+            individual_to_receive_index = self.simulation.nodes[self.blocked_queue[0][0]].individuals.index(self.blocked_queue[0][1])
+            individual_to_receive = self.simulation.nodes[self.blocked_queue[0][0]].individuals[individual_to_receive_index]
+            self.simulation.nodes[self.blocked_queue[0][0]].release(individual_to_receive_index, self)
+            self.simulation.nodes[self.blocked_queue[0][0]].blocked_queue.pop(0)
 
         if len(self.individuals) >= self.c:
             self.individuals[self.c-1].service_start_date = self.next_event_date
@@ -398,7 +401,7 @@ class Node:
             >>> N.update_next_event_date(0.0)
             >>> N.next_event_date
             2500
-            >>> N.event_is_release
+            >>> N.event_is_service_end
             False
 
             >>> ind1 = Individual(1)
@@ -410,8 +413,8 @@ class Node:
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.5
-            >>> N.event_is_release
-            False
+            >>> N.event_is_service_end
+            True
 
             >>> ind2 = Individual(2)
             >>> ind2.arrival_date = 0.4
@@ -423,18 +426,18 @@ class Node:
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.6
-            >>> N.event_is_release
-            False
+            >>> N.event_is_service_end
+            True
 
             >>> ind2.exit_date = 0.9
 
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.9
-            >>> N.event_is_release
-            True
+            >>> N.event_is_service_end
+            False
         """
-        (self.next_event_date, self.event_is_release) = min([(max(ind.exit_date, ind.service_end_date), ind.exit_date>ind.service_end_date) for ind in self.individuals[:self.c] if max(ind.service_end_date, ind.exit_date)>current_time] + [(self.simulation.max_simulation_time, False)], key=lambda x: x[0])
+        (self.next_event_date, self.event_is_service_end) = min([(max(ind.exit_date, ind.service_end_date), ind.exit_date<ind.service_end_date) for ind in self.individuals[:self.c] if max(ind.service_end_date, ind.exit_date)>current_time] + [(self.simulation.max_simulation_time, False)], key=lambda x: x[0])
 
     def next_node(self, customer_class):
         """
@@ -740,7 +743,6 @@ class ArrivalNode:
             >>> N.choose_class()
             1
         """
-
         rnd_num = random()
         for p in range(len(self.cum_class_probs)):
             if rnd_num < self.cum_class_probs[p]:
@@ -774,6 +776,7 @@ class ExitNode:
         self.individuals = []
         self.id_number = -1
         self.next_event_date = max_simulation_time
+        self.queue_capacity = "Inf"
 
     def __repr__(self):
         """
