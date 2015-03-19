@@ -190,7 +190,7 @@ class Node:
         self.cum_transition_row = self.find_cum_transition_row()
         self.next_event_date = self.simulation.max_simulation_time
         self.event_is_service_end = False
-        self.queue_capacity = "Inf"
+        self.queue_capacity = 12 if self.id_number==1 else "Inf"
         self.blocked_queue = []
 
     def find_cum_transition_row(self):
@@ -261,11 +261,11 @@ class Node:
         next_node = self.next_node(next_individual.customer_class)
 
         if len(next_node.individuals) < next_node.queue_capacity:
-            self.release(next_individual_index, next_node)
+            self.release(next_individual_index, next_node, self.next_event_date)
         else:
             next_node.blocked_queue.append((self.id_number, next_individual.id_number))
 
-    def release(self, next_individual_index, next_node):
+    def release(self, next_individual_index, next_node, current_time):
         """
         Update node when an individual is released.
 
@@ -283,32 +283,32 @@ class Node:
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             0.04
-            >>> N.release(1, Q.transitive_nodes[1])
+            >>> N.release(1, Q.transitive_nodes[1], N.next_event_date)
             >>> N.individuals
             [Individual 1, Individual 3]
             >>> round(N.next_event_date, 5)
             0.04846
         """
         next_individual = self.individuals.pop(next_individual_index)
-        next_individual.exit_date = self.next_event_date
+        next_individual.exit_date = current_time
 
         if len(self.blocked_queue) > 0:
             individual_to_receive_index = self.simulation.nodes[self.blocked_queue[0][0]].individuals.index(self.blocked_queue[0][1])
             individual_to_receive = self.simulation.nodes[self.blocked_queue[0][0]].individuals[individual_to_receive_index]
-            self.simulation.nodes[self.blocked_queue[0][0]].release(individual_to_receive_index, self)
+            self.simulation.nodes[self.blocked_queue[0][0]].release(individual_to_receive_index, self, current_time)
             self.simulation.nodes[self.blocked_queue[0][0]].blocked_queue.pop(0)
 
         if len(self.individuals) >= self.c:
-            self.individuals[self.c-1].service_start_date = self.next_event_date
+            self.individuals[self.c-1].service_start_date = current_time
             self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
 
         self.write_individual_record(next_individual)
 
         next_node = self.next_node(next_individual.customer_class)
-        next_node.accept(next_individual, self.next_event_date)
+        next_node.accept(next_individual, current_time)
 
         if next_node.id_number != self.id_number:
-            self.update_next_event_date(self.next_event_date)
+            self.update_next_event_date(current_time)
 
     def accept(self, next_individual, current_time):
         """
@@ -437,7 +437,7 @@ class Node:
             >>> N.event_is_service_end
             False
         """
-        (self.next_event_date, self.event_is_service_end) = min([(max(ind.exit_date, ind.service_end_date), ind.exit_date<ind.service_end_date) for ind in self.individuals[:self.c] if max(ind.service_end_date, ind.exit_date)>current_time] + [(self.simulation.max_simulation_time, False)], key=lambda x: x[0])
+        self.next_event_date = min([ind.service_end_date for ind in self.individuals[:self.c] if max(ind.service_end_date, ind.exit_date)>current_time] + [self.simulation.max_simulation_time])
 
     def next_node(self, customer_class):
         """

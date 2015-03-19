@@ -238,6 +238,7 @@ class JacksonNetwork:
         self.find_overall_external_arrival_rate()
         self.find_L()
         self.find_W()
+
         print '##############################'
         print 'PERFORMANCE MEASURES OF THE JACKSON NETWORK'
         print '\n'
@@ -256,7 +257,7 @@ class JacksonNetwork:
         print self.W
         print '\n'
         print 'Traffic intensities at each node:'
-        print self.p0s
+        print self.ros
         print '##############################'
 
 
