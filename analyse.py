@@ -149,7 +149,7 @@ class Data():
     		>>> round(d.mean_customers(d.data_per_node[1]), 5)
     		9.78516
     	"""
-    	arrivals_and_exits = [[float(datapoint[3]), 'a'] for datapoint in data] + [[float(datapoint[7]), 'd'] for datapoint in data]
+    	arrivals_and_exits = [[float(datapoint[3]), 'a'] for datapoint in data] + [[float(datapoint[9]), 'd'] for datapoint in data]
     	sorted_arrivals_and_exits = sorted(arrivals_and_exits, key=lambda data_point: data_point[0])
     	current_number_of_customers = 0
     	current_mean_customers = 0
@@ -246,17 +246,17 @@ if __name__ == '__main__':
     dirname = arguments['<dir_name>']
     sffx = arguments['<sffx>']
     d = Data(dirname, sffx)
-    #d.find_summary_statistics()
-    #d.write_results_to_file()
+    d.find_summary_statistics()
+    d.write_results_to_file()
 
-    #Overall customers
-    ts_dict = d.time_series_num_custs(d.data)
-    d.plot_time_series(ts_dict, 'Both Nodes')
-
-    # node 1
-    ts_dict = d.time_series_num_custs(d.find_data_per_node()[1])
-    d.plot_time_series(ts_dict, 'Node 1')
-
-    # node 2
-    ts_dict = d.time_series_num_custs(d.find_data_per_node()[2])
-    d.plot_time_series(ts_dict, 'Node 2')
+    # #Overall customers
+    # ts_dict = d.time_series_num_custs(d.data)
+    # d.plot_time_series(ts_dict, 'Both Nodes')
+    #
+    # # node 1
+    # ts_dict = d.time_series_num_custs(d.find_data_per_node()[1])
+    # d.plot_time_series(ts_dict, 'Node 1')
+    #
+    # # node 2
+    # ts_dict = d.time_series_num_custs(d.find_data_per_node()[2])
+    # d.plot_time_series(ts_dict, 'Node 2')

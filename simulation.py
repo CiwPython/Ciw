@@ -183,12 +183,13 @@ class Node:
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
         self.c = self.simulation.c[id_number-1]
+        #self.queue_capacity = self.simulation.queue_capacities[id_number-1]
+        self.queue_capacity = 2 if id_number == 1 else 4
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         self.individuals = []
         self.id_number = id_number
         self.cum_transition_row = self.find_cum_transition_row()
         self.next_event_date = self.simulation.max_simulation_time
-        self.queue_capacity = 20 if self.id_number==2 else "Inf"
         self.blocked_queue = []
 
     def find_cum_transition_row(self):
@@ -279,7 +280,7 @@ class Node:
             >>> N.update_next_event_date(0.03)
             >>> round(N.next_event_date, 5)
             0.03555
-            >>> N.individuals[1].exit_date = 0.04 #shouldn't affect the next event dt
+            >>> N.individuals[1].exit_date = 0.04 #shouldn't affect the next event date
             >>> N.update_next_event_date(N.next_event_date)
             >>> round(N.next_event_date, 5)
             0.04846
@@ -308,8 +309,6 @@ class Node:
             self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
 
         self.write_individual_record(next_individual)
-
-        next_node = self.next_node(next_individual.customer_class)
         next_node.accept(next_individual, current_time)
 
     def accept(self, next_individual, current_time):
@@ -887,6 +886,7 @@ class Simulation:
         self.node_given_class_probs = [[self.lmbda[j][i]/(self.class_probs[j]*self.overall_lmbda) for i in range(len(self.lmbda[0]))] for j in range(len(self.lmbda))]
         self.mu = [self.parameters['Service_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.c = self.parameters['Number_of_servers']
+        self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.max_simulation_time = self.parameters['Simulation_time']
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
@@ -1023,18 +1023,18 @@ class Simulation:
                                        node,
                                        record.arrival_date,
                                        record.wait,
-                                       record.service_date,
+                                       record.service_start_date,
                                        record.service_time,
+                                       record.service_end_date,
+                                       record.blocked,
                                        record.exit_date])
         data_file.close()
 
 
 if __name__ == '__main__':
-    # arguments = docopt.docopt(__doc__)
-    # dirname = arguments['<dir_name>']
-    # sffx = arguments['<sffx>']
-    # Q = Simulation(dirname, sffx)
-    # Q.simulate()
-    # Q.write_records_to_file()
-    Q = Simulation('logs_test_for_simulation')
+    arguments = docopt.docopt(__doc__)
+    dirname = arguments['<dir_name>']
+    sffx = arguments['<sffx>']
+    Q = Simulation(dirname, sffx)
     Q.simulate()
+    Q.write_records_to_file()

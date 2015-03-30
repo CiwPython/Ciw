@@ -21,6 +21,11 @@ Number_of_servers:
 - 10
 - 8
 - 8
+Queue_capacities:
+- 20
+- "Inf"
+- "Inf"
+- "Inf"
 Service_rates:
   Class 0:
   - - Exponential
