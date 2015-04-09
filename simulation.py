@@ -16,6 +16,8 @@ from csv import writer
 import yaml
 import shutil
 import docopt
+import networkx as nx
+
 
 
 class DataRecord:
@@ -183,8 +185,7 @@ class Node:
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
         self.c = self.simulation.c[id_number-1]
-        #self.queue_capacity = self.simulation.queue_capacities[id_number-1]
-        self.queue_capacity = 2 if id_number == 1 else 4
+        self.queue_capacity = self.simulation.queue_capacities[id_number-1]
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         self.individuals = []
         self.id_number = id_number
@@ -253,7 +254,7 @@ class Node:
             0.03555
             >>> N.finish_service()
             >>> N.individuals
-            [Individual 1, Individual 3, Individual 2]
+            [Individual 1, Individual 3]
         """
         next_individual_index = [ind.service_end_date for ind in self.individuals[:self.c]].index(self.next_event_date)
         next_individual = self.individuals[next_individual_index]
@@ -264,6 +265,8 @@ class Node:
         else:
             next_individual.is_blocked = True
             next_node.blocked_queue.append((self.id_number, next_individual.id_number))
+            for ind in next_node.individuals[:next_node.c]:
+                self.simulation.digraph.add_edge(str(next_individual), str(ind))
 
     def release(self, next_individual_index, next_node, current_time):
         """
@@ -294,6 +297,9 @@ class Node:
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
 
+        next_individual_predecessors = self.simulation.digraph.predecessors(str(next_individual))
+        self.simulation.digraph.remove_node(str(next_individual))
+
         if len(self.blocked_queue) > 0:
             node_to_receive_from = self.simulation.nodes[self.blocked_queue[0][0]]
             if node_to_receive_from == self:
@@ -307,6 +313,9 @@ class Node:
         if len(self.individuals) >= self.c:
             self.individuals[self.c-1].service_start_date = current_time
             self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
+            self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
+            for vertex in next_individual_predecessors:
+                self.simulation.digraph.add_edge(vertex, str(self.individuals[self.c-1]))
 
         self.write_individual_record(next_individual)
         next_node.accept(next_individual, current_time)
@@ -382,6 +391,7 @@ class Node:
         if len(self.individuals) < self.c:
             next_individual.service_start_date = current_time
             next_individual.service_end_date = current_time + next_individual.service_time
+            self.simulation.digraph.add_node(str(next_individual))
 
         self.individuals.append(next_individual)
 
@@ -893,6 +903,7 @@ class Simulation:
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode(self.max_simulation_time)]
         self.number_of_nodes = len(self.transitive_nodes)
         self.service_times = self.find_service_time_dictionary()
+        self.digraph = nx.DiGraph()
 
         if len(self.lmbda) != len(self.mu) or len(self.lmbda) != len(self.transition_matrix) or len(self.mu) != len(self.transition_matrix):
             raise ValueError('Lambda, Mu and the Transition Matrix should all have the same number of classes')
@@ -994,11 +1005,44 @@ class Simulation:
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
         while current_time < self.max_simulation_time:
+            print "--------------------"
+            # if next_active_node == self.nodes[0]:
+            #     print "Event is an arrival"
+            # else:
+            #     print "Event at node %i." % next_active_node.id_number
             next_active_node.have_event()
             for node in self.transitive_nodes:
                 node.update_next_event_date(current_time)
+            # print self.detect_deadlock()
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
+
+    def detect_deadlock(self):
+        """
+        Detects whether the system is in a deadlocked state
+
+            >>> Q = Simulation('logs_test_for_simulation')
+            >>> nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+            >>> connections = [('A', 'B'), ('B', 'A'), ('F', 'G')]
+            >>> for nd in nodes:
+            ...     Q.digraph.add_node(nd)
+            >>> for cnctn in connections:
+            ...     Q.digraph.add_edge(cnctn[0], cnctn[1])
+            >>> Q.detect_deadlock()
+            True
+
+            >>> Q = Simulation('logs_test_for_simulation')
+            >>> nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+            >>> connections = [('A', 'B'), ('B', 'A'), ('F', 'G'), ('B', 'E')]
+            >>> for nd in nodes:
+            ...     Q.digraph.add_node(nd)
+            >>> for cnctn in connections:
+            ...     Q.digraph.add_edge(cnctn[0], cnctn[1])
+            >>> Q.detect_deadlock()
+            False
+        """
+        wccs = list(nx.weakly_connected_component_subgraphs(self.digraph))
+        return any([all([g.out_degree(nd)>0 for nd in g.nodes()]) for g in wccs])
 
     def get_all_individuals(self):
         """
