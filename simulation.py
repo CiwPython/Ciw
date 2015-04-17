@@ -185,7 +185,7 @@ class Node:
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
         self.c = self.simulation.c[id_number-1]
-        self.queue_capacity = self.simulation.queue_capacities[id_number-1]
+        self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         self.individuals = []
         self.id_number = id_number
@@ -260,7 +260,7 @@ class Node:
         next_individual = self.individuals[next_individual_index]
         next_node = self.next_node(next_individual.customer_class)
 
-        if len(next_node.individuals) < next_node.queue_capacity:
+        if len(next_node.individuals) < next_node.node_capacity:
             self.release(next_individual_index, next_node, self.next_event_date)
         else:
             next_individual.is_blocked = True
@@ -315,7 +315,8 @@ class Node:
             self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
             self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
             for vertex in next_individual_predecessors:
-                self.simulation.digraph.add_edge(vertex, str(self.individuals[self.c-1]))
+                if vertex in self.simulation.digraph and vertex != str(self.individuals[self.c-1]):
+                    self.simulation.digraph.add_edge(vertex, str(self.individuals[self.c-1]))
 
         self.write_individual_record(next_individual)
         next_node.accept(next_individual, current_time)
@@ -681,7 +682,7 @@ class ArrivalNode:
         self.number_of_individuals += 1
         next_individual = Individual(self.number_of_individuals, self.choose_class())
         next_node = self.next_node(next_individual.customer_class)
-        if len(next_node.individuals) < next_node.queue_capacity:
+        if len(next_node.individuals) < next_node.node_capacity:
             next_node.accept(next_individual, self.next_event_date)
         self.update_next_event_date()
 
@@ -776,7 +777,7 @@ class ExitNode:
         self.individuals = []
         self.id_number = -1
         self.next_event_date = max_simulation_time
-        self.queue_capacity = "Inf"
+        self.node_capacity = "Inf"
 
     def __repr__(self):
         """
@@ -904,6 +905,7 @@ class Simulation:
         self.number_of_nodes = len(self.transitive_nodes)
         self.service_times = self.find_service_time_dictionary()
         self.digraph = nx.DiGraph()
+        self.order = sum([nd.c for nd in self.transitive_nodes])
 
         if len(self.lmbda) != len(self.mu) or len(self.lmbda) != len(self.transition_matrix) or len(self.mu) != len(self.transition_matrix):
             raise ValueError('Lambda, Mu and the Transition Matrix should all have the same number of classes')
@@ -1002,18 +1004,13 @@ class Simulation:
             >>> Q = Simulation('logs_test_for_simulation')
             >>> Q.simulate()
         """
+        self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
         while current_time < self.max_simulation_time:
-            print "--------------------"
-            # if next_active_node == self.nodes[0]:
-            #     print "Event is an arrival"
-            # else:
-            #     print "Event at node %i." % next_active_node.id_number
             next_active_node.have_event()
             for node in self.transitive_nodes:
                 node.update_next_event_date(current_time)
-            # print self.detect_deadlock()
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
 
