@@ -1,0 +1,14 @@
+Mean_Customers_Overall: 25.23661643202073
+Mean_Customers_per_Node:
+  1: 8.802959329874037
+Mean_Visits_per_Node:
+  1: 1.650829024781601
+Mean_Waiting_Times_Overall: 0.49960851490788155
+Mean_Waiting_Times_per_Class:
+  1: 0.37441470586273606
+Mean_Waiting_Times_per_Node:
+  1: 0.2125191556505086
+Mean_Waiting_Times_per_Node_per_Class:
+  1:
+    0: 0.21710436748606707
+    1: 0.21080405304123104

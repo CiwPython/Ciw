@@ -889,7 +889,7 @@ class Simulation:
             2500
         """
 
-        self.directory = os.path.dirname(os.path.realpath(__file__)) + '/' + directory_name + '/'
+        self.directory = os.path.dirname(os.path.realpath(__file__)) + '/results/' + directory_name + '/'
         self.sffx = sffx
         self.parameters = self.load_parameters()
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
@@ -1102,6 +1102,6 @@ if __name__ == '__main__':
     Q = Simulation(dirname, sffx)
     if option == 'to_max_time':
         Q.simulate_until_max_time()
-    if option == 'to_deadlock'
+    if option == 'to_deadlock':
         Q.simulate_until_deadlock()
     Q.write_records_to_file()

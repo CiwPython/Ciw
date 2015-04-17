@@ -1,0 +1,52 @@
+Arrival_rates:
+  Class 0:
+  - 5
+  - 2
+  - 4
+  Class 1:
+  - 3
+  - 7
+  - 4
+Number_of_classes: 2
+Number_of_nodes: 3
+Number_of_servers:
+- 8
+- 6
+- 6
+Service_rates:
+  Class 0:
+  - - Exponential
+    - 8.0
+  - - Exponential
+    - 9.0
+  - - Exponential
+    - 6.0
+  Class 1:
+  - - Exponential
+    - 5.0
+  - - Exponential
+    - 4.0
+  - - Exponential
+    - 9.0
+Simulation_time: 2500
+Transition_matrices:
+  Class 0:
+  - - 0.2
+    - 0.3
+    - 0.4
+  - - 0.2
+    - 0.1
+    - 0.1
+  - - 0.2
+    - 0.7
+    - 0.1
+  Class 1:
+  - - 0.5
+    - 0.1
+    - 0.1
+  - - 0.3
+    - 0.1
+    - 0.1
+  - - 0.8
+    - 0.1
+    - 0.0
