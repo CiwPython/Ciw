@@ -24,7 +24,7 @@ Number_of_servers:
 Queue_capacities:
 - 20
 - "Inf"
-- "Inf"
+- 30
 - "Inf"
 Service_rates:
   Class 0:

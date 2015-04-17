@@ -1,9 +1,10 @@
 """
-Usage: simulation.py <dir_name> [<sffx>]
+Usage: simulation.py <dir_name> [<sffx>] [<option>]
 
 Arguments
     dir_name    : name of the directory from which to read in parameters and write data files
     suff        : optional suffix to add to the data file name
+    option      : 'to_deadlock' for simulating until deadlock; 'to_max_time' for simulating until max time
 
 Options
     -h          : displays this help file
@@ -173,7 +174,7 @@ class Node:
             >>> N.transition_row
             [[0.1, 0.2, 0.1, 0.4], [0.6, 0.0, 0.0, 0.2], [0.0, 0.0, 0.4, 0.3]]
             >>> N.next_event_date
-            2500
+            'Inf'
             >>> N.individuals
             []
             >>> N.id_number
@@ -190,7 +191,7 @@ class Node:
         self.individuals = []
         self.id_number = id_number
         self.cum_transition_row = self.find_cum_transition_row()
-        self.next_event_date = self.simulation.max_simulation_time
+        self.next_event_date = "Inf"
         self.blocked_queue = []
 
     def find_cum_transition_row(self):
@@ -403,12 +404,12 @@ class Node:
             >>> Q = Simulation('logs_test_for_simulation')
             >>> N = Q.transitive_nodes[0]
             >>> N.next_event_date
-            2500
+            'Inf'
             >>> N.individuals
             []
             >>> N.update_next_event_date(0.0)
             >>> N.next_event_date
-            2500
+            'Inf'
 
             >>> ind1 = Individual(1)
             >>> ind1.arrival_date = 0.3
@@ -435,9 +436,9 @@ class Node:
 
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
-            2500
+            'Inf'
         """
-        self.next_event_date = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + [self.simulation.max_simulation_time])
+        self.next_event_date = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
 
     def next_node(self, customer_class):
         """
@@ -818,13 +819,13 @@ class ExitNode:
             >>> N.individuals
             []
             >>> N.next_event_date
-            2500
+            'Inf'
             >>> next_individual = Individual(3)
             >>> N.accept(next_individual, 3)
             >>> N.individuals
             [Individual 3]
             >>> N.next_event_date
-            2500
+            'Inf'
         """
         self.individuals.append(next_individual)
 
@@ -844,10 +845,10 @@ class ExitNode:
             >>> Q = Simulation('logs_test_for_simulation')
             >>> N = Q.nodes[-1]
             >>> N.next_event_date
-            2500
+            'Inf'
             >>> N.update_next_event_date()
             >>> N.next_event_date
-            2500
+            'Inf'
 
         And again, even when parameters don't make sense.
             >>> N = ExitNode(False)
@@ -901,7 +902,7 @@ class Simulation:
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.max_simulation_time = self.parameters['Simulation_time']
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
-        self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode(self.max_simulation_time)]
+        self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
         self.number_of_nodes = len(self.transitive_nodes)
         self.service_times = self.find_service_time_dictionary()
         self.digraph = nx.DiGraph()
@@ -997,12 +998,13 @@ class Simulation:
         """
         return {node+1:{customer_class:self.find_service_time(node, customer_class) for customer_class in range(len(self.lmbda))} for node in range(self.number_of_nodes)}
 
-    def simulate(self):
+    def simulate_until_max_time(self):
         """
         Run the actual simulation.
 
+            >>> seed(3)
             >>> Q = Simulation('logs_test_for_simulation')
-            >>> Q.simulate()
+            >>> Q.simulate_until_max_time()
         """
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
@@ -1011,6 +1013,26 @@ class Simulation:
             next_active_node.have_event()
             for node in self.transitive_nodes:
                 node.update_next_event_date(current_time)
+            next_active_node = self.find_next_active_node()
+            current_time = next_active_node.next_event_date
+
+    def simulate_until_deadlock(self):
+        """
+        Run the actual simulation.
+
+            >>> seed(3)
+            >>> Q = Simulation('logs_test_for_simulation')
+            >>> Q.simulate_until_deadlock()
+        """
+        deadlocked = False
+        self.nodes[0].update_next_event_date()
+        next_active_node = self.find_next_active_node()
+        current_time = next_active_node.next_event_date
+        while not deadlocked:
+            next_active_node.have_event()
+            for node in self.transitive_nodes:
+                node.update_next_event_date(current_time)
+            deadlocked = self.detect_deadlock()
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
 
@@ -1076,6 +1098,10 @@ if __name__ == '__main__':
     arguments = docopt.docopt(__doc__)
     dirname = arguments['<dir_name>']
     sffx = arguments['<sffx>']
+    option = arguments['<option>']
     Q = Simulation(dirname, sffx)
-    Q.simulate()
+    if option == 'to_max_time':
+        Q.simulate_until_max_time()
+    if option == 'to_deadlock'
+        Q.simulate_until_deadlock()
     Q.write_records_to_file()
