@@ -25,11 +25,11 @@ class Data():
 
 			>>> d = Data('logs_test_for_analyse')
 			>>> d.directory
-			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/logs_test_for_analyse/'
+			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/results/logs_test_for_analyse/'
 			>>> d.parameter_file
-			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/logs_test_for_analyse/parameters.yml'
+			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/results/logs_test_for_analyse/parameters.yml'
 			>>> d.data_file
-			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/logs_test_for_analyse/data.csv'
+			'/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/results/logs_test_for_analyse/data.csv'
             >>> d.data[0]
             ['50132', '0', '3', '1999.8061066137873', '0.0', '1999.8061066137873', '0.1923943987059666', '1999.9985010124933']
             >>> d.data_per_node[1][0]
@@ -39,7 +39,7 @@ class Data():
             >>> d.data_per_node_per_class[2][1][0]
             ['50102', '1', '2', '1998.6969428179862', '0.14433402242707416', '1998.8412768404132', '0.1612822656274953', '1999.0025591060407']
 		"""
-		self.directory = os.path.dirname(os.path.realpath(__file__)) + '/' + directory_name + '/'
+		self.directory = os.path.dirname(os.path.realpath(__file__)) + '/results/' + directory_name + '/'
 		self.sffx = sffx
 		self.parameter_file = self.directory + 'parameters.yml'
 		self.data_file = self.find_data_file()
