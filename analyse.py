@@ -195,7 +195,7 @@ class Data():
         """
         does the time series of number of customers
         """
-        arrivals_and_exits = [[float(datapoint[3]), 'a', int(datapoint[1])] for datapoint in data] + [[float(datapoint[7]), 'd', int(datapoint[1])] for datapoint in data]
+        arrivals_and_exits = [[float(datapoint[3]), 'a', int(datapoint[1])] for datapoint in data] + [[float(datapoint[9]), 'd', int(datapoint[1])] for datapoint in data]
         sorted_arrivals_and_exits = sorted(arrivals_and_exits, key=lambda data_point: data_point[0])
         current_number_of_customers = 0
         cls_customers = [0 for cls in range(self.parameters['Number_of_classes'])]
@@ -249,14 +249,14 @@ if __name__ == '__main__':
     d.find_summary_statistics()
     d.write_results_to_file()
 
-    # #Overall customers
-    # ts_dict = d.time_series_num_custs(d.data)
-    # d.plot_time_series(ts_dict, 'Both Nodes')
-    #
-    # # node 1
-    # ts_dict = d.time_series_num_custs(d.find_data_per_node()[1])
-    # d.plot_time_series(ts_dict, 'Node 1')
-    #
-    # # node 2
-    # ts_dict = d.time_series_num_custs(d.find_data_per_node()[2])
-    # d.plot_time_series(ts_dict, 'Node 2')
+    #Overall customers
+    ts_dict = d.time_series_num_custs(d.data)
+    d.plot_time_series(ts_dict, 'Both Nodes')
+
+    # node 1
+    ts_dict = d.time_series_num_custs(d.find_data_per_node()[1])
+    d.plot_time_series(ts_dict, 'Node 1')
+
+    # node 2
+    ts_dict = d.time_series_num_custs(d.find_data_per_node()[2])
+    d.plot_time_series(ts_dict, 'Node 2')
