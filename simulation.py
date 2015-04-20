@@ -908,6 +908,7 @@ class Simulation:
         self.service_times = self.find_service_time_dictionary()
         self.digraph = nx.DiGraph()
         self.order = sum([nd.c for nd in self.transitive_nodes])
+        self.state = [[0, 0] for i in range(self.number_of_nodes)]
 
         if len(self.lmbda) != len(self.mu) or len(self.lmbda) != len(self.transition_matrix) or len(self.mu) != len(self.transition_matrix):
             raise ValueError('Lambda, Mu and the Transition Matrix should all have the same number of classes')
