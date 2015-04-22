@@ -1,9 +1,10 @@
 """
-Usage: simulation.py <dir_name> <option> [<sffx>]
+Usage: simulation.py <dir_name> <option> [<num_itrs>] [<sffx>]
 
 Arguments
     dir_name    : name of the directory from which to read in parameters and write data files
     suff        : optional suffix to add to the data file name
+    num_itrs    : number of iterations to run the to_deadlock option for
     option      : 'to_deadlock' for simulating until deadlock; 'to_max_time' for simulating until max time
 
 Options
@@ -265,6 +266,8 @@ class Node:
             self.release(next_individual_index, next_node, self.next_event_date)
         else:
             next_individual.is_blocked = True
+            self.simulation.state[self.id_number-1][1] += 1
+            self.simulation.state[self.id_number-1][0] -= 1
             next_node.blocked_queue.append((self.id_number, next_individual.id_number))
             for ind in next_node.individuals[:next_node.c]:
                 self.simulation.digraph.add_edge(str(next_individual), str(ind))
@@ -297,6 +300,11 @@ class Node:
         """
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
+
+        if next_individual.is_blocked:
+            self.simulation.state[self.id_number-1][1] -= 1
+        else:
+            self.simulation.state[self.id_number-1][0] -= 1
 
         next_individual_predecessors = self.simulation.digraph.predecessors(str(next_individual))
         self.simulation.digraph.remove_node(str(next_individual))
@@ -396,6 +404,7 @@ class Node:
             self.simulation.digraph.add_node(str(next_individual))
 
         self.individuals.append(next_individual)
+        self.simulation.state[self.id_number-1][0] += 1
 
     def update_next_event_date(self, current_time):
         """
@@ -909,6 +918,8 @@ class Simulation:
         self.digraph = nx.DiGraph()
         self.order = sum([nd.c for nd in self.transitive_nodes])
         self.state = [[0, 0] for i in range(self.number_of_nodes)]
+        initial_state = [[0, 0] for i in range(self.number_of_nodes)]
+        self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
 
         if len(self.lmbda) != len(self.mu) or len(self.lmbda) != len(self.transition_matrix) or len(self.mu) != len(self.transition_matrix):
             raise ValueError('Lambda, Mu and the Transition Matrix should all have the same number of classes')
@@ -1024,7 +1035,9 @@ class Simulation:
 
             >>> seed(3)
             >>> Q = Simulation('results/logs_test_for_simulation/')
-            >>> Q.simulate_until_deadlock()
+            >>> times = Q.simulate_until_deadlock()
+            >>> times[((0, 0), (0, 0), (0, 0), (0, 0))]
+            194.65850092384824
         """
         deadlocked = False
         self.nodes[0].update_next_event_date()
@@ -1032,11 +1045,22 @@ class Simulation:
         current_time = next_active_node.next_event_date
         while not deadlocked:
             next_active_node.have_event()
+
+            current_state = tuple(tuple(self.state[i]) for i in range(len(self.state)))
+            if current_state not in self.times_dictionary:
+                self.times_dictionary[current_state] = current_time
+
             for node in self.transitive_nodes:
                 node.update_next_event_date(current_time)
             deadlocked = self.detect_deadlock()
+
+            if deadlocked:
+                time_of_deadlock = current_time
+
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
+
+        return {state: time_of_deadlock - self.times_dictionary[state] for state in self.times_dictionary.keys()}
 
     def detect_deadlock(self):
         """
@@ -1096,15 +1120,55 @@ class Simulation:
         data_file.close()
 
 
+def write_deadlock_records_to_file(overall_dict, directory_name):
+    """
+    Writes the records for times to deadlock to a csv file
+    """
+    root = os.getcwd()
+    directory = os.path.join(root, directory_name)
+    data_file = open('%sdeadlocking_times.csv' % directory, 'w')
+    csv_wrtr = writer(data_file)
+    for state in overall_dict:
+        row_to_write = [state] + overall_dict[state]
+        csv_wrtr.writerow(row_to_write)
+    data_file.close()
+
+def append_times_dictionaies(overall_dict, new_dict):
+    """
+    Appends the new times to the overall times dictionary
+
+        >>> A = {'t':[9], 'r':[10]}
+        >>> B = {'g':3, 't':2}
+        >>> append_times_dictionaies(A, B)
+        >>> A
+        {'r': [10], 't': [9, 2], 'g': [3]}
+        >>> B
+        {'t': 2, 'g': 3}
+    """
+    for state in new_dict:
+        if state in overall_dict:
+            overall_dict[state].append(new_dict[state])
+        else:
+            overall_dict[state] = [new_dict[state]]
+
+
 if __name__ == '__main__':
     arguments = docopt.docopt(__doc__)
     dirname = arguments['<dir_name>']
     sffx = arguments['<sffx>']
     option = arguments['<option>']
+    num_iters = int(arguments['<num_itrs>'])
     print option
     Q = Simulation(dirname, sffx)
     if option == 'to_max_time':
         Q.simulate_until_max_time()
+        Q.write_records_to_file()
     if option == 'to_deadlock':
-        Q.simulate_until_deadlock()
-    Q.write_records_to_file()
+        if not num_iters:
+            raise ValueError('Number of iterations not given.')
+        all_times = {}
+        times = {}
+        for iteration in range(num_iters):
+            times = Q.simulate_until_deadlock()
+            append_times_dictionaies(all_times, times)
+        write_deadlock_records_to_file(all_times, dirname)
