@@ -874,7 +874,7 @@ class Simulation:
     """
     Overall simulation class
     """
-    def __init__(self, directory_name, sffx=None):
+    def __init__(self, directory_name, sffx=None, L1=None):
         """
         Initialise a queue instance.
 
@@ -901,7 +901,7 @@ class Simulation:
         self.root = os.getcwd()
         self.directory = os.path.join(self.root, directory_name)
         self.sffx = sffx
-        self.parameters = self.load_parameters()
+        self.parameters = self.load_parameters(L1)
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.overall_lmbda = sum([sum(self.lmbda[i]) for i in range(len(self.lmbda))])
         self.class_probs = [sum(self.lmbda[i])/self.overall_lmbda for i in range(len(self.lmbda))]
@@ -948,7 +948,7 @@ class Simulation:
         if self.max_simulation_time < 0:
             raise ValueError('Maximum simulation time should be positive')
 
-    def load_parameters(self):
+    def load_parameters(self, L1):
         """
         Loads the parameters into the model
         """
@@ -956,6 +956,7 @@ class Simulation:
         parameter_file = open(parameter_file_name, 'r')
         parameters = yaml.load(parameter_file)
         parameter_file.close()
+        parameters['Queue_capacities'][1] = L1
         return parameters
 
     def find_next_active_node(self):
@@ -1059,7 +1060,6 @@ class Simulation:
 
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
-
         return {state: time_of_deadlock - self.times_dictionary[state] for state in self.times_dictionary.keys()}
 
     def detect_deadlock(self):
@@ -1120,14 +1120,15 @@ class Simulation:
         data_file.close()
 
 
-def write_deadlock_records_to_file(overall_dict, directory_name):
+def write_deadlock_records_to_file(overall_dict, directory_name, queue_capacities, sffx):
     """
     Writes the records for times to deadlock to a csv file
     """
     root = os.getcwd()
     directory = os.path.join(root, directory_name)
-    data_file = open('%sdeadlocking_times.csv' % directory, 'w')
+    data_file = open('%sdeadlocking_times_%s.csv' % (directory, sffx), 'w')
     csv_wrtr = writer(data_file)
+    csv_wrtr.writerow(queue_capacities)
     for state in overall_dict:
         row_to_write = [state] + overall_dict[state]
         csv_wrtr.writerow(row_to_write)
@@ -1158,17 +1159,23 @@ if __name__ == '__main__':
     sffx = arguments['<sffx>']
     option = arguments['<option>']
     num_iters = int(arguments['<num_itrs>'])
-    print option
-    Q = Simulation(dirname, sffx)
     if option == 'to_max_time':
+        Q = Simulation(dirname, sffx)
         Q.simulate_until_max_time()
         Q.write_records_to_file()
     if option == 'to_deadlock':
-        if not num_iters:
-            raise ValueError('Number of iterations not given.')
-        all_times = {}
-        times = {}
-        for iteration in range(num_iters):
-            times = Q.simulate_until_deadlock()
-            append_times_dictionaies(all_times, times)
-        write_deadlock_records_to_file(all_times, dirname)
+
+        L1s = [0, 1, 2, 3, 4, 5, 6]
+        for overall_iteration in range(len(L1s)):
+
+
+            if not num_iters:
+                raise ValueError('Number of iterations not given.')
+            all_times = {}
+            times = {}
+            for iteration in range(num_iters):
+                Q = Simulation(dirname, sffx, L1s[overall_iteration])
+                times = Q.simulate_until_deadlock()
+                append_times_dictionaies(all_times, times)
+            sffx = L1s[overall_iteration]
+            write_deadlock_records_to_file(all_times, dirname, Q.queue_capacities, sffx)

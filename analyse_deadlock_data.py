@@ -34,7 +34,7 @@ class Data():
         self.directory = os.path.join(self.root, directory_name)
         self.sffx = sffx
         self.data_file = self.find_data_file()
-        self.data = self.load_data()
+        self.n1, self.n2, self.data = self.load_data()
 
     def find_data_file(self):
 		"""
@@ -59,7 +59,19 @@ class Data():
 		for row in rdr:
 			data_array.append(row)
 		data_file.close()
-		return data_array
+		return int(data_array[0][0]), int(data_array[0][1]), data_array[1:]
+
+    def prune_deadlocked_state_for_2node_problem(self):
+        """
+        Gets rid of the deadlocked state as it has the same state as another state
+        """
+        d_state = ((self.n1, 1), (self.n2, 1))
+        for i in range(len(self.data)):
+            if self.data[i][0] == str(d_state):
+                index_to_remove = i
+                break
+        self.data.pop(index_to_remove)
+
 
     def find_states_for_2_nodes_problem(self, string):
         """
@@ -102,4 +114,5 @@ if __name__ == '__main__':
     dirname = arguments['<dir_name>']
     sffx = arguments['<sffx>']
     d = Data(dirname, sffx)
+    d.prune_deadlocked_state_for_2node_problem()
     d.write_results_to_file()
