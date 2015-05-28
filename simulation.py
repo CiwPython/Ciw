@@ -187,7 +187,7 @@ class Node:
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
         self.c = self.simulation.c[id_number-1]
-        self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
+        self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == 'Inf' else (self.simulation.queue_capacities[id_number-1] + self.c)
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         self.individuals = []
         self.id_number = id_number
@@ -956,7 +956,7 @@ class Simulation:
         parameter_file = open(parameter_file_name, 'r')
         parameters = yaml.load(parameter_file)
         parameter_file.close()
-        parameters['Queue_capacities'][1] = L1
+        #parameters['Queue_capacities'][1] = L1
         return parameters
 
     def find_next_active_node(self):
