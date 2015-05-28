@@ -265,6 +265,7 @@ class Node:
         if len(next_node.individuals) < next_node.node_capacity:
             self.release(next_individual_index, next_node, self.next_event_date)
         else:
+            # THIS SHOULD PROBABLY BE A METHOD OF ITS OWN
             next_individual.is_blocked = True
             self.simulation.state[self.id_number-1][1] += 1
             self.simulation.state[self.id_number-1][0] -= 1
@@ -301,6 +302,7 @@ class Node:
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
 
+        # THIS COULD BE A METHOD OF ITS OWN
         if next_individual.is_blocked:
             self.simulation.state[self.id_number-1][1] -= 1
         else:
@@ -309,6 +311,7 @@ class Node:
         next_individual_predecessors = self.simulation.digraph.predecessors(str(next_individual))
         self.simulation.digraph.remove_node(str(next_individual))
 
+        # MAYBE A METHOD?
         if len(self.blocked_queue) > 0:
             node_to_receive_from = self.simulation.nodes[self.blocked_queue[0][0]]
             if node_to_receive_from == self:
@@ -323,6 +326,8 @@ class Node:
             self.individuals[self.c-1].service_start_date = current_time
             self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
             self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
+
+            # ADDING / REMOVING EDGES SHOULD DEFINATELY BE A METHOD OF ITS OWN
             for vertex in next_individual_predecessors:
                 if vertex in self.simulation.digraph and vertex != str(self.individuals[self.c-1]):
                     self.simulation.digraph.add_edge(vertex, str(self.individuals[self.c-1]))
@@ -956,7 +961,10 @@ class Simulation:
         parameter_file = open(parameter_file_name, 'r')
         parameters = yaml.load(parameter_file)
         parameter_file.close()
+
+        # SHOULD ONLY DO THIS IF 'to_deadlock' OPTION CHOSEN
         #parameters['Queue_capacities'][1] = L1
+
         return parameters
 
     def find_next_active_node(self):
@@ -1160,12 +1168,16 @@ if __name__ == '__main__':
     option = arguments['<option>']
     num_iters = int(arguments['<num_itrs>'])
     if option == 'to_max_time':
+        # FUNCTION OF ITS OWN?
         Q = Simulation(dirname, sffx)
         Q.simulate_until_max_time()
         Q.write_records_to_file()
     if option == 'to_deadlock':
 
+        # THIS SHOULD BE READ IN FROM A config FILE OR SOMETHING
         L1s = [0, 1, 2, 3, 4, 5, 6]
+
+        # FUNCTION OF ITS OWN?
         for overall_iteration in range(len(L1s)):
 
 
