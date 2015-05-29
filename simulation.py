@@ -187,7 +187,7 @@ class Node:
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
         self.c = self.simulation.c[id_number-1]
-        self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == 'Inf' else (self.simulation.queue_capacities[id_number-1] + self.c)
+        self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         self.individuals = []
         self.id_number = id_number
@@ -265,13 +265,39 @@ class Node:
         if len(next_node.individuals) < next_node.node_capacity:
             self.release(next_individual_index, next_node, self.next_event_date)
         else:
-            # THIS SHOULD PROBABLY BE A METHOD OF ITS OWN
-            next_individual.is_blocked = True
-            self.simulation.state[self.id_number-1][1] += 1
-            self.simulation.state[self.id_number-1][0] -= 1
-            next_node.blocked_queue.append((self.id_number, next_individual.id_number))
-            for ind in next_node.individuals[:next_node.c]:
-                self.simulation.digraph.add_edge(str(next_individual), str(ind))
+            self.block_individual(next_individual, next_node)
+
+    def block_individual(self, individual, next_node):
+        """
+        Blocks the individual from entering the next node
+
+            >>> seed(4)
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> inds = [Individual(i+1) for i in range(7)]
+            >>> N1 = Q.transitive_nodes[2]
+            >>> N1.individuals = inds[:6]
+            >>> N2 = Q.transitive_nodes[3]
+            >>> N2.accept(inds[6], 2)
+            >>> inds[6].is_blocked
+            False
+            >>> N1.blocked_queue
+            []
+            >>> Q.digraph.edges()
+            []
+            >>> N2.block_individual(inds[6], N1)
+            >>> inds[6].is_blocked
+            True
+            >>> N1.blocked_queue
+            [(4, 7)]
+            >>> Q.digraph.edges()
+            [('Individual 7', 'Individual 5'), ('Individual 7', 'Individual 4'), ('Individual 7', 'Individual 6'), ('Individual 7', 'Individual 1'), ('Individual 7', 'Individual 3'), ('Individual 7', 'Individual 2')]
+        """
+        individual.is_blocked = True
+        self.simulation.state[self.id_number-1][1] += 1
+        self.simulation.state[self.id_number-1][0] -= 1
+        next_node.blocked_queue.append((self.id_number, individual.id_number))
+        for ind in next_node.individuals[:next_node.c]:
+            self.simulation.digraph.add_edge(str(individual), str(ind))
 
     def release(self, next_individual_index, next_node, current_time):
         """
