@@ -293,8 +293,7 @@ class Node:
             [('Individual 7', 'Individual 5'), ('Individual 7', 'Individual 4'), ('Individual 7', 'Individual 6'), ('Individual 7', 'Individual 1'), ('Individual 7', 'Individual 3'), ('Individual 7', 'Individual 2')]
         """
         individual.is_blocked = True
-        self.simulation.state[self.id_number-1][1] += 1
-        self.simulation.state[self.id_number-1][0] -= 1
+        self.change_state_block()
         next_node.blocked_queue.append((self.id_number, individual.id_number))
         for ind in next_node.individuals[:next_node.c]:
             self.simulation.digraph.add_edge(str(individual), str(ind))
@@ -379,6 +378,24 @@ class Node:
             self.simulation.state[self.id_number-1][1] -= 1
         else:
             self.simulation.state[self.id_number-1][0] -= 1
+
+    def change_state_block(self):
+        """
+        Changes the state of the system when a customer gets blocked
+
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
+            >>> N = Q.transitive_nodes[2]
+            >>> N.change_state_block()
+            >>> Q.state
+            [[0, 0], [0, 0], [1, 2], [0, 0]]
+            >>> N.change_state_block()
+            >>> Q.state
+            [[0, 0], [0, 0], [0, 3], [0, 0]]
+
+        """
+        self.simulation.state[self.id_number-1][1] += 1
+        self.simulation.state[self.id_number-1][0] -= 1
 
     def accept(self, next_individual, current_time):
         """
