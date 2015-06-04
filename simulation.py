@@ -363,10 +363,10 @@ class Node:
             >>> preds = [Q.transitive_nodes[0].individuals[i] for i in [3, 5, 6, 9]]
             >>> Q.digraph.add_edges_from([(preds[0], preds[1]), (preds[3], preds[0])])
             >>> Q.digraph.edges()
-            [(Individual 3, Individual 5), (Individual 9, Individual 3)]
+            [(Individual 9, Individual 3), (Individual 3, Individual 5)]
             >>> Q.transitive_nodes[0].replace_digraph_edges_of_blocked_ind(preds)
             >>> Q.digraph.edges()
-            [(Individual 3, 'Individual 8'), (Individual 3, Individual 5), (Individual 9, Individual 3), (Individual 9, 'Individual 8'), (Individual 5, 'Individual 8')]
+            [(Individual 5, 'Individual 8'), (Individual 9, 'Individual 8'), (Individual 9, Individual 3), (Individual 3, Individual 5), (Individual 3, 'Individual 8')]
         """
         self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
         for vertex in next_individual_predecessors:
@@ -497,16 +497,46 @@ class Node:
         """
         next_individual.exit_date = False
         next_individual.is_blocked = False
+        self.begin_service_if_possible(next_individual, current_time)
+        self.individuals.append(next_individual)
+        self.change_state_accept()
+
+    def begin_service_if_possible(self, next_individual, current_time):
+        """
+        Begins the service of the next individual, giving that customer a service time, end date and node
+
+            >>> seed(50)
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> ind = Individual(1)
+            >>> Q.digraph.nodes()
+            []
+            >>> ind.arrival_date
+            False
+            >>> ind.service_time
+            False
+            >>> ind.service_start_date
+            False
+            >>> ind.service_end_date
+            False
+            >>> Q.transitive_nodes[0].begin_service_if_possible(ind, 300)
+            >>> Q.digraph.nodes()
+            ['Individual 1']
+            >>> ind.arrival_date
+            300
+            >>> round(ind.service_time,5)
+            0.09832
+            >>> ind.service_start_date
+            300
+            >>> round(ind.service_end_date,5)
+            300.09832
+
+        """
         next_individual.arrival_date = current_time
         next_individual.service_time = self.simulation.service_times[self.id_number][next_individual.customer_class]()
-
         if len(self.individuals) < self.c:
             next_individual.service_start_date = current_time
             next_individual.service_end_date = current_time + next_individual.service_time
             self.simulation.digraph.add_node(str(next_individual))
-
-        self.individuals.append(next_individual)
-        self.change_state_accept()
 
     def update_next_event_date(self, current_time):
         """
