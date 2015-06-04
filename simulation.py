@@ -5,7 +5,7 @@ Arguments
     dir_name    : name of the directory from which to read in parameters and write data files
     suff        : optional suffix to add to the data file name
     num_itrs    : number of iterations to run the to_deadlock option for
-    option      : 'to_deadlock' for simulating until deadlock; 'to_max_time' for simulating until max time
+    option      : 'to_deadlock' for simu lating until deadlock; 'to_max_time' for simulating until max time
 
 Options
     -h          : displays this help file
@@ -328,11 +328,7 @@ class Node:
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
 
-        # THIS COULD BE A METHOD OF ITS OWN
-        if next_individual.is_blocked:
-            self.simulation.state[self.id_number-1][1] -= 1
-        else:
-            self.simulation.state[self.id_number-1][0] -= 1
+        self.change_state_release(next_individual)
 
         next_individual_predecessors = self.simulation.digraph.predecessors(str(next_individual))
         self.simulation.digraph.remove_node(str(next_individual))
@@ -360,6 +356,29 @@ class Node:
 
         self.write_individual_record(next_individual)
         next_node.accept(next_individual, current_time)
+
+    def change_state_release(self, next_individual):
+        """
+        Changes the state of the system when a customer gets blocked
+
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
+            >>> N = Q.transitive_nodes[2]
+            >>> inds = [Individual(i) for i in range(3)]
+            >>> N.individuals = inds
+            >>> N.change_state_release(inds[0])
+            >>> Q.state
+            [[0, 0], [0, 0], [1, 1], [0, 0]]
+            >>> inds[1].is_blocked = True
+            >>> N.change_state_release(inds[1])
+            >>> Q.state
+            [[0, 0], [0, 0], [1, 0], [0, 0]]
+
+        """
+        if next_individual.is_blocked:
+            self.simulation.state[self.id_number-1][1] -= 1
+        else:
+            self.simulation.state[self.id_number-1][0] -= 1
 
     def accept(self, next_individual, current_time):
         """
