@@ -332,6 +332,7 @@ class Node:
         next_individual_predecessors = self.simulation.digraph.predecessors(str(next_individual))
         self.simulation.digraph.remove_node(str(next_individual))
 
+
         # MAYBE A METHOD?
         if len(self.blocked_queue) > 0:
             node_to_receive_from = self.simulation.nodes[self.blocked_queue[0][0]]
@@ -346,15 +347,32 @@ class Node:
         if len(self.individuals) >= self.c:
             self.individuals[self.c-1].service_start_date = current_time
             self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
-            self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
-
-            # ADDING / REMOVING EDGES SHOULD DEFINATELY BE A METHOD OF ITS OWN
-            for vertex in next_individual_predecessors:
-                if vertex in self.simulation.digraph and vertex != str(self.individuals[self.c-1]):
-                    self.simulation.digraph.add_edge(vertex, str(self.individuals[self.c-1]))
+            self.replace_digraph_edges_of_blocked_ind(next_individual_predecessors)
 
         self.write_individual_record(next_individual)
         next_node.accept(next_individual, current_time)
+
+
+    def replace_digraph_edges_of_blocked_ind(self, next_individual_predecessors):
+        """
+        Addes the neccessary edges to the digraph when a customer gets blocked
+
+            >>> seed(5)
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q.transitive_nodes[0].individuals = [Individual(i) for i in range(Q.transitive_nodes[0].c + 5)]
+            >>> preds = [Q.transitive_nodes[0].individuals[i] for i in [3, 5, 6, 9]]
+            >>> Q.digraph.add_edges_from([(preds[0], preds[1]), (preds[3], preds[0])])
+            >>> Q.digraph.edges()
+            [(Individual 9, Individual 3), (Individual 3, Individual 5)]
+            >>> Q.transitive_nodes[0].replace_digraph_edges_of_blocked_ind(preds)
+            >>> Q.digraph.edges()
+            [(Individual 9, Individual 3), (Individual 9, 'Individual 8'), (Individual 3, Individual 5), (Individual 3, 'Individual 8'), (Individual 5, 'Individual 8')]
+        """
+        self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
+        for vertex in next_individual_predecessors:
+            if vertex in self.simulation.digraph and vertex != str(self.individuals[self.c-1]):
+                self.simulation.digraph.add_edge(vertex, str(self.individuals[self.c-1]))
+
 
     def change_state_release(self, next_individual):
         """
