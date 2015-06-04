@@ -363,10 +363,10 @@ class Node:
             >>> preds = [Q.transitive_nodes[0].individuals[i] for i in [3, 5, 6, 9]]
             >>> Q.digraph.add_edges_from([(preds[0], preds[1]), (preds[3], preds[0])])
             >>> Q.digraph.edges()
-            [(Individual 9, Individual 3), (Individual 3, Individual 5)]
+            [(Individual 3, Individual 5), (Individual 9, Individual 3)]
             >>> Q.transitive_nodes[0].replace_digraph_edges_of_blocked_ind(preds)
             >>> Q.digraph.edges()
-            [(Individual 9, Individual 3), (Individual 9, 'Individual 8'), (Individual 3, Individual 5), (Individual 3, 'Individual 8'), (Individual 5, 'Individual 8')]
+            [(Individual 3, 'Individual 8'), (Individual 3, Individual 5), (Individual 9, Individual 3), (Individual 9, 'Individual 8'), (Individual 5, 'Individual 8')]
         """
         self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
         for vertex in next_individual_predecessors:
@@ -414,6 +414,23 @@ class Node:
         """
         self.simulation.state[self.id_number-1][1] += 1
         self.simulation.state[self.id_number-1][0] -= 1
+
+    def change_state_accept(self):
+        """
+        Changes the state of the system when a customer gets blocked
+
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
+            >>> N = Q.transitive_nodes[2]
+            >>> N.change_state_accept()
+            >>> Q.state
+            [[0, 0], [0, 0], [3, 1], [0, 0]]
+            >>> N.change_state_accept()
+            >>> Q.state
+            [[0, 0], [0, 0], [4, 1], [0, 0]]
+
+        """
+        self.simulation.state[self.id_number-1][0] += 1
 
     def accept(self, next_individual, current_time):
         """
@@ -489,7 +506,7 @@ class Node:
             self.simulation.digraph.add_node(str(next_individual))
 
         self.individuals.append(next_individual)
-        self.simulation.state[self.id_number-1][0] += 1
+        self.change_state_accept()
 
     def update_next_event_date(self, current_time):
         """
