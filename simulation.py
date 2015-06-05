@@ -22,7 +22,6 @@ import docopt
 import networkx as nx
 
 
-
 class DataRecord:
     """
     A class for a data record
@@ -331,14 +330,49 @@ class Node:
         next_individual_predecessors = self.simulation.digraph.predecessors(str(next_individual))
         self.simulation.digraph.remove_node(str(next_individual))
         self.release_blocked_individual(current_time)
+        self.begin_service_if_possible_release(next_individual_predecessors, current_time)
+        self.write_individual_record(next_individual)
+        next_node.accept(next_individual, current_time)
 
+    def begin_service_if_possible_release(self, next_individual_predecessors, current_time):
+        """
+        Begins the service of the next individual, giving that customer a service time, end date and node
+
+            >>> seed(50)
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> inds = [Individual(i) for i in range(30)]
+            >>> Q.transitive_nodes[0].individuals = inds
+            >>> ind = Q.transitive_nodes[0].individuals[Q.transitive_nodes[0].c - 1]
+            >>> ind.service_time = 3.14
+            >>> ind.arrival_date = 100.0
+            >>> Q.digraph.nodes()
+            []
+            >>> ind.arrival_date
+            100.0
+            >>> ind.service_time
+            3.14
+            >>> ind.service_start_date
+            False
+            >>> ind.service_end_date
+            False
+            >>> Q.transitive_nodes[0].begin_service_if_possible_release(['Individual 1', 'Individual 2'], 200.0)
+            >>> Q.digraph.nodes()
+            ['Individual 8']
+            >>> ind.arrival_date
+            100.0
+            >>> round(ind.service_time,5)
+            3.14
+            >>> ind.service_start_date
+            200.0
+            >>> round(ind.service_end_date,5)
+            203.14
+
+        """
         if len(self.individuals) >= self.c:
             self.individuals[self.c-1].service_start_date = current_time
             self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
             self.replace_digraph_edges_of_blocked_ind(next_individual_predecessors)
 
-        self.write_individual_record(next_individual)
-        next_node.accept(next_individual, current_time)
 
     def release_blocked_individual(self, current_time):
         """
@@ -532,11 +566,11 @@ class Node:
         """
         next_individual.exit_date = False
         next_individual.is_blocked = False
-        self.begin_service_if_possible(next_individual, current_time)
+        self.begin_service_if_possible_accept(next_individual, current_time)
         self.individuals.append(next_individual)
         self.change_state_accept()
 
-    def begin_service_if_possible(self, next_individual, current_time):
+    def begin_service_if_possible_accept(self, next_individual, current_time):
         """
         Begins the service of the next individual, giving that customer a service time, end date and node
 
@@ -553,7 +587,7 @@ class Node:
             False
             >>> ind.service_end_date
             False
-            >>> Q.transitive_nodes[0].begin_service_if_possible(ind, 300)
+            >>> Q.transitive_nodes[0].begin_service_if_possible_accept(ind, 300)
             >>> Q.digraph.nodes()
             ['Individual 1']
             >>> ind.arrival_date
