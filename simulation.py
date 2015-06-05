@@ -1,14 +1,15 @@
 """
-Usage: simulation.py <dir_name> <option> [<num_itrs>] [<sffx>]
+Usage: simulation.py <dir_name> <option> [<sffx>] [options]
 
 Arguments
     dir_name    : name of the directory from which to read in parameters and write data files
     suff        : optional suffix to add to the data file name
     num_itrs    : number of iterations to run the to_deadlock option for
-    option      : 'to_deadlock' for simu lating until deadlock; 'to_max_time' for simulating until max time
+    option      : 'to_deadlock' for simulating until deadlock; 'to_max_time' for simulating until max time
 
 Options
     -h          : displays this help file
+    --num_itrs=<numi>  : the number of iterations to run until deadlock for [default: 1000]
 """
 from __future__ import division
 from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
@@ -1327,7 +1328,7 @@ if __name__ == '__main__':
     dirname = arguments['<dir_name>']
     sffx = arguments['<sffx>']
     option = arguments['<option>']
-    num_iters = int(arguments['<num_itrs>'])
+    num_iters = int(arguments['--num_itrs'])
     if option == 'to_max_time':
         # FUNCTION OF ITS OWN?
         Q = Simulation(dirname, sffx)
