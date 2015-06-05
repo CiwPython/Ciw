@@ -326,14 +326,56 @@ class Node:
         """
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
-
         self.change_state_release(next_individual)
-
         next_individual_predecessors = self.simulation.digraph.predecessors(str(next_individual))
         self.simulation.digraph.remove_node(str(next_individual))
+        self.release_blocked_individual(current_time)
 
+        if len(self.individuals) >= self.c:
+            self.individuals[self.c-1].service_start_date = current_time
+            self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
+            self.replace_digraph_edges_of_blocked_ind(next_individual_predecessors)
 
-        # MAYBE A METHOD?
+        self.write_individual_record(next_individual)
+        next_node.accept(next_individual, current_time)
+
+    def release_blocked_individual(self, current_time):
+        """
+        Releases an individual who becomes unblocked when another individual is released
+
+            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> N1 = Q.transitive_nodes[0]
+            >>> N2 = Q.transitive_nodes[1]
+            >>> N1.individuals = [Individual(i) for i in range(N1.c + 3)]
+            >>> N2.individuals = [Individual(i + 100) for i in range(N2.c + 4)]
+
+            >>> N1.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11]
+            >>> N2.individuals
+            [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
+            >>> N1.release_blocked_individual(100)
+            >>> N1.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11]
+            >>> N2.individuals
+            [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
+
+            >>> N1.blocked_queue = [(1, 1), (2, 100)]
+            >>> Q.digraph.add_edges_from([['Individual 1', i] for i in N2.individuals[:N2.c]])
+            >>> Q.digraph.add_edges_from([['Individual 100', i] for i in N1.individuals[:N1.c]])
+
+            >>> N1.release_blocked_individual(110)
+            >>> N1.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11]
+            >>> N2.individuals
+            [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
+
+            >>> N1.release_blocked_individual(120)
+            >>> N1.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11, Individual 100]
+            >>> N2.individuals
+            [Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
+
+        """
         if len(self.blocked_queue) > 0:
             node_to_receive_from = self.simulation.nodes[self.blocked_queue[0][0]]
             if node_to_receive_from == self:
@@ -343,14 +385,6 @@ class Node:
                 individual_to_receive = node_to_receive_from.individuals[individual_to_receive_index]
                 self.blocked_queue.pop(0)
                 node_to_receive_from.release(individual_to_receive_index, self, current_time)
-
-        if len(self.individuals) >= self.c:
-            self.individuals[self.c-1].service_start_date = current_time
-            self.individuals[self.c-1].service_end_date = self.individuals[self.c-1].service_start_date + self.individuals[self.c-1].service_time
-            self.replace_digraph_edges_of_blocked_ind(next_individual_predecessors)
-
-        self.write_individual_record(next_individual)
-        next_node.accept(next_individual, current_time)
 
 
     def replace_digraph_edges_of_blocked_ind(self, next_individual_predecessors):
@@ -363,10 +397,10 @@ class Node:
             >>> preds = [Q.transitive_nodes[0].individuals[i] for i in [3, 5, 6, 9]]
             >>> Q.digraph.add_edges_from([(preds[0], preds[1]), (preds[3], preds[0])])
             >>> Q.digraph.edges()
-            [(Individual 9, Individual 3), (Individual 3, Individual 5)]
+            [(Individual 3, Individual 5), (Individual 9, Individual 3)]
             >>> Q.transitive_nodes[0].replace_digraph_edges_of_blocked_ind(preds)
             >>> Q.digraph.edges()
-            [(Individual 5, 'Individual 8'), (Individual 9, 'Individual 8'), (Individual 9, Individual 3), (Individual 3, Individual 5), (Individual 3, 'Individual 8')]
+            [(Individual 3, Individual 5), (Individual 3, 'Individual 8'), (Individual 5, 'Individual 8'), (Individual 9, Individual 3), (Individual 9, 'Individual 8')]
         """
         self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
         for vertex in next_individual_predecessors:
