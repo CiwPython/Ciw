@@ -1251,11 +1251,13 @@ class Simulation:
 
     def detect_deadlock(self):
         """
-        Detects whether the system is in a deadlocked state
+        Detects whether the system is in a deadlocked state, that is, is there a knot
+
+        Note that this code is taken from the NetworkX Developer Zone Ticket #663 knot.py (09/06/2015)
 
             >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
-            >>> nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
-            >>> connections = [('A', 'B'), ('B', 'A'), ('F', 'G')]
+            >>> nodes = ['A', 'B', 'C', 'D', 'E']
+            >>> connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
             >>> for nd in nodes:
             ...     Q.digraph.add_node(nd)
             >>> for cnctn in connections:
@@ -1264,8 +1266,8 @@ class Simulation:
             True
 
             >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
-            >>> nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
-            >>> connections = [('A', 'B'), ('B', 'A'), ('F', 'G'), ('B', 'E')]
+            >>> nodes = ['A', 'B', 'C', 'D']
+            >>> connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
             >>> for nd in nodes:
             ...     Q.digraph.add_node(nd)
             >>> for cnctn in connections:
@@ -1273,8 +1275,19 @@ class Simulation:
             >>> Q.detect_deadlock()
             False
         """
-        wccs = list(nx.weakly_connected_component_subgraphs(self.digraph))
-        return any([all([g.out_degree(nd)>0 for nd in g.nodes()]) for g in wccs])
+        knots = []
+        for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
+            nodes = set(subgraph.nodes())
+            if len(nodes) > 1:
+                for n in nodes:
+                    successors = set(self.digraph.successors(n))
+                    if not successors <= nodes:
+                        break
+                else:
+                    knots.append(subgraph)
+        if len(knots) > 0:
+            return True
+        return False
 
     def get_all_individuals(self):
         """
