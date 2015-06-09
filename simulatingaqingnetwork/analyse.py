@@ -23,11 +23,11 @@ class Data():
 
             >>> d = Data('datafortesting/logs_test_for_analyse/')
             >>> d.directory
-            '/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/datafortesting/logs_test_for_analyse/'
+            '/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/simulatingaqingnetwork/datafortesting/logs_test_for_analyse/'
             >>> d.parameter_file
-            '/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/datafortesting/logs_test_for_analyse/parameters.yml'
+            '/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/simulatingaqingnetwork/datafortesting/logs_test_for_analyse/parameters.yml'
             >>> d.data_file
-            '/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/datafortesting/logs_test_for_analyse/data.csv'
+            '/Users/geraintianpalmer/Documents/SimulatingAQingNetwork/simulatingaqingnetwork/datafortesting/logs_test_for_analyse/data.csv'
             >>> d.data[0]
             ['50132', '0', '3', '1999.8061066137873', '0.0', '1999.8061066137873', '0.1923943987059666', '1999.9985010124933']
             >>> d.data_per_node[1][0]
