@@ -152,7 +152,7 @@ class Node:
         Initialise a node.
 
         An example of initialising a node.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Node(1, Q)
             >>> N.mu
             [['Exponential', 7.0], ['Exponential', 7.0], ['Deterministic', 0.3]]
@@ -186,7 +186,7 @@ class Node:
         Finds the cumulative transition row for the node
 
         An exmaple of finding the cumulative transition row of a node.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Node(1, Q)
             >>> N.cum_transition_row
             [[0.1, 0.30000000000000004, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]]
@@ -206,7 +206,7 @@ class Node:
         Representation of a node::
 
         An example of how a node is represented.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Node(1, Q)
             >>> N
             Node 1
@@ -230,7 +230,7 @@ class Node:
         The next individual finishes service
 
             >>> seed(4)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.transitive_nodes[0]
             >>> inds = [Individual(i+1) for i in range(3)]
             >>> for current_time in [0.01, 0.02, 0.03]:
@@ -258,7 +258,7 @@ class Node:
         Blocks the individual from entering the next node
 
             >>> seed(4)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> inds = [Individual(i+1) for i in range(7)]
             >>> N1 = Q.transitive_nodes[2]
             >>> N1.individuals = inds[:6]
@@ -289,7 +289,7 @@ class Node:
         Update node when an individual is released.
 
             >>> seed(4)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.transitive_nodes[0]
             >>> inds = [Individual(i+1) for i in range(3)]
             >>> for current_time in [0.01, 0.02, 0.03]:
@@ -325,7 +325,7 @@ class Node:
         Begins the service of the next individual, giving that customer a service time, end date and node
 
             >>> seed(50)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> inds = [Individual(i) for i in range(30)]
             >>> Q.transitive_nodes[0].individuals = inds
             >>> ind = Q.transitive_nodes[0].individuals[Q.transitive_nodes[0].c - 1]
@@ -364,7 +364,7 @@ class Node:
         """
         Releases an individual who becomes unblocked when another individual is released
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N1 = Q.transitive_nodes[0]
             >>> N2 = Q.transitive_nodes[1]
             >>> N1.individuals = [Individual(i) for i in range(N1.c + 3)]
@@ -413,7 +413,7 @@ class Node:
         Addes the neccessary edges to the digraph when a customer gets blocked
 
             >>> seed(5)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.transitive_nodes[0].individuals = [Individual(i) for i in range(Q.transitive_nodes[0].c + 5)]
             >>> preds = [Q.transitive_nodes[0].individuals[i] for i in [3, 5, 6, 9]]
             >>> Q.digraph.add_edges_from([(preds[0], preds[1]), (preds[3], preds[0])])
@@ -433,7 +433,7 @@ class Node:
         """
         Changes the state of the system when a customer gets blocked
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
             >>> N = Q.transitive_nodes[2]
             >>> inds = [Individual(i) for i in range(3)]
@@ -456,7 +456,7 @@ class Node:
         """
         Changes the state of the system when a customer gets blocked
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
             >>> N = Q.transitive_nodes[2]
             >>> N.change_state_block()
@@ -474,7 +474,7 @@ class Node:
         """
         Changes the state of the system when a customer gets blocked
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
             >>> N = Q.transitive_nodes[2]
             >>> N.change_state_accept()
@@ -493,7 +493,7 @@ class Node:
 
             >>> seed(6)
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.transitive_nodes[0]
             >>> N.next_event_date = 0.0
             >>> N.individuals
@@ -561,7 +561,7 @@ class Node:
         Begins the service of the next individual, giving that customer a service time, end date and node
 
             >>> seed(50)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> ind = Individual(1)
             >>> Q.digraph.nodes()
             []
@@ -597,7 +597,7 @@ class Node:
         """
         Finds the time of the next event at this node
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.transitive_nodes[0]
             >>> N.next_event_date
             'Inf'
@@ -642,7 +642,7 @@ class Node:
 
         An example showing a node choosing both nodes and exit node randomly.
             >>> seed(6)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> node = Q.transitive_nodes[0]
             >>> node.next_node(0)
             Node 4
@@ -659,7 +659,7 @@ class Node:
 
         Another example.
             >>> seed(54)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> node = Q.transitive_nodes[2]
             >>> node.next_node(0)
             Node 4
@@ -699,7 +699,7 @@ class Node:
 
         An example showing the data records written; can only write records once an exit date has been determined.
             >>> seed(7)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(6)
             >>> N.accept(ind, 3)
@@ -743,7 +743,7 @@ class ArrivalNode:
         Initialise a node.
 
         Here is an example::
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = ArrivalNode(Q)
             >>> N.lmbda
             35.5
@@ -773,7 +773,7 @@ class ArrivalNode:
         Finds the cumulative transition row for the arrival node
 
         An example of finding the cumulative transition row of an arrival node.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = ArrivalNode(Q)
             >>> [[round(pr, 2) for pr in N.cum_transition_row[cls]] for cls in range(len(N.cum_transition_row))]
             [[0.2, 0.67, 0.93, 1.0], [0.13, 0.33, 0.73, 1.0], [0.36, 0.55, 0.91, 1.0]]
@@ -793,7 +793,7 @@ class ArrivalNode:
         Returns the cumulative class probs
 
         An example of finding the cumulative probabilities of a new customer being in each class.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = ArrivalNode(Q)
             >>> N.find_cumulative_class_probs()
             [0.4225352112676056, 0.8450704225352113, 1.0]
@@ -811,7 +811,7 @@ class ArrivalNode:
         Representation of a node::
 
         An example showing how an arrival node is represented.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = ArrivalNode(Q)
             >>> N
             Arrival Node
@@ -824,7 +824,7 @@ class ArrivalNode:
 
         An example of creating an individual instance, releasing it to a node, and then updating its next event time.
             >>> seed(1)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -852,7 +852,7 @@ class ArrivalNode:
 
         Another example.
             >>> seed(12)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.transitive_nodes[0].individuals
             []
             >>> Q.transitive_nodes[1].individuals
@@ -888,7 +888,7 @@ class ArrivalNode:
         Finds the time of the next event at this node
 
             >>> seed(1)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = ArrivalNode(Q)
             >>> N.next_event_date
             0.0
@@ -904,7 +904,7 @@ class ArrivalNode:
 
         An example of finding the individual's starting node.
             >>> seed(1)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.nodes[0]
             >>> N.cum_transition_row
             [[0.2, 0.6666666666666667, 0.9333333333333333, 1.0], [0.13333333333333333, 0.33333333333333337, 0.7333333333333334, 1.0], [0.36363636363636365, 0.5454545454545454, 0.9090909090909091, 1.0]]
@@ -917,7 +917,7 @@ class ArrivalNode:
 
         And another example.
             >>> seed(401)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.nodes[0]
             >>> N.next_node(0)
             Node 2
@@ -936,7 +936,7 @@ class ArrivalNode:
         Returns the customer's class from the class probabilities
 
             >>> seed(6)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = ArrivalNode(Q)
             >>> N.choose_class()
             1
@@ -1010,7 +1010,7 @@ class ExitNode:
             200
 
         Another example.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.nodes[-1]
             >>> N.individuals
             []
@@ -1038,7 +1038,7 @@ class ExitNode:
             25
 
         And again.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> N = Q.nodes[-1]
             >>> N.next_event_date
             'Inf'
@@ -1068,7 +1068,7 @@ class Simulation:
         Here is an example::
 
         An example of creating a simulation instance.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.lmbda
             [[3.0, 7.0, 4.0, 1.0], [2.0, 3.0, 6.0, 4.0], [2.0, 1.0, 2.0, 0.5]]
             >>> Q.mu
@@ -1151,7 +1151,7 @@ class Simulation:
         Return the next active node:
 
         A mock example testing if this method works.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> i = 0
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_date = i
@@ -1160,7 +1160,7 @@ class Simulation:
             Arrival Node
 
         And again.
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> i = 10
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_date = i
@@ -1204,7 +1204,7 @@ class Simulation:
         Run the actual simulation.
 
             >>> seed(3)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.simulate_until_max_time()
         """
         self.nodes[0].update_next_event_date()
@@ -1222,7 +1222,7 @@ class Simulation:
         Run the actual simulation.
 
             >>> seed(3)
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> times = Q.simulate_until_deadlock()
             >>> times[((0, 0), (0, 0), (0, 0), (0, 0))]
             194.65850092384824
@@ -1253,7 +1253,7 @@ class Simulation:
         """
         Detects whether the system is in a deadlocked state
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
             >>> connections = [('A', 'B'), ('B', 'A'), ('F', 'G')]
             >>> for nd in nodes:
@@ -1263,7 +1263,7 @@ class Simulation:
             >>> Q.detect_deadlock()
             True
 
-            >>> Q = Simulation('results/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
             >>> connections = [('A', 'B'), ('B', 'A'), ('F', 'G'), ('B', 'E')]
             >>> for nd in nodes:
