@@ -1,16 +1,3 @@
-"""
-Usage: simulation.py <dir_name> <option> [<sffx>] [options]
-
-Arguments
-    dir_name    : name of the directory from which to read in parameters and write data files
-    suff        : optional suffix to add to the data file name
-    num_itrs    : number of iterations to run the to_deadlock option for
-    option      : 'to_deadlock' for simulating until deadlock; 'to_max_time' for simulating until max time
-
-Options
-    -h          : displays this help file
-    --num_itrs=<numi>  : the number of iterations to run until deadlock for [default: 1000]
-"""
 from __future__ import division
 from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
 from datetime import datetime
@@ -18,7 +5,6 @@ import os
 from csv import writer
 import yaml
 import shutil
-import docopt
 import networkx as nx
 
 
@@ -1075,7 +1061,7 @@ class Simulation:
     """
     Overall simulation class
     """
-    def __init__(self, directory_name, sffx=None, L1=None):
+    def __init__(self, directory_name, sffx=None):
         """
         Initialise a queue instance.
 
@@ -1102,7 +1088,7 @@ class Simulation:
         self.root = os.getcwd()
         self.directory = os.path.join(self.root, directory_name)
         self.sffx = sffx
-        self.parameters = self.load_parameters(L1)
+        self.parameters = self.load_parameters()
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.overall_lmbda = sum([sum(self.lmbda[i]) for i in range(len(self.lmbda))])
         self.class_probs = [sum(self.lmbda[i])/self.overall_lmbda for i in range(len(self.lmbda))]
@@ -1149,7 +1135,7 @@ class Simulation:
         if self.max_simulation_time < 0:
             raise ValueError('Maximum simulation time should be positive')
 
-    def load_parameters(self, L1):
+    def load_parameters(self):
         """
         Loads the parameters into the model
         """
@@ -1157,9 +1143,6 @@ class Simulation:
         parameter_file = open(parameter_file_name, 'r')
         parameters = yaml.load(parameter_file)
         parameter_file.close()
-
-        # SHOULD ONLY DO THIS IF 'to_deadlock' OPTION CHOSEN
-        #parameters['Queue_capacities'][1] = L1
 
         return parameters
 
@@ -1322,68 +1305,3 @@ class Simulation:
                                        record.blocked,
                                        record.exit_date])
         data_file.close()
-
-
-def write_deadlock_records_to_file(overall_dict, directory_name, queue_capacities, sffx):
-    """
-    Writes the records for times to deadlock to a csv file
-    """
-    root = os.getcwd()
-    directory = os.path.join(root, directory_name)
-    data_file = open('%sdeadlocking_times_%s.csv' % (directory, sffx), 'w')
-    csv_wrtr = writer(data_file)
-    csv_wrtr.writerow(queue_capacities)
-    for state in overall_dict:
-        row_to_write = [state] + overall_dict[state]
-        csv_wrtr.writerow(row_to_write)
-    data_file.close()
-
-def append_times_dictionaies(overall_dict, new_dict):
-    """
-    Appends the new times to the overall times dictionary
-
-        >>> A = {'t':[9], 'r':[10]}
-        >>> B = {'g':3, 't':2}
-        >>> append_times_dictionaies(A, B)
-        >>> A
-        {'r': [10], 't': [9, 2], 'g': [3]}
-        >>> B
-        {'t': 2, 'g': 3}
-    """
-    for state in new_dict:
-        if state in overall_dict:
-            overall_dict[state].append(new_dict[state])
-        else:
-            overall_dict[state] = [new_dict[state]]
-
-
-if __name__ == '__main__':
-    arguments = docopt.docopt(__doc__)
-    dirname = arguments['<dir_name>']
-    sffx = arguments['<sffx>']
-    option = arguments['<option>']
-    num_iters = int(arguments['--num_itrs'])
-    if option == 'to_max_time':
-        # FUNCTION OF ITS OWN?
-        Q = Simulation(dirname, sffx)
-        Q.simulate_until_max_time()
-        Q.write_records_to_file()
-    if option == 'to_deadlock':
-
-        # THIS SHOULD BE READ IN FROM A config FILE OR SOMETHING
-        L1s = [0, 1, 2, 3, 4, 5, 6]
-
-        # FUNCTION OF ITS OWN?
-        for overall_iteration in range(len(L1s)):
-
-
-            if not num_iters:
-                raise ValueError('Number of iterations not given.')
-            all_times = {}
-            times = {}
-            for iteration in range(num_iters):
-                Q = Simulation(dirname, sffx, L1s[overall_iteration])
-                times = Q.simulate_until_deadlock()
-                append_times_dictionaies(all_times, times)
-            sffx = L1s[overall_iteration]
-            write_deadlock_records_to_file(all_times, dirname, Q.queue_capacities, sffx)
