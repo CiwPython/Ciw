@@ -24,7 +24,7 @@ def write_deadlock_records_to_file(overall_dict, directory, queue_capacities, sf
     """
     Writes the records for times to deadlock to a csv file
     """
-    data_file = open('%sdeadlocking_times_%s.csv' % (directory, sffx), 'w')
+    data_file = open('%sdsubeadlocking_times_%s.csv' % (directory, sffx), 'w')
     csv_wrtr = writer(data_file)
     csv_wrtr.writerow(queue_capacities)
     for state in overall_dict:
@@ -62,9 +62,9 @@ class Experiment:
 
 			>>> E = Experiment('datafortesting/logs_test_for_experiment/')
 			>>> E.parameters
-			{'Arrival_rates': {'Class 0': [6.0, 7.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
+			{'Arrival_rates': {'Class 0': [24.0, 20.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
 			>>> E.config
-			{'Variable': ['Arrival_rates', 'Class 0', 0], 'Values': [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0], 'Number of Iterations': [10]}
+			{'Variable': ['Arrival_rates', 'Class 0', 0], 'Values': [22.0, 24.0], 'Number of Iterations': [5]}
 		"""
 		self.root = os.getcwd()
 		self.directory = os.path.join(self.root, dirname)
@@ -106,10 +106,10 @@ class Experiment:
 
 			>>> E = Experiment('datafortesting/logs_test_for_experiment/')
 			>>> E.parameters
-			{'Arrival_rates': {'Class 0': [6.0, 7.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
+			{'Arrival_rates': {'Class 0': [24.0, 20.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
 			>>> E.update_parameters(5555.55)
 			>>> E.parameters
-			{'Arrival_rates': {'Class 0': [5555.55, 7.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
+			{'Arrival_rates': {'Class 0': [5555.55, 20.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
 		"""
 		A = [self.parameters]
 		i = 0
@@ -122,11 +122,11 @@ class Experiment:
 		"""
 		Runs the experiment
 
-			>>> seed(55)
+			>>> seed(51)
 			>>> E = Experiment('datafortesting/logs_test_for_experiment/')
 			>>> E.run_experiment()
 			>>> E.all_times[((0, 0), (0, 0))]
-			[1.6631478251458955, 1.1637164446860553, 1.2684120719947678, 4.1986937569921094, 1.2358598736835837, 2.87603070637842, 2.762536804874705, 5.651410970870952, 1.938034497255711, 3.104405438022541]
+			[1.7575488630183014, 0.5764103544711466, 0.8629459649046253, 1.6632958105934947, 1.4026410332480492]
 		"""
 		for new_parameter in self.config['Values']:
 			self.all_times = {}

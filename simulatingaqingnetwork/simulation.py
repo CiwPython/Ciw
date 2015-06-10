@@ -418,10 +418,10 @@ class Node:
             >>> preds = [Q.transitive_nodes[0].individuals[i] for i in [3, 5, 6, 9]]
             >>> Q.digraph.add_edges_from([(preds[0], preds[1]), (preds[3], preds[0])])
             >>> Q.digraph.edges()
-            [(Individual 3, Individual 5), (Individual 9, Individual 3)]
+            [(Individual 9, Individual 3), (Individual 3, Individual 5)]
             >>> Q.transitive_nodes[0].replace_digraph_edges_of_blocked_ind(preds)
             >>> Q.digraph.edges()
-            [(Individual 3, Individual 5), (Individual 3, 'Individual 8'), (Individual 5, 'Individual 8'), (Individual 9, Individual 3), (Individual 9, 'Individual 8')]
+            [(Individual 9, Individual 3), (Individual 9, 'Individual 8'), (Individual 3, 'Individual 8'), (Individual 3, Individual 5), (Individual 5, 'Individual 8')]
         """
         self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
         for vertex in next_individual_predecessors:
@@ -1253,7 +1253,7 @@ class Simulation:
         """
         Detects whether the system is in a deadlocked state, that is, is there a knot
 
-        Note that this code is taken from the NetworkX Developer Zone Ticket #663 knot.py (09/06/2015)
+        Note that this code is taken and adapted from the NetworkX Developer Zone Ticket #663 knot.py (09/06/2015)
 
             >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> nodes = ['A', 'B', 'C', 'D', 'E']

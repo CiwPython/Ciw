@@ -1,7 +1,7 @@
 Arrival_rates:
   Class 0:
-  - 6.0
-  - 7.0
+  - 24.0
+  - 20.0
 Number_of_classes: 1
 Number_of_nodes: 2
 Number_of_servers:
