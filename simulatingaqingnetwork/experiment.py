@@ -24,7 +24,7 @@ def write_deadlock_records_to_file(overall_dict, directory, queue_capacities, sf
     """
     Writes the records for times to deadlock to a csv file
     """
-    data_file = open('%sdsubeadlocking_times_%s.csv' % (directory, sffx), 'w')
+    data_file = open('%sdeadlocking_times_%s.csv' % (directory, sffx), 'w')
     csv_wrtr = writer(data_file)
     csv_wrtr.writerow(queue_capacities)
     for state in overall_dict:

@@ -1144,6 +1144,10 @@ class Simulation:
         parameters = yaml.load(parameter_file)
         parameter_file.close()
 
+        if parameters['Number_of_nodes'] == 1:
+            for cls in parameters['Transition_matrices']:
+                parameters['Transition_matrices'][cls] = [parameters['Transition_matrices'][cls]]
+
         return parameters
 
     def find_next_active_node(self):
