@@ -421,7 +421,7 @@ class Node:
             [(Individual 9, Individual 3), (Individual 3, Individual 5)]
             >>> Q.transitive_nodes[0].replace_digraph_edges_of_blocked_ind(preds)
             >>> Q.digraph.edges()
-            [(Individual 9, Individual 3), (Individual 9, 'Individual 8'), (Individual 3, 'Individual 8'), (Individual 3, Individual 5), (Individual 5, 'Individual 8')]
+            [(Individual 9, 'Individual 8'), (Individual 9, Individual 3), (Individual 3, 'Individual 8'), (Individual 3, Individual 5), (Individual 5, 'Individual 8')]
         """
         self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
         for vertex in next_individual_predecessors:
@@ -1278,11 +1278,28 @@ class Simulation:
             ...     Q.digraph.add_edge(cnctn[0], cnctn[1])
             >>> Q.detect_deadlock()
             False
+
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
+            >>> nodes = ['A', 'B']
+            >>> for nd in nodes:
+            ...     Q.digraph.add_node(nd)
+            >>> Q.detect_deadlock()
+            False
+            >>> connections = [('A', 'A')]
+            >>> for cnctn in connections:
+            ...     Q.digraph.add_edge(cnctn[0], cnctn[1])
+            >>> Q.detect_deadlock()
+            True
         """
         knots = []
         for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
             nodes = set(subgraph.nodes())
-            if len(nodes) > 1:
+            if len(nodes) == 1:
+                n = nodes.pop()
+                nodes.add(n)
+                if set(self.digraph.successors(n)) == nodes:
+                    knots.append(subgraph)
+            else:
                 for n in nodes:
                     successors = set(self.digraph.successors(n))
                     if not successors <= nodes:
