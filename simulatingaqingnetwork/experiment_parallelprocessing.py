@@ -45,20 +45,25 @@ class Experiment:
 
 		data_file = open('%sdeadlocking_times_%s.csv' % (self.directory, sffx), 'r')
 		rdr = reader(data_file)
+		first_row = True
 		for row in rdr:
-			results[row[0]] = row[1:]
+			if first_row:
+				current_iteration = int(row[0])
+				first_row = False
+			else:
+				results[row[0]] = row[1:]
 		data_file.close()
-		print "A"
-		print results
+		
 		for state in new_results:
 			if str(state) in results:
 				results[str(state)].append(new_results[state])
 			else:
 				results[str(state)] = [new_results[state]]
-		print "B"
-		print results
+		current_iteration += 1
+		
 		data_file = open('%sdeadlocking_times_%s.csv' % (self.directory, sffx), 'w')
 		wrtr = writer(data_file)
+		wrtr.writerow([current_iteration])
 		for state in results:
 			row_to_write = [state] + results[state]
 			wrtr.writerow(row_to_write)
