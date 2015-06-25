@@ -386,13 +386,13 @@ class Node:
 
             >>> N1.release_blocked_individual(110)
             >>> N1.individuals
-            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11]
+            [Individual 0, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11, Individual 1]
             >>> N2.individuals
             [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
 
             >>> N1.release_blocked_individual(120)
             >>> N1.individuals
-            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11, Individual 100]
+            [Individual 0, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11, Individual 1, Individual 100]
             >>> N2.individuals
             [Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
 
@@ -400,12 +400,52 @@ class Node:
         if len(self.blocked_queue) > 0:
             node_to_receive_from = self.simulation.nodes[self.blocked_queue[0][0]]
             if node_to_receive_from == self:
+                individual_to_receive_index = [ind.id_number for ind in node_to_receive_from.individuals].index(self.blocked_queue[0][1])
+                individual_to_receive = node_to_receive_from.individuals[individual_to_receive_index]
                 self.blocked_queue.pop(0)
+                self.move_individual_to_back_of_queue(individual_to_receive, individual_to_receive_index, current_time)
             else:
                 individual_to_receive_index = [ind.id_number for ind in node_to_receive_from.individuals].index(self.blocked_queue[0][1])
                 individual_to_receive = node_to_receive_from.individuals[individual_to_receive_index]
                 self.blocked_queue.pop(0)
                 node_to_receive_from.release(individual_to_receive_index, self, current_time)
+
+    def move_individual_to_back_of_queue(self, ind, ind_index, current_time):
+        """
+        Unblocks and individual and sends him to back of queue
+
+            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
+            >>> N = Q.transitive_nodes[0]
+            >>> N.individuals = [Individual(i) for i in range(12)]
+            >>> N.individuals[0].is_blocked = True
+            >>> N.individuals[0].exit_date = False
+            >>> N.individuals[0].arrival_date = 2
+            >>> N.individuals[0].service_start_date = 4
+            >>> N.individuals[0].service_time = 1
+            >>> N.individuals[0].service_end_date = 5
+            >>> N.individuals
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11]
+            >>> N.individuals[0].data_records
+            {}
+            >>> N.move_individual_to_back_of_queue(N.individuals[0], 0, 7.5)
+            >>> N.individuals
+            [Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11, Individual 0]
+            >>> N.individuals[-1].data_records[1][0].arrival_date
+            2
+            >>> N.individuals[-1].data_records[1][0].wait
+            2
+            >>> N.individuals[-1].data_records[1][0].blocked
+            2.5
+            >>> N.individuals[-1].data_records[1][0].exit_date
+            7.5
+        """
+        self.individuals.pop(ind_index)
+        ind.exit_date = current_time
+        self.write_individual_record(ind)
+        ind.exit_date = False
+        ind.is_blocked = False
+        self.individuals.append(ind)
+        self.begin_service_if_possible_accept(ind, current_time)
 
 
     def replace_digraph_edges_of_blocked_ind(self, next_individual_predecessors):
@@ -416,17 +456,17 @@ class Node:
             >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
             >>> Q.transitive_nodes[0].individuals = [Individual(i) for i in range(Q.transitive_nodes[0].c + 5)]
             >>> preds = [Q.transitive_nodes[0].individuals[i] for i in [3, 5, 6, 9]]
-            >>> Q.digraph.add_edges_from([(preds[0], preds[1]), (preds[3], preds[0])])
+            >>> Q.digraph.add_edges_from([(str(preds[0]), str(preds[1])), (str(preds[3]), str(preds[0]))])
             >>> Q.digraph.edges()
-            [(Individual 9, Individual 3), (Individual 3, Individual 5)]
+            [('Individual 9', 'Individual 3'), ('Individual 3', 'Individual 5')]
             >>> Q.transitive_nodes[0].replace_digraph_edges_of_blocked_ind(preds)
             >>> Q.digraph.edges()
-            [(Individual 9, 'Individual 8'), (Individual 9, Individual 3), (Individual 3, 'Individual 8'), (Individual 3, Individual 5), (Individual 5, 'Individual 8')]
+            [('Individual 5', 'Individual 8'), ('Individual 9', 'Individual 8'), ('Individual 9', 'Individual 3'), ('Individual 3', 'Individual 5'), ('Individual 3', 'Individual 8')]
         """
         self.simulation.digraph.add_node(str(self.individuals[self.c-1]))
         for vertex in next_individual_predecessors:
-            if vertex in self.simulation.digraph and vertex != str(self.individuals[self.c-1]):
-                self.simulation.digraph.add_edge(vertex, str(self.individuals[self.c-1]))
+            if str(vertex) in self.simulation.digraph and vertex != str(self.individuals[self.c-1]):
+                self.simulation.digraph.add_edge(str(vertex), str(self.individuals[self.c-1]))
 
 
     def change_state_release(self, next_individual):
@@ -1226,10 +1266,10 @@ class Simulation:
         Run the actual simulation.
 
             >>> seed(3)
-            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
+            >>> Q = Simulation('datafortesting/logs_test_for_deadlock_sim/')
             >>> times = Q.simulate_until_deadlock()
-            >>> times[((0, 0), (0, 0), (0, 0), (0, 0))]
-            194.65850092384824
+            >>> times[((0, 0), (0, 0))]
+            4.952291666171667
         """
         deadlocked = False
         self.nodes[0].update_next_event_date()
