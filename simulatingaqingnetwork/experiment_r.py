@@ -104,23 +104,19 @@ class Experiment:
 		"""
 		Updates the parameters to write to file
 
-			>>> E = Experiment('datafortesting/logs_test_for_experiment/')
+			>>> E = Experiment('datafortesting/logs_test_for_experiment_r/')
 			>>> E.parameters
-			{'Arrival_rates': {'Class 0': [24.0, 20.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
-			>>> E.update_parameters(5555.55)
+			{'Arrival_rates': {'Class 0': [22.0, 20.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
+			>>> E.update_parameters(0.9)
 			>>> E.parameters
-			{'Arrival_rates': {'Class 0': [5555.55, 20.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.2], [0.2, 0.2]]}}
+			{'Arrival_rates': {'Class 0': [22.0, 20.0]}, 'Number_of_nodes': 2, 'Simulation_time': 2500, 'Number_of_servers': [2, 2], 'Queue_capacities': [2, 3], 'Number_of_classes': 1, 'Service_rates': {'Class 0': [['Exponential', 7.0], ['Exponential', 7.0]]}, 'Transition_matrices': {'Class 0': [[0.2, 0.9], [0.2, 0.2]]}}
 		"""
-		A = [self.parameters]
-
-		for i in range(4):
-			A.append([-1][self.config['Variable'][i]])
-
-		A[-1][self.config['Variable'][i]] = new_parameter
+		A = [self.parameters[self.config['Variable'][0]][self.config['Variable'][1]][self.config['Variable'][2]]]
+		A[0][self.config['Variable'][3]] = new_parameter
 
 	def run_experiment(self):
 		"""
-		Runs the experiment
+		# Runs the experiment
 
 			>>> seed(51)
 			>>> E = Experiment('datafortesting/logs_test_for_experiment/')
