@@ -1341,7 +1341,7 @@ class Simulation:
                     knots.append(subgraph)
             else:
                 for n in nodes:
-                    successors = set(self.digraph.successors(n))
+                    successors = nx.descendants(subgraph, n)
                     if not successors <= nodes:
                         break
                 else:
