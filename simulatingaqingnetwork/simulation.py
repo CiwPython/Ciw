@@ -266,7 +266,9 @@ class Node:
         for blq in self.blocked_queue:
             inds = [ind for ind in self.simulation.nodes[blq[0]].individuals if ind.id_number==blq[1]]
             ind = inds[0]
-            self.simulation.digraph.add_edge(str(ind.server), str(server))
+            if ind != individual:
+                self.simulation.digraph.add_edge(str(ind.server), str(server))
+
 
     def detatch_server(self, server, individual):
         """
@@ -343,6 +345,7 @@ class Node:
 
         for svr in next_node.servers:
             self.simulation.digraph.add_edge(str(individual.server), str(svr))
+
 
     def release(self, next_individual_index, next_node, current_time):
         """
@@ -1340,7 +1343,7 @@ class Simulation:
                     knots.append(subgraph)
             else:
                 for n in nodes:
-                    successors = nx.descendants(subgraph, n)
+                    successors = nx.descendants(self.digraph, n)
                     if not successors <= nodes:
                         break
                 else:
