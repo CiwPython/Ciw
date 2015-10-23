@@ -1,5 +1,5 @@
-Running a Simulation
-======================
+Running a Simulation via Command Line
+=====================================
 
 This page will describe how to set up a parameters file and then how to run the experiment.
 Set up a new folder alongside QNetSim that will contain your parameters file::

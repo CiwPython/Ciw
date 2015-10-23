@@ -7,10 +7,8 @@ Contents:
 
    :maxdepth: 2
    run_simulation
-   output_file
    service_distributions
-   deadlock_experiment
-
+   output_file
 
 
 Indices and tables
