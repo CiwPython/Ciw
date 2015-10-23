@@ -2,3 +2,4 @@
 *.DS_Store
 *.bash_profile
 *.bashrc.save
+*_build*
