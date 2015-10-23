@@ -4,4 +4,14 @@
 Service Time Distributions
 ==========================
 
-Some more text here...
+QNetSim currently allows the following service rate distributions:
+
+- Uniform
+- Deterministic
+- Triangular
+- Exponential
+- Gamma
+- Normal
+- Lognormal
+- Weibull
+

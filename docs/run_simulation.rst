@@ -36,7 +36,7 @@ And then each customer class requires:
 
 - Transition matrix
 
- A full example of the parameters file for a three node network with two classes of customer is shown below::
+A full example of the parameters file for a three node network with two classes of customer is shown below::
 
     Arrival_rates:
       Class 0:
@@ -111,7 +111,7 @@ Notice that:
     [0.0, 0.5, 0.5],
     [0.3, 0.1, 0.1]]
 
-In this transition matrix the `i,j`th element corresponds to the probability of transitioning to node `j` after service at node `i`.
+In this transition matrix the `(i,j)` th element corresponds to the probability of transitioning to node `j` after service at node `i`.
 
 
 Running the Simulation
