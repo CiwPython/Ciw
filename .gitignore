@@ -3,3 +3,4 @@
 *.bash_profile
 *.bashrc.save
 *_build*
+*egg-info*
