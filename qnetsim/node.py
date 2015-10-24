@@ -42,7 +42,6 @@ class Node:
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
         self.c = self.simulation.c[id_number-1]
-        self.servers = [Server(self, i+1) for i in range(self.c)]
         self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         self.individuals = []
@@ -50,7 +49,9 @@ class Node:
         self.cum_transition_row = self.find_cum_transition_row()
         self.next_event_date = "Inf"
         self.blocked_queue = []
-        self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
+        if simulation.detecting_deadlock:
+            self.servers = [Server(self, i+1) for i in range(self.c)]
+            self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
 
     def find_cum_transition_row(self):
         """
@@ -164,11 +165,11 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(4)
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
             >>> inds = [Individual(i+1) for i in range(7)]
-            >>> N1 = Q.transitive_nodes[2]
+            >>> N1 = Q.transitive_nodes[0]
             >>> N1.individuals = inds[:6]
-            >>> N2 = Q.transitive_nodes[3]
+            >>> N2 = Q.transitive_nodes[1]
             >>> N2.accept(inds[6], 2)
             >>> inds[6].is_blocked
             False
@@ -180,16 +181,16 @@ class Node:
             >>> inds[6].is_blocked
             True
             >>> N1.blocked_queue
-            [(4, 7)]
+            [(2, 7)]
             >>> Q.digraph.edges()
-            [('Server 1 at Node 4', 'Server 8 at Node 3'), ('Server 1 at Node 4', 'Server 7 at Node 3'), ('Server 1 at Node 4', 'Server 5 at Node 3'), ('Server 1 at Node 4', 'Server 1 at Node 3'), ('Server 1 at Node 4', 'Server 2 at Node 3'), ('Server 1 at Node 4', 'Server 4 at Node 3'), ('Server 1 at Node 4', 'Server 3 at Node 3'), ('Server 1 at Node 4', 'Server 6 at Node 3')]
+            [('Server 1 at Node 2', 'Server 2 at Node 1'), ('Server 1 at Node 2', 'Server 1 at Node 1')]
         """
         individual.is_blocked = True
         self.change_state_block()
         next_node.blocked_queue.append((self.id_number, individual.id_number))
-
-        for svr in next_node.servers:
-            self.simulation.digraph.add_edge(str(individual.server), str(svr))
+        if self.simulation.detecting_deadlock:
+            for svr in next_node.servers:
+                self.simulation.digraph.add_edge(str(individual.server), str(svr))
 
 
     def release(self, next_individual_index, next_node, current_time):
@@ -223,7 +224,8 @@ class Node:
         """
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
-        self.detatch_server(next_individual.server, next_individual)
+        if self.simulation.detecting_deadlock:
+            self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
         self.change_state_release(next_individual)
         self.release_blocked_individual(current_time)
@@ -238,14 +240,14 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(50)
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
             >>> inds = [Individual(i) for i in range(30)]
             >>> Q.transitive_nodes[0].individuals = inds
             >>> ind = Q.transitive_nodes[0].individuals[Q.transitive_nodes[0].c - 1]
             >>> ind.service_time = 3.14
             >>> ind.arrival_date = 100.0
             >>> Q.digraph.nodes()
-            ['Server 8 at Node 2', 'Server 8 at Node 3', 'Server 8 at Node 1', 'Server 8 at Node 4', 'Server 2 at Node 4', 'Server 3 at Node 4', 'Server 4 at Node 4', 'Server 6 at Node 4', 'Server 4 at Node 2', 'Server 6 at Node 1', 'Server 6 at Node 2', 'Server 4 at Node 3', 'Server 9 at Node 1', 'Server 5 at Node 3', 'Server 5 at Node 2', 'Server 5 at Node 1', 'Server 4 at Node 1', 'Server 5 at Node 4', 'Server 7 at Node 1', 'Server 7 at Node 3', 'Server 7 at Node 2', 'Server 7 at Node 4', 'Server 1 at Node 4', 'Server 1 at Node 3', 'Server 1 at Node 2', 'Server 1 at Node 1', 'Server 2 at Node 1', 'Server 2 at Node 2', 'Server 2 at Node 3', 'Server 3 at Node 1', 'Server 9 at Node 2', 'Server 3 at Node 3', 'Server 3 at Node 2', 'Server 6 at Node 3', 'Server 10 at Node 2']
+            ['Server 2 at Node 1', 'Server 1 at Node 2', 'Server 1 at Node 1']
             >>> ind.arrival_date
             100.0
             >>> ind.service_time
@@ -267,8 +269,9 @@ class Node:
         """
         if len(self.individuals) >= self.c:
             for ind in self.individuals[:self.c]:
-                if not ind.server:
-                    self.attach_server(self.find_free_server(), ind)
+                if not ind.service_start_date:
+                    if self.simulation.detecting_deadlock:
+                        self.attach_server(self.find_free_server(), ind)
                     ind.service_start_date = current_time
                     ind.service_end_date = ind.service_start_date + ind.service_time
 
@@ -280,26 +283,26 @@ class Node:
             >>> from simulation import Simulation
             >>> from individual import Individual
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
             >>> N1 = Q.transitive_nodes[0]
             >>> N2 = Q.transitive_nodes[1]
             >>> N1.individuals = [Individual(i) for i in range(N1.c + 3)]
             >>> N2.individuals = [Individual(i + 100) for i in range(N2.c + 4)]
 
-            >>> for ind in N1.individuals[:9]:
+            >>> for ind in N1.individuals[:2]:
             ...     N1.attach_server(N1.find_free_server(), ind)
-            >>> for ind in N2.individuals[:10]:
+            >>> for ind in N2.individuals[:1]:
             ...     N2.attach_server(N2.find_free_server(), ind)
 
             >>> N1.individuals
-            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11]
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4]
             >>> N2.individuals
-            [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
+            [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104]
             >>> N1.release_blocked_individual(100)
             >>> N1.individuals
-            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11]
+            [Individual 0, Individual 1, Individual 2, Individual 3, Individual 4]
             >>> N2.individuals
-            [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
+            [Individual 100, Individual 101, Individual 102, Individual 103, Individual 104]
 
             >>> N1.blocked_queue = [(1, 1), (2, 100)]
             >>> rel_ind = N1.individuals.pop(0)
@@ -307,10 +310,9 @@ class Node:
 
             >>> N1.release_blocked_individual(110)
             >>> N1.individuals
-            [Individual 2, Individual 3, Individual 4, Individual 5, Individual 6, Individual 7, Individual 8, Individual 9, Individual 10, Individual 11, Individual 100, Individual 1]
+            [Individual 2, Individual 3, Individual 4, Individual 100, Individual 1]
             >>> N2.individuals
-            [Individual 101, Individual 102, Individual 103, Individual 104, Individual 105, Individual 106, Individual 107, Individual 108, Individual 109, Individual 110, Individual 111, Individual 112, Individual 113]
-
+            [Individual 101, Individual 102, Individual 103, Individual 104]
         """
         if len(self.blocked_queue) > 0:
             node_to_receive_from = self.simulation.nodes[self.blocked_queue[0][0]]
@@ -463,10 +465,10 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(50)
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
             >>> ind = Individual(1)
             >>> Q.digraph.nodes()
-            ['Server 8 at Node 2', 'Server 8 at Node 3', 'Server 8 at Node 1', 'Server 8 at Node 4', 'Server 2 at Node 4', 'Server 3 at Node 4', 'Server 4 at Node 4', 'Server 6 at Node 4', 'Server 4 at Node 2', 'Server 6 at Node 1', 'Server 6 at Node 2', 'Server 4 at Node 3', 'Server 9 at Node 1', 'Server 5 at Node 3', 'Server 5 at Node 2', 'Server 5 at Node 1', 'Server 4 at Node 1', 'Server 5 at Node 4', 'Server 7 at Node 1', 'Server 7 at Node 3', 'Server 7 at Node 2', 'Server 7 at Node 4', 'Server 1 at Node 4', 'Server 1 at Node 3', 'Server 1 at Node 2', 'Server 1 at Node 1', 'Server 2 at Node 1', 'Server 2 at Node 2', 'Server 2 at Node 3', 'Server 3 at Node 1', 'Server 9 at Node 2', 'Server 3 at Node 3', 'Server 3 at Node 2', 'Server 6 at Node 3', 'Server 10 at Node 2']
+            ['Server 2 at Node 1', 'Server 1 at Node 2', 'Server 1 at Node 1']
             >>> ind.arrival_date
             False
             >>> ind.service_time
@@ -479,17 +481,18 @@ class Node:
             >>> ind.arrival_date
             300
             >>> round(ind.service_time,5)
-            0.09832
+            0.02294
             >>> ind.service_start_date
             300
             >>> round(ind.service_end_date,5)
-            300.09832
+            300.02294
 
         """
         next_individual.arrival_date = current_time
         next_individual.service_time = self.simulation.service_times[self.id_number][next_individual.customer_class]()
         if len(self.individuals) < self.c:
-            self.attach_server(self.find_free_server(), next_individual)
+            if self.simulation.detecting_deadlock:
+                self.attach_server(self.find_free_server(), next_individual)
             next_individual.service_start_date = current_time
             next_individual.service_end_date = current_time + next_individual.service_time
 
@@ -544,7 +547,10 @@ class Node:
             >>> N.next_event_date
             'Inf'
         """
-        self.next_event_date = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+        if self.c == "Inf":
+            self.next_event_date = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+        else:
+            self.next_event_date = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
 
     def next_node(self, customer_class):
         """

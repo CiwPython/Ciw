@@ -14,6 +14,7 @@ Arrival_rates:
   - 1.0
   - 2.0
   - 0.5
+detect_deadlock: False
 Number_of_classes: 3
 Number_of_nodes: 4
 Number_of_servers:

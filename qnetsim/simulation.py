@@ -44,6 +44,7 @@ class Simulation:
         """
 
         self.parameters = parameters
+        self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.overall_lmbda = sum([sum(self.lmbda[i]) for i in range(len(self.lmbda))])
@@ -58,7 +59,6 @@ class Simulation:
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
         self.number_of_nodes = len(self.transitive_nodes)
         self.service_times = self.find_service_time_dictionary()
-        self.order = sum([nd.c for nd in self.transitive_nodes])
         self.state = [[0, 0] for i in range(self.number_of_nodes)]
         initial_state = [[0, 0] for i in range(self.number_of_nodes)]
         self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
@@ -80,9 +80,6 @@ class Simulation:
 
         if any(l < 0 for lmbdaclass in self.lmbda for l in lmbdaclass):
             raise ValueError('All arrival rates should be positive')
-
-        if any(type(k) is not int or k <= 0 for k in self.c):
-            raise ValueError('All servers must be positive integer number')
 
         if any(tmval < 0 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(tmval > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(sum(transmatrxrow) > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls):
             raise ValueError('All transition matrix entries should be probabilities 0<=p<=1 and all transition matrix rows should sum to 1 or less')
@@ -154,6 +151,9 @@ class Simulation:
             >>> from import_params import load_parameters
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> Q.simulate_until_max_time()
+            >>> L = Q.get_all_individuals()
+            >>> L[300].data_records.values()[0][0].service_start_date
+            7.655099937252633
         """
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
