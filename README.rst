@@ -5,5 +5,8 @@ A Package for Simulating a Queueing network
    :alt: Join the chat at https://gitter.im/geraintpalmer/QNetSim
    :target: https://gitter.im/geraintpalmer/QNetSim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-A simulation of a queueing network.
-Running the simulation run_simulation.py outputs a .csv file with all the data ready for analysis.
+A simulation framework for open queueing networks.
+
+Read the documentation `here`_.
+
+.. _here: http://qnetsim.readthedocs.org
