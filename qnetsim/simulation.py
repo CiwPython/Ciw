@@ -26,7 +26,7 @@ class Simulation:
 
         An example of creating a simulation instance.
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> Q.lmbda
             [[3.0, 7.0, 4.0, 1.0], [2.0, 3.0, 6.0, 4.0], [2.0, 1.0, 2.0, 0.5]]
             >>> Q.mu
@@ -97,7 +97,7 @@ class Simulation:
 
         A mock example testing if this method works.
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> i = 0
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_date = i
@@ -107,7 +107,7 @@ class Simulation:
 
         And again.
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> i = 10
             >>> for node in Q.nodes[:-1]:
             ...     node.next_event_date = i
@@ -152,7 +152,7 @@ class Simulation:
 
             >>> seed(3)
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> Q.simulate_until_max_time()
         """
         self.nodes[0].update_next_event_date()
@@ -171,7 +171,7 @@ class Simulation:
 
             >>> seed(3)
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_deadlock_sim/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
             >>> times = Q.simulate_until_deadlock()
             >>> times[((0, 0), (0, 0))]
             8.699770274666774
@@ -206,7 +206,7 @@ class Simulation:
         Note that this code is taken and adapted from the NetworkX Developer Zone Ticket #663 knot.py (09/06/2015)
 
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> nodes = ['A', 'B', 'C', 'D', 'E']
             >>> connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
             >>> for nd in nodes:
@@ -216,7 +216,7 @@ class Simulation:
             >>> Q.detect_deadlock()
             True
 
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> nodes = ['A', 'B', 'C', 'D']
             >>> connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
             >>> for nd in nodes:
@@ -226,7 +226,7 @@ class Simulation:
             >>> Q.detect_deadlock()
             False
 
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> nodes = ['A', 'B']
             >>> for nd in nodes:
             ...     Q.digraph.add_node(nd)

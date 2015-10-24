@@ -21,7 +21,7 @@ class Node:
         An example of initialising a node.
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Node(1, Q)
             >>> N.mu
             [['Exponential', 7.0], ['Exponential', 7.0], ['Deterministic', 0.3]]
@@ -59,7 +59,7 @@ class Node:
         An exmaple of finding the cumulative transition row of a node.
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Node(1, Q)
             >>> N.cum_transition_row
             [[0.1, 0.30000000000000004, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]]
@@ -81,7 +81,7 @@ class Node:
         An example of how a node is represented.
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Node(1, Q)
             >>> N
             Node 1
@@ -133,7 +133,7 @@ class Node:
             >>> from import_params import load_parameters
             >>> from individual import Individual
             >>> seed(4)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0]
             >>> inds = [Individual(i+1) for i in range(3)]
             >>> for current_time in [0.01, 0.02, 0.03]:
@@ -164,7 +164,7 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(4)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> inds = [Individual(i+1) for i in range(7)]
             >>> N1 = Q.transitive_nodes[2]
             >>> N1.individuals = inds[:6]
@@ -200,7 +200,7 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(4)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0]
             >>> inds = [Individual(i+1) for i in range(3)]
             >>> for current_time in [0.01, 0.02, 0.03]:
@@ -238,7 +238,7 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(50)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> inds = [Individual(i) for i in range(30)]
             >>> Q.transitive_nodes[0].individuals = inds
             >>> ind = Q.transitive_nodes[0].individuals[Q.transitive_nodes[0].c - 1]
@@ -280,7 +280,7 @@ class Node:
             >>> from simulation import Simulation
             >>> from individual import Individual
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N1 = Q.transitive_nodes[0]
             >>> N2 = Q.transitive_nodes[1]
             >>> N1.individuals = [Individual(i) for i in range(N1.c + 3)]
@@ -326,7 +326,7 @@ class Node:
             >>> from simulation import Simulation
             >>> from individual import Individual
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
             >>> N = Q.transitive_nodes[2]
             >>> inds = [Individual(i) for i in range(3)]
@@ -351,7 +351,7 @@ class Node:
 
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
             >>> N = Q.transitive_nodes[2]
             >>> N.change_state_block()
@@ -371,7 +371,7 @@ class Node:
 
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
             >>> N = Q.transitive_nodes[2]
             >>> N.change_state_accept()
@@ -392,7 +392,7 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(6)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0]
             >>> N.next_event_date = 0.0
             >>> N.individuals
@@ -463,7 +463,7 @@ class Node:
             >>> from individual import Individual
             >>> from import_params import load_parameters
             >>> seed(50)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> ind = Individual(1)
             >>> Q.digraph.nodes()
             ['Server 8 at Node 2', 'Server 8 at Node 3', 'Server 8 at Node 1', 'Server 8 at Node 4', 'Server 2 at Node 4', 'Server 3 at Node 4', 'Server 4 at Node 4', 'Server 6 at Node 4', 'Server 4 at Node 2', 'Server 6 at Node 1', 'Server 6 at Node 2', 'Server 4 at Node 3', 'Server 9 at Node 1', 'Server 5 at Node 3', 'Server 5 at Node 2', 'Server 5 at Node 1', 'Server 4 at Node 1', 'Server 5 at Node 4', 'Server 7 at Node 1', 'Server 7 at Node 3', 'Server 7 at Node 2', 'Server 7 at Node 4', 'Server 1 at Node 4', 'Server 1 at Node 3', 'Server 1 at Node 2', 'Server 1 at Node 1', 'Server 2 at Node 1', 'Server 2 at Node 2', 'Server 2 at Node 3', 'Server 3 at Node 1', 'Server 9 at Node 2', 'Server 3 at Node 3', 'Server 3 at Node 2', 'Server 6 at Node 3', 'Server 10 at Node 2']
@@ -507,7 +507,7 @@ class Node:
             >>> from simulation import Simulation
             >>> from individual import Individual
             >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0]
             >>> N.next_event_date
             'Inf'
@@ -554,7 +554,7 @@ class Node:
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
             >>> seed(6)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> node = Q.transitive_nodes[0]
             >>> node.next_node(0)
             Node 4
@@ -571,7 +571,7 @@ class Node:
 
         Another example.
             >>> seed(54)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> node = Q.transitive_nodes[2]
             >>> node.next_node(0)
             Node 4
@@ -614,7 +614,7 @@ class Node:
             >>> from import_params import load_parameters
             >>> from individual import Individual
             >>> seed(7)
-            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0]
             >>> ind = Individual(6)
             >>> N.accept(ind, 3)
