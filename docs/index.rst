@@ -9,6 +9,7 @@ Contents:
    run_simulation
    service_distributions
    output_file
+   deadlock
 
 
 Indices and tables

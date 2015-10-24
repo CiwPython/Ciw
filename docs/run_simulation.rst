@@ -47,6 +47,7 @@ A full example of the parameters file for a three node network with two classes 
       - 1.0
       - 1.8
       - 7.25
+    detect_deadlock: False
     Number_of_classes: 2
     Number_of_nodes: 3
     Number_of_servers:
@@ -105,6 +106,7 @@ Notice that:
 - When :code:`Queue_capacities` aren't set to :code:`"Inf"` blocking rules apply. Type I (blocked after service) blocking applies here.
 - To obtain no arrivals, set :code:`Arrival_rates` to 0.
 - There are many service distributions available, see :ref:`service-distributions`.
+- There's a :code:`detect_deadlock` option, see :ref:`deadlock-detection`.
 - The :code:`Transition_matrices` for :code:`Class 0` section represents the following transition matrix::
 
    [[0.1, 0.6, 0.2],
