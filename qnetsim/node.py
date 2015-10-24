@@ -148,7 +148,10 @@ class Node:
             >>> N.individuals
             [Individual 1, Individual 3]
         """
-        next_individual_index = [ind.service_end_date for ind in self.individuals[:self.c]].index(self.next_event_date)
+        if self.c == "Inf":
+            next_individual_index = [ind.service_end_date for ind in self.individuals].index(self.next_event_date)
+        else:
+            next_individual_index = [ind.service_end_date for ind in self.individuals[:self.c]].index(self.next_event_date)
         next_individual = self.individuals[next_individual_index]
         next_node = self.next_node(next_individual.customer_class)
 
