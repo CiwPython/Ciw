@@ -1,5 +1,5 @@
 """
-Usage: experiment.py <dir_name> [<sffx>]
+Usage: run_simulation.py <dir_name>
 
 Arguments
 	dir_name    : name of the directory from which to read in parameters and write data files
@@ -9,20 +9,15 @@ Options
     -h          : displays this help file
 """
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
-from datetime import datetime
 import os
-from csv import writer
-import yaml
-import shutil
 import docopt
-import networkx as nx
-from simulation import *
+from import_params import load_parameters
+from qnetsim import *
 
 if __name__ == '__main__':
 	arguments = docopt.docopt(__doc__)
 	dirname = arguments['<dir_name>']
-	sffx = arguments['<sffx>']
-	Q = Simulation(dirname, sffx)
+	P = load_parameters(dirname)
+	Q = Simulation(P)
 	Q.simulate_until_max_time()
-	Q.write_records_to_file()
+	Q.write_records_to_file(dirname)

@@ -14,8 +14,9 @@ class Server:
     def __init__(self, node, id_number):
         """
         Initialise the server object
+            >>> from import_params import load_parameters
             >>> from simulation import Simulation
-            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
+            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0] 
             >>> S = Server(N, 1)
             >>> S.node.id_number
@@ -32,8 +33,9 @@ class Server:
         """
         Represents the Server instance as a string
 
+            >>> from import_params import load_parameters
             >>> from simulation import Simulation
-            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
+            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0] 
             >>> S = Server(N, 1)
             >>> S

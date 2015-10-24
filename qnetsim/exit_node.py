@@ -73,7 +73,8 @@ class ExitNode:
 
         Another example.
             >>> from simulation import Simulation
-            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
             >>> N = Q.nodes[-1]
             >>> N.individuals
             []
@@ -102,7 +103,8 @@ class ExitNode:
 
         And again.
             >>> from simulation import Simulation
-            >>> Q = Simulation('datafortesting/logs_test_for_simulation/')
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('datafortesting/logs_test_for_simulation/'))
             >>> N = Q.nodes[-1]
             >>> N.next_event_date
             'Inf'
