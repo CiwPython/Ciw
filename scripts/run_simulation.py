@@ -11,7 +11,6 @@ Options
 from __future__ import division
 import os
 import docopt
-from import_params import load_parameters
 from qnetsim import *
 
 if __name__ == '__main__':

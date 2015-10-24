@@ -120,7 +120,7 @@ Running the Simulation
 To run the simulation go to the directory which contains both :code:`QNetSim` and :code:`my_simultion_instance`.
 Then run the following command::
 
-    $ python QNetSim/qnetsim/run_simulation.py my_simulation_instance/
+    $ python QNetSim/scripts/run_simulation.py my_simulation_instance/
 
 This will create a :code:`data.csv`, positioned here::
 
