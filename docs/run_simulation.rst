@@ -74,7 +74,7 @@ A full example of the parameters file for a three node network with two classes 
         - 0.1
         - 0.8
         - 0.95
-      - Exponential
+      - - Exponential
         - 3.0
     Simulation_time: 2500
     Transition_matrices:
@@ -106,6 +106,7 @@ Notice that:
 - When :code:`Queue_capacities` aren't set to :code:`"Inf"` blocking rules apply. Type I (blocked after service) blocking applies here.
 - To obtain no arrivals, set :code:`Arrival_rates` to 0.
 - There are many service distributions available, see :ref:`service-distributions`.
+- There is also the possibility to define custom discrete PDFs for service times, see :ref:`custom-distributions`.
 - There's a :code:`detect_deadlock` option, see :ref:`deadlock-detection`.
 - The :code:`Transition_matrices` for :code:`Class 0` section represents the following transition matrix::
 

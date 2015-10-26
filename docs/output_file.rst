@@ -9,7 +9,7 @@ This file contains does not contain summary statistics, but all the information 
 Each time an individual completes service at a service station, a data record of that service is kept.
 This file contains all these data records for all services of all customers at all nodes during the simulation run time.
 
-The following table summarises the columns::
+The following table summarises the columns:
 
     +------------+-------+------+--------------+--------------+--------------------+--------------+------------------+--------------+-----------+
     | I.D number | Class | Node | Arrival Date | Waiting Time | Service Start Date | Service Time | Service End Date | Time Blocked | Exit Date |

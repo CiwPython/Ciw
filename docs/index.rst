@@ -8,6 +8,7 @@ Contents:
    :maxdepth: 2
    run_simulation
    service_distributions
+   custom_dists
    output_file
    deadlock
 

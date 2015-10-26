@@ -4,7 +4,7 @@
 Service Time Distributions
 ==========================
 
-QNetSim currently allows the following service rate distributions:
+QNetSim currently allows the following continuous service rate distributions:
 
 - :ref:`uniform_dist`
 - :ref:`deterministic_dist`
@@ -15,6 +15,7 @@ QNetSim currently allows the following service rate distributions:
 - :ref:`lognormal_dist`
 - :ref:`weibull_dist`
 
+See :ref:`custom-distributions` for how to define custom discrete service time distributions.
 
 .. _uniform_dist:
 
