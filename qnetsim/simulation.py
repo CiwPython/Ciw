@@ -135,7 +135,69 @@ class Simulation:
             return lambda : lognormvariate(self.mu[c][n][1], self.mu[c][n][2])
         if self.mu[c][n][0] == 'Weibull':
             return lambda : weibullvariate(self.mu[c][n][1], self.mu[c][n][2])
+        if self.mu[c][n][0] == 'Custom':
+            P, V = zip(*self.parameters[self.mu[c][n][1]])
+            probs = list(P)
+            cum_probs = [sum(probs[0:i+1]) for i in range(len(probs))]
+            values = list(V)
+            return lambda : self.custom_pdf(cum_probs, values)
         return False
+
+    def custom_pdf(self, cum_probs, values):
+        """
+        Samples from a custom pdf
+
+            >>> from import_params import load_parameters
+            >>> seed(45)
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            10.7
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            14.6
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            9.5
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            10.7
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            9.5
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            9.5
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            10.7
+
+        Testing whether reading in from a file works::
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_custom_dist/'))
+            >>> Q.service_times[1][0]()
+            5.0
+            >>> Q.service_times[1][0]()
+            5.5
+            >>> Q.service_times[1][0]()
+            6.0
+            >>> Q.service_times[1][1]()
+            5.0
+            >>> Q.service_times[1][1]()
+            6.0
+            >>> Q.service_times[1][1]()
+            5.0
+            >>> Q.service_times[2][1]()
+            1.9
+            >>> Q.service_times[2][1]()
+            1.9
+            >>> Q.service_times[2][1]()
+            1.3
+            >>> Q.service_times[2][1]()
+            2.1
+            >>> Q.service_times[2][1]()
+            1.9
+            >>> Q.service_times[2][1]()
+            1.1
+            >>> Q.service_times[2][1]()
+            1.4
+        """
+        rnd_num = random()
+        for p in range(len(cum_probs)):
+            if rnd_num < cum_probs[p]:
+                return values[p]
 
     def find_service_time_dictionary(self):
         """
