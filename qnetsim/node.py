@@ -196,7 +196,7 @@ class Node:
         >>> from simulation import Simulation
             >>> from individual import Individual
             >>> from import_params import load_parameters
-            >>> seed(4)
+            >>> seed(80)
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
             >>> N1 = Q.transitive_nodes[0]
             >>> ind = Individual(254, 0)
@@ -206,19 +206,19 @@ class Node:
             0
             >>> N1.change_customer_class(ind)
             >>> ind.customer_class
-            1
+            0
+            >>> ind.previous_class
+            0
+            >>> N1.change_customer_class(ind)
+            >>> ind.customer_class
+            0
             >>> ind.previous_class
             0
             >>> N1.change_customer_class(ind)
             >>> ind.customer_class
             1
             >>> ind.previous_class
-            1
-            >>> N1.change_customer_class(ind)
-            >>> ind.customer_class
-            1
-            >>> ind.previous_class
-            1
+            0
             >>> N1.change_customer_class(ind)
             >>> ind.customer_class
             1
@@ -233,8 +233,9 @@ class Node:
             
             inx=0
             for i in cdf:
-                if rnd_num<=1:
+                if rnd_num<=i:
                     individual.customer_class=inx
+                    break
                 inx+=1
 
     def block_individual(self, individual, next_node):

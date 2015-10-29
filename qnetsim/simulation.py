@@ -234,9 +234,7 @@ class Simulation:
             >>> for dr in L[0].data_records[1]:
             ...    print (dr.customer_class, dr.service_time)
             (0, 5.0)
-            (1, 10.0)
-            (1, 10.0)
-            (1, 10.0)
+            (0, 5.0)
             (1, 10.0)
         """
         self.nodes[0].update_next_event_date()
