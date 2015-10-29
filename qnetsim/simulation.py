@@ -41,6 +41,8 @@ class Simulation:
             [Node 1, Node 2, Node 3, Node 4]
             >>> Q.max_simulation_time
             2500
+            >>> Q.class_change_matrix
+            'NA'
         """
 
         self.parameters = parameters
@@ -54,6 +56,10 @@ class Simulation:
         self.c = self.parameters['Number_of_servers']
         self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        if 'Class_change_matrices' in self.parameters:
+            self.class_change_matrix = [self.parameters['Class_change_matrices']['Node ' + str(i)] for i in range(self.parameters['Number_of_nodes'])]
+        else:
+            self.class_change_matrix = 'NA'
         self.max_simulation_time = self.parameters['Simulation_time']
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
