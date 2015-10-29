@@ -37,6 +37,15 @@ class Node:
             1
             >>> N.cum_transition_row
             [[0.1, 0.30000000000000004, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]]
+
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+            >>> N1 = Q.transitive_nodes[0]
+            >>> N1.class_change_for_node
+            [[0.7, 0.3], [0.2, 0.8]]
+            >>> N2 = Q.transitive_nodes[1]
+            >>> N2.class_change_for_node
+            [[1.0, 0.0], [0.0, 1.0]]
         """
 
         self.simulation = simulation
@@ -44,6 +53,9 @@ class Node:
         self.c = self.simulation.c[id_number-1]
         self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
+        if self.simulation.class_change_matrix != 'NA':
+            self.class_change_for_node = self.simulation.class_change_matrix[id_number-1]
+            self.class_change_cdf = self.find_cdf_class_changes()
         self.individuals = []
         self.id_number = id_number
         self.cum_transition_row = self.find_cum_transition_row()
@@ -52,6 +64,21 @@ class Node:
         if simulation.detecting_deadlock:
             self.servers = [Server(self, i+1) for i in range(self.c)]
             self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
+
+    def find_cdf_class_changes(self):
+        """
+        Turning the pdf of the class change probabilities into a cdf.
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+            >>> N1 = Q.transitive_nodes[0]
+            >>> N1.class_change_for_node
+            [[0.7, 0.3], [0.2, 0.8]]
+            >>> N1.find_cdf_class_changes()
+            [[0.7, 1.0], [0.2, 1.0]]
+        """
+        return [[sum(self.class_change_for_node[j][0:i+1]) for i in range(len(self.class_change_for_node[j]))] for j in range(len(self.class_change_for_node))]
 
     def find_cum_transition_row(self):
         """
@@ -153,12 +180,62 @@ class Node:
         else:
             next_individual_index = [ind.service_end_date for ind in self.individuals[:self.c]].index(self.next_event_date)
         next_individual = self.individuals[next_individual_index]
+
+        self.change_customer_class(next_individual)
+
         next_node = self.next_node(next_individual.customer_class)
 
         if len(next_node.individuals) < next_node.node_capacity:
             self.release(next_individual_index, next_node, self.next_event_date)
         else:
             self.block_individual(next_individual, next_node)
+
+    def change_customer_class(self,individual):
+        """
+        Takes individual and changes customer class according to a probability distribution.
+        >>> from simulation import Simulation
+            >>> from individual import Individual
+            >>> from import_params import load_parameters
+            >>> seed(4)
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+            >>> N1 = Q.transitive_nodes[0]
+            >>> ind = Individual(254, 0)
+            >>> ind.customer_class
+            0
+            >>> ind.previous_class
+            0
+            >>> N1.change_customer_class(ind)
+            >>> ind.customer_class
+            1
+            >>> ind.previous_class
+            0
+            >>> N1.change_customer_class(ind)
+            >>> ind.customer_class
+            1
+            >>> ind.previous_class
+            1
+            >>> N1.change_customer_class(ind)
+            >>> ind.customer_class
+            1
+            >>> ind.previous_class
+            1
+            >>> N1.change_customer_class(ind)
+            >>> ind.customer_class
+            1
+            >>> ind.previous_class
+            1
+
+        """
+        if self.simulation.class_change_matrix != 'NA':
+            rnd_num=random()
+            cdf=self.class_change_cdf[individual.customer_class]
+            individual.previous_class=individual.customer_class
+            
+            inx=0
+            for i in cdf:
+                if rnd_num<=1:
+                    individual.customer_class=inx
+                inx+=1
 
     def block_individual(self, individual, next_node):
         """

@@ -1,10 +1,10 @@
 Arrival_rates:
   Class 0:
-  - 7
-  - 5
+  - 0.05
+  - 0.04
   Class 1:
-  - 2
-  - 7
+  - 0.04
+  - 0.06
 detect_deadlock: False
 Number_of_classes: 2
 Number_of_nodes: 2
@@ -16,24 +16,24 @@ Queue_capacities:
 - 10
 Service_rates:
   Class 0:
-  - - Exponential
-    - 8.0
   - - Deterministic
-    - 0.8
+    - 5.0
+  - - Deterministic
+    - 5.0
   Class 1:
-  - - Exponential
-    - 8.0
-  - - Custom
-    - my_special_distribution_01
-Simulation_time: 2500
+  - - Deterministic
+    - 10.0
+  - - Deterministic
+    - 10.0
+Simulation_time: 50
 Transition_matrices:
   Class 0:
-  - - 0.1
-    - 0.5
+  - - 0.8
+    - 0.1
   - - 0.0
     - 0.0
   Class 1:
-  - - 0.0
+  - - 0.8
     - 0.1
   - - 0.2
     - 0.0
@@ -48,10 +48,3 @@ Class_change_matrices:
     - 0.0
   - - 0.0
     - 1.0
-my_special_distribution_01:
-  - - 0.1
-    - 1.2
-  - - 0.5
-    - 1.5
-  - - 0.4
-    - 1.8

@@ -227,6 +227,17 @@ class Simulation:
             >>> L = Q.get_all_individuals()
             >>> L[300].data_records.values()[0][0].service_start_date
             7.655099937252633
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+            >>> Q.simulate_until_max_time()
+            >>> L = Q.get_all_individuals()
+            >>> for dr in L[0].data_records[1]:
+            ...    print (dr.customer_class, dr.service_time)
+            (0, 5.0)
+            (1, 10.0)
+            (1, 10.0)
+            (1, 10.0)
+            (1, 10.0)
         """
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
