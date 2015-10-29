@@ -31,6 +31,8 @@ class Individual:
             {}
             >>> i.customer_class
             3
+            >>> i.previous_class
+            3
 
         Another example of an individual instance.
             >>> i = Individual(5)
@@ -48,6 +50,8 @@ class Individual:
             {}
             >>> i.customer_class
             0
+            >>> i.previous_class
+            0
         """
         self.arrival_date = False
         self.service_start_date = False
@@ -57,6 +61,7 @@ class Individual:
         self.id_number = id_number
         self.data_records = {}
         self.customer_class = customer_class
+        self.previous_class = customer_class
         self.is_blocked = False
         self.server = False
 

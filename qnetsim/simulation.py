@@ -41,6 +41,13 @@ class Simulation:
             [Node 1, Node 2, Node 3, Node 4]
             >>> Q.max_simulation_time
             2500
+            >>> Q.class_change_matrix
+            'NA'
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+            >>> Q.class_change_matrix
+            [[[0.7, 0.3], [0.2, 0.8]], [[1.0, 0.0], [0.0, 1.0]]]
+
         """
 
         self.parameters = parameters
@@ -54,6 +61,10 @@ class Simulation:
         self.c = self.parameters['Number_of_servers']
         self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        if 'Class_change_matrices' in self.parameters:
+            self.class_change_matrix = [self.parameters['Class_change_matrices']['Node ' + str(i)] for i in range(self.parameters['Number_of_nodes'])]
+        else:
+            self.class_change_matrix = 'NA'
         self.max_simulation_time = self.parameters['Simulation_time']
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
@@ -216,6 +227,17 @@ class Simulation:
             >>> L = Q.get_all_individuals()
             >>> L[300].data_records.values()[0][0].service_start_date
             7.655099937252633
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+            >>> Q.simulate_until_max_time()
+            >>> L = Q.get_all_individuals()
+            >>> for dr in L[0].data_records[1]:
+            ...    print (dr.customer_class, dr.service_time)
+            (0, 5.0)
+            (1, 10.0)
+            (1, 10.0)
+            (1, 10.0)
+            (1, 10.0)
         """
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
@@ -337,7 +359,7 @@ class Simulation:
             for node in individual.data_records:
                 for record in individual.data_records[node]:
                     csv_wrtr.writerow([individual.id_number,
-                                       individual.customer_class,
+                                       record.customer_class,
                                        node,
                                        record.arrival_date,
                                        record.wait,
