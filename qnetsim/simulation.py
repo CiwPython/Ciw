@@ -43,6 +43,11 @@ class Simulation:
             2500
             >>> Q.class_change_matrix
             'NA'
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+            >>> Q.class_change_matrix
+            [[[0.7, 0.3], [0.2, 0.8]], [[1.0, 0.0], [0.0, 1.0]]]
+
         """
 
         self.parameters = parameters
