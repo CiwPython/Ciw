@@ -644,8 +644,10 @@ class Node:
             5.4441
             >>> ind.data_records[1][0].exit_date
             9
+            >>> ind.data_records[1][0].customer_class
+            0
         """
-        record = DataRecord(individual.arrival_date, individual.service_time, individual.service_start_date, individual.exit_date, self.id_number)
+        record = DataRecord(individual.arrival_date, individual.service_time, individual.service_start_date, individual.exit_date, self.id_number, individual.previous_class)
         if self.id_number in individual.data_records:
             individual.data_records[self.id_number].append(record)
         else:

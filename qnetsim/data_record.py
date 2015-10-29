@@ -11,10 +11,10 @@ class DataRecord:
     """
     A class for a data record
     """
-    def __init__(self, arrival_date, service_time, service_start_date, exit_date, node):
+    def __init__(self, arrival_date, service_time, service_start_date, exit_date, node, customer_class):
         """
         An example of a data record instance.
-            >>> r = DataRecord(2, 3, 2, 8, 1)
+            >>> r = DataRecord(2, 3, 2, 8, 1, 2)
             >>> r.arrival_date
             2
             >>> r.wait
@@ -31,9 +31,11 @@ class DataRecord:
             8
             >>> r.node
             1
+            >>> r.customer_class
+            2
 
         Another example of a data record instance.
-            >>> r = DataRecord(5.7, 2.1, 8.2, 10.3, 1)
+            >>> r = DataRecord(5.7, 2.1, 8.2, 10.3, 1,3)
             >>> r.arrival_date
             5.7
             >>> round(r.wait, 5)
@@ -50,6 +52,8 @@ class DataRecord:
             10.3
             >>> r.node
             1
+            >>> r.customer_class
+            3
         """
         if exit_date < arrival_date:
             raise ValueError('Arrival date should preceed exit date')
@@ -61,6 +65,7 @@ class DataRecord:
         self.service_time = service_time
         self.service_start_date = service_start_date
         self.exit_date = exit_date
+        self.customer_class = customer_class
 
         self.service_end_date = service_start_date + service_time
         self.wait = service_start_date - arrival_date

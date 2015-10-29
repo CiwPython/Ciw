@@ -348,7 +348,7 @@ class Simulation:
             for node in individual.data_records:
                 for record in individual.data_records[node]:
                     csv_wrtr.writerow([individual.id_number,
-                                       individual.customer_class,
+                                       record.customer_class,
                                        node,
                                        record.arrival_date,
                                        record.wait,
