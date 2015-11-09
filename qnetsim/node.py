@@ -59,6 +59,8 @@ class Node:
             1
             >>> N.masterschedule
             [30, 60, 90, 100, 130, 160, 190, 200, 230, 260, 290]
+            >>> N.next_event_date
+            30
 
         """
 
@@ -81,7 +83,10 @@ class Node:
         self.individuals = []
         self.id_number = id_number
         self.cum_transition_row = self.find_cum_transition_row()
-        self.next_event_date = "Inf"
+        if self.scheduled_servers:
+            self.next_event_date = self.masterschedule[0]
+        else:
+            self.next_event_date = "Inf"
         self.blocked_queue = []
         if self.c < 'Inf':
             self.servers = [Server(self, i+1) for i in range(self.c)]
@@ -651,11 +656,51 @@ class Node:
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             'Inf'
+
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date
+            30
+            >>> N.individuals
+            []
+            >>> N.update_next_event_date(0.0)
+            >>> N.next_event_date
+            30
+
+            >>> ind1 = Individual(1)
+            >>> ind1.arrival_date = 0.3
+            >>> ind1.service_time = 0.2
+            >>> ind1.service_end_date = 0.5
+            >>> N.next_event_date = 0.3
+            >>> N.individuals = [ind1]
+            >>> N.update_next_event_date(N.next_event_date)
+            >>> N.next_event_date
+            0.5
+
+            >>> ind2 = Individual(2)
+            >>> ind2.arrival_date = 0.7
+            >>> ind2.service_time = 0.2
+            >>> ind2.service_end_date = 0.9
+            >>> ind2.exit_date = False
+
+            >>> N.individuals = [ind1, ind2]
+            >>> N.update_next_event_date(N.next_event_date)
+            >>> N.next_event_date
+            30
+
+
+
         """
         if self.c == "Inf":
-            self.next_event_date = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+            next_end_service = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
         else:
-            self.next_event_date = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+            next_end_service = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+        if self.scheduled_servers:
+            next_shift_change = self.masterschedule[0]
+            self.next_event_date = min(next_end_service, next_shift_change)
+        else:
+            self.next_event_date = next_end_service
 
     def next_node(self, customer_class):
         """
