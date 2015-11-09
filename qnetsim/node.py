@@ -613,6 +613,26 @@ class Node:
         free_servers = [svr for svr in self.servers if not svr.busy]
         return free_servers[0]
 
+    def kill_server(self,srvr):
+        """
+        Kills server
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> s = N.servers[0]
+            >>> N.servers
+            [Server 1 at Node 1]
+            >>> N.kill_server(s)
+            >>> N.servers
+            []
+
+
+        """
+        indx = self.servers.index(srvr)
+        del self.servers[indx]
+
     def update_next_event_date(self, current_time):
         """
         Finds the time of the next event at this node
@@ -688,7 +708,6 @@ class Node:
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             30
-
 
 
         """
