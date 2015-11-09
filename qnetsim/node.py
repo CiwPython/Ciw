@@ -181,10 +181,17 @@ class Node:
         """
         Has an event
         """
-        
+        if self.check_if_shiftchange:
+            self.change_shift()
+        else:
+            self.finish_service
+
+
+
+
         self.finish_service()
 
-    def check_if_shiftchange(self, current_time):
+    def check_if_shiftchange(self):
         """
         Check whether current time is a shift change
 
@@ -192,22 +199,26 @@ class Node:
             >>> from import_params import load_parameters
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
             >>> N = Q.transitive_nodes[0]
-            >>> N.check_if_shiftchange(12.0)
+            >>> N.next_event_date = 12.0
+            >>> N.check_if_shiftchange()
             False
-            >>> N.check_if_shiftchange(30.0)
+            >>> N.next_event_date = 30.0
+            >>> N.check_if_shiftchange()
             True
 
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = Q.transitive_nodes[0]
-            >>> N.check_if_shiftchange(12.0)
+            >>> N.next_event_date = 12.0
+            >>> N.check_if_shiftchange()
             False
-            >>> N.check_if_shiftchange(30.0)
+            >>> N.next_event_date = 30.0
+            >>> N.check_if_shiftchange()
             False
 
 
         """
         if self.scheduled_servers:
-            return current_time == self.masterschedule[0]
+            return self.next_event_date == self.masterschedule[0]
         return False
 
 
