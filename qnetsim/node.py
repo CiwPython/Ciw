@@ -177,6 +177,9 @@ class Node:
         if self.simulation.detecting_deadlock:
             self.simulation.digraph.remove_edges_from(self.simulation.digraph.in_edges(str(server)) + self.simulation.digraph.out_edges(str(server)))
 
+        if server.offduty:
+            self.kill_server(server)
+
     def have_event(self):
         """
         Has an event
@@ -187,9 +190,90 @@ class Node:
             self.finish_service
 
 
-
-
         self.finish_service()
+
+    def change_shift(self):
+        """
+        Add servers and deletes or indicates which servers should go off duty
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date = 30
+            >>> N.servers
+            [Server 1 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [False]
+            >>> [obs.offduty for obs in N.servers]
+            [False]
+            >>> N.change_shift()
+            >>> N.servers
+            [Server 2 at Node 1, Server 3 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [False, False]
+            >>> [obs.offduty for obs in N.servers]
+            [False, False]
+            >>> N.c
+            2
+
+            >>> N.servers[0].busy = True
+            >>> N.next_event_date = 90
+            >>> N.change_shift()
+            >>> N.servers
+            [Server 2 at Node 1, Server 4 at Node 1, Server 5 at Node 1, Server 6 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [True, False, False, False]
+            >>> [obs.offduty for obs in N.servers]
+            [True, False, False, False]
+            >>> N.c
+            3
+
+        """
+        highest_id = max([srvr.id_number for srvr in self.servers])
+        shift = self.next_event_date%self.cyclelength
+
+        self.take_servers_off_duty()
+
+        self.add_new_server(shift,highest_id)
+
+        indx = [obs[0] for obs in self.schedule].index(shift)
+        self.c = self.schedule[indx][1]
+
+    def take_servers_off_duty(self):
+        """
+        Gathers servers that should be deleted
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.add_new_server(90, 1)
+            >>> N.servers
+            [Server 1 at Node 1, Server 2 at Node 1, Server 3 at Node 1, Server 4 at Node 1]
+            >>> N.servers[1].busy = True
+            >>> N.servers[2].busy = True
+            >>> [obs.busy for obs in N.servers]
+            [False, True, True, False]
+            >>> [obs.offduty for obs in N.servers]
+            [False, False, False, False]
+
+            >>> N.take_servers_off_duty()
+            >>> N.servers
+            [Server 2 at Node 1, Server 3 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [True, True]
+            >>> [obs.offduty for obs in N.servers]
+            [True, True]
+        """
+
+        to_delete = []
+        for srvr in self.servers:
+            if srvr.busy:
+                srvr.offduty = True
+            else:
+                to_delete.append(srvr)
+        for obs in to_delete:
+            self.kill_server(obs)
 
     def check_if_shiftchange(self):
         """
@@ -672,7 +756,7 @@ class Node:
         indx = self.servers.index(srvr)
         del self.servers[indx]
 
-    def add_new_server(self, shift):
+    def add_new_server(self, shift, highest_id):
         """
         Add appropriate amount of servers for the given shift
 
@@ -683,12 +767,11 @@ class Node:
             >>> s = 90
             >>> N.servers
             [Server 1 at Node 1]
-            >>> N.add_new_server(s)
+            >>> N.add_new_server(s,1)
             >>> N.servers
             [Server 1 at Node 1, Server 2 at Node 1, Server 3 at Node 1, Server 4 at Node 1]
 
         """
-        highest_id = max([srvr.id_number for srvr in self.servers])
         indx = [obs[0] for obs in self.schedule].index(shift)
         num_servers = self.schedule[indx][1]
         for i in range(num_servers):
