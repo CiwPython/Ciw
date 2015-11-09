@@ -23,11 +23,14 @@ class Server:
             1
             >>> S.id_number
             1
+            >>> S.offduty
+            False
         """
         self.node = node
         self.id_number = id_number
         self.cust = False
         self.busy = False
+        self.offduty = False
 
     def __repr__(self):
         """
