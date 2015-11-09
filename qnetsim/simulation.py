@@ -43,10 +43,16 @@ class Simulation:
             2500
             >>> Q.class_change_matrix
             'NA'
+            >>> Q.schedules
+            [False, False, False, False]
 
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
             >>> Q.class_change_matrix
             [[[0.7, 0.3], [0.2, 0.8]], [[1.0, 0.0], [0.0, 1.0]]]
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> Q.schedules
+            [True, False]
 
         """
 
@@ -59,6 +65,10 @@ class Simulation:
         self.node_given_class_probs = [[self.lmbda[j][i]/(self.class_probs[j]*self.overall_lmbda) for i in range(len(self.lmbda[0]))] for j in range(len(self.lmbda))]
         self.mu = [self.parameters['Service_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.c = self.parameters['Number_of_servers']
+        self.schedules = [False for i in range(len(self.c))]
+        for i in range(len(self.c)):
+            if type(self.c[i])==type('string'):
+                self.schedules[i] =  True               
         self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         if 'Class_change_matrices' in self.parameters:

@@ -46,11 +46,30 @@ class Node:
             >>> N2 = Q.transitive_nodes[1]
             >>> N2.class_change_for_node
             [[1.0, 0.0], [0.0, 1.0]]
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.scheduled_servers
+            True
+            >>> N.schedule
+            [[0, 1], [30, 2], [60, 1], [90, 3]]
+            >>> N.cyclelength
+            100
+            >>> N.c
+            1
+
         """
 
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
-        self.c = self.simulation.c[id_number-1]
+        self.scheduled_servers = self.simulation.schedules[id_number-1]
+        if self.scheduled_servers:
+            self.schedule = self.simulation.parameters[self.simulation.c[id_number-1]]
+            self.cyclelength = self.simulation.parameters['cycle_length']
+            self.c = self.schedule[0][1]
+        else:
+            self.c = self.simulation.c[id_number-1]
+
         self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         if self.simulation.class_change_matrix != 'NA':
