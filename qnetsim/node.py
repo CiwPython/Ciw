@@ -46,11 +46,35 @@ class Node:
             >>> N2 = Q.transitive_nodes[1]
             >>> N2.class_change_for_node
             [[1.0, 0.0], [0.0, 1.0]]
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.scheduled_servers
+            True
+            >>> N.schedule
+            [[0, 1], [30, 2], [60, 1], [90, 3]]
+            >>> N.cyclelength
+            100
+            >>> N.c
+            1
+            >>> N.masterschedule
+            [30, 60, 90, 100, 130, 160, 190, 200, 230, 260, 290]
+            >>> N.next_event_date
+            30
+
         """
 
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
-        self.c = self.simulation.c[id_number-1]
+        self.scheduled_servers = self.simulation.schedules[id_number-1]
+        if self.scheduled_servers:
+            self.schedule = self.simulation.parameters[self.simulation.c[id_number-1]]
+            self.cyclelength = self.simulation.parameters['cycle_length']
+            self.c = self.schedule[0][1]
+            self.masterschedule = [i*self.cyclelength + obs for i in range(self.simulation.max_simulation_time//self.cyclelength + 1) for obs in [t[0] for t in  self.schedule]][1:]
+        else:
+            self.c = self.simulation.c[id_number-1]
+
         self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         if self.simulation.class_change_matrix != 'NA':
@@ -59,7 +83,10 @@ class Node:
         self.individuals = []
         self.id_number = id_number
         self.cum_transition_row = self.find_cum_transition_row()
-        self.next_event_date = "Inf"
+        if self.scheduled_servers:
+            self.next_event_date = self.masterschedule[0]
+        else:
+            self.next_event_date = "Inf"
         self.blocked_queue = []
         if self.c < 'Inf':
             self.servers = [Server(self, i+1) for i in range(self.c)]
@@ -150,11 +177,134 @@ class Node:
         if self.simulation.detecting_deadlock:
             self.simulation.digraph.remove_edges_from(self.simulation.digraph.in_edges(str(server)) + self.simulation.digraph.out_edges(str(server)))
 
+        if server.offduty:
+            self.kill_server(server)
+
     def have_event(self):
         """
         Has an event
         """
+        if self.check_if_shiftchange:
+            self.change_shift()
+        else:
+            self.finish_service
+
+
         self.finish_service()
+
+    def change_shift(self):
+        """
+        Add servers and deletes or indicates which servers should go off duty
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date = 30
+            >>> N.servers
+            [Server 1 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [False]
+            >>> [obs.offduty for obs in N.servers]
+            [False]
+            >>> N.change_shift()
+            >>> N.servers
+            [Server 2 at Node 1, Server 3 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [False, False]
+            >>> [obs.offduty for obs in N.servers]
+            [False, False]
+            >>> N.c
+            2
+
+            >>> N.servers[0].busy = True
+            >>> N.next_event_date = 90
+            >>> N.change_shift()
+            >>> N.servers
+            [Server 2 at Node 1, Server 4 at Node 1, Server 5 at Node 1, Server 6 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [True, False, False, False]
+            >>> [obs.offduty for obs in N.servers]
+            [True, False, False, False]
+            >>> N.c
+            3
+
+        """
+        highest_id = max([srvr.id_number for srvr in self.servers])
+        shift = self.next_event_date%self.cyclelength
+
+        self.take_servers_off_duty()
+
+        self.add_new_server(shift,highest_id)
+
+        indx = [obs[0] for obs in self.schedule].index(shift)
+        self.c = self.schedule[indx][1]
+
+    def take_servers_off_duty(self):
+        """
+        Gathers servers that should be deleted
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.add_new_server(90, 1)
+            >>> N.servers
+            [Server 1 at Node 1, Server 2 at Node 1, Server 3 at Node 1, Server 4 at Node 1]
+            >>> N.servers[1].busy = True
+            >>> N.servers[2].busy = True
+            >>> [obs.busy for obs in N.servers]
+            [False, True, True, False]
+            >>> [obs.offduty for obs in N.servers]
+            [False, False, False, False]
+
+            >>> N.take_servers_off_duty()
+            >>> N.servers
+            [Server 2 at Node 1, Server 3 at Node 1]
+            >>> [obs.busy for obs in N.servers]
+            [True, True]
+            >>> [obs.offduty for obs in N.servers]
+            [True, True]
+        """
+
+        to_delete = []
+        for srvr in self.servers:
+            if srvr.busy:
+                srvr.offduty = True
+            else:
+                to_delete.append(srvr)
+        for obs in to_delete:
+            self.kill_server(obs)
+
+    def check_if_shiftchange(self):
+        """
+        Check whether current time is a shift change
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date = 12.0
+            >>> N.check_if_shiftchange()
+            False
+            >>> N.next_event_date = 30.0
+            >>> N.check_if_shiftchange()
+            True
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date = 12.0
+            >>> N.check_if_shiftchange()
+            False
+            >>> N.next_event_date = 30.0
+            >>> N.check_if_shiftchange()
+            False
+
+
+        """
+        if self.scheduled_servers:
+            return self.next_event_date == self.masterschedule[0]
+        return False
+
 
     def finish_service(self):
         """
@@ -586,6 +736,48 @@ class Node:
         free_servers = [svr for svr in self.servers if not svr.busy]
         return free_servers[0]
 
+    def kill_server(self,srvr):
+        """
+        Kills server
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> s = N.servers[0]
+            >>> N.servers
+            [Server 1 at Node 1]
+            >>> N.kill_server(s)
+            >>> N.servers
+            []
+
+
+        """
+        indx = self.servers.index(srvr)
+        del self.servers[indx]
+
+    def add_new_server(self, shift, highest_id):
+        """
+        Add appropriate amount of servers for the given shift
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> s = 90
+            >>> N.servers
+            [Server 1 at Node 1]
+            >>> N.add_new_server(s,1)
+            >>> N.servers
+            [Server 1 at Node 1, Server 2 at Node 1, Server 3 at Node 1, Server 4 at Node 1]
+
+        """
+        indx = [obs[0] for obs in self.schedule].index(shift)
+        num_servers = self.schedule[indx][1]
+        for i in range(num_servers):
+            self.servers.append(Server(self, highest_id+i+1))
+
+
     def update_next_event_date(self, current_time):
         """
         Finds the time of the next event at this node
@@ -629,11 +821,50 @@ class Node:
             >>> N.update_next_event_date(N.next_event_date)
             >>> N.next_event_date
             'Inf'
+
+
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.next_event_date
+            30
+            >>> N.individuals
+            []
+            >>> N.update_next_event_date(0.0)
+            >>> N.next_event_date
+            30
+
+            >>> ind1 = Individual(1)
+            >>> ind1.arrival_date = 0.3
+            >>> ind1.service_time = 0.2
+            >>> ind1.service_end_date = 0.5
+            >>> N.next_event_date = 0.3
+            >>> N.individuals = [ind1]
+            >>> N.update_next_event_date(N.next_event_date)
+            >>> N.next_event_date
+            0.5
+
+            >>> ind2 = Individual(2)
+            >>> ind2.arrival_date = 0.7
+            >>> ind2.service_time = 0.2
+            >>> ind2.service_end_date = 0.9
+            >>> ind2.exit_date = False
+
+            >>> N.individuals = [ind1, ind2]
+            >>> N.update_next_event_date(N.next_event_date)
+            >>> N.next_event_date
+            30
+
+
         """
         if self.c == "Inf":
-            self.next_event_date = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+            next_end_service = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
         else:
-            self.next_event_date = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+            next_end_service = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+        if self.scheduled_servers:
+            next_shift_change = self.masterschedule[0]
+            self.next_event_date = min(next_end_service, next_shift_change)
+        else:
+            self.next_event_date = next_end_service
 
     def next_node(self, customer_class):
         """
