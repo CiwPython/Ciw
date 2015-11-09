@@ -183,6 +183,23 @@ class Node:
         """
         self.finish_service()
 
+    def check_if_shiftchange(self, current_time):
+        """
+        Check whether current time is a shift change
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> N.check_if_shiftchange(12.0)
+            False
+            >>> N.check_if_shiftchange(30.0)
+            True
+
+        """
+        return current_time == self.masterschedule[0]
+
+
     def finish_service(self):
         """
         The next individual finishes service
