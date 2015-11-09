@@ -61,9 +61,10 @@ class Node:
         self.cum_transition_row = self.find_cum_transition_row()
         self.next_event_date = "Inf"
         self.blocked_queue = []
-        if simulation.detecting_deadlock:
+        if self.c < 'Inf':
             self.servers = [Server(self, i+1) for i in range(self.c)]
-            self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
+            if simulation.detecting_deadlock:
+                self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
 
     def find_cdf_class_changes(self):
         """
@@ -130,11 +131,12 @@ class Node:
         server.busy = True
         individual.server = server
 
-        for blq in self.blocked_queue:
-            inds = [ind for ind in self.simulation.nodes[blq[0]].individuals if ind.id_number==blq[1]]
-            ind = inds[0]
-            if ind != individual:
-                self.simulation.digraph.add_edge(str(ind.server), str(server))
+        if self.simulation.detecting_deadlock:
+            for blq in self.blocked_queue:
+                inds = [ind for ind in self.simulation.nodes[blq[0]].individuals if ind.id_number==blq[1]]
+                ind = inds[0]
+                if ind != individual:
+                    self.simulation.digraph.add_edge(str(ind.server), str(server))
 
 
     def detatch_server(self, server, individual):
@@ -145,7 +147,8 @@ class Node:
         server.busy = False
         individual.server = False
 
-        self.simulation.digraph.remove_edges_from(self.simulation.digraph.in_edges(str(server)) + self.simulation.digraph.out_edges(str(server)))
+        if self.simulation.detecting_deadlock:
+            self.simulation.digraph.remove_edges_from(self.simulation.digraph.in_edges(str(server)) + self.simulation.digraph.out_edges(str(server)))
 
     def have_event(self):
         """
@@ -305,7 +308,7 @@ class Node:
         """
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
-        if self.simulation.detecting_deadlock:
+        if self.c < 'Inf':
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
         self.change_state_release(next_individual)
@@ -351,8 +354,7 @@ class Node:
         if len(self.individuals) >= self.c:
             for ind in self.individuals[:self.c]:
                 if not ind.service_start_date:
-                    if self.simulation.detecting_deadlock:
-                        self.attach_server(self.find_free_server(), ind)
+                    self.attach_server(self.find_free_server(), ind)
                     ind.service_start_date = current_time
                     ind.service_end_date = ind.service_start_date + ind.service_time
 
@@ -572,7 +574,7 @@ class Node:
         next_individual.arrival_date = current_time
         next_individual.service_time = self.simulation.service_times[self.id_number][next_individual.customer_class]()
         if len(self.individuals) < self.c:
-            if self.simulation.detecting_deadlock:
+            if self.c < 'Inf':
                 self.attach_server(self.find_free_server(), next_individual)
             next_individual.service_start_date = current_time
             next_individual.service_end_date = current_time + next_individual.service_time
