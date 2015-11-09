@@ -633,6 +633,29 @@ class Node:
         indx = self.servers.index(srvr)
         del self.servers[indx]
 
+    def add_new_server(self, shift):
+        """
+        Add appropriate amount of servers for the given shift
+
+            >>> from simulation import Simulation
+            >>> from import_params import load_parameters
+            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+            >>> N = Q.transitive_nodes[0]
+            >>> s = 90
+            >>> N.servers
+            [Server 1 at Node 1]
+            >>> N.add_new_server(s)
+            >>> N.servers
+            [Server 1 at Node 1, Server 2 at Node 1, Server 3 at Node 1, Server 4 at Node 1]
+
+        """
+        highest_id = max([srvr.id_number for srvr in self.servers])
+        indx = [obs[0] for obs in self.schedule].index(shift)
+        num_servers = self.schedule[indx][1]
+        for i in range(num_servers):
+            self.servers.append(Server(self, highest_id+i+1))
+
+
     def update_next_event_date(self, current_time):
         """
         Finds the time of the next event at this node
