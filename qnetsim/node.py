@@ -184,7 +184,7 @@ class Node:
         """
         Has an event
         """
-        if self.check_if_shiftchange:
+        if self.check_if_shiftchange():
             self.change_shift()
         else:
             self.finish_service
@@ -298,7 +298,6 @@ class Node:
             >>> N.next_event_date = 30.0
             >>> N.check_if_shiftchange()
             False
-
 
         """
         if self.scheduled_servers:

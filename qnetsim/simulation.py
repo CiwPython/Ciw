@@ -67,7 +67,7 @@ class Simulation:
         self.c = self.parameters['Number_of_servers']
         self.schedules = [False for i in range(len(self.c))]
         for i in range(len(self.c)):
-            if type(self.c[i])==type('string'):
+            if type(self.c[i])==type('string') and self.c[i]!='Inf':
                 self.schedules[i] =  True               
         self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
