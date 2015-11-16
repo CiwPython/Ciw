@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='Open Queueing Network Simulation',
+    name='ASQ',
     version='0.0.1dev',
     author='Geraint Palmer, Vincent Knight',
     author_email=('palmer.geraint@googlemail.com'),

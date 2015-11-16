@@ -11,7 +11,7 @@ Options
 from __future__ import division
 import os
 import docopt
-from qnetsim import *
+from asq import *
 
 if __name__ == '__main__':
 	arguments = docopt.docopt(__doc__)
