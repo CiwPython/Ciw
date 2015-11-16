@@ -1,0 +1,50 @@
+Arrival_rates:
+  Class 0:
+  - 0.05
+  - 0.04
+  Class 1:
+  - 0.04
+  - 0.06
+detect_deadlock: False
+Number_of_classes: 2
+Number_of_nodes: 2
+Number_of_servers:
+- 4
+- 3
+Queue_capacities:
+- "Inf"
+- 10
+Service_rates:
+  Class 0:
+  - - Deterministic
+    - 5.0
+  - - Deterministic
+    - 5.0
+  Class 1:
+  - - Deterministic
+    - 10.0
+  - - Deterministic
+    - 10.0
+Simulation_time: 50
+Transition_matrices:
+  Class 0:
+  - - 0.8
+    - 0.1
+  - - 0.0
+    - 0.0
+  Class 1:
+  - - 0.8
+    - 0.1
+  - - 0.2
+    - 0.0
+Class_change_matrices:
+  Node 0:
+  - - 0.7
+    - 0.3
+  - - 0.2
+    - 0.8
+  Node 1:
+  - - 1.0
+    - 0.0
+  - - 0.0
+    - 1.0
