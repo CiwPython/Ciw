@@ -2,13 +2,13 @@ Running a Simulation via Command Line
 =====================================
 
 This page will describe how to set up a parameters file and then how to run the experiment.
-Set up a new folder alongside QNetSim that will contain your parameters file::
+Set up a new folder alongside ASQ that will contain your parameters file::
 
     .
     ├── my_simulation_instance
     │   └── parameters.yml
     │
-    ├── QNetSim
+    ├── ASQ
 
 The parameters.yml file is a yaml file containing all the parameters that describe the queueing network you would like to simulate.
 
@@ -120,10 +120,10 @@ In this transition matrix the `(i,j)` th element corresponds to the probability 
 Running the Simulation
 ----------------------
 
-To run the simulation go to the directory which contains both :code:`QNetSim` and :code:`my_simultion_instance`.
+To run the simulation go to the directory which contains both :code:`ASQ` and :code:`my_simultion_instance`.
 Then run the following command::
 
-    $ python QNetSim/scripts/run_simulation.py my_simulation_instance/
+    $ python ASQ/scripts/run_simulation.py my_simulation_instance/
 
 This will create a :code:`data.csv`, positioned here::
 
@@ -131,6 +131,6 @@ This will create a :code:`data.csv`, positioned here::
     ├── my_simulation_instance
     │   └── parameters.yml
     │   └── data.csv
-    ├── QNetSim
+    ├── ASQ
 
 Please see :ref:`output-file` for an explanation of the data contained here.

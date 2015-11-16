@@ -4,7 +4,7 @@
 Service Time Distributions
 ==========================
 
-QNetSim currently allows the following continuous service rate distributions:
+ASQ currently allows the following continuous service rate distributions:
 
 - :ref:`uniform_dist`
 - :ref:`deterministic_dist`

@@ -4,7 +4,7 @@
 Custom Discrete PDFs for Service Times
 ======================================
 
-QNetSim allows users to define their own discrete service time distributions.
+ASQ allows users to define their own discrete service time distributions.
 An example distribution may look like this:
 
 	+------+------+------+------+------+------+------+
@@ -31,7 +31,7 @@ An example is shown::
       - - Exponential
         - 0.1
 
-This tells QNetSim that at Node 1 all Class 0 customers will have their service time drawn from the custom distribution :code:`my_special_distribution_01`.
+This tells ASQ that at Node 1 all Class 0 customers will have their service time drawn from the custom distribution :code:`my_special_distribution_01`.
 This distribution hasn;t been defined yet.
 To define the distribution, add the following lines to the end of the :code:`parameters.yml` file::
 

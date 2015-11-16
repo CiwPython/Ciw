@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'QNetSim'
+project = u'ASQ'
 copyright = u'2015, Geraint Palmer'
 author = u'Geraint Palmer'
 
@@ -108,7 +108,7 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -200,7 +200,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'QNetSimdoc'
+htmlhelp_basename = 'ASQdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -222,7 +222,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'QNetSim.tex', u'QNetSim Documentation',
+  (master_doc, 'ASQ.tex', u'ASQ Documentation',
    u'Geraint Palmer', 'manual'),
 ]
 
@@ -252,7 +252,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'qnetsim', u'QNetSim Documentation',
+    (master_doc, 'asq', u'ASQ Documentation',
      [author], 1)
 ]
 
@@ -266,8 +266,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'QNetSim', u'QNetSim Documentation',
-   author, 'QNetSim', 'One line description of project.',
+  (master_doc, 'ASQ', u'ASQ Documentation',
+   author, 'ASQ', 'One line description of project.',
    'Miscellaneous'),
 ]
 

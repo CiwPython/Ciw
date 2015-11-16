@@ -1,5 +1,7 @@
-Welcome to QNetSim's documentation!
-===================================
+Welcome to ASQ's documentation!
+===============================
+
+ASQ is a recursive acronym that stands for ASQ Simulates Queues. This package is a simulation framework for open queueing networks.
 
 Contents:
 
