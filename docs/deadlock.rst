@@ -4,4 +4,4 @@
 Deadlock Detection Capability
 =============================
 
-The simulation frameworkhas built in deadlock detection capability.
+The simulation framework has built in deadlock detection capability.
