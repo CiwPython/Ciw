@@ -853,7 +853,6 @@ class Node:
             >>> N.next_event_date
             30
 
-
         """
         if self.c == "Inf":
             next_end_service = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
