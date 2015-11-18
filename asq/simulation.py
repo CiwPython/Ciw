@@ -57,6 +57,7 @@ class Simulation:
         """
 
         self.parameters = parameters
+        self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
@@ -78,7 +79,6 @@ class Simulation:
         self.max_simulation_time = self.parameters['Simulation_time']
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
-        self.number_of_nodes = len(self.transitive_nodes)
         self.service_times = self.find_service_time_dictionary()
         self.state = [[0, 0] for i in range(self.number_of_nodes)]
         initial_state = [[0, 0] for i in range(self.number_of_nodes)]
@@ -176,34 +176,32 @@ class Simulation:
             >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
             14.6
             >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            9.5
+            14.6
             >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
             10.7
             >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            9.5
+            14.6
+            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
+            14.6
             >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
             9.5
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            10.7
 
         Testing whether reading in from a file works::
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_custom_dist/'))
             >>> Q.service_times[1][0]()
             5.0
             >>> Q.service_times[1][0]()
-            5.5
+            6.0
             >>> Q.service_times[1][0]()
             6.0
             >>> Q.service_times[1][1]()
             5.0
             >>> Q.service_times[1][1]()
-            6.0
-            >>> Q.service_times[1][1]()
             5.0
+            >>> Q.service_times[1][1]()
+            6.0
             >>> Q.service_times[2][1]()
-            1.9
-            >>> Q.service_times[2][1]()
-            1.9
+            1.3
             >>> Q.service_times[2][1]()
             1.3
             >>> Q.service_times[2][1]()
@@ -211,9 +209,11 @@ class Simulation:
             >>> Q.service_times[2][1]()
             1.9
             >>> Q.service_times[2][1]()
-            1.1
+            1.5
             >>> Q.service_times[2][1]()
-            1.4
+            2.1
+            >>> Q.service_times[2][1]()
+            1.9
         """
         rnd_num = random()
         for p in range(len(cum_probs)):
@@ -236,14 +236,15 @@ class Simulation:
             >>> Q.simulate_until_max_time()
             >>> L = Q.get_all_individuals()
             >>> L[300].data_records.values()[0][0].service_start_date
-            7.655099937252633
+            6.047300861515974
 
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
             >>> Q.simulate_until_max_time()
             >>> L = Q.get_all_individuals()
             >>> for dr in L[0].data_records[1]:
             ...    print (dr.customer_class, dr.service_time)
-            (0, 5.0)
+            (1, 10.0)
+            (1, 10.0)
             (0, 5.0)
             (1, 10.0)
         """
@@ -266,7 +267,7 @@ class Simulation:
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
             >>> times = Q.simulate_until_deadlock()
             >>> times[((0, 0), (0, 0))]
-            8.699770274666774
+            9.099394565084223
         """
         deadlocked = False
         self.nodes[0].update_next_event_date()

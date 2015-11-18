@@ -21,72 +21,45 @@ class ArrivalNode:
         Here is an example::
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
+            >>> seed(5)
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = ArrivalNode(Q)
-            >>> N.lmbda
-            35.5
-            >>> N.transition_row_given_class
-            [[0.2, 0.4666666666666667, 0.26666666666666666, 0.06666666666666667], [0.13333333333333333, 0.2, 0.4, 0.26666666666666666], [0.36363636363636365, 0.18181818181818182, 0.36363636363636365, 0.09090909090909091]]
             >>> N.next_event_date
-            0.0
+            0.004400313282484739
             >>> N.number_of_individuals
             0
-            >>> N.cum_transition_row
-            [[0.2, 0.6666666666666667, 0.9333333333333333, 1.0], [0.13333333333333333, 0.33333333333333337, 0.7333333333333334, 1.0], [0.36363636363636365, 0.5454545454545454, 0.9090909090909091, 1.0]]
-            >>> N.cum_class_probs
-            [0.4225352112676056, 0.8450704225352113, 1.0]
+            >>> N.next_event_dates_dict
+            {1: {0: 0.21104109989445083, 1: 0.14156146233571273, 2: 0.3923690877168693}, 2: {0: 0.12188255510498336, 1: 0.004400313282484739, 2: 0.24427756009692883}, 3: {0: 0.08194634729677806, 1: 0.41350975417151004, 2: 0.7256307838738146}, 4: {0: 0.17388232234898224, 1: 0.39881841448612376, 2: 0.2987813628296875}}
         """
 
         self.simulation = simulation
-        self.lmbda = self.simulation.overall_lmbda
-        self.class_probs = self.simulation.class_probs
-        self.transition_row_given_class = self.simulation.node_given_class_probs
-        self.next_event_date = 0.0
         self.number_of_individuals = 0
-        self.cum_transition_row = self.find_cumulative_transition_row()
-        self.cum_class_probs = self.find_cumulative_class_probs()
+        self.next_event_dates_dict = {nd + 1:{cls:False for cls in range(self.simulation.parameters['Number_of_classes'])} for nd in range(self.simulation.number_of_nodes)}
+        self.initialise_next_event_dates_dict()
+        self.find_next_event_date()
 
-    def find_cumulative_transition_row(self):
+    def initialise_next_event_dates_dict(self):
         """
-        Finds the cumulative transition row for the arrival node
+        Initialises the next event dates dictionary with random times for each node and class
 
-        An example of finding the cumulative transition row of an arrival node.
             >>> from simulation import Simulation
             >>> from import_params import load_parameters
+            >>> seed(6)
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = ArrivalNode(Q)
-            >>> [[round(pr, 2) for pr in N.cum_transition_row[cls]] for cls in range(len(N.cum_transition_row))]
-            [[0.2, 0.67, 0.93, 1.0], [0.13, 0.33, 0.73, 1.0], [0.36, 0.55, 0.91, 1.0]]
+            >>> N.next_event_dates_dict
+            {1: {0: 0.43622825409205973, 1: 0.26722324060759933, 2: 0.38642562730637603}, 2: {0: 0.16369523112791148, 1: 0.07147095652645417, 2: 0.8065738413825493}, 3: {0: 0.4088480189803173, 1: 0.0514323247956018, 2: 0.8132038176069183}, 4: {0: 1.157375143843249, 1: 0.46492767142177205, 2: 0.8176876726520277}}
+            >>> N.initialise_next_event_dates_dict()
+            >>> N.next_event_dates_dict
+            {1: {0: 0.03258707753070194, 1: 0.8054262557674572, 2: 0.8168179514964325}, 2: {0: 0.08416713808943652, 1: 0.03282452990969279, 2: 0.219602384651059}, 3: {0: 0.25190890679024003, 1: 0.05735978139796031, 2: 1.5117882120904502}, 4: {0: 0.8881158889281887, 1: 0.05605926220383697, 2: 2.1307650867721044}}
         """
+        for nd in self.next_event_dates_dict:
+            for cls in self.next_event_dates_dict[nd]:
+                if self.simulation.lmbda == 0:
+                    self.next_event_dates_dict[nd][cls] = 'Inf'
+                else:
+                    self.next_event_dates_dict[nd][cls] = expovariate(self.simulation.lmbda[cls][nd-1])
 
-        cum_transition_row = []
-        for cls in range(len(self.transition_row_given_class)):
-            sum_p = 0
-            cum_transition_row.append([])
-            for p in self.transition_row_given_class[cls]:
-                sum_p += p
-                cum_transition_row[cls].append(sum_p)
-        return cum_transition_row
-
-    def find_cumulative_class_probs(self):
-        """
-        Returns the cumulative class probs
-
-        An example of finding the cumulative probabilities of a new customer being in each class.
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> N = ArrivalNode(Q)
-            >>> N.find_cumulative_class_probs()
-            [0.4225352112676056, 0.8450704225352113, 1.0]
-        """
-
-        cum_class_probs = []
-        sum_p = 0
-        for p in self.class_probs:
-            sum_p += p
-            cum_class_probs.append(sum_p)
-        return cum_class_probs
 
     def __repr__(self):
         """
@@ -120,21 +93,22 @@ class ArrivalNode:
             >>> Q.transitive_nodes[3].individuals
             []
             >>> N = ArrivalNode(Q)
-            >>> N.lmbda
-            35.5
+            >>> N.find_next_event_date()
             >>> N.next_event_date
-            0.0
+            0.0010541371000842435
+            >>> N.next_node
+            1
             >>> N.have_event()
             >>> Q.transitive_nodes[0].individuals
-            []
+            [Individual 1]
             >>> Q.transitive_nodes[1].individuals
             []
             >>> Q.transitive_nodes[2].individuals
-            [Individual 1]
+            []
             >>> Q.transitive_nodes[3].individuals
             []
             >>> round(N.next_event_date,5)
-            0.01927
+            0.00518
 
         Another example.
             >>> seed(12)
@@ -149,8 +123,9 @@ class ArrivalNode:
             >>> Q.transitive_nodes[3].individuals
             []
             >>> N = ArrivalNode(Q)
+            >>> N.find_next_event_date()
             >>> N.next_event_date
-            0.0
+            0.01938490320079715
             >>> N.have_event()
             >>> Q.transitive_nodes[0].individuals
             []
@@ -161,16 +136,17 @@ class ArrivalNode:
             >>> Q.transitive_nodes[3].individuals
             []
             >>> round(N.next_event_date,5)
-            0.00433
+            0.02021
         """
         self.number_of_individuals += 1
-        next_individual = Individual(self.number_of_individuals, self.choose_class())
-        next_node = self.next_node(next_individual.customer_class)
+        next_individual = Individual(self.number_of_individuals, self.next_class)
+        next_node = self.simulation.transitive_nodes[self.next_node-1]
         if len(next_node.individuals) < next_node.node_capacity:
             next_node.accept(next_individual, self.next_event_date)
-        self.update_next_event_date()
+        self.next_event_dates_dict[self.next_node][self.next_class] += expovariate(self.simulation.lmbda[self.next_class][self.next_node-1])
+        self.find_next_event_date()
 
-    def update_next_event_date(self):
+    def find_next_event_date(self):
         """
         Finds the time of the next event at this node
 
@@ -180,62 +156,34 @@ class ArrivalNode:
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> N = ArrivalNode(Q)
             >>> N.next_event_date
-            0.0
-            >>> N.update_next_event_date()
+            0.0010541371000842435
+            >>> N.find_next_event_date()
             >>> round(N.next_event_date, 5)
-            0.00406
-        """
-        self.next_event_date += expovariate(self.lmbda)
+            0.00105
+            >>> N.next_node
+            1
+            >>> N.next_class
+            1
 
-    def next_node(self, customer_class):
-        """
-        Finds the next node according the random distribution.
-
-        An example of finding the individual's starting node.
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> seed(1)
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> N = Q.nodes[0]
-            >>> N.cum_transition_row
-            [[0.2, 0.6666666666666667, 0.9333333333333333, 1.0], [0.13333333333333333, 0.33333333333333337, 0.7333333333333334, 1.0], [0.36363636363636365, 0.5454545454545454, 0.9090909090909091, 1.0]]
-            >>> N.next_node(0)
-            Node 1
-            >>> N.next_node(0)
-            Node 3
-            >>> N.next_node(0)
-            Node 3
-
-        And another example.
-            >>> seed(401)
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> N = Q.nodes[0]
-            >>> N.next_node(0)
-            Node 2
-            >>> N.next_node(0)
-            Node 2
-            >>> N.next_node(0)
-            Node 3
-        """
-        rnd_num = random()
-        for p in range(len(self.cum_transition_row[customer_class])):
-            if rnd_num < self.cum_transition_row[customer_class][p]:
-                return self.simulation.transitive_nodes[p]
-
-    def choose_class(self):
-        """
-        Returns the customer's class from the class probabilities
-
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> seed(6)
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> N = ArrivalNode(Q)
-            >>> N.choose_class()
+            >>> N.have_event()
+            >>> N.find_next_event_date()
+            >>> round(N.next_event_date, 5)
+            0.00518
+            >>> N.next_node
+            3
+            >>> N.next_class
             1
         """
-        rnd_num = random()
-        for p in range(len(self.cum_class_probs)):
-            if rnd_num < self.cum_class_probs[p]:
-                return p
+        times = [[self.next_event_dates_dict[nd+1][cls] for cls in range(len(self.next_event_dates_dict[1]))] for nd in range(len(self.next_event_dates_dict))]
+        mintimes = [min(obs) for obs in times]
+        nd = mintimes.index(min(mintimes))
+        cls = times[nd].index(min(times[nd]))
+        self.next_node = nd + 1
+        self.next_class = cls
+        self.next_event_date = self.next_event_dates_dict[self.next_node][self.next_class]
+
+    def update_next_event_date(self):
+        """
+        Passes, updatign enxt event happens at time of event
+        """
+        pass

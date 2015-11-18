@@ -322,7 +322,7 @@ class Node:
             [Individual 1, Individual 2, Individual 3]
             >>> N.update_next_event_date(0.03)
             >>> round(N.next_event_date, 5)
-            0.03555
+            0.03604
             >>> N.finish_service()
             >>> N.individuals
             [Individual 1, Individual 3]
@@ -348,7 +348,7 @@ class Node:
         >>> from simulation import Simulation
             >>> from individual import Individual
             >>> from import_params import load_parameters
-            >>> seed(80)
+            >>> seed(14)
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
             >>> N1 = Q.transitive_nodes[0]
             >>> ind = Individual(254, 0)
@@ -443,17 +443,17 @@ class Node:
             [Individual 1, Individual 2, Individual 3]
             >>> N.update_next_event_date(0.03)
             >>> round(N.next_event_date, 5)
-            0.03555
+            0.03604
             >>> N.individuals[1].exit_date = 0.04 #shouldn't affect the next event date
             >>> N.update_next_event_date(N.next_event_date)
             >>> round(N.next_event_date, 5)
-            0.04846
+            0.03708
             >>> N.release(1, Q.transitive_nodes[1], N.next_event_date)
             >>> N.individuals
             [Individual 1, Individual 3]
             >>> N.update_next_event_date(N.next_event_date)
             >>> round(N.next_event_date, 5)
-            0.10204
+            0.06447
         """
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.exit_date = current_time
@@ -650,9 +650,9 @@ class Node:
             >>> ind1.service_start_date
             0.01
             >>> round(ind1.service_time, 5)
-            0.22524
+            0.18695
             >>> round(ind1.service_end_date, 5)
-            0.23524
+            0.19695
 
             >>> N.accept(ind2, 0.02)
             >>> N.accept(ind3, 0.03)
@@ -664,9 +664,9 @@ class Node:
             >>> round(ind4.service_start_date, 5)
             0.04
             >>> round(ind4.service_time, 5)
-            0.04333
+            0.1637
             >>> round(ind4.service_end_date, 5)
-            0.08333
+            0.2037
 
             >>> N.accept(ind5, 0.05)
             >>> N.accept(ind6, 0.06)
@@ -681,7 +681,7 @@ class Node:
             >>> ind10.service_start_date
             False
             >>> round(ind10.service_time, 5)
-            0.21004
+            0.16534
         """
         next_individual.exit_date = False
         next_individual.is_blocked = False
@@ -713,11 +713,11 @@ class Node:
             >>> ind.arrival_date
             300
             >>> round(ind.service_time,5)
-            0.02294
+            0.03382
             >>> ind.service_start_date
             300
             >>> round(ind.service_end_date,5)
-            300.02294
+            300.03382
 
         """
         next_individual.arrival_date = current_time
@@ -878,13 +878,13 @@ class Node:
             >>> node.next_node(0)
             Node 4
             >>> node.next_node(0)
-            Exit Node
+            Node 4
+            >>> node.next_node(0)
+            Node 4
             >>> node.next_node(0)
             Node 4
             >>> node.next_node(0)
             Node 2
-            >>> node.next_node(0)
-            Node 1
             >>> node.next_node(0)
             Node 4
 
@@ -893,12 +893,6 @@ class Node:
             >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
             >>> node = Q.transitive_nodes[2]
             >>> node.next_node(0)
-            Node 4
-            >>> node.next_node(0)
-            Node 2
-            >>> node.next_node(0)
-            Node 2
-            >>> node.next_node(0)
             Node 2
             >>> node.next_node(0)
             Node 4
@@ -906,6 +900,12 @@ class Node:
             Node 2
             >>> node.next_node(0)
             Node 2
+            >>> node.next_node(0)
+            Node 2
+            >>> node.next_node(0)
+            Node 2
+            >>> node.next_node(0)
+            Node 4
             >>> node.next_node(0)
             Node 2
 
@@ -947,11 +947,11 @@ class Node:
             >>> ind.data_records[1][0].service_start_date
             3.5
             >>> round(ind.data_records[1][0].service_time, 5)
-            0.0559
+            0.07894
             >>> round(ind.data_records[1][0].service_end_date, 5)
-            3.5559
+            3.57894
             >>> round(ind.data_records[1][0].blocked, 5)
-            5.4441
+            5.42106
             >>> ind.data_records[1][0].exit_date
             9
             >>> ind.data_records[1][0].customer_class
