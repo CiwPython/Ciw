@@ -17,53 +17,7 @@ class Node:
     def __init__(self, id_number, simulation):
         """
         Initialise a node.
-
-        An example of initialising a node.
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> N = Node(1, Q)
-            >>> N.mu
-            [['Exponential', 7.0], ['Exponential', 7.0], ['Deterministic', 0.3]]
-            >>> N.c
-            9
-            >>> N.transition_row
-            [[0.1, 0.2, 0.1, 0.4], [0.6, 0.0, 0.0, 0.2], [0.0, 0.0, 0.4, 0.3]]
-            >>> N.next_event_date
-            'Inf'
-            >>> N.individuals
-            []
-            >>> N.id_number
-            1
-            >>> N.cum_transition_row
-            [[0.1, 0.30000000000000004, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]]
-
-
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
-            >>> N1 = Q.transitive_nodes[0]
-            >>> N1.class_change_for_node
-            [[0.7, 0.3], [0.2, 0.8]]
-            >>> N2 = Q.transitive_nodes[1]
-            >>> N2.class_change_for_node
-            [[1.0, 0.0], [0.0, 1.0]]
-
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
-            >>> N = Q.transitive_nodes[0]
-            >>> N.scheduled_servers
-            True
-            >>> N.schedule
-            [[0, 1], [30, 2], [60, 1], [90, 3]]
-            >>> N.cyclelength
-            100
-            >>> N.c
-            1
-            >>> N.masterschedule
-            [30, 60, 90, 100, 130, 160, 190, 200, 230, 260, 290]
-            >>> N.next_event_date
-            30
-
         """
-
         self.simulation = simulation
         self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
         self.scheduled_servers = self.simulation.schedules[id_number-1]
@@ -96,29 +50,12 @@ class Node:
     def find_cdf_class_changes(self):
         """
         Turning the pdf of the class change probabilities into a cdf.
-
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
-            >>> N1 = Q.transitive_nodes[0]
-            >>> N1.class_change_for_node
-            [[0.7, 0.3], [0.2, 0.8]]
-            >>> N1.find_cdf_class_changes()
-            [[0.7, 1.0], [0.2, 1.0]]
         """
         return [[sum(self.class_change_for_node[j][0:i+1]) for i in range(len(self.class_change_for_node[j]))] for j in range(len(self.class_change_for_node))]
 
     def find_cum_transition_row(self):
         """
         Finds the cumulative transition row for the node
-
-        An exmaple of finding the cumulative transition row of a node.
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> N = Node(1, Q)
-            >>> N.cum_transition_row
-            [[0.1, 0.30000000000000004, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]]
         """
 
         cum_transition_row = []
@@ -133,20 +70,6 @@ class Node:
     def __repr__(self):
         """
         Representation of a node::
-
-        An example of how a node is represented.
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> N = Node(1, Q)
-            >>> N
-            Node 1
-
-        A node cannot exist without a simulation.
-            >>> N = Node(2, False)
-            Traceback (most recent call last):
-            ...
-            AttributeError: 'bool' object has no attribute 'mu'
         """
         return 'Node %s' % self.id_number
 
@@ -189,45 +112,11 @@ class Node:
         else:
             self.finish_service
 
-
         self.finish_service()
 
     def change_shift(self):
         """
         Add servers and deletes or indicates which servers should go off duty
-            >>> from simulation import Simulation
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
-            >>> N = Q.transitive_nodes[0]
-            >>> N.next_event_date = 30
-            >>> N.servers
-            [Server 1 at Node 1]
-            >>> [obs.busy for obs in N.servers]
-            [False]
-            >>> [obs.offduty for obs in N.servers]
-            [False]
-            >>> N.change_shift()
-            >>> N.servers
-            [Server 2 at Node 1, Server 3 at Node 1]
-            >>> [obs.busy for obs in N.servers]
-            [False, False]
-            >>> [obs.offduty for obs in N.servers]
-            [False, False]
-            >>> N.c
-            2
-
-            >>> N.servers[0].busy = True
-            >>> N.next_event_date = 90
-            >>> N.change_shift()
-            >>> N.servers
-            [Server 2 at Node 1, Server 4 at Node 1, Server 5 at Node 1, Server 6 at Node 1]
-            >>> [obs.busy for obs in N.servers]
-            [True, False, False, False]
-            >>> [obs.offduty for obs in N.servers]
-            [True, False, False, False]
-            >>> N.c
-            3
-
         """
         highest_id = max([srvr.id_number for srvr in self.servers])
         shift = self.next_event_date%self.cyclelength
