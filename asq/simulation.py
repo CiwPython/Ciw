@@ -21,41 +21,7 @@ class Simulation:
     def __init__(self, parameters):
         """
         Initialise a queue instance.
-
-        Here is an example::
-
-        An example of creating a simulation instance.
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> Q.lmbda
-            [[3.0, 7.0, 4.0, 1.0], [2.0, 3.0, 6.0, 4.0], [2.0, 1.0, 2.0, 0.5]]
-            >>> Q.mu
-            [[['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]], [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]]]
-            >>> Q.c
-            [9, 10, 8, 8]
-            >>> Q.transition_matrix
-            [[[0.1, 0.2, 0.1, 0.4], [0.2, 0.2, 0.0, 0.1], [0.0, 0.8, 0.1, 0.1], [0.4, 0.1, 0.1, 0.0]], [[0.6, 0.0, 0.0, 0.2], [0.1, 0.1, 0.2, 0.2], [0.9, 0.0, 0.0, 0.0], [0.2, 0.1, 0.1, 0.1]], [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]]]
-            >>> Q.nodes
-            [Arrival Node, Node 1, Node 2, Node 3, Node 4, Exit Node]
-            >>> Q.transitive_nodes
-            [Node 1, Node 2, Node 3, Node 4]
-            >>> Q.max_simulation_time
-            2500
-            >>> Q.class_change_matrix
-            'NA'
-            >>> Q.schedules
-            [False, False, False, False]
-
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
-            >>> Q.class_change_matrix
-            [[[0.7, 0.3], [0.2, 0.8]], [[1.0, 0.0], [0.0, 1.0]]]
-
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
-            >>> Q.schedules
-            [True, False]
-
         """
-
         self.parameters = parameters
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
@@ -112,26 +78,6 @@ class Simulation:
     def find_next_active_node(self):
         """
         Return the next active node:
-
-        A mock example testing if this method works.
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> i = 0
-            >>> for node in Q.nodes[:-1]:
-            ...     node.next_event_date = i
-            ...     i += 1
-            >>> Q.find_next_active_node()
-            Arrival Node
-
-        And again.
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> i = 10
-            >>> for node in Q.nodes[:-1]:
-            ...     node.next_event_date = i
-            ...     i -= 1
-            >>> Q.find_next_active_node()
-            Node 4
         """
         return min(self.nodes, key=lambda x: x.next_event_date)
 
@@ -167,53 +113,6 @@ class Simulation:
     def custom_pdf(self, cum_probs, values):
         """
         Samples from a custom pdf
-
-            >>> from import_params import load_parameters
-            >>> seed(45)
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            10.7
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            14.6
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            14.6
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            10.7
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            14.6
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            14.6
-            >>> Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6])
-            9.5
-
-        Testing whether reading in from a file works::
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_custom_dist/'))
-            >>> Q.service_times[1][0]()
-            5.0
-            >>> Q.service_times[1][0]()
-            6.0
-            >>> Q.service_times[1][0]()
-            6.0
-            >>> Q.service_times[1][1]()
-            5.0
-            >>> Q.service_times[1][1]()
-            5.0
-            >>> Q.service_times[1][1]()
-            6.0
-            >>> Q.service_times[2][1]()
-            1.3
-            >>> Q.service_times[2][1]()
-            1.3
-            >>> Q.service_times[2][1]()
-            2.1
-            >>> Q.service_times[2][1]()
-            1.9
-            >>> Q.service_times[2][1]()
-            1.5
-            >>> Q.service_times[2][1]()
-            2.1
-            >>> Q.service_times[2][1]()
-            1.9
         """
         rnd_num = random()
         for p in range(len(cum_probs)):
@@ -229,24 +128,6 @@ class Simulation:
     def simulate_until_max_time(self):
         """
         Run the actual simulation.
-
-            >>> seed(3)
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> Q.simulate_until_max_time()
-            >>> L = Q.get_all_individuals()
-            >>> L[300].data_records.values()[0][0].service_start_date
-            6.047300861515974
-
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
-            >>> Q.simulate_until_max_time()
-            >>> L = Q.get_all_individuals()
-            >>> for dr in L[0].data_records[1]:
-            ...    print (dr.customer_class, dr.service_time)
-            (1, 10.0)
-            (1, 10.0)
-            (0, 5.0)
-            (1, 10.0)
         """
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
@@ -261,13 +142,6 @@ class Simulation:
     def simulate_until_deadlock(self):
         """
         Run the actual simulation.
-
-            >>> seed(3)
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
-            >>> times = Q.simulate_until_deadlock()
-            >>> times[((0, 0), (0, 0))]
-            9.099394565084223
         """
         deadlocked = False
         self.nodes[0].update_next_event_date()
@@ -295,41 +169,7 @@ class Simulation:
     def detect_deadlock(self):
         """
         Detects whether the system is in a deadlocked state, that is, is there a knot
-
         Note that this code is taken and adapted from the NetworkX Developer Zone Ticket #663 knot.py (09/06/2015)
-
-            >>> from import_params import load_parameters
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> nodes = ['A', 'B', 'C', 'D', 'E']
-            >>> connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
-            >>> for nd in nodes:
-            ...     Q.digraph.add_node(nd)
-            >>> for cnctn in connections:
-            ...     Q.digraph.add_edge(cnctn[0], cnctn[1])
-            >>> Q.detect_deadlock()
-            True
-
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> nodes = ['A', 'B', 'C', 'D']
-            >>> connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
-            >>> for nd in nodes:
-            ...     Q.digraph.add_node(nd)
-            >>> for cnctn in connections:
-            ...     Q.digraph.add_edge(cnctn[0], cnctn[1])
-            >>> Q.detect_deadlock()
-            False
-
-            >>> Q = Simulation(load_parameters('tests/datafortesting/logs_test_for_simulation/'))
-            >>> nodes = ['A', 'B']
-            >>> for nd in nodes:
-            ...     Q.digraph.add_node(nd)
-            >>> Q.detect_deadlock()
-            False
-            >>> connections = [('A', 'A')]
-            >>> for cnctn in connections:
-            ...     Q.digraph.add_edge(cnctn[0], cnctn[1])
-            >>> Q.detect_deadlock()
-            True
         """
         knots = []
         for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
