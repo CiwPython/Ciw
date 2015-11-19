@@ -2,7 +2,7 @@ import unittest
 import asq
 from random import seed
 
-class TestServer(unittest.TestCase):
+class TestArrivalNode(unittest.TestCase):
 
     def test_init_method(self):
         seed(5)
