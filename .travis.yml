@@ -4,4 +4,4 @@ python:
 install:
   - pip install -r requirements.txt
 script:
-  - cd asq/; python -m unittest discover asq.tests
+  - cd asq/; python -m unittest discover tests
