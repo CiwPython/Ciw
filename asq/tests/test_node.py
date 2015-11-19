@@ -13,7 +13,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, 'Inf')
         self.assertEqual(N.individuals, [])
         self.assertEqual(N.id_number, 1)
-        self.assertEqual(N.cum_transition_row, [[0.1, 0.30000000000000004, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]])
+        self.assertEqual([[round(obs, 1) for obs in row] for row in N.cum_transition_row], [[0.1, 0.3, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]])
 
         Q = asq.Simulation(asq.load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
         N1 = Q.transitive_nodes[0]
@@ -37,7 +37,7 @@ class TestNode(unittest.TestCase):
     def test_find_cum_transition_row_method(self):
         Q = asq.Simulation(asq.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
         N = asq.Node(1, Q)
-        self.assertEqual(N.find_cum_transition_row(), [[0.1, 0.30000000000000004, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]])
+        self.assertEqual([[round(obs, 1) for obs in row] for row in N.find_cum_transition_row()], [[0.1, 0.3, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]])
 
     def test_repr_method(self):
         Q = asq.Simulation(asq.load_parameters('tests/datafortesting/logs_test_for_simulation/'))

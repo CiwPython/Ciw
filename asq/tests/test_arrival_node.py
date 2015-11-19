@@ -10,18 +10,18 @@ class TestArrivalNode(unittest.TestCase):
         N = asq.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
         self.assertEqual(N.number_of_individuals, 0)
-        dates_dict = {1: {0: 0.21104109989445083, 1: 0.14156146233571273, 2: 0.3923690877168693}, 2: {0: 0.12188255510498336, 1: 0.004400313282484739, 2: 0.24427756009692883}, 3: {0: 0.08194634729677806, 1: 0.41350975417151004, 2: 0.7256307838738146}, 4: {0: 0.17388232234898224, 1: 0.39881841448612376, 2: 0.2987813628296875}}
-        self.assertEqual(N.next_event_dates_dict, dates_dict)
+        dates_dict = {1: {0: 0.2110410999, 1: 0.1415614623, 2: 0.3923690877}, 2: {0: 0.1218825551, 1: 0.0044003133, 2: 0.2442775601}, 3: {0: 0.0819463473, 1: 0.4135097542, 2: 0.7256307839}, 4: {0: 0.1738823223, 1: 0.3988184145, 2: 0.2987813628}}
+        self.assertEqual({nd:{obs:round(N.next_event_dates_dict[nd][obs], 10) for obs in N.next_event_dates_dict[nd]} for nd in N.next_event_dates_dict}, dates_dict)
 
     def test_initialise_next_event_dates_dict_method(self):
         seed(6)
         Q = asq.Simulation(asq.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
         N = asq.ArrivalNode(Q)
-        dates_dict_1 = {1: {0: 0.43622825409205973, 1: 0.26722324060759933, 2: 0.38642562730637603}, 2: {0: 0.16369523112791148, 1: 0.07147095652645417, 2: 0.8065738413825493}, 3: {0: 0.4088480189803173, 1: 0.0514323247956018, 2: 0.8132038176069183}, 4: {0: 1.157375143843249, 1: 0.46492767142177205, 2: 0.8176876726520277}}
-        dates_dict_2 = {1: {0: 0.03258707753070194, 1: 0.8054262557674572, 2: 0.8168179514964325}, 2: {0: 0.08416713808943652, 1: 0.03282452990969279, 2: 0.219602384651059}, 3: {0: 0.25190890679024003, 1: 0.05735978139796031, 2: 1.5117882120904502}, 4: {0: 0.8881158889281887, 1: 0.05605926220383697, 2: 2.1307650867721044}}
-        self.assertEqual(N.next_event_dates_dict, dates_dict_1)
+        dates_dict_1 = {1: {0: 0.4362282541, 1: 0.2672232406, 2: 0.3864256273}, 2: {0: 0.1636952311, 1: 0.0714709565, 2: 0.8065738414}, 3: {0: 0.4088480190, 1: 0.0514323248, 2: 0.8132038176}, 4: {0: 1.1573751438, 1: 0.4649276714, 2: 0.8176876727}}
+        dates_dict_2 = {1: {0: 0.0325870775, 1: 0.8054262558, 2: 0.8168179515}, 2: {0: 0.0841671381, 1: 0.0328245299, 2: 0.2196023847}, 3: {0: 0.2519089068, 1: 0.0573597814, 2: 1.5117882121}, 4: {0: 0.8881158889, 1: 0.0560592622, 2: 2.1307650868}}
+        self.assertEqual({nd:{obs:round(N.next_event_dates_dict[nd][obs], 10) for obs in N.next_event_dates_dict[nd]} for nd in N.next_event_dates_dict}, dates_dict_1)
         N.initialise_next_event_dates_dict()
-        self.assertEqual(N.next_event_dates_dict, dates_dict_2)
+        self.assertEqual({nd:{obs:round(N.next_event_dates_dict[nd][obs], 10) for obs in N.next_event_dates_dict[nd]} for nd in N.next_event_dates_dict}, dates_dict_2)
 
     def test_repr_method(self):
         Q = asq.Simulation(asq.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
