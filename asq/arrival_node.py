@@ -44,8 +44,17 @@ class ArrivalNode:
         next_node = self.simulation.transitive_nodes[self.next_node-1]
         if len(next_node.individuals) < next_node.node_capacity:
             next_node.accept(next_individual, self.next_event_date)
-        self.next_event_dates_dict[self.next_node][self.next_class] += expovariate(self.simulation.lmbda[self.next_class][self.next_node-1])
+        self.next_event_dates_dict[self.next_node][self.next_class] += self.sample_next_event_time(self.next_node, self.next_class)
         self.find_next_event_date()
+
+    def sample_next_event_time(self, nd, cls):
+        """
+        Expovariate but omits zero
+        """
+        if self.simulation.lmbda[cls][nd-1] == 0:
+            return 0
+        return expovariate(self.simulation.lmbda[cls][nd-1])
+
 
     def find_next_event_date(self):
         """
