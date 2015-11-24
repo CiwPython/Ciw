@@ -192,13 +192,13 @@ class Simulation:
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
-    def write_records_to_file(self, directory_name):
+    def write_records_to_file(self, directory_name, sffx=''):
         """
         Writes the records for all individuals to a csv file
         """
         root = os.getcwd()
         directory = os.path.join(root, directory_name)
-        data_file = open('%sdata.csv' % directory, 'w')
+        data_file = open('%sdata%s.csv' % (directory, sffx), 'w')
         csv_wrtr = writer(data_file)
         for individual in self.get_all_individuals():
             for node in individual.data_records:
