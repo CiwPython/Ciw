@@ -23,7 +23,7 @@ class ArrivalNode:
         """
         for nd in self.next_event_dates_dict:
             for cls in self.next_event_dates_dict[nd]:
-                if self.simulation.lmbda == 0:
+                if self.simulation.lmbda[cls][nd-1] == 0:
                     self.next_event_dates_dict[nd][cls] = 'Inf'
                 else:
                     self.next_event_dates_dict[nd][cls] = expovariate(self.simulation.lmbda[cls][nd-1])
