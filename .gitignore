@@ -4,3 +4,4 @@
 *.bashrc.save
 *_build*
 *egg-info*
+.coverage
