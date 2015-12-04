@@ -16,7 +16,7 @@ The parameters.yml file is a yaml file containing all the parameters that descri
 The Parameters File
 -------------------
 
-In order to full define a queueing network simulation, the following need to be defined:
+In order to fully define a queueing network simulation, the following need to be defined:
 
 - Number of nodes (service stations)
 - Number of customer classes

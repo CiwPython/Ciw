@@ -8,11 +8,8 @@ Contents:
 .. toctree::
 
    :maxdepth: 2
-   run_simulation
-   service_distributions
-   custom_dists
-   output_file
-   deadlock
+   Basics/index.rst
+   Features/index.rst
 
 
 Indices and tables
