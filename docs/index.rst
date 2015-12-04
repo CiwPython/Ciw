@@ -6,10 +6,13 @@ ASQ is a recursive acronym that stands for ASQ Simulates Queues. This package is
 Contents:
 
 .. toctree::
-
    :maxdepth: 2
+   
    Basics/index.rst
    Features/index.rst
+   Examples/index.rst
+   attributes.rst
+   glossary.rst
 
 
 Indices and tables

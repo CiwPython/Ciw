@@ -11,11 +11,11 @@ ASQ currently allows the following continuous service rate distributions:
 - :ref:`triangular_dist`
 - :ref:`exponential_dist`
 - :ref:`gamma_dist`
-- :ref:`normal_dist`
 - :ref:`lognormal_dist`
 - :ref:`weibull_dist`
 
 See :ref:`custom-distributions` for how to define custom discrete service time distributions.
+Note that when choosing parameters for these distributions, ensure that no negative numbers may be sampled.
 
 .. _uniform_dist:
 
@@ -97,26 +97,6 @@ In the :code:`parameters.yml` file, write a gamma distribution with parameters `
     - - Gamma
       - 0.6
       - 1.2
-
-
-
-
-
-
-
-
-.. _normal_dist:
-
------------------------
-The Normal Distribution
------------------------
-
-The normal distribution samples a random number from the normal distribution with mean `mu` and standard deviation `sigma`.
-In the :code:`parameters.yml` file, write a normal distribution with mean `4.5` and standard deviation `2.0` as follows::
-
-    - - Normal
-      - 4.5
-      - 2.0
 
 
 

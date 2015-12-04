@@ -1,12 +1,16 @@
+.. _features:
+
+========
 Features
 ========
 
 Contents:
 
 .. toctree::
-
    :maxdepth: 2
-   run_simulation.rst
-   service_distributions.rst
-   output_file.rst
 
+   service_distributions.rst
+   custom_dists.rst
+   server_schedules.rst
+   dynamic_classes.rst
+   deadlock.rst

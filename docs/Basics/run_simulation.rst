@@ -1,136 +1,41 @@
-Running a Simulation via Command Line
-=====================================
+Running a Simulation in the Shell
+=================================
 
-This page will describe how to set up a parameters file and then how to run the experiment.
-Set up a new folder alongside ASQ that will contain your parameters file::
+This page will describe how to run the experiment via the command line.
+First, set up a parameters file as described in :ref:`parameters-file`.
 
-    .
-    ├── my_simulation_instance
-    │   └── parameters.yml
-    │
-    ├── ASQ
+Now importing ASQ and the parameters file as a dictionary is simple::
 
-The parameters.yml file is a yaml file containing all the parameters that describe the queueing network you would like to simulate.
+    >>> import asq
+    >>> params = asq.load_parameters("path/to/parameters/file/")
+    >>> params["Number_of_servers"]
+    [2, 1, 1]
 
+Set up a Simulation object, from which all parameters can also be accessed::
 
-The Parameters File
--------------------
+    >>> Q = asq.Simulation(params)
+    >>> Q.number_of_nodes
+    3
+    >>> Q.queue_capacities
+    ['Inf', 'Inf', 10]
 
-In order to fully define a queueing network simulation, the following need to be defined:
+A full list of ASQ's objects and attributes can be found here: :ref:`objects-attributes`
+Now to run a simulation simply run the following method::
 
-- Number of nodes (service stations)
-- Number of customer classes
-- Simulation run time
+    >>> Q.simulate_until_max_time()
 
-Every node must have the following defined globally (independent of customer class):
+Individuals' data records can be accessed directly using the following methods::
 
-- Number of servers
-- Queue capacity
+    >>> all_individuals = Q.get_all_individuals()    # Creates a list of all individuals in the system
+    >>> all_individuals[0]
+    Individual 13
+    >>> all_individuals[0].data_records.values()[0][0].wait    # Time Individual 13 was waiting for this instance of service
+    0.39586652218275364
+    >>> all_individuals[0].data_records.values()[0][0].arrival_date # Time Individual 13 arrived for this instance of service
+    0.5736475797750542
 
-Then, for every node and every class the following must be defined:
+The full list data records can be written to a csv file::
 
-- Arrival rate
-- Service distribution
+    >>> Q.write_records_to_file("path/to/destination/")
 
-And then each customer class requires:
-
-- Transition matrix
-
-A full example of the parameters file for a three node network with two classes of customer is shown below::
-
-    Arrival_rates:
-      Class 0:
-      - 6.0
-      - 4.5
-      - 2.0
-      Class 1:
-      - 1.0
-      - 1.8
-      - 7.25
-    detect_deadlock: False
-    Number_of_classes: 2
-    Number_of_nodes: 3
-    Number_of_servers:
-    - 2
-    - 1
-    - 1
-    Queue_capacities:
-    - "Inf"
-    - "Inf"
-    - 10
-    Service_rates:
-      Class 0:
-      - - Exponential
-        - 7.0
-      - - Exponential
-        - 5.0
-      - - Gamma
-        - 0.4
-        - 0.6
-      Class 1:
-      - - Exponential
-        - 8.5
-      - - Triangular
-        - 0.1
-        - 0.8
-        - 0.95
-      - - Exponential
-        - 3.0
-    Simulation_time: 2500
-    Transition_matrices:
-      Class 0:
-      - - 0.1
-        - 0.6
-        - 0.2
-      - - 0.0
-        - 0.5
-        - 0.5
-      - - 0.3
-        - 0.1
-        - 0.1
-      Class 1:
-      - - 0.7
-        - 0.05
-        - 0.05
-      - - 0.5
-        - 0.1
-        - 0.4
-      - - 0.2
-        - 0.2
-        - 0.2
-
-The variable names and format of the :code:`.yml` file are very important.
-Notice that:
-
-- :code:`Queue_capacities` can be set to :code:`"Inf"`.
-- When :code:`Queue_capacities` aren't set to :code:`"Inf"` blocking rules apply. Type I (blocked after service) blocking applies here.
-- To obtain no arrivals, set :code:`Arrival_rates` to 0.
-- There are many service distributions available, see :ref:`service-distributions`.
-- There is also the possibility to define custom discrete PDFs for service times, see :ref:`custom-distributions`.
-- There's a :code:`detect_deadlock` option, see :ref:`deadlock-detection`.
-- The :code:`Transition_matrices` for :code:`Class 0` section represents the following transition matrix::
-
-   [[0.1, 0.6, 0.2],
-    [0.0, 0.5, 0.5],
-    [0.3, 0.1, 0.1]]
-
-In this transition matrix the `(i,j)` th element corresponds to the probability of transitioning to node `j` after service at node `i`.
-
-
-Running the Simulation
-----------------------
-
-To run the simulation go to the directory which contains both :code:`ASQ` and :code:`my_simultion_instance`.
-Then run the following command::
-
-    $ python ASQ/scripts/run_simulation.py my_simulation_instance/
-
-This will create a :code:`data.csv`, positioned here::
-
-    .
-    ├── my_simulation_instance
-    │   └── parameters.yml
-    │   └── data.csv
-    ├── ASQ
-
-Please see :ref:`output-file` for an explanation of the data contained here.
+Note also that this method can take in a suffix argument for the data file. The resulting :code:`data.csv` file can be found in the destination folder. Please see :ref:`output-file` for an explanation of the data contained here.

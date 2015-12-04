@@ -4,9 +4,10 @@ Basics
 Contents:
 
 .. toctree::
-
    :maxdepth: 2
-   custom_dists.rst
-   server_schedules.rst
-   dynamic_classes.rst
-   deadlock.rst
+   
+   run_simulation_commandline.rst
+   run_simulation.rst
+   parameters.rst
+   parameters_dict.rst
+   output_file.rst
