@@ -16,10 +16,14 @@ class Simulation:
     """
     Overall simulation class
     """
-    def __init__(self, parameters):
+    def __init__(self, *args, **kwargs):
         """
         Initialise a queue instance.
         """
+        if args:
+            parameters = args[0]
+        else:
+            parameters = kwargs
         self.parameters = parameters
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
