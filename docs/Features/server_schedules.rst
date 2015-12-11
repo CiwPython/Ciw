@@ -26,6 +26,14 @@ An example is shown::
       - 'my_special_schedule_01'
       - 3
 
+The equivalent way to add this to the parameters dictionary is by first adding the cycle length::
+    
+    'cycle_length':250
+
+And then under number of servers, add the schedule name::
+
+    'Number_of_servers':['my_special_schedule_01', 3]
+
 This tells ASQ that at Node 1 the number of servers will vary over time according to the work schedule :code:`my_special_schedule_01`.
 This schedule hasn't been defined yet.
 To define the work schedule, add the following lines to the end of the :code:`parameters.yml` file::
@@ -43,6 +51,10 @@ To define the work schedule, add the following lines to the end of the :code:`pa
         - 4
       - - 220
         - 0
+
+And equivalently, adding the following to the parameters dictionary::
+
+    'my_special_schedule_01':[[0, 2], [40, 3], [100, 1], [120, 2], [180, 4], [220, 0]]
 
 Here we are saying that there will be 2 servers scheduled between times 0 and 40, 3 between 40 and 100, etc. The final shift denotes 0 servers between times 220 and :code:`cycle_length`, and then the schedule cycles to the beginning.
 This fully defines the cyclic work schedule.
