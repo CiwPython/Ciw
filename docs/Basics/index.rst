@@ -6,6 +6,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
+   getting_started.rst
    run_simulation_commandline.rst
    run_simulation.rst
    parameters.rst
