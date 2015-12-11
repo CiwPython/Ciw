@@ -1,7 +1,7 @@
-Running a Simulation in the Shell
-=================================
+Going Deeper
+============
 
-This page will describe how to run the experiment via the command line.
+In :ref:`getting-started` you saw how to run a simple simulation. This page lets you access the simulation by exploring its attributed and methods.
 First, set up a parameters file as described in :ref:`parameters-file`.
 
 Now importing ASQ and the parameters file as a dictionary is simple::
@@ -18,6 +18,10 @@ Set up a Simulation object, from which all parameters can also be accessed::
     3
     >>> Q.queue_capacities
     ['Inf', 'Inf', 10]
+    >>> Q.lmbda    # The arrival rates of the system
+    [[1.0, 1.8, 7.25], [6.0, 4.5, 2.0]]
+    >>> Q.lmbda[0]    # Arrival rates of the 0th class
+    [1.0, 1.8, 7.2]
 
 A full list of ASQ's objects and attributes can be found here: :ref:`objects-attributes`
 Now to run a simulation simply run the following method::
@@ -36,6 +40,6 @@ Individuals' data records can be accessed directly using the following methods::
 
 The full list data records can be written to a csv file::
 
-    >>> Q.write_records_to_file("path/to/destination/")
+    >>> Q.write_records_to_file("data/location.csv")
 
-Note also that this method can take in a suffix argument for the data file. The resulting :code:`data.csv` file can be found in the destination folder. Please see :ref:`output-file` for an explanation of the data contained here.
+Please see :ref:`output-file` for an explanation of the data contained here.

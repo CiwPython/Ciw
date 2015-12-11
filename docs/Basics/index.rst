@@ -7,8 +7,8 @@ Contents:
    :maxdepth: 2
    
    getting_started.rst
-   run_simulation_commandline.rst
-   run_simulation.rst
-   parameters.rst
    parameters_dict.rst
    output_file.rst
+   further_shell.rst
+   run_simulation_commandline.rst
+   parameters.rst

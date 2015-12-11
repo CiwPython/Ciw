@@ -4,25 +4,7 @@
 The Parameters File
 ===================
 
-In order to fully define a queueing network simulation, the following need to be defined:
-
-- Number of nodes (service stations)
-- Number of customer classes
-- Simulation run time
-
-Every node must have the following defined globally (independent of customer class):
-
-- Number of servers
-- Queue capacity
-
-Then, for every node and every class the following must be defined:
-
-- Arrival rate
-- Service distribution
-
-And then each customer class requires:
-
-- Transition matrix
+ASQ features a :code:`load_parameters` function that imports a parameters file as a dictionary. This file take is in :code:`.yml` format. A :code:`parameters.yml` file of this same format is required for use with :ref:`command-line-tool`.
 
 A full example of the parameters file for a three node network with two classes of customer is shown below::
 
@@ -87,21 +69,4 @@ A full example of the parameters file for a three node network with two classes 
         - 0.2
         - 0.2
 
-The variable names and format of the :code:`.yml` file are very important.
-Notice that:
-
-- :code:`Queue_capacities` can be set to :code:`"Inf"`.
-- When :code:`Queue_capacities` aren't set to :code:`"Inf"` blocking rules apply. Type I (blocked after service) blocking applies here.
-- :code:`Number_of_servers` may be set to `"Inf"` also.
-- To obtain no arrivals, set :code:`Arrival_rates` to 0.
-- There are many service distributions available, see :ref:`service-distributions`.
-- There are numerous other features, please see :ref:`features` for more information.
-- The :code:`Transition_matrices` for :code:`Class 0` section represents the following transition matrix::
-
-   [[0.1, 0.6, 0.2],
-    [0.0, 0.5, 0.5],
-    [0.3, 0.1, 0.1]]
-
-In this transition matrix the `(i,j)` th element corresponds to the probability of transitioning to node `j` after service at node `i`.
-
-When not using the command line tool, ASQ takes in a parameters dictionary, please read :ref:`parameters-dict`.
+The variable names are identical to the keys of the parameters dictionary (:ref:`parameters-dict`), and the keyword arguments that may also be used.

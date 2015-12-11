@@ -1,3 +1,6 @@
+.. _getting-started:
+
+===============
 Getting Started
 ===============
 
@@ -46,4 +49,4 @@ ASQ can then use this parameters dictionary to run the simulation::
 
 Once this simulation has been run, :ref:`output-file` can be written to file through::
 
-	>>> Q.write_records_to_file("path/to/destination/")
+	>>> Q.write_records_to_file("destination/location.csv")
