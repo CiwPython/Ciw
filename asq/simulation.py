@@ -16,10 +16,14 @@ class Simulation:
     """
     Overall simulation class
     """
-    def __init__(self, parameters):
+    def __init__(self, *args, **kwargs):
         """
         Initialise a queue instance.
         """
+        if args:
+            parameters = args[0]
+        else:
+            parameters = kwargs
         self.parameters = parameters
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
@@ -192,14 +196,16 @@ class Simulation:
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
-    def write_records_to_file(self, directory_name, sffx=''):
+    def write_records_to_file(self, file_name, sffx='',headers=True):
         """
         Writes the records for all individuals to a csv file
         """
         root = os.getcwd()
-        directory = os.path.join(root, directory_name)
-        data_file = open('%sdata%s.csv' % (directory, sffx), 'w')
+        directory = os.path.join(root, file_name)
+        data_file = open('%s%s' % (directory, sffx), 'w')
         csv_wrtr = writer(data_file)
+        if headers:
+            csv_wrtr.writerow(['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'])
         for individual in self.get_all_individuals():
             for node in individual.data_records:
                 for record in individual.data_records[node]:
