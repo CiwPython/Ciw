@@ -19,4 +19,4 @@ if __name__ == '__main__':
 	P = load_parameters(dirname)
 	Q = Simulation(P)
 	Q.simulate_until_max_time()
-	Q.write_records_to_file(dirname)
+	Q.write_records_to_file('%sdata.csv' % dirname)

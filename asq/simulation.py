@@ -196,13 +196,13 @@ class Simulation:
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
-    def write_records_to_file(self, directory_name, sffx='',headers=True):
+    def write_records_to_file(self, file_name, sffx='',headers=True):
         """
         Writes the records for all individuals to a csv file
         """
         root = os.getcwd()
-        directory = os.path.join(root, directory_name)
-        data_file = open('%sdata%s.csv' % (directory, sffx), 'w')
+        directory = os.path.join(root, file_name)
+        data_file = open('%s%s' % (directory, sffx), 'w')
         csv_wrtr = writer(data_file)
         if headers:
             csv_wrtr.writerow(['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'])
