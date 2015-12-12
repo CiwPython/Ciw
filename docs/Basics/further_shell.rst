@@ -40,6 +40,6 @@ Individuals' data records can be accessed directly using the following methods::
 
 The full list data records can be written to a csv file::
 
-    >>> Q.write_records_to_file("data/location.csv")
+    >>> Q.write_records_to_file(<path_to_file>)
 
 Please see :ref:`output-file` for an explanation of the data contained here.

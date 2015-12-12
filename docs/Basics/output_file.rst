@@ -28,4 +28,4 @@ The following table summarises the columns:
 
 The :code:`write_records_to_file` method writes a header as default. To disable this feature, input :code:`headers=False`::
 
-    >>> Q.write_records_to_file('data/file/location.csv', header=False)
+    >>> Q.write_records_to_file(<path_to_file>, header=False)
