@@ -6,8 +6,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
-   run_simulation_commandline.rst
-   run_simulation.rst
-   parameters.rst
+   getting_started.rst
    parameters_dict.rst
    output_file.rst
+   further_shell.rst
+   run_simulation_commandline.rst
+   parameters.rst

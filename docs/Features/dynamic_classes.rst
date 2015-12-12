@@ -30,18 +30,32 @@ Below is an example of a class change matrix for a given node:
 
 In this example a customer of class 0 finishing service at node 1 will become class 0 again with probability 0.3, will become class 1 with probability 0.4, and will become class 2 with probability 0.3. A different matrix is given for customers finishing service at node 2.
 
-This is input into the simulation model by including the following code in the parameters file::
+This is input into the simulation model by including the following to the parameters dictionary::
+    
+    'Class_change_matrices':{'Node 0':[[0.3, 0.4, 0.3], [0.1, 0.9, 0.0], [0.5, 0.1, 0.4]], 'Node 1':[[1.0, 0.0, 0.0], [0.4, 0.5, 0.1], [0.2, 0.2, 0.6]]}
+
+This is equivalent to adding the following code to the parameters file::
 
     Class_change_matrices:
       Node 0:
-      - - 0.7
+      - - 0.3
+        - 0.4
         - 0.3
-      - - 0.2
-        - 0.8
+      - - 0.1
+        - 0.9
+        - 0.0
+      - - 0.5
+        - 0.1
+        - 0.4
       Node 1:
       - - 1.0
         - 0.0
-      - - 0.0
+        - 0.0
+      - - 0.4
+        - 0.5
         - 1.0
+      - - 0.2
+        - 0.2
+        - 0.6
 
 Omitting this code will simply assume that customers cannot change class after service.

@@ -1,5 +1,8 @@
-Running a Simulation via Command Line
-=====================================
+.. _command-line-tool:
+
+=====================
+The Command Line Tool
+=====================
 
 This page will describe how to run the experiment via the command line.
 Set up a new folder alongside ASQ that will contain your parameters file::

@@ -4,7 +4,10 @@
 The Output Data
 ===============
 
-When a simulation is run via the command line, a :code:`data.csv` file is created.
+Once a simulation has been run, the following method may be called to write a data file::
+
+    >>> Q.write_records_to_file('data/file/location.csv')
+
 This file contains does not contain summary statistics, but all the information that happened during the simulation in raw format.
 Each time an individual completes service at a service station, a data record of that service is kept.
 This file contains all these data records for all services of all customers at all nodes during the simulation run time.
@@ -22,3 +25,7 @@ The following table summarises the columns:
     +------------+-------+------+--------------+--------------+--------------------+--------------+------------------+--------------+-----------+
     | ...        | ...   | ...  | ...          | ...          | ...                | ...          | ...              | ...          | ...       |
     +------------+-------+------+--------------+--------------+--------------------+--------------+------------------+--------------+-----------+
+
+The :code:`write_records_to_file` method writes a header as default. To disable this feature, input :code:`headers=False`::
+
+    >>> Q.write_records_to_file(<path_to_file>, header=False)
