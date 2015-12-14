@@ -5,7 +5,7 @@ from random import seed
 class TestSimulation(unittest.TestCase):
 
     def test_init_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         self.assertEqual(Q.lmbda, [[3.0, 7.0, 4.0, 1.0], [2.0, 3.0, 6.0, 4.0], [2.0, 1.0, 2.0, 0.5]])
         self.assertEqual(Q.mu, [[['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]], [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]]])
         self.assertEqual(Q.c, [9, 10, 8, 8])
@@ -15,24 +15,24 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
 
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/'))
         self.assertEqual(Q.class_change_matrix, [[[0.7, 0.3], [0.2, 0.8]], [[1.0, 0.0], [0.0, 1.0]]])
 
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_server_schedule/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/'))
         self.assertEqual(Q.schedules, [True, False])
 
         Q = ciw.Simulation(Arrival_rates = {'Class 2': [2.0, 1.0, 2.0, 0.5], 'Class 1': [2.0, 3.0, 6.0, 4.0], 'Class 0': [3.0, 7.0, 4.0, 1.0]}, Number_of_nodes = 4, detect_deadlock = False, Simulation_time = 2500, Number_of_servers = [9, 10, 8, 8], Queue_capacities = [20, 'Inf', 30, 'Inf'], Number_of_classes = 3, Service_rates = {'Class 2': [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]], 'Class 1': [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], 'Class 0': [['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]]}, Transition_matrices = {'Class 2': [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]], 'Class 1': [[0.6, 0.0, 0.0, 0.2], [0.1, 0.1, 0.2, 0.2], [0.9, 0.0, 0.0, 0.0], [0.2, 0.1, 0.1, 0.1]], 'Class 0': [[0.1, 0.2, 0.1, 0.4], [0.2, 0.2, 0.0, 0.1], [0.0, 0.8, 0.1, 0.1], [0.4, 0.1, 0.1, 0.0]]})
         self.assertEqual(Q.parameters, {'Arrival_rates': {'Class 2': [2.0, 1.0, 2.0, 0.5], 'Class 1': [2.0, 3.0, 6.0, 4.0], 'Class 0': [3.0, 7.0, 4.0, 1.0]}, 'Number_of_nodes': 4, 'Simulation_time': 2500, 'detect_deadlock': False, 'Number_of_servers': [9, 10, 8, 8], 'Queue_capacities': [20, 'Inf', 30, 'Inf'], 'Number_of_classes': 3, 'Service_rates': {'Class 2': [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]], 'Class 1': [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], 'Class 0': [['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]]}, 'Transition_matrices': {'Class 2': [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]], 'Class 1': [[0.6, 0.0, 0.0, 0.2], [0.1, 0.1, 0.2, 0.2], [0.9, 0.0, 0.0, 0.0], [0.2, 0.1, 0.1, 0.1]], 'Class 0': [[0.1, 0.2, 0.1, 0.4], [0.2, 0.2, 0.0, 0.1], [0.0, 0.8, 0.1, 0.1], [0.4, 0.1, 0.1, 0.0]]}})
 
     def test_find_next_active_node_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         i = 0
         for node in Q.nodes[:-1]:
             node.next_event_date = i
             i += 1
         self.assertEqual(str(Q.find_next_active_node()), 'Arrival Node')
 
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         i = 10
         for node in Q.nodes[:-1]:
             node.next_event_date = i
@@ -41,7 +41,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_custom_pdf_method(self):
         seed(45)
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 10.7)
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
@@ -50,7 +50,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 9.5)
 
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_custom_dist/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_custom_dist/'))
         self.assertEqual(Q.service_times[1][0](), 5.0)
         self.assertEqual(Q.service_times[1][0](), 6.0)
         self.assertEqual(Q.service_times[1][0](), 6.0)
@@ -67,12 +67,12 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulate_until_max_time_method(self):
         seed(3)
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         Q.simulate_until_max_time()
         L = Q.get_all_individuals()
         self.assertEqual(round(L[300].data_records.values()[0][0].service_start_date, 8), 6.04730086)
 
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_dynamic_classes/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/'))
         Q.simulate_until_max_time()
         L = Q.get_all_individuals()
         drl = []
@@ -82,12 +82,12 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulate_until_deadlock_method(self):
         seed(3)
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_deadlock_sim/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/'))
         times = Q.simulate_until_deadlock()
         self.assertEqual(round(times[((0, 0), (0, 0))], 8), 9.09939457)
 
     def test_detect_deadlock_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         nodes = ['A', 'B', 'C', 'D', 'E']
         connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
         for nd in nodes:
@@ -96,7 +96,7 @@ class TestSimulation(unittest.TestCase):
             Q.digraph.add_edge(cnctn[0], cnctn[1])
         self.assertEqual(Q.detect_deadlock(), True)
 
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         nodes = ['A', 'B', 'C', 'D']
         connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         for nd in nodes:
@@ -105,7 +105,7 @@ class TestSimulation(unittest.TestCase):
             Q.digraph.add_edge(cnctn[0], cnctn[1])
         self.assertEqual(Q.detect_deadlock(), False)
 
-        Q = ciw.Simulation(ciw.load_parameters('tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         nodes = ['A', 'B']
         for nd in nodes:
             Q.digraph.add_node(nd)
