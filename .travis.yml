@@ -5,4 +5,4 @@ install:
   - pip install -r requirements.txt
   - python setup.py develop
 script:
-  - python -m unittest discover tests
+  - python -m unittest discover ciw.tests

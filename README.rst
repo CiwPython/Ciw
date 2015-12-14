@@ -1,5 +1,6 @@
-ASQ Simulates Queues
-====================
+Ciw - The Queueing Network Simulation
+=====================================
+
 .. image:: https://travis-ci.org/geraintpalmer/ASQ.svg?branch=master
    :target: https://travis-ci.org/geraintpalmer/ASQ
 
