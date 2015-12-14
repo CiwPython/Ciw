@@ -1,8 +1,8 @@
 Ciw - The Queueing Network Simulation
 =====================================
 
-.. image:: https://travis-ci.org/geraintpalmer/ASQ.svg?branch=master
-   :target: https://travis-ci.org/geraintpalmer/ASQ
+.. image:: https://travis-ci.org/geraintpalmer/Ciw.svg?branch=master
+    :target: https://travis-ci.org/geraintpalmer/Ciw
 
    
 .. image:: https://github.com/geraintpalmer/Ciw/blob/master/docs/_static/logo.png
