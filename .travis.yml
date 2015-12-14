@@ -5,4 +5,4 @@ install:
   - pip install -r requirements.txt
   - python setup.py develop
 script:
-  - cd asq/; python -m unittest discover tests
+  - cd ciw/; python -m unittest discover tests
