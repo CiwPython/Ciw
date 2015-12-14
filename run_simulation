@@ -12,7 +12,7 @@ Options
 from __future__ import division
 import os
 import docopt
-from asq import *
+from ciw import *
 
 if __name__ == '__main__':
 	arguments = docopt.docopt(__doc__)
