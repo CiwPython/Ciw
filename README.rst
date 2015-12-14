@@ -10,7 +10,7 @@ ASQ Simulates Queues
    
 .. image:: https://github.com/geraintpalmer/ASQ/blob/master/docs/_static/logo.png
 
-ASQ (ASQ Simulates Queues) is a simulation framework for open queueing networks.
+Ciw is a simulation framework for open queueing networks.
 
 Read the documentation `here`_.
 

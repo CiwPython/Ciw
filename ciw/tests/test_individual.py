@@ -1,10 +1,10 @@
 import unittest
-import asq
+import ciw
 
 class TestIndividual(unittest.TestCase):
 
     def test_init_method_1(self):
-        i = asq.Individual(22, 3)
+        i = ciw.Individual(22, 3)
         self.assertEqual(i.customer_class, 3)
         self.assertEqual(i.previous_class, 3)
         self.assertEqual(i.id_number, 22)
@@ -15,7 +15,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.data_records, {})
 
     def test_init_method_2(self):
-        i = asq.Individual(5)
+        i = ciw.Individual(5)
         self.assertEqual(i.customer_class, 0)
         self.assertEqual(i.previous_class, 0)
         self.assertEqual(i.id_number, 5)
@@ -26,5 +26,5 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.data_records, {})
 
     def test_repr_method(self):
-        i = asq.Individual(3, 6)
+        i = ciw.Individual(3, 6)
         self.assertEqual(str(i), 'Individual 3')

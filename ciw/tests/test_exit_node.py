@@ -1,16 +1,16 @@
 import unittest
-import asq
+import ciw
 
 class TestExitNode(unittest.TestCase):
 
     def test_init_method(self):
-        n = asq.ExitNode(100)
+        n = ciw.ExitNode(100)
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.individuals, [])
         self.assertEqual(n.next_event_date, 100)
         self.assertEqual(n.node_capacity, 'Inf')
 
-        n = asq.ExitNode('Inf')
+        n = ciw.ExitNode('Inf')
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.individuals, [])
         self.assertEqual(n.next_event_date, 'Inf')
@@ -19,17 +19,17 @@ class TestExitNode(unittest.TestCase):
 
 
     def test_repr_method(self):
-        n = asq.ExitNode(500)
+        n = ciw.ExitNode(500)
         self.assertEqual(str(n), 'Exit Node')
 
-        n = asq.ExitNode(2500)
+        n = ciw.ExitNode(2500)
         self.assertEqual(str(n), 'Exit Node')
 
 
     def test_accept_method(self):
-        n = asq.ExitNode(200)
-        i1 = asq.Individual(3)
-        i2 = asq.Individual(8)
+        n = ciw.ExitNode(200)
+        i1 = ciw.Individual(3)
+        i2 = ciw.Individual(8)
         self.assertEqual(n.individuals, [])
         n.accept(i1, 42.1)
         self.assertEqual(n.individuals, [i1])
@@ -37,7 +37,7 @@ class TestExitNode(unittest.TestCase):
         self.assertEqual(n.individuals, [i1, i2])
 
     def test_update_next_event_date_method(self):
-        n = asq.ExitNode(100)
+        n = ciw.ExitNode(100)
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.individuals, [])
         self.assertEqual(n.next_event_date, 100)
