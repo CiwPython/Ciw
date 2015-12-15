@@ -4,7 +4,7 @@
 Deadlock Detection Capability
 =============================
 
-ASQs has built in deadlock detection capability. With ASQ, a queueing network can be simulated until it reaches deadlock. ASQ then records the time until deadlock from each state.
+Ciw's has built in deadlock detection capability. With Ciw, a queueing network can be simulated until it reaches deadlock. Ciw then records the time until deadlock from each state.
 
 In order to take advantage of this feature, set deadlock detection option to True in the parameters file::
 
@@ -12,8 +12,8 @@ In order to take advantage of this feature, set deadlock detection option to Tru
 
 Then use the :code:`simulate_until_deadlock` method to return the times to deadlock from each state::
 
-   >>> import asq
-   >>> Q = asq.Simulation(deadlock_params)
+   >>> import ciw
+   >>> Q = ciw.Simulation(deadlock_params)
    >>> times = Q.simulate_until_deadlock()
 
 where :code:`times` is a dictionary with states as keys and times to deadlock as values. Note that :code:`Simulation_time` is ingnored in this case.
@@ -40,9 +40,9 @@ Parameters::
 
 Running until deadlock::
 
-    >>> import asq
+    >>> import ciw
     >>> seed(99)
-    >>> Q = asq.Simulation(params)
+    >>> Q = ciw.Simulation(params)
     >>> times = Q.simulate_until_deadlock()
     >>> times
     {((1, 0),): 1.0845416939916719, ((3, 0),): 0.5436399978272065, ((0, 0),): 1.1707879982560288, ((4, 0),): 0.15650986183172932, ((3, 1),): 0.0, ((2, 0),): 1.0517097907100657}

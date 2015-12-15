@@ -4,7 +4,7 @@
 Dynamic Customer Classes
 ========================
 
-ASQ allows customers to probabilistically change their class after service. That is after service at node `k` a customer of class `i` will become class `j` with probability `P(J=j | I=i, K=k)`. These probabilities are input into the system through the :code:`Class_change_matrices`.
+Ciw allows customers to probabilistically change their class after service. That is after service at node `k` a customer of class `i` will become class `j` with probability `P(J=j | I=i, K=k)`. These probabilities are input into the system through the :code:`Class_change_matrices`.
 
 Below is an example of a class change matrix for a given node:
 

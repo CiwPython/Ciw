@@ -29,7 +29,7 @@ This queueing network contains 2 nodes:
 We wish to simulate this system for 1000 time units. This system is defined by the following parameters dictionary::
 
     >>> params = {
-    ... 'Arrival_rates': {'Class 0': [6.0, 8.5]},
+    ... 'Arrival_rates': {'Class 0': [6.0, 2.5]},
     ... 'Number_of_nodes': 2,
     ... 'detect_deadlock': False,
     ... 'Simulation_time': 1000,
@@ -41,10 +41,10 @@ We wish to simulate this system for 1000 time units. This system is defined by t
     ... }
 
 Please see :ref:`parameters-dict` for a fuller explaination of this.
-ASQ can then use this parameters dictionary to run the simulation::
+Ciw can then use this parameters dictionary to run the simulation::
 
-	>>> import asq
-	>>> Q = Simulation(params)
+	>>> import ciw
+	>>> Q = ciw.Simulation(params)
 	>>> Q.simulate_until_max_time()
 
 Once this simulation has been run, :ref:`output-file` can be written to file through::

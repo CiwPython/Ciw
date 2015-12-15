@@ -4,7 +4,7 @@
 Service Time Distributions
 ==========================
 
-ASQ currently allows the following continuous service rate distributions:
+Ciw currently allows the following continuous service rate distributions:
 
 - :ref:`uniform_dist`
 - :ref:`deterministic_dist`
@@ -33,7 +33,6 @@ In the :code:`parameters.yml` file, write a uniform distribution between `4` and
 
 
 
-
 .. _deterministic_dist:
 
 ------------------------------
@@ -56,7 +55,7 @@ The Triangular Distribution
 ---------------------------
 
 The triangular distribution samples a continuous pdf that rises linearly from its minimum value `low` to its mode value `mode`, and then decreases linearly to its highest attainable value `high`.
-In the :code:`parameters.yml` file, write a triangular distribution between `2.1` and `7.6` with mode of `3.4 as follows::
+In the :code:`parameters.yml` file, write a triangular distribution between `2.1` and `7.6` with mode of `3.4` as follows::
 
     - - Triangular
       - 2.1

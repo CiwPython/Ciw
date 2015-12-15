@@ -58,4 +58,4 @@ In this transition matrix the `(i,j)` th element corresponds to the probability 
 
 There are numerous other features, please see :ref:`features` for more information.
 
-The keys of this dictionary may also be used as keyword arguments when defining a simulation. ASQ features a function that will load in these parameters from a file, please read :ref:`parameters-file`.
+The keys of this dictionary may also be used as keyword arguments when defining a simulation. Ciw features a function that will load in these parameters from a file, please read :ref:`parameters-file`.

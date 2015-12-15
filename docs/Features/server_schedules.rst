@@ -4,7 +4,7 @@
 Assign Work Schedules for Servers
 =================================
 
-ASQ allows users to assign cyclic work schedules to servers at each service centre.
+Ciw allows users to assign cyclic work schedules to servers at each service centre.
 An example cyclic work schedule may look like this:
 
 	+-------------------+---------+---------+---------+---------+---------+---------+
@@ -34,7 +34,7 @@ And then under number of servers, add the schedule name::
 
     'Number_of_servers':['my_special_schedule_01', 3]
 
-This tells ASQ that at Node 1 the number of servers will vary over time according to the work schedule :code:`my_special_schedule_01`.
+This tells Ciw that at Node 1 the number of servers will vary over time according to the work schedule :code:`my_special_schedule_01`.
 This schedule hasn't been defined yet.
 To define the work schedule, add the following lines to the end of the :code:`parameters.yml` file::
 

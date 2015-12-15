@@ -4,16 +4,16 @@ Going Deeper
 In :ref:`getting-started` you saw how to run a simple simulation. This page lets you access the simulation by exploring its attributed and methods.
 First, set up a parameters file as described in :ref:`parameters-file`.
 
-Now importing ASQ and the parameters file as a dictionary is simple::
+Now importing Ciw and the parameters file as a dictionary is simple::
 
-    >>> import asq
-    >>> params = asq.load_parameters("path/to/parameters/file/")
+    >>> import ciw
+    >>> params = ciw.load_parameters("path/to/parameters/file/")
     >>> params["Number_of_servers"]
     [2, 1, 1]
 
 Set up a Simulation object, from which all parameters can also be accessed::
 
-    >>> Q = asq.Simulation(params)
+    >>> Q = ciw.Simulation(params)
     >>> Q.number_of_nodes
     3
     >>> Q.queue_capacities
@@ -23,7 +23,7 @@ Set up a Simulation object, from which all parameters can also be accessed::
     >>> Q.lmbda[0]    # Arrival rates of the 0th class
     [1.0, 1.8, 7.2]
 
-A full list of ASQ's objects and attributes can be found here: :ref:`objects-attributes`
+A full list of Ciw's objects and attributes can be found here: :ref:`objects-attributes`
 Now to run a simulation simply run the following method::
 
     >>> Q.simulate_until_max_time()

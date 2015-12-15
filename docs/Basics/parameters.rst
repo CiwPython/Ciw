@@ -4,7 +4,7 @@
 The Parameters File
 ===================
 
-ASQ features a :code:`load_parameters` function that imports a parameters file as a dictionary. This file take is in :code:`.yml` format. A :code:`parameters.yml` file of this same format is required for use with :ref:`command-line-tool`.
+Ciw features a :code:`load_parameters` function that imports a parameters file as a dictionary. This file take is in :code:`.yml` format. A :code:`parameters.yml` file of this same format is required for use with :ref:`command-line-tool`.
 
 A full example of the parameters file for a three node network with two classes of customer is shown below::
 

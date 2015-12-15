@@ -1,7 +1,7 @@
-Welcome to ASQ's documentation!
+Welcome to Ciw's documentation!
 ===============================
 
-ASQ is a recursive acronym that stands for ASQ Simulates Queues. This package is a simulation framework for open queueing networks.
+Ciw (Welsh for queue), is a simulation framework package for open queueing networks.
 
 Contents:
 
