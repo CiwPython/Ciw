@@ -1,8 +1,5 @@
 import unittest
 import ciw
-from hypothesis import given
-from hypothesis.strategies import integers
-
 
 class TestIndividual(unittest.TestCase):
 
@@ -31,32 +28,3 @@ class TestIndividual(unittest.TestCase):
     def test_repr_method(self):
         i = ciw.Individual(3, 6)
         self.assertEqual(str(i), 'Individual 3')
-
-    @given(id_num=integers(), customer_class=integers())
-    def test_init_method_1h(self, id_num, customer_class):
-        i = ciw.Individual(id_num, customer_class)
-        self.assertEqual(i.customer_class, customer_class)
-        self.assertEqual(i.previous_class, customer_class)
-        self.assertEqual(i.id_number, id_num)
-        self.assertEqual(i.service_start_date, False)
-        self.assertEqual(i.service_time, False)
-        self.assertEqual(i.service_end_date, False)
-        self.assertEqual(i.arrival_date, False)
-        self.assertEqual(i.data_records, {})
-    
-    @given(id_num=integers())
-    def test_init_method_2h(self, id_num):
-        i = ciw.Individual(id_num)
-        self.assertEqual(i.customer_class, 0)
-        self.assertEqual(i.previous_class, 0)
-        self.assertEqual(i.id_number, id_num)
-        self.assertEqual(i.service_start_date, False)
-        self.assertEqual(i.service_time, False)
-        self.assertEqual(i.service_end_date, False)
-        self.assertEqual(i.arrival_date, False)
-        self.assertEqual(i.data_records, {})
-
-    @given(id_num=integers(), customer_class=integers())
-    def test_repr_methodh(self, id_num, customer_class):
-        i = ciw.Individual(id_num, customer_class)
-        self.assertEqual(str(i), 'Individual ' + str(id_num))

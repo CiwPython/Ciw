@@ -1,7 +1,5 @@
 import unittest
 import ciw
-from hypothesis import given, assume
-from hypothesis.strategies import floats, integers
 
 class TestDataRecord(unittest.TestCase):
 
@@ -27,29 +25,3 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.exit_date, 10.3)
         self.assertEqual(r.node, 1)
         self.assertEqual(r.customer_class, 3)
-
-    @given(arrival_date=floats(min_value=0.0, max_value=99999.99),
-           service_time=floats(min_value=0.0, max_value=99999.99),
-           inter_service_start_date=floats(min_value=0.0, max_value=99999.99),
-           inter_exit_date=floats(min_value=0.0, max_value=99999.99),
-           node=integers(),
-           customer_class=integers())
-    def test_init_methodh(self,
-                          arrival_date,
-                          service_time,
-                          inter_service_start_date,
-                          inter_exit_date,
-                          node,
-                          customer_class):
-        service_start_date = arrival_date+inter_service_start_date
-        exit_date = service_start_date+inter_exit_date+service_time
-        r = ciw.DataRecord(arrival_date, service_time, service_start_date, exit_date, node, customer_class)
-        self.assertEqual(r.arrival_date, arrival_date)
-        self.assertEqual(r.wait, service_start_date - arrival_date)
-        self.assertEqual(r.service_start_date, service_start_date)
-        self.assertEqual(r.service_time, service_time)
-        self.assertEqual(r.service_end_date, service_start_date + service_time)
-        self.assertEqual(r.blocked, exit_date - (service_time + service_start_date))
-        self.assertEqual(r.exit_date, exit_date)
-        self.assertEqual(r.node, node)
-        self.assertEqual(r.customer_class, customer_class)
