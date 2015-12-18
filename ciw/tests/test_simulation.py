@@ -1,10 +1,14 @@
 import unittest
 import ciw
 from random import seed
+from hypothesis import given
+from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionary
+
+
 
 class TestSimulation(unittest.TestCase):
 
-    def test_init_method(self):
+    def test_init_method_from_dict(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
         self.assertEqual(Q.lmbda, [[3.0, 7.0, 4.0, 1.0], [2.0, 3.0, 6.0, 4.0], [2.0, 1.0, 2.0, 0.5]])
         self.assertEqual(Q.mu, [[['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]], [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]]])
@@ -23,6 +27,21 @@ class TestSimulation(unittest.TestCase):
 
         Q = ciw.Simulation(Arrival_rates = {'Class 2': [2.0, 1.0, 2.0, 0.5], 'Class 1': [2.0, 3.0, 6.0, 4.0], 'Class 0': [3.0, 7.0, 4.0, 1.0]}, Number_of_nodes = 4, detect_deadlock = False, Simulation_time = 2500, Number_of_servers = [9, 10, 8, 8], Queue_capacities = [20, 'Inf', 30, 'Inf'], Number_of_classes = 3, Service_rates = {'Class 2': [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]], 'Class 1': [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], 'Class 0': [['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]]}, Transition_matrices = {'Class 2': [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]], 'Class 1': [[0.6, 0.0, 0.0, 0.2], [0.1, 0.1, 0.2, 0.2], [0.9, 0.0, 0.0, 0.0], [0.2, 0.1, 0.1, 0.1]], 'Class 0': [[0.1, 0.2, 0.1, 0.4], [0.2, 0.2, 0.0, 0.1], [0.0, 0.8, 0.1, 0.1], [0.4, 0.1, 0.1, 0.0]]})
         self.assertEqual(Q.parameters, {'Arrival_rates': {'Class 2': [2.0, 1.0, 2.0, 0.5], 'Class 1': [2.0, 3.0, 6.0, 4.0], 'Class 0': [3.0, 7.0, 4.0, 1.0]}, 'Number_of_nodes': 4, 'Simulation_time': 2500, 'detect_deadlock': False, 'Number_of_servers': [9, 10, 8, 8], 'Queue_capacities': [20, 'Inf', 30, 'Inf'], 'Number_of_classes': 3, 'Service_rates': {'Class 2': [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]], 'Class 1': [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], 'Class 0': [['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]]}, 'Transition_matrices': {'Class 2': [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]], 'Class 1': [[0.6, 0.0, 0.0, 0.2], [0.1, 0.1, 0.2, 0.2], [0.9, 0.0, 0.0, 0.0], [0.2, 0.1, 0.1, 0.1]], 'Class 0': [[0.1, 0.2, 0.1, 0.4], [0.2, 0.2, 0.0, 0.1], [0.0, 0.8, 0.1, 0.1], [0.4, 0.1, 0.1, 0.0]]}})
+
+
+    @given(arrival_rate=floats(min_value=0.0, max_value=999.99),
+           service_rate=floats(min_value=0.0, max_value=999.99),
+           number_of_servers=integers(min_value=1))
+    def test_simple_init_method(self, arrival_rate, service_rate):
+        """
+        Test for creating M/M/c queues
+        """
+        Q = ciw.Simulation(arrival_rate=arrival_rate,
+                           service_rate=service_rate,
+                           number_of_servers=number_of_servers)
+        self.assertEqual(Q.arrival_rate, arrival_rate)
+        self.assertEqual(Q.service_rate, service_rate)
+        self.assertEqual(Q.number_of_servers, number_of_servers)
 
     def test_find_next_active_node_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
