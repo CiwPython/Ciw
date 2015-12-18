@@ -73,19 +73,76 @@ class TestSimulation(unittest.TestCase):
 
     @given(arrival_rate=floats(min_value=0.0, max_value=999.99),
            service_rate=floats(min_value=0.0, max_value=999.99),
-           number_of_servers=integers(min_value=1))
+           number_of_servers=integers(min_value=1),
+           Simulation_time=floats(min_value=1, max_value=728.88))
     def test_simple_init_method(self, arrival_rate,
                                 service_rate,
-                                number_of_servers):
+                                number_of_servers,
+                                Simulation_time):
         """
         Test for creating M/M/c queues
         """
         Q = ciw.Simulation(arrival_rate=arrival_rate,
                            service_rate=service_rate,
-                           number_of_servers=number_of_servers)
-        self.assertEqual(Q.arrival_rate, arrival_rate)
-        self.assertEqual(Q.service_rate, service_rate)
-        self.assertEqual(Q.number_of_servers, number_of_servers)
+                           number_of_servers=number_of_servers,
+                           Simulation_time=Simulation_time)
+
+        expected_dictionary = {
+            'Arrival_rates' : {'Class 0' : [arrival_rate]},
+            'Service_rates' : {'Class 0' : [['Exponential', service_rate]]},
+            'Transition_matrices' : {'Class 0' : [[0.0]]},
+            'Number_of_servers' : [number_of_servers],
+            'Number_of_nodes' : 1,
+            'Number_of_classes' : 1,
+            'Queue_capacities' : ['Inf'],
+            'Simulation_time' : Simulation_time
+        }
+        self.assertEqual(Q.parameters, expected_dictionary)
+        self.assertEqual(Q.lmbda, [[arrival_rate]])
+        self.assertEqual(Q.mu, [[['Exponential', service_rate]]])
+        self.assertEqual(Q.c, [number_of_servers])
+        self.assertEqual(Q.transition_matrix, [[[0.0]]])
+        self.assertEqual([str(obs) for obs in Q.nodes], ['Arrival Node', 'Node 1', 'Exit Node'])
+        self.assertEqual(Q.max_simulation_time, Simulation_time)
+        self.assertEqual(Q.class_change_matrix, 'NA')
+        self.assertEqual(Q.schedules, [False])
+
+
+    @given(arrival_rate=floats(min_value=0.0, max_value=999.99),
+           service_rate=floats(min_value=0.0, max_value=999.99),
+           number_of_servers=integers(min_value=1),
+           Simulation_time=floats(min_value=1, max_value=728.88))
+    def test_build_mmc_parameters(self,
+                                  arrival_rate,
+                                  service_rate,
+                                  number_of_servers,
+                                  Simulation_time):
+
+        Q = ciw.Simulation(arrival_rate=arrival_rate,
+                            service_rate=service_rate,
+                            number_of_servers=number_of_servers,
+                            Simulation_time=Simulation_time)
+
+        expected_dictionary = {
+            'Arrival_rates' : {'Class 0' : [arrival_rate]},
+            'Service_rates' : {'Class 0' : [['Exponential', service_rate]]},
+            'Transition_matrices' : {'Class 0' : [[0.0]]},
+            'Number_of_servers' : [number_of_servers],
+            'Number_of_nodes' : 1,
+            'Number_of_classes' : 1,
+            'Queue_capacities' : ['Inf'],
+            'Simulation_time' : Simulation_time
+        }
+        self.assertEqual(Q.build_mmc_parameters(arrival_rate,
+                                                service_rate,
+                                                number_of_servers,
+                                                Simulation_time),
+                         expected_dictionary)
+
+
+
+
+
 
     def test_find_next_active_node_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
