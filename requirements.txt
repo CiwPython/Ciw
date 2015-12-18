@@ -1,3 +1,4 @@
 PyYAML==3.11
 networkx==1.9.1
 docopt==0.6.2
+hypothesis==1.17
