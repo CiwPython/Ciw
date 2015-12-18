@@ -33,13 +33,23 @@ class Simulation:
                                                    self.parameters['number_of_servers'],
                                                    self.parameters['Simulation_time'])
 
+        # Default arguments
+        default_dict ={'Number_of_nodes': len(self.parameters['Number_of_servers']),
+                       'Number_of_classes': len(self.parameters['Arrival_rates']),
+                       'Queue_capacities': ['Inf' for _ in
+                                            range(len(self.parameters['Number_of_servers']))],
+                       'detect_deadlock': False}
+        for a in default_dict:
+            self.parameters[a] = self.parameters.get(a, default_dict[a])
+
+
+        self.c = self.parameters['Number_of_servers']
         self.number_of_nodes = self.parameters['Number_of_nodes']
-        self.detecting_deadlock = self.parameters.get('detect_deadlock', False)
+        self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.overall_lmbda = sum([sum(self.lmbda[i]) for i in range(len(self.lmbda))])
         self.mu = [self.parameters['Service_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
-        self.c = self.parameters['Number_of_servers']
         self.schedules = [False for i in range(len(self.c))]
         for i in range(len(self.c)):
             if type(self.c[i])==type('string') and self.c[i]!='Inf':

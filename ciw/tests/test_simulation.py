@@ -56,16 +56,17 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, [20, 'Inf', 30, 'Inf'])
 
-        #Q = ciw.Simulation(Arrival_rates=Arrival_rates, Simulation_time=Simulation_time, Service_rates=Service_rates,
-                           #Number_of_servers=Number_of_servers, Transition_matrices=Transition_matrices)
-        #self.assertEqual(Q.lmbda, [[3.0, 7.0, 4.0, 1.0], [2.0, 3.0, 6.0, 4.0], [2.0, 1.0, 2.0, 0.5]])
-        #self.assertEqual(Q.mu, [[['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]], [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]]])
-        #self.assertEqual(Q.c, [9, 10, 8, 8])
-        #self.assertEqual(Q.transition_matrix, [[[0.1, 0.2, 0.1, 0.4], [0.2, 0.2, 0.0, 0.1], [0.0, 0.8, 0.1, 0.1], [0.4, 0.1, 0.1, 0.0]], [[0.6, 0.0, 0.0, 0.2], [0.1, 0.1, 0.2, 0.2], [0.9, 0.0, 0.0, 0.0], [0.2, 0.1, 0.1, 0.1]], [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]]])
-        #self.assertEqual([str(obs) for obs in Q.nodes], ['Arrival Node', 'Node 1', 'Node 2', 'Node 3', 'Node 4', 'Exit Node'])
-        #self.assertEqual(Q.max_simulation_time, 2500)
-        #self.assertEqual(Q.class_change_matrix, 'NA')
-        #self.assertEqual(Q.schedules, [False, False, False, False])
+        Q = ciw.Simulation(Arrival_rates=Arrival_rates, Simulation_time=Simulation_time, Service_rates=Service_rates,
+                           Number_of_servers=Number_of_servers, Transition_matrices=Transition_matrices)
+        self.assertEqual(Q.lmbda, [[3.0, 7.0, 4.0, 1.0], [2.0, 3.0, 6.0, 4.0], [2.0, 1.0, 2.0, 0.5]])
+        self.assertEqual(Q.mu, [[['Exponential', 7.0], ['Exponential', 7.0], ['Gamma', 0.4, 0.6], ['Deterministic', 0.5]], [['Exponential', 7.0], ['Triangular', 0.1, 0.8, 0.85], ['Exponential', 8.0], ['Exponential', 5.0]], [['Deterministic', 0.3], ['Deterministic', 0.2], ['Exponential', 8.0], ['Exponential', 9.0]]])
+        self.assertEqual(Q.c, [9, 10, 8, 8])
+        self.assertEqual(Q.transition_matrix, [[[0.1, 0.2, 0.1, 0.4], [0.2, 0.2, 0.0, 0.1], [0.0, 0.8, 0.1, 0.1], [0.4, 0.1, 0.1, 0.0]], [[0.6, 0.0, 0.0, 0.2], [0.1, 0.1, 0.2, 0.2], [0.9, 0.0, 0.0, 0.0], [0.2, 0.1, 0.1, 0.1]], [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]]])
+        self.assertEqual([str(obs) for obs in Q.nodes], ['Arrival Node', 'Node 1', 'Node 2', 'Node 3', 'Node 4', 'Exit Node'])
+        self.assertEqual(Q.max_simulation_time, 2500)
+        self.assertEqual(Q.class_change_matrix, 'NA')
+        self.assertEqual(Q.schedules, [False, False, False, False])
+        self.assertEqual(Q.queue_capacities, ['Inf', 'Inf', 'Inf', 'Inf'])
 
         Q = ciw.Simulation(Arrival_rates=Arrival_rates, Simulation_time=Simulation_time, Queue_capacities=Queue_capacities, Service_rates=Service_rates,
                            Number_of_servers=Number_of_servers, Transition_matrices=Transition_matrices,
@@ -107,7 +108,8 @@ class TestSimulation(unittest.TestCase):
             'Number_of_nodes' : 1,
             'Number_of_classes' : 1,
             'Queue_capacities' : ['Inf'],
-            'Simulation_time' : Simulation_time
+            'Simulation_time': Simulation_time,
+            'detect_deadlock': False
         }
         self.assertEqual(Q.parameters, expected_dictionary)
         self.assertEqual(Q.lmbda, [[arrival_rate]])
