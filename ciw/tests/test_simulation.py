@@ -74,7 +74,9 @@ class TestSimulation(unittest.TestCase):
     @given(arrival_rate=floats(min_value=0.0, max_value=999.99),
            service_rate=floats(min_value=0.0, max_value=999.99),
            number_of_servers=integers(min_value=1))
-    def test_simple_init_method(self, arrival_rate, service_rate):
+    def test_simple_init_method(self, arrival_rate,
+                                service_rate,
+                                number_of_servers):
         """
         Test for creating M/M/c queues
         """
