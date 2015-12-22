@@ -28,6 +28,7 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.node, 1)
         self.assertEqual(r.customer_class, 3)
 
+
     @given(arrival_date=floats(min_value=0.0, max_value=99999.99),
            service_time=floats(min_value=0.0, max_value=99999.99),
            inter_service_start_date=floats(min_value=0.0, max_value=99999.99),
@@ -41,9 +42,12 @@ class TestDataRecord(unittest.TestCase):
                           inter_exit_date,
                           node,
                           customer_class):
+        # Define parameters
         service_start_date = arrival_date+inter_service_start_date
         exit_date = service_start_date+inter_exit_date+service_time
         r = ciw.DataRecord(arrival_date, service_time, service_start_date, exit_date, node, customer_class)
+
+        # The tests
         self.assertEqual(r.arrival_date, arrival_date)
         self.assertEqual(r.wait, service_start_date - arrival_date)
         self.assertEqual(r.service_start_date, service_start_date)

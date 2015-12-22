@@ -1,5 +1,7 @@
 import unittest
 import ciw
+from hypothesis import given
+from hypothesis.strategies import integers
 
 class TestServer(unittest.TestCase):
 
@@ -13,7 +15,6 @@ class TestServer(unittest.TestCase):
         self.assertEqual(s.cust, False)
         self.assertEqual(s.busy, False)
         self.assertEqual(s.offduty, False)
-
 
     def test_repr_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
