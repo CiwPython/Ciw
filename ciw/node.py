@@ -46,6 +46,7 @@ class Node:
             self.servers = [Server(self, i+1) for i in range(self.c)]
             if simulation.detecting_deadlock:
                 self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
+        self.highest_id = 0
 
     def find_cdf_class_changes(self):
         """
@@ -110,20 +111,20 @@ class Node:
         if self.check_if_shiftchange():
             self.change_shift()
         else:
-            self.finish_service
+            self.finish_service()
 
-        self.finish_service()
 
     def change_shift(self):
         """
         Add servers and deletes or indicates which servers should go off duty
         """
-        highest_id = max([srvr.id_number for srvr in self.servers])
+        if len(self.servers) != 0:
+            self.highest_id = max([srvr.id_number for srvr in self.servers])
         shift = self.next_event_date%self.cyclelength
 
         self.take_servers_off_duty()
 
-        self.add_new_server(shift,highest_id)
+        self.add_new_server(shift, self.highest_id)
 
         indx = [obs[0] for obs in self.schedule].index(shift)
         self.c = self.schedule[indx][1]

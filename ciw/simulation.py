@@ -48,8 +48,18 @@ class Simulation:
         self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
-        self.overall_lmbda = sum([sum(self.lmbda[i]) for i in range(len(self.lmbda))])
+        
+        if any(len(lmbdacls) != len(self.c) for lmbdacls in self.lmbda):
+            raise ValueError('Lambda should have same length as c for every class')
+        if any(l < 0 for lmbdaclass in self.lmbda for l in lmbdaclass):
+            raise ValueError('All arrival rates should be positive')
+
+
         self.mu = [self.parameters['Service_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        
+        if any(len(mucls) != len(self.c) for mucls in self.mu):
+            raise ValueError('Mu should have same length as c for every class')
+
         self.schedules = [False for i in range(len(self.c))]
         for i in range(len(self.c)):
             if type(self.c[i])==type('string') and self.c[i]!='Inf':
@@ -57,12 +67,21 @@ class Simulation:
         self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
 
+        if any(len(transmatrxcls) != len(self.c) for transmatrxcls in self.transition_matrix):
+            raise ValueError('Transition matrix should be square matrix of length c for every class')
+        if any(tmval < 0 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(tmval > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(sum(transmatrxrow) > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls):
+            raise ValueError('All transition matrix entries should be probabilities 0<=p<=1 and all transition matrix rows should sum to 1 or less')
+
         if 'Class_change_matrices' in self.parameters:
             self.class_change_matrix = [self.parameters['Class_change_matrices']['Node ' + str(i)] for i in range(self.parameters['Number_of_nodes'])]
         else:
             self.class_change_matrix = 'NA'
 
         self.max_simulation_time = self.parameters['Simulation_time']
+
+        if self.max_simulation_time < 0:
+            raise ValueError('Maximum simulation time should be positive')
+
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
         self.service_times = self.find_service_time_dictionary()
@@ -71,63 +90,19 @@ class Simulation:
         self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
 
 
-        if len(self.lmbda) != len(self.mu) or len(self.lmbda) != len(self.transition_matrix) or len(self.mu) != len(self.transition_matrix):
-            raise ValueError('Lambda, Mu and the Transition Matrix should all have the same number of classes')
+    def build_mmc_parameters(self, arrival_rate, service_rate, number_of_servers, Simulation_time):
+        """
+        Builds the parameters dictionary for an M/M/C queue
+        """
+        return {'Arrival_rates' : {'Class 0' : [arrival_rate]},
+                'Service_distributions' : {'Class 0' : [['Exponential', service_rate]]},
+                'Transition_matrices' : {'Class 0' : [[0.0]]},
+                'Number_of_servers' : [number_of_servers],
+                'Number_of_nodes' : 1,
+                'Number_of_classes' : 1,
+                'Queue_capacities' : ['Inf'],
+                'Simulation_time' : Simulation_time}
 
-        if any(len(lmbdacls) != len(self.c) for lmbdacls in self.lmbda):
-            raise ValueError('Lambda should have same length as c for every class')
-
-        if any(len(mucls) != len(self.c) for mucls in self.mu):
-            raise ValueError('Mu should have same length as c for every class')
-
-        if any(len(transmatrxcls) != len(self.c) for transmatrxcls in self.transition_matrix):
-            raise ValueError('Transition matrix should be square matrix of length c for every class')
-
-        if any(len(transmatrxrow) != len(self.c) for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls):
-            raise ValueError('Transition matrix should be square matrix of length c for every class')
-
-        if any(l < 0 for lmbdaclass in self.lmbda for l in lmbdaclass):
-            raise ValueError('All arrival rates should be positive')
-
-        if any(tmval < 0 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(tmval > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(sum(transmatrxrow) > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls):
-            raise ValueError('All transition matrix entries should be probabilities 0<=p<=1 and all transition matrix rows should sum to 1 or less')
-
-        if self.max_simulation_time < 0:
-            raise ValueError('Maximum simulation time should be positive')
-
-    def build_mmc_parameters(self, arrival_rate, service_rate,
-                             number_of_servers, Simulation_time):
-        return {
-            'Arrival_rates' : {'Class 0' : [arrival_rate]},
-            'Service_distributions' : {'Class 0' : [['Exponential', service_rate]]},
-            'Transition_matrices' : {'Class 0' : [[0.0]]},
-            'Number_of_servers' : [number_of_servers],
-            'Number_of_nodes' : 1,
-            'Number_of_classes' : 1,
-            'Queue_capacities' : ['Inf'],
-            'Simulation_time' : Simulation_time
-        }
-
-        #self.arrival_rate : self.parameters['arrival_rate'],
-        #self.service_rate = self.parameters['service_rate']
-        #self.number_of_servers = self.parameters['number_of_servers']
-        #self.number_of_nodes = 1
-        #self.detecting_deadlock = False
-        #self.digraph = nx.DiGraph()
-        #self.lmbda = [[self.arrival_rate]]
-        #self.mu = [[['Exponential', self.service_rate]]]
-        #self.c = [self.number_of_servers]
-        #self.schedules = [False]
-        #self.queue_capacities = ['Inf']
-        #self.transition_matrix = [[[0.0]]]
-        #self.class_change_matrix = 'NA'
-        #self.max_simulation_time = self.parameters['Simulation_time']
-        #self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
-        #self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
-        #self.service_times = self.find_service_time_dictionary()
-        #self.state = [[0, 0] for i in range(self.number_of_nodes)]
-        #initial_state = [[0, 0] for i in range(self.number_of_nodes)]
-        #self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
 
     def find_next_active_node(self):
         """
@@ -150,8 +125,6 @@ class Simulation:
             return lambda : expovariate(self.mu[c][n][1])
         if self.mu[c][n][0] == 'Gamma':
             return lambda : gammavariate(self.mu[c][n][1], self.mu[c][n][2])
-        if self.mu[c][n][0] == 'Normal':
-            return lambda : gauss(self.mu[c][n][1], self.mu[c][n][2])
         if self.mu[c][n][0] == 'Lognormal':
             return lambda : lognormvariate(self.mu[c][n][1], self.mu[c][n][2])
         if self.mu[c][n][0] == 'Weibull':

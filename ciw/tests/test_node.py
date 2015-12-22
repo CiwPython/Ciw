@@ -303,7 +303,19 @@ class TestNode(unittest.TestCase):
         s = N.servers[0]
         self.assertEqual([str(obs) for obs in N.servers], ['Server 1 at Node 1'])
         N.kill_server(s)
+        N.highest_id += 1
         self.assertEqual(N.servers, [])
+        N.next_event_date = 30
+        N.have_event()
+        self.assertEqual([str(obs) for obs in N.servers], ['Server 2 at Node 1', 'Server 3 at Node 1'])
+        ind = ciw.Individual(666)
+        N.attach_server(N.servers[0], ind)
+        N.servers[0].offduty = True
+        self.assertEqual([obs.busy for obs in N.servers], [True, False])
+        self.assertEqual([obs.offduty for obs in N.servers], [True, False])
+        N.detatch_server(N.servers[0], ind)
+        self.assertEqual([str(obs) for obs in N.servers], ['Server 3 at Node 1'])
+
 
     def test_add_new_server_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/'))
@@ -312,6 +324,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N.servers], ['Server 1 at Node 1'])
         N.add_new_server(s,1)
         self.assertEqual([str(obs) for obs in N.servers], ['Server 1 at Node 1', 'Server 2 at Node 1', 'Server 3 at Node 1', 'Server 4 at Node 1'])
+
 
     def test_update_next_event_date_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))

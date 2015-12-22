@@ -291,7 +291,7 @@ class TestSimulation(unittest.TestCase):
 
 
     @given(arrival_rate=floats(min_value=0.0, max_value=999.99),
-           service_rate=floats(min_value=0.0, max_value=999.99),
+           service_rate=floats(min_value=0.01, max_value=999.99),
            number_of_servers=integers(min_value=1),
            Simulation_time=floats(min_value=1, max_value=999.99),
            myseed=integers())
@@ -338,7 +338,7 @@ class TestSimulation(unittest.TestCase):
 
 
     @given(arrival_rate=floats(min_value=0.0, max_value=999.99),
-           service_rate=floats(min_value=0.0, max_value=999.99),
+           service_rate=floats(min_value=0.01, max_value=999.99),
            number_of_servers=integers(min_value=1),
            Simulation_time=floats(min_value=1, max_value=999.99),
            myseed=integers())
@@ -472,3 +472,171 @@ class TestSimulation(unittest.TestCase):
         for cnctn in connections:
             Q.digraph.add_edge(cnctn[0], cnctn[1])
         self.assertEqual(Q.detect_deadlock(), True)
+
+    def test_mm1_from_file(self):
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/'))
+        self.assertEqual(Q.transition_matrix, [[[0.0]]])
+
+
+    @given(arrival_rate=floats(min_value=0.0, max_value=99.99),
+           service_rate=floats(min_value=0.1, max_value=99.99),
+           Simulation_time=floats(min_value=1, max_value=99.99),
+           myseed=integers())
+    def test_mminf_node(self, arrival_rate, service_rate, Simulation_time, myseed):
+        try:
+            # Stuff to make random work with hypothesis
+            state = getstate()
+            seed(myseed)
+
+            Q = ciw.Simulation(arrival_rate=arrival_rate,
+                               service_rate=service_rate,
+                               number_of_servers='Inf',
+                               Simulation_time=Simulation_time)
+            Q.simulate_until_max_time()
+            inds = Q.get_all_individuals()
+            waits = [ind.data_records[1][0].wait for ind in inds]
+            self.assertEqual(sum(waits), 0.0)
+
+        finally:
+            setstate(state)
+
+    def test_raising_errors(self):
+        Arrival_rates = {'Class 0':[3.0]}
+        Arrival_rates2 = {'Class 0':[-3.0]}
+        Service_distributions = {'Class 0':[['Exponential', 7.0]]}
+        Service_distributions2 = {'Class 0':[['Exponential', 7.0], ['Lognormal', 0.5, 0.25]]}
+        Number_of_servers = [9]
+        Number_of_servers2 = [9, 10]
+        Transition_matrices = {'Class 0': [[0.5]]}
+        Transition_matrices3 = {'Class 0': [[1.2]]}
+        Transition_matrices2 = {'Class 0': [[0.1, 0.2, 0.1, 0.4],
+                                           [0.2, 0.2, 0.0, 0.1],
+                                           [0.0, 0.8, 0.1, 0.1],
+                                           [0.4, 0.1, 0.1, 0.0]]}
+        Simulation_time = 400
+        Simulation_time2 = -30
+        Number_of_nodes = 1
+        Queue_capacities = ['Inf']
+
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+                                                      Service_distributions=Service_distributions,
+                                                      Number_of_servers=Number_of_servers2,
+                                                      Transition_matrices=Transition_matrices,
+                                                      Simulation_time=Simulation_time,
+                                                      Number_of_nodes=Number_of_nodes,
+                                                      Queue_capacities=Queue_capacities)
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+                                                      Service_distributions=Service_distributions2,
+                                                      Number_of_servers=Number_of_servers,
+                                                      Transition_matrices=Transition_matrices,
+                                                      Simulation_time=Simulation_time,
+                                                      Number_of_nodes=Number_of_nodes,
+                                                      Queue_capacities=Queue_capacities)
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+                                                      Service_distributions=Service_distributions,
+                                                      Number_of_servers=Number_of_servers,
+                                                      Transition_matrices=Transition_matrices2,
+                                                      Simulation_time=Simulation_time,
+                                                      Number_of_nodes=Number_of_nodes,
+                                                      Queue_capacities=Queue_capacities)
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates2,
+                                                      Service_distributions=Service_distributions,
+                                                      Number_of_servers=Number_of_servers,
+                                                      Transition_matrices=Transition_matrices,
+                                                      Simulation_time=Simulation_time,
+                                                      Number_of_nodes=Number_of_nodes,
+                                                      Queue_capacities=Queue_capacities)
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+                                                      Service_distributions=Service_distributions,
+                                                      Number_of_servers=Number_of_servers,
+                                                      Transition_matrices=Transition_matrices3,
+                                                      Simulation_time=Simulation_time,
+                                                      Number_of_nodes=Number_of_nodes,
+                                                      Queue_capacities=Queue_capacities)
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+                                                      Service_distributions=Service_distributions,
+                                                      Number_of_servers=Number_of_servers,
+                                                      Transition_matrices=Transition_matrices,
+                                                      Simulation_time=Simulation_time2,
+                                                      Number_of_nodes=Number_of_nodes,
+                                                      Queue_capacities=Queue_capacities)
+
+    def test_sampling_service_times(self):
+        Arrival_rates = {'Class 0': [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]}
+        Service_distributions = {'Class 0':[['Uniform', 2.2, 3.3],
+                                            ['Deterministic', 4.4],
+                                            ['Triangular', 1.1, 6.6, 1.5],
+                                            ['Exponential', 4.4],
+                                            ['Gamma', 0.6, 1.2],
+                                            ['Lognormal', 0.8, 0.2],
+                                            ['Weibull', 0.9, 0.8],
+                                            ['testerror', 9]]}
+        Number_of_servers = [1, 1, 1, 1, 1, 1, 1, 1]
+        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
+        Simulation_time = [2222]
+
+        Q = ciw.Simulation(Arrival_rates=Arrival_rates,
+                           Service_distributions=Service_distributions,
+                           Number_of_servers=Number_of_servers,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time)
+        Nu = Q.transitive_nodes[0]
+        Nd = Q.transitive_nodes[1]
+        Nt = Q.transitive_nodes[2]
+        Ne = Q.transitive_nodes[3]
+        Ng = Q.transitive_nodes[4]
+        Nl = Q.transitive_nodes[5]
+        Nw = Q.transitive_nodes[6]
+        Nf = Q.transitive_nodes[7]
+        seed(5)
+
+        self.assertEqual(round(Nu.simulation.service_times[Nu.id_number][0](), 2), 2.89)
+        self.assertEqual(round(Nu.simulation.service_times[Nu.id_number][0](), 2), 3.02)
+        self.assertEqual(round(Nu.simulation.service_times[Nu.id_number][0](), 2), 3.07)
+        self.assertEqual(round(Nu.simulation.service_times[Nu.id_number][0](), 2), 3.24)
+        self.assertEqual(round(Nu.simulation.service_times[Nu.id_number][0](), 2), 3.01)
+
+        self.assertEqual(round(Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
+        self.assertEqual(round(Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
+        self.assertEqual(round(Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
+        self.assertEqual(round(Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
+        self.assertEqual(round(Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
+
+        self.assertEqual(round(Nt.simulation.service_times[Nt.id_number][0](), 2), 5.12)
+        self.assertEqual(round(Nt.simulation.service_times[Nt.id_number][0](), 2), 1.35)
+        self.assertEqual(round(Nt.simulation.service_times[Nt.id_number][0](), 2), 2.73)
+        self.assertEqual(round(Nt.simulation.service_times[Nt.id_number][0](), 2), 5.34)
+        self.assertEqual(round(Nt.simulation.service_times[Nt.id_number][0](), 2), 3.46)
+
+        self.assertEqual(round(Ne.simulation.service_times[Ne.id_number][0](), 2), 0.53)
+        self.assertEqual(round(Ne.simulation.service_times[Ne.id_number][0](), 2), 0.03)
+        self.assertEqual(round(Ne.simulation.service_times[Ne.id_number][0](), 2), 0.14)
+        self.assertEqual(round(Ne.simulation.service_times[Ne.id_number][0](), 2), 0.06)
+        self.assertEqual(round(Ne.simulation.service_times[Ne.id_number][0](), 2), 0.18)
+
+        self.assertEqual(round(Ng.simulation.service_times[Ng.id_number][0](), 2), 0.66)
+        self.assertEqual(round(Ng.simulation.service_times[Ng.id_number][0](), 2), 0.13)
+        self.assertEqual(round(Ng.simulation.service_times[Ng.id_number][0](), 2), 2.12)
+        self.assertEqual(round(Ng.simulation.service_times[Ng.id_number][0](), 2), 0.08)
+        self.assertEqual(round(Ng.simulation.service_times[Ng.id_number][0](), 2), 0.06)
+
+        self.assertEqual(round(Nl.simulation.service_times[Nl.id_number][0](), 2), 2.61)
+        self.assertEqual(round(Nl.simulation.service_times[Nl.id_number][0](), 2), 2.66)
+        self.assertEqual(round(Nl.simulation.service_times[Nl.id_number][0](), 2), 3.14)
+        self.assertEqual(round(Nl.simulation.service_times[Nl.id_number][0](), 2), 2.40)
+        self.assertEqual(round(Nl.simulation.service_times[Nl.id_number][0](), 2), 2.00)
+
+        self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.11)
+        self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.09)
+        self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.03)
+        self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.25)
+        self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.82)
+
+        self.assertEqual(Q.service_times[8][0], False)

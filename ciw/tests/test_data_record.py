@@ -28,6 +28,9 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.node, 1)
         self.assertEqual(r.customer_class, 3)
 
+    def test_init_error(self):
+        self.assertRaises(ValueError, ciw.DataRecord, 2, 3, 2, 1, 1, 2)
+        self.assertRaises(ValueError, ciw.DataRecord, 2, -3, 2, 8, 1, 2)
 
     @given(arrival_date=floats(min_value=0.0, max_value=99999.99),
            service_time=floats(min_value=0.0, max_value=99999.99),
@@ -57,3 +60,25 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.exit_date, exit_date)
         self.assertEqual(r.node, node)
         self.assertEqual(r.customer_class, customer_class)
+
+
+    @given(arrival_date=floats(min_value=0.01, max_value=99999.99),
+           service_time=floats(min_value=0.0, max_value=99999.99),
+           neg_service_time=floats(min_value=-99999.99, max_value=-0.01),
+           inter_service_start_date=floats(min_value=0.0, max_value=99999.99),
+           inter_exit_date=floats(min_value=0.0, max_value=99999.99),
+           node=integers(),
+           customer_class=integers())
+    def test_init_errorh(self,
+                        arrival_date,
+                        service_time,
+                        neg_service_time,
+                        inter_service_start_date,
+                        inter_exit_date,
+                        node,
+                        customer_class):
+        service_start_date = arrival_date+inter_service_start_date
+        exit_date = service_start_date+inter_exit_date+service_time
+        self.assertRaises(ValueError, ciw.DataRecord, arrival_date, service_time, service_start_date, (arrival_date/2), node, customer_class)
+        self.assertRaises(ValueError, ciw.DataRecord, arrival_date, neg_service_time, service_start_date, exit_date, node, customer_class)
+
