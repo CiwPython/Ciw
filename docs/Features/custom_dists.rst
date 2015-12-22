@@ -18,12 +18,12 @@ Let's call it :code:`my_special_distribution_01`.
 
 In order to implement this in the parameters dictionary, simply state that that class and node's service distribution is :code:`Custom`, and the name the distribution as a parameter::
 
-    'Service_rates':{'Class 0':[['Custom', 'my_special_distribution_01'], ['Exponential', 0.1]], 'Class 1':[['Exponential', 0.3], ['Exponential', 0.1]]}
+    'Service_distributions':{'Class 0':[['Custom', 'my_special_distribution_01'], ['Exponential', 0.1]], 'Class 1':[['Exponential', 0.3], ['Exponential', 0.1]]}
 
 In the :code:`parameters.yml` file, under :code:`Serivce_rates`, for the given class and node enter :code:`Custom` and the name of the distribution below it.
 An example is shown::
 
-    Service_rates:
+    Service_distributions:
       Class 0:
       - - Custom
         - my_special_distribution_01
@@ -65,4 +65,3 @@ Note:
 
 - For each distribution, probabilities must sum to 1.
 - You may add as many custom probability distributions as you like.
-- **Service times** are sampled from the custom probability distribution, even though they are placed under the heading :code:`Service_rates`.

@@ -28,7 +28,7 @@ A full example of the parameters file for a three node network with two classes 
     - "Inf"
     - "Inf"
     - 10
-    Service_rates:
+    Service_distributions:
       Class 0:
       - - Exponential
         - 7.0

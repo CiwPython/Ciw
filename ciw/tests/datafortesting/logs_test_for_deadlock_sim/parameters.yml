@@ -13,7 +13,7 @@ Queue_capacities:
 - "Inf"
 - 2
 - "Inf"
-Service_rates:
+Service_distributions:
   Class 0:
   - - Exponential
     - 30.0

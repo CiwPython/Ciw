@@ -7,7 +7,7 @@ First, set up a parameters file as described in :ref:`parameters-file`.
 Now importing Ciw and the parameters file as a dictionary is simple::
 
     >>> import ciw
-    >>> params = ciw.load_parameters("path/to/parameters/file/")
+    >>> params = ciw.load_parameters(<path_to_file>)
     >>> params["Number_of_servers"]
     [2, 1, 1]
 

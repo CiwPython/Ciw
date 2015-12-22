@@ -15,7 +15,7 @@ Number_of_servers:
 Queue_capacities:
 - "Inf"
 - 10
-Service_rates:
+Service_distributions:
   Class 0:
   - - Deterministic
     - 5.0

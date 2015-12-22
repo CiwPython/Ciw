@@ -35,7 +35,7 @@ Parameters::
     ...           'Number_of_servers': [1],
     ...           'Queue_capacities': [3],
     ...           'Number_of_classes': 1,
-    ...           'Service_rates': {'Class 0': [['Exponential', 5.0]]},
+    ...           'Service_distributions': {'Class 0': [['Exponential', 5.0]]},
     ...           'Transition_matrices': {'Class 0': [[0.5]]}}
 
 Running until deadlock::

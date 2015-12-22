@@ -14,7 +14,7 @@ Number_of_servers:
 Queue_capacities:
 - "Inf"
 - "Inf"
-Service_rates:
+Service_distributions:
   Class 0:
   - - Custom
     - customdist1

@@ -49,7 +49,7 @@ class Simulation:
         self.digraph = nx.DiGraph()
         self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.overall_lmbda = sum([sum(self.lmbda[i]) for i in range(len(self.lmbda))])
-        self.mu = [self.parameters['Service_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        self.mu = [self.parameters['Service_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         self.schedules = [False for i in range(len(self.c))]
         for i in range(len(self.c)):
             if type(self.c[i])==type('string') and self.c[i]!='Inf':
@@ -99,7 +99,7 @@ class Simulation:
                              number_of_servers, Simulation_time):
         return {
             'Arrival_rates' : {'Class 0' : [arrival_rate]},
-            'Service_rates' : {'Class 0' : [['Exponential', service_rate]]},
+            'Service_distributions' : {'Class 0' : [['Exponential', service_rate]]},
             'Transition_matrices' : {'Class 0' : [[0.0]]},
             'Number_of_servers' : [number_of_servers],
             'Number_of_nodes' : 1,

@@ -55,7 +55,7 @@ class TestSimulation(unittest.TestCase):
         Arrival_rates = {'Class 0':[3.0, 7.0, 4.0, 1.0],
                          'Class 1':[2.0, 3.0, 6.0, 4.0],
                          'Class 2':[2.0, 1.0, 2.0, 0.5]}
-        Service_rates = {'Class 0':[['Exponential', 7.0],
+        Service_distributions = {'Class 0':[['Exponential', 7.0],
                                     ['Exponential', 7.0],
                                     ['Gamma', 0.4, 0.6],
                                     ['Deterministic', 0.5]],
@@ -106,7 +106,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(Arrival_rates=Arrival_rates,
                            Simulation_time=Simulation_time,
                            Queue_capacities=Queue_capacities,
-                           Service_rates=Service_rates,
+                           Service_distributions=Service_distributions,
                            Number_of_servers=Number_of_servers,
                            Transition_matrices=Transition_matrices,
                            Number_of_classes=Number_of_classes,
@@ -148,7 +148,7 @@ class TestSimulation(unittest.TestCase):
 
         Q = ciw.Simulation(Arrival_rates=Arrival_rates,
                            Simulation_time=Simulation_time,
-                           Service_rates=Service_rates,
+                           Service_distributions=Service_distributions,
                            Number_of_servers=Number_of_servers,
                            Transition_matrices=Transition_matrices)
         self.assertEqual(Q.lmbda, [[3.0, 7.0, 4.0, 1.0],
@@ -188,7 +188,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(Arrival_rates=Arrival_rates,
                            Simulation_time=Simulation_time,
                            Queue_capacities=Queue_capacities,
-                           Service_rates=Service_rates,
+                           Service_distributions=Service_distributions,
                            Number_of_servers=Number_of_servers,
                            Transition_matrices=Transition_matrices,
                            Number_of_classes=Number_of_classes,
@@ -211,7 +211,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(Arrival_rates=Arrival_rates,
                            Simulation_time=Simulation_time,
                            Queue_capacities=Queue_capacities,
-                           Service_rates=Service_rates,
+                           Service_distributions=Service_distributions,
                            Number_of_servers=Number_of_servers2,
                            Transition_matrices=Transition_matrices,
                            Number_of_classes=Number_of_classes,
@@ -231,7 +231,7 @@ class TestSimulation(unittest.TestCase):
                            Number_of_servers = [9, 10, 8, 8],
                            Queue_capacities = [20, 'Inf', 30, 'Inf'],
                            Number_of_classes = 3,
-                           Service_rates = {'Class 2': [['Deterministic', 0.3],
+                           Service_distributions = {'Class 2': [['Deterministic', 0.3],
                                                         ['Deterministic', 0.2],
                                                         ['Exponential', 8.0],
                                                         ['Exponential', 9.0]],
@@ -264,7 +264,7 @@ class TestSimulation(unittest.TestCase):
                                         'Number_of_servers': [9, 10, 8, 8],
                                         'Queue_capacities': [20, 'Inf', 30, 'Inf'],
                                         'Number_of_classes': 3,
-                                        'Service_rates': {'Class 2': [['Deterministic', 0.3],
+                                        'Service_distributions': {'Class 2': [['Deterministic', 0.3],
                                                                       ['Deterministic', 0.2],
                                                                       ['Exponential', 8.0],
                                                                       ['Exponential', 9.0]],
@@ -315,7 +315,7 @@ class TestSimulation(unittest.TestCase):
 
             expected_dictionary = {
                 'Arrival_rates': {'Class 0': [arrival_rate]},
-                'Service_rates': {'Class 0': [['Exponential', service_rate]]},
+                'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
                 'Transition_matrices': {'Class 0': [[0.0]]},
                 'Number_of_servers': [number_of_servers],
                 'Number_of_nodes': 1,
@@ -360,7 +360,7 @@ class TestSimulation(unittest.TestCase):
 
             expected_dictionary = {
                 'Arrival_rates': {'Class 0': [arrival_rate]},
-                'Service_rates': {'Class 0': [['Exponential', service_rate]]},
+                'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
                 'Transition_matrices': {'Class 0': [[0.0]]},
                 'Number_of_servers': [number_of_servers],
                 'Number_of_nodes': 1,
