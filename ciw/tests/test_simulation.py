@@ -3,6 +3,7 @@ import ciw
 from random import seed, getstate, setstate
 from hypothesis import given
 from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries
+import os
 
 class TestSimulation(unittest.TestCase):
 
@@ -640,3 +641,24 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.82)
 
         self.assertEqual(Q.service_times[8][0], False)
+
+
+    def test_writing_data_files(self):
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q.simulate_until_max_time()
+        files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
+        self.assertEqual('data.csv' in files, False)
+        Q.write_records_to_file('ciw/tests/datafortesting/logs_test_for_simulation/data.csv')
+        files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
+        self.assertEqual('data.csv' in files, True)
+        os.remove('ciw/tests/datafortesting/logs_test_for_simulation/data.csv')
+
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/'))
+        Q.simulate_until_max_time()
+        files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
+        self.assertEqual('data_1.csv' in files, False)
+        Q.write_records_to_file('ciw/tests/datafortesting/logs_test_for_mm1/data_1.csv', False)
+        files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
+        self.assertEqual('data_1.csv' in files, True)
+        os.remove('ciw/tests/datafortesting/logs_test_for_mm1/data_1.csv')
+

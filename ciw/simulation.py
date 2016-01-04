@@ -209,10 +209,9 @@ class Simulation:
             else:
                 for n in nodes:
                     successors = nx.descendants(self.digraph, n)
-                    if not successors <= nodes:
+                    if successors <= nodes:
+                        knots.append(subgraph)
                         break
-                else:
-                    knots.append(subgraph)
         if len(knots) > 0:
             return True
         return False
@@ -223,13 +222,13 @@ class Simulation:
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
-    def write_records_to_file(self, file_name, sffx='',headers=True):
+    def write_records_to_file(self, file_name, headers=True):
         """
         Writes the records for all individuals to a csv file
         """
         root = os.getcwd()
         directory = os.path.join(root, file_name)
-        data_file = open('%s%s' % (directory, sffx), 'w')
+        data_file = open('%s' % directory, 'w')
         csv_wrtr = writer(data_file)
         if headers:
             csv_wrtr.writerow(['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'])
