@@ -6,3 +6,4 @@ install:
   - python setup.py develop
 script:
   - python -m unittest discover ciw.tests
+  - python doctests.py
