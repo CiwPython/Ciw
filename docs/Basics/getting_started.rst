@@ -49,4 +49,4 @@ Ciw can then use this parameters dictionary to run the simulation::
 
 Once this simulation has been run, :ref:`output-file` can be written to file through::
 
-	>>> Q.write_records_to_file(<path_to_file>)
+	>>> Q.write_records_to_file(<path_to_file>)  # doctest:+SKIP

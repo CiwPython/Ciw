@@ -7,48 +7,48 @@ First, set up a parameters file as described in :ref:`parameters-file`.
 Now importing Ciw and the parameters file as a dictionary is simple::
 
     >>> import ciw
-    >>> params = ciw.load_parameters(<path_to_file>)
-    >>> params["Number_of_servers"]
-    [2, 1, 1]
+    >>> params = ciw.load_parameters(<path_to_file>) # doctest:+SKIP
+    >>> params["Number_of_servers"] # doctest:+SKIP
+    [2, 1, 1] # doctest:+SKIP
 
 Set up a Simulation object, from which all parameters can also be accessed::
 
-    >>> Q = ciw.Simulation(params)
-    >>> Q.number_of_nodes
-    3
-    >>> Q.queue_capacities
-    ['Inf', 'Inf', 10]
-    >>> Q.lmbda    # The arrival rates of the system
-    [[1.0, 1.8, 7.25], [6.0, 4.5, 2.0]]
-    >>> Q.lmbda[0]    # Arrival rates of the 0th class
-    [1.0, 1.8, 7.2]
+    >>> Q = ciw.Simulation(params) # doctest:+SKIP
+    >>> Q.number_of_nodes # doctest:+SKIP
+    3 # doctest:+SKIP
+    >>> Q.queue_capacities # doctest:+SKIP
+    ['Inf', 'Inf', 10] # doctest:+SKIP
+    >>> Q.lmbda    # The arrival rates of the system # doctest:+SKIP
+    [[1.0, 1.8, 7.25], [6.0, 4.5, 2.0]] # doctest:+SKIP
+    >>> Q.lmbda[0]    # Arrival rates of the 0th class # doctest:+SKIP
+    [1.0, 1.8, 7.2] # doctest:+SKIP
 
 A full list of Ciw's objects and attributes can be found here: :ref:`objects-attributes`
 Now to run a simulation simply run the following method::
 
-    >>> Q.simulate_until_max_time()
+    >>> Q.simulate_until_max_time() # doctest:+SKIP
 
 Individuals' data records can be accessed directly using the following methods::
 
-    >>> all_individuals = Q.get_all_individuals()    # Creates a list of all individuals in the system
-    >>> all_individuals[0]
-    Individual 13
-    >>> all_individuals[0].data_records.values()[0][0].wait    # Time Individual 13 was waiting for this instance of service
-    0.39586652218275364
-    >>> all_individuals[0].data_records.values()[0][0].arrival_date # Time Individual 13 arrived for this instance of service
-    0.5736475797750542
+    >>> all_individuals = Q.get_all_individuals()    # Creates a list of all individuals in the system # doctest:+SKIP
+    >>> all_individuals[0] # doctest:+SKIP
+    Individual 13 # doctest:+SKIP
+    >>> all_individuals[0].data_records.values()[0][0].wait    # Time Individual 13 was waiting for this instance of service # doctest:+SKIP
+    0.39586652218275364 # doctest:+SKIP
+    >>> all_individuals[0].data_records.values()[0][0].arrival_date # Time Individual 13 arrived for this instance of service # doctest:+SKIP
+    0.5736475797750542 # doctest:+SKIP
 
 A full list of data records can be obtained, with or without headers::
     
-    >>> records = Q.get_all_records(headers=True)
-    >>> records[:3]
-    [['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'],
-    [1, 0, 1, 0.16207509531905792, 0.0, 0.16207509531905792, 0.014861757967438763, 0.1769368532864967, 0.0, 0.1769368532864967],
-    [2, 0, 1, 0.4628182409609607, 0.0, 0.4628182409609607, 0.13420139243827206, 0.5970196333992328, 0.0, 0.5970196333992328]]
+    >>> records = Q.get_all_records(headers=True) # doctest:+SKIP
+    >>> records[:3] # doctest:+SKIP
+    [['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'], # doctest:+SKIP
+    [1, 0, 1, 0.16207509531905792, 0.0, 0.16207509531905792, 0.014861757967438763, 0.1769368532864967, 0.0, 0.1769368532864967], # doctest:+SKIP
+    [2, 0, 1, 0.4628182409609607, 0.0, 0.4628182409609607, 0.13420139243827206, 0.5970196333992328, 0.0, 0.5970196333992328]] # doctest:+SKIP
 
 
 The full list data records can be written to a csv file::
 
-    >>> Q.write_records_to_file(<path_to_file>)
+    >>> Q.write_records_to_file(<path_to_file>) # doctest:+SKIP
 
 Please see :ref:`output-file` for an explanation of the data contained here.

@@ -6,7 +6,7 @@ The Output Data
 
 Once a simulation has been run, the following method may be called to write a data file::
 
-    >>> Q.write_records_to_file('data/file/location.csv')
+    >>> Q.write_records_to_file(<path_to_file>) # doctest:+SKIP
 
 This file contains does not contain summary statistics, but all the information that happened during the simulation in raw format.
 Each time an individual completes service at a service station, a data record of that service is kept.
@@ -28,4 +28,4 @@ The following table summarises the columns:
 
 The :code:`write_records_to_file` method writes a header as default. To disable this feature, input :code:`headers=False`::
 
-    >>> Q.write_records_to_file(<path_to_file>, header=False)
+    >>> Q.write_records_to_file(<path_to_file>, header=False) # doctest:+SKIP
