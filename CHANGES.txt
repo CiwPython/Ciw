@@ -1,2 +1,3 @@
 v0.0.1dev, 2015-12-14 -- Initial release (dev)
-v0.012, 2015-12-214 -- Initial release
+v0.0.1, 2015-12-14 -- Initial release
+v0.0.2, 2016-01-06 -- Some kwargs optional, hypothesis tests, minor enhancements
