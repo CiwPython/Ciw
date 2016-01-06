@@ -45,7 +45,7 @@ Running until deadlock::
     >>> seed(99)
     >>> Q = ciw.Simulation(params)
     >>> times = Q.simulate_until_deadlock()
-    >>> times
+    >>> times # doctest:+SKIP
     {((1, 0),): 1.0845416939916719, ((3, 0),): 0.5436399978272065, ((0, 0),): 1.1707879982560288, ((4, 0),): 0.15650986183172932, ((3, 1),): 0.0, ((2, 0),): 1.0517097907100657}
 
-Here the state :code:`((i, j),)` denotes the state where there are `i` customers at the node, `j` of which are blocked. 
+Here the state :code:`((i, j),)` denotes the state where there are `i` customers at the node, `j` of which are blocked
