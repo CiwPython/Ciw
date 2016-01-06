@@ -222,6 +222,29 @@ class Simulation:
         """
         return [individual for node in self.nodes[1:] for individual in node.individuals if len(individual.data_records) > 0]
 
+    def get_all_records(self, headers=True):
+        """
+        Gets all records from all individuals
+        """
+        records = []
+        if headers:
+            records.append(['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'])
+        for individual in self.get_all_individuals():
+            for node in individual.data_records:
+                for record in individual.data_records[node]:
+                    records.append([individual.id_number,
+                                    record.customer_class,
+                                    node,
+                                    record.arrival_date,
+                                    record.wait,
+                                    record.service_start_date,
+                                    record.service_time,
+                                    record.service_end_date,
+                                    record.blocked,
+                                    record.exit_date])
+        self.all_records = records
+        return records
+
     def write_records_to_file(self, file_name, headers=True):
         """
         Writes the records for all individuals to a csv file
@@ -231,18 +254,9 @@ class Simulation:
         data_file = open('%s' % directory, 'w')
         csv_wrtr = writer(data_file)
         if headers:
-            csv_wrtr.writerow(['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'])
-        for individual in self.get_all_individuals():
-            for node in individual.data_records:
-                for record in individual.data_records[node]:
-                    csv_wrtr.writerow([individual.id_number,
-                                       record.customer_class,
-                                       node,
-                                       record.arrival_date,
-                                       record.wait,
-                                       record.service_start_date,
-                                       record.service_time,
-                                       record.service_end_date,
-                                       record.blocked,
-                                       record.exit_date])
+            records = self.get_all_records(headers=True)
+        else:
+            records = self.get_all_records(headers=False)
+        for row in records:
+            csv_wrtr.writerow(row)
         data_file.close()

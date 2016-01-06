@@ -11,30 +11,26 @@ Standard queueing theory gives the expected wait in an M/M/1 queue as :math:`\ma
 
 We set up the parameters in ASQ::
 
-    >>> params_dict = {'Queue_capacities': ['Inf'],
-    ...                'Number_of_classes': 1,
-    ...                'Arrival_rates': {'Class 0': [3.0]},
-    ...                'Number_of_nodes': 1,
-    ...                'Service_rates':{'Class 0': [['Exponential', 5.0]]},
+    >>> params_dict = {'Arrival_rates': {'Class 0': [3.0]},
+    ...                'Service_distributions':{'Class 0': [['Exponential', 5.0]]},
     ...                'Simulation_time': 250,
-    ...                'Transition_matrices': {'Class 0': [[0.0]]},
-    ...                'detect_deadlock': False,
-    ...                'Number_of_servers': [1]}
+    ...                'Transition_matrices': {'Class 0': [[0.0]]}
+    ...                }
 
 The following code repeats the experiment 100 times, only recording waits for those that arrived after a warm-up time of 50.
 It then returns the average wait in the system::
 
-    >>> def interation(warmup):
-    ...     Q = asq.Simulation(params_dict)
+    >>> def iteration(warmup):
+    ...     Q = ciw.Simulation(params_dict)
     ...     Q.simulate_until_max_time()
-    ...     inds = Q.get_all_individuals()
-    ...     waits = [ind.data_records[1][0].wait for ind in inds if ind.data_records[1][0].arrival_date > warmup]
+    ...     records = Q.get_all_records(headers=False)
+    ...     waits = [row[4] for row in records if row[3] > warmup]
     ...     return sum(waits)/len(waits)
     
     >>> seed(27)
     >>> ws = []
     >>> for i in range(100):
-    ...     ws.append(interation(50))
+    ...     ws.append(iteration(50))
     
     >>> print sum(ws)/len(ws)
     0.292014274888

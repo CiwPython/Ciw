@@ -38,6 +38,15 @@ Individuals' data records can be accessed directly using the following methods::
     >>> all_individuals[0].data_records.values()[0][0].arrival_date # Time Individual 13 arrived for this instance of service
     0.5736475797750542
 
+A full list of data records can be obtained, with or without headers::
+    
+    >>> records = Q.get_all_records(headers=True)
+    >>> records[:3]
+    [['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'],
+    [1, 0, 1, 0.16207509531905792, 0.0, 0.16207509531905792, 0.014861757967438763, 0.1769368532864967, 0.0, 0.1769368532864967],
+    [2, 0, 1, 0.4628182409609607, 0.0, 0.4628182409609607, 0.13420139243827206, 0.5970196333992328, 0.0, 0.5970196333992328]]
+
+
 The full list data records can be written to a csv file::
 
     >>> Q.write_records_to_file(<path_to_file>)

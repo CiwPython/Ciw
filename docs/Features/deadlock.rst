@@ -8,7 +8,7 @@ Ciw's has built in deadlock detection capability. With Ciw, a queueing network c
 
 In order to take advantage of this feature, set deadlock detection option to True in the parameters file::
 
-    detect_deadlock: False
+    detect_deadlock: True
 
 Then use the :code:`simulate_until_deadlock` method to return the times to deadlock from each state::
 
