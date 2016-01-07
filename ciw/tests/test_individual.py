@@ -15,6 +15,9 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.service_time, False)
         self.assertEqual(i.service_end_date, False)
         self.assertEqual(i.arrival_date, False)
+        self.assertEqual(i.destination, False)
+        self.assertEqual(i.queue_size_at_arrival, False)
+        self.assertEqual(i.queue_size_at_departure, False)
         self.assertEqual(i.data_records, {})
 
     def test_init_method_2(self):
@@ -26,6 +29,10 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.service_time, False)
         self.assertEqual(i.service_end_date, False)
         self.assertEqual(i.arrival_date, False)
+        self.assertEqual(i.destination, False)
+        self.assertEqual(i.queue_size_at_arrival, False)
+        self.assertEqual(i.queue_size_at_departure, False)
+
         self.assertEqual(i.data_records, {})
 
     def test_repr_method(self):
@@ -42,6 +49,10 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.service_time, False)
         self.assertEqual(i.service_end_date, False)
         self.assertEqual(i.arrival_date, False)
+        self.assertEqual(i.destination, False)
+        self.assertEqual(i.queue_size_at_arrival, False)
+        self.assertEqual(i.queue_size_at_departure, False)
+
         self.assertEqual(i.data_records, {})
     
     @given(id_num=integers())
@@ -54,6 +65,10 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.service_time, False)
         self.assertEqual(i.service_end_date, False)
         self.assertEqual(i.arrival_date, False)
+        self.assertEqual(i.destination, False)
+        self.assertEqual(i.queue_size_at_arrival, False)
+        self.assertEqual(i.queue_size_at_departure, False)
+
         self.assertEqual(i.data_records, {})
 
     @given(id_num=integers(), customer_class=integers())

@@ -165,6 +165,7 @@ class Node:
         self.change_customer_class(next_individual)
 
         next_node = self.next_node(next_individual.customer_class)
+        next_individual.destination = next_node.id_number
 
         if len(next_node.individuals) < next_node.node_capacity:
             self.release(next_individual_index, next_node, self.next_event_date)
@@ -204,6 +205,7 @@ class Node:
         Update node when an individual is released.
         """
         next_individual = self.individuals.pop(next_individual_index)
+        next_individual.queue_size_at_departure = len(self.individuals)
         next_individual.exit_date = current_time
         if self.c < 'Inf':
             self.detatch_server(next_individual.server, next_individual)
@@ -265,6 +267,7 @@ class Node:
         next_individual.exit_date = False
         next_individual.is_blocked = False
         self.begin_service_if_possible_accept(next_individual, current_time)
+        next_individual.queue_size_at_arrival = len(self.individuals)
         self.individuals.append(next_individual)
         self.change_state_accept()
 
@@ -338,8 +341,13 @@ class Node:
             - Service end date
             - Blocked
             - Exit date
+            - Node
+            - Destination
+            - Previous class
+            - Queue size at arrival
+            - Queue size at departure
         """
-        record = DataRecord(individual.arrival_date, individual.service_time, individual.service_start_date, individual.exit_date, self.id_number, individual.previous_class)
+        record = DataRecord(individual.arrival_date, individual.service_time, individual.service_start_date, individual.exit_date, self.id_number, individual.destination, individual.previous_class, individual.queue_size_at_arrival, individual.queue_size_at_departure)
         if self.id_number in individual.data_records:
             individual.data_records[self.id_number].append(record)
         else:
@@ -350,3 +358,6 @@ class Node:
         individual.service_start_date = False
         individual.service_end_date = False
         individual.exit_date = False
+        individual.queue_size_at_arrival = False
+        individual.queue_size_at_departure = False
+        individual.destination = False

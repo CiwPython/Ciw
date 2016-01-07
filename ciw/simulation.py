@@ -228,7 +228,7 @@ class Simulation:
         """
         records = []
         if headers:
-            records.append(['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'])
+            records.append(['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date', 'Destination', 'Queue Size at Arrival', 'Queue Size at Departure'])
         for individual in self.get_all_individuals():
             for node in individual.data_records:
                 for record in individual.data_records[node]:
@@ -241,7 +241,10 @@ class Simulation:
                                     record.service_time,
                                     record.service_end_date,
                                     record.blocked,
-                                    record.exit_date])
+                                    record.exit_date,
+                                    record.desintation,
+                                    record.queue_size_at_arrival,
+                                    record.queue_size_at_departure])
         self.all_records = records
         return records
 
