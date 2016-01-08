@@ -11,6 +11,7 @@ Contents:
    Basics/index.rst
    Features/index.rst
    Examples/index.rst
+   Background/index.rst
    attributes.rst
    glossary.rst
 
