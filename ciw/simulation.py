@@ -242,7 +242,7 @@ class Simulation:
                                     record.service_end_date,
                                     record.blocked,
                                     record.exit_date,
-                                    record.desintation,
+                                    record.destination,
                                     record.queue_size_at_arrival,
                                     record.queue_size_at_departure])
         self.all_records = records
