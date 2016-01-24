@@ -70,6 +70,6 @@ class ArrivalNode:
 
     def update_next_event_date(self):
         """
-        Passes, updating enxt event happens at time of event
+        Passes, updating next event happens at time of event
         """
         pass

@@ -425,11 +425,12 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.service_times[2][1](), 1.9)
 
     def test_simulate_until_max_time_method(self):
-        seed(3)
+        seed(2)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q.max_simulation_time = 600
         Q.simulate_until_max_time()
         L = Q.get_all_individuals()
-        self.assertEqual(round(L[300].data_records.values()[0][0].service_start_date, 8), 6.04730086)
+        self.assertEqual(round(L[300].data_records.values()[0][0].service_start_date, 8), 8.18087789)
 
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/'))
         Q.simulate_until_max_time()
@@ -437,7 +438,7 @@ class TestSimulation(unittest.TestCase):
         drl = []
         for dr in L[0].data_records[1]:
             drl.append((dr.customer_class, dr.service_time))
-        self.assertEqual(drl, [(1, 10.0), (1, 10.0), (0, 5.0), (1, 10.0)])
+        self.assertEqual(drl, [(0, 5.0), (0, 5.0), (0, 5.0), (0, 5.0), (0, 5.0), (0, 5.0), (1, 10.0)])
 
     def test_simulate_until_deadlock_method(self):
         seed(3)
@@ -645,6 +646,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_writing_data_files(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q.max_simulation_time = 500
         Q.simulate_until_max_time()
         files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
         self.assertEqual('data.csv' in files, False)
@@ -654,6 +656,7 @@ class TestSimulation(unittest.TestCase):
         os.remove('ciw/tests/datafortesting/logs_test_for_simulation/data.csv')
 
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/'))
+        Q.max_simulation_time = 500
         Q.simulate_until_max_time()
         files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
         self.assertEqual('data_1.csv' in files, False)

@@ -1,5 +1,5 @@
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
+from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
 from datetime import datetime
 import os
 from csv import writer
@@ -156,10 +156,13 @@ class Node:
         """
         The next individual finishes service
         """
-        if self.c == "Inf":
-            next_individual_index = [ind.service_end_date for ind in self.individuals].index(self.next_event_date)
+        next_individual_indices = [i for i, x in enumerate([ind.service_end_date for ind in self.individuals]) if x == self.next_event_date]
+
+        if len(next_individual_indices) > 1:
+            next_individual_index = choice(next_individual_indices)
         else:
-            next_individual_index = [ind.service_end_date for ind in self.individuals[:self.c]].index(self.next_event_date)
+            next_individual_index = next_individual_indices[0]
+
         next_individual = self.individuals[next_individual_index]
 
         self.change_customer_class(next_individual)
@@ -311,10 +314,7 @@ class Node:
         """
         Finds the time of the next event at this node
         """
-        if self.c == "Inf":
-            next_end_service = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
-        else:
-            next_end_service = min([ind.service_end_date for ind in self.individuals[:self.c] if not ind.is_blocked if ind.service_end_date>current_time] + ["Inf"])
+        next_end_service = min([ind.service_end_date for ind in self.individuals if not ind.is_blocked if ind.service_end_date>=current_time] + ["Inf"])
         if self.scheduled_servers:
             next_shift_change = self.masterschedule[0]
             self.next_event_date = min(next_end_service, next_shift_change)

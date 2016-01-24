@@ -1,5 +1,5 @@
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
+from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
 import os
 from csv import writer
 import yaml
@@ -108,7 +108,11 @@ class Simulation:
         """
         Return the next active node:
         """
-        return min(self.nodes, key=lambda x: x.next_event_date)
+        next_active_node_indices = [i for i, x in enumerate([nd.next_event_date for nd in self.nodes]) if x == min([nd.next_event_date for nd in self.nodes])]
+        if len(next_active_node_indices) > 1:
+            return self.nodes[choice(next_active_node_indices)]
+        else:
+            return self.nodes[next_active_node_indices[0]]
 
     def find_service_time(self, n, c):
         """

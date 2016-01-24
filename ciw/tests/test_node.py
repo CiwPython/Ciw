@@ -157,11 +157,11 @@ class TestNode(unittest.TestCase):
         N.update_next_event_date(0.03)
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
         N.individuals[1].exit_date = 0.04  # shouldn't affect the next event date
-        N.update_next_event_date(N.next_event_date)
+        N.update_next_event_date(N.next_event_date+0.00001)
         self.assertEqual(round(N.next_event_date, 5), 0.03708)
         N.release(1, Q.transitive_nodes[1], N.next_event_date)
         self.assertEqual([str(obs) for obs in N.individuals], ['Individual 1', 'Individual 3'])
-        N.update_next_event_date(N.next_event_date)
+        N.update_next_event_date(N.next_event_date+0.00001)
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
 
     def test_begin_service_if_possible_release_method(self):
@@ -340,7 +340,7 @@ class TestNode(unittest.TestCase):
         ind1.service_end_date = 0.5
         N.next_event_date = 0.3
         N.individuals = [ind1]
-        N.update_next_event_date(N.next_event_date)
+        N.update_next_event_date(N.next_event_date+0.000001)
         self.assertEqual(N.next_event_date, 0.5)
 
         ind2 = ciw.Individual(2)
@@ -350,12 +350,12 @@ class TestNode(unittest.TestCase):
         ind2.exit_date = False
 
         N.individuals = [ind1, ind2]
-        N.update_next_event_date(N.next_event_date)
+        N.update_next_event_date(N.next_event_date+0.000001)
         self.assertEqual(N.next_event_date, 0.6)
 
         ind2.exit_date = 0.9  # shouldn't affect next_event_date
 
-        N.update_next_event_date(N.next_event_date)
+        N.update_next_event_date(N.next_event_date+0.000001)
         self.assertEqual(N.next_event_date, 'Inf')
 
 
@@ -372,17 +372,10 @@ class TestNode(unittest.TestCase):
         ind1.service_end_date = 0.5
         N.next_event_date = 0.3
         N.individuals = [ind1]
-        N.update_next_event_date(N.next_event_date)
+        N.update_next_event_date(N.next_event_date+0.000001)
         self.assertEqual(N.next_event_date, 0.5)
 
-        ind2 = ciw.Individual(2)
-        ind2.arrival_date = 0.7
-        ind2.service_time = 0.2
-        ind2.service_end_date = 0.9
-        ind2.exit_date = False
-
-        N.individuals = [ind1, ind2]
-        N.update_next_event_date(N.next_event_date)
+        N.update_next_event_date(N.next_event_date+0.000001)
         self.assertEqual(N.next_event_date, 30)
 
     def test_next_node_method(self):
