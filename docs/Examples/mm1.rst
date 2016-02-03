@@ -9,7 +9,7 @@ This will walk through an example of an M/M/1 queue with Poisson arrivals of rat
 
 Standard queueing theory gives the expected wait in an M/M/1 queue as :math:`\mathbb{E}[W] = \frac{\rho}{\mu(1-\rho)}`. With arrival rate :math:`\lambda = 3` and service rate :math:`\mu = 5`, we get traffic intensity :math:`\rho = \frac{\lambda}{\mu} = 0.6`, and so :math:`\mathbb{E}[W] = 0.3`.
 
-We set up the parameters in ASQ::
+We set up the parameters in Ciw::
 
     >>> params_dict = {'Arrival_rates': {'Class 0': [3.0]},
     ...                'Service_distributions': {'Class 0': [['Exponential', 5.0]]},
