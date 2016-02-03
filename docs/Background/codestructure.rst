@@ -7,7 +7,7 @@ Code Structure
 Ciw is structured in an object orientated manor.
 
 
-.. image:: ../_static/codestructure.png
+.. image:: ../_static/codestructure.svg
    :scale: 100 %
    :alt: Code structure for Ciw.
    :align: center
