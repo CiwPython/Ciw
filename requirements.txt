@@ -1,4 +1,3 @@
 PyYAML
 networkx
-docopt
 hypothesis
