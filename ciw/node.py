@@ -25,7 +25,7 @@ class Node:
             self.schedule = self.simulation.parameters[self.simulation.c[id_number-1]]
             self.cyclelength = self.simulation.parameters['cycle_length']
             self.c = self.schedule[0][1]
-            self.masterschedule = [i*self.cyclelength + obs for i in range(self.simulation.max_simulation_time//self.cyclelength + 1) for obs in [t[0] for t in  self.schedule]][1:]
+            self.masterschedule = [i*self.cyclelength + obs for i in range(int(self.simulation.max_simulation_time//self.cyclelength) + 1) for obs in [t[0] for t in  self.schedule]][1:]
         else:
             self.c = self.simulation.c[id_number-1]
 
@@ -122,12 +122,15 @@ class Node:
             self.highest_id = max([srvr.id_number for srvr in self.servers])
         shift = self.next_event_date%self.cyclelength
 
+        tms = [obs[0] for obs in self.schedule]
+        diffs = [abs(x-shift) for x in tms]
+        indx = diffs.index(min(diffs))
+
         self.take_servers_off_duty()
+        self.add_new_server(indx, self.highest_id)
 
-        self.add_new_server(shift, self.highest_id)
-
-        indx = [obs[0] for obs in self.schedule].index(shift)
         self.c = self.schedule[indx][1]
+        self.masterschedule.pop(0)
 
     def take_servers_off_duty(self):
         """
@@ -300,12 +303,11 @@ class Node:
         indx = self.servers.index(srvr)
         del self.servers[indx]
 
-    def add_new_server(self, shift, highest_id):
+    def add_new_server(self, shift_indx, highest_id):
         """
         Add appropriate amount of servers for the given shift
         """
-        indx = [obs[0] for obs in self.schedule].index(shift)
-        num_servers = self.schedule[indx][1]
+        num_servers = self.schedule[shift_indx][1]
         for i in range(num_servers):
             self.servers.append(Server(self, highest_id+i+1))
 
