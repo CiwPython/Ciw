@@ -71,7 +71,7 @@ class TestNode(unittest.TestCase):
     def test_take_servers_off_duty_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/'))
         N = Q.transitive_nodes[0]
-        N.add_new_server(90, 1)
+        N.add_new_server(3, 1)
         self.assertEqual([str(obs) for obs in N.servers], ['Server 1 at Node 1', 'Server 2 at Node 1', 'Server 3 at Node 1', 'Server 4 at Node 1'])
         N.servers[1].busy = True
         N.servers[2].busy = True
@@ -320,9 +320,9 @@ class TestNode(unittest.TestCase):
     def test_add_new_server_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/'))
         N = Q.transitive_nodes[0]
-        s = 90
         self.assertEqual([str(obs) for obs in N.servers], ['Server 1 at Node 1'])
-        N.add_new_server(s,1)
+        s_indx = 3
+        N.add_new_server(s_indx,1)
         self.assertEqual([str(obs) for obs in N.servers], ['Server 1 at Node 1', 'Server 2 at Node 1', 'Server 3 at Node 1', 'Server 4 at Node 1'])
 
 
