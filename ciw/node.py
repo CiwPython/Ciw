@@ -25,7 +25,7 @@ class Node:
             self.schedule = self.simulation.parameters[self.simulation.c[id_number-1]]
             self.cyclelength = self.simulation.parameters['cycle_length']
             self.c = self.schedule[0][1]
-            self.masterschedule = [i*self.cyclelength + obs for i in range(int(self.simulation.max_simulation_time//self.cyclelength) + 1) for obs in [t[0] for t in  self.schedule]][1:]
+            self.masterschedule = [i*self.cyclelength + obs for i in range(int(self.simulation.max_simulation_time//self.cyclelength) + 2) for obs in [t[0] for t in  self.schedule]][1:]
         else:
             self.c = self.simulation.c[id_number-1]
 
