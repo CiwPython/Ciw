@@ -149,6 +149,7 @@ class Simulation:
         for p in range(len(cum_probs)):
             if rnd_num < cum_probs[p]:
                 return values[p]
+        return choice(values) # To catch the very slim chance it reaches here, due to floating points
 
     def find_times_dictionary(self, source):
         """
