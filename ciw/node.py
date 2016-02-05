@@ -131,6 +131,7 @@ class Node:
 
         self.c = self.schedule[indx][1]
         self.masterschedule.pop(0)
+        self.begin_service_if_possible_change_shift(self.next_event_date)
 
     def take_servers_off_duty(self):
         """
@@ -220,6 +221,18 @@ class Node:
         self.release_blocked_individual(current_time)
         self.begin_service_if_possible_release(current_time)
         next_node.accept(next_individual, current_time)
+
+    def begin_service_if_possible_change_shift(self, current_time):
+        """
+        Attempts to begin service if change_shift yields any free servers
+        """
+        free_servers = [s for s in self.servers if not s.busy]
+        for srvr in free_servers:
+            if len([i for i in self.individuals if not i.server]) > 0:
+                ind = [i for i in self.individuals if not i.server][0]
+                self.attach_server(srvr, ind)
+                ind.service_start_date = current_time
+                ind.service_end_date = ind.service_start_date + ind.service_time
 
     def begin_service_if_possible_release(self, current_time):
         """
