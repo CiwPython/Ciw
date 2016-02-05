@@ -62,7 +62,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_init_method_from_kws(self):
         # Define parameters
-        Arrival_rates = {'Class 0':[['Exponential', 3.0],
+        Arrival_distributions = {'Class 0':[['Exponential', 3.0],
                                     ['Exponential', 7.0],
                                     ['Exponential', 4.0],
                                     ['Exponential', 1.0]],
@@ -122,7 +122,7 @@ class TestSimulation(unittest.TestCase):
 
 
         # The tests
-        Q = ciw.Simulation(Arrival_rates=Arrival_rates,
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
                            Queue_capacities=Queue_capacities,
                            Service_distributions=Service_distributions,
@@ -174,7 +174,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, [20, 'Inf', 30, 'Inf'])
 
-        Q = ciw.Simulation(Arrival_rates=Arrival_rates,
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
                            Service_distributions=Service_distributions,
                            Number_of_servers=Number_of_servers,
@@ -222,7 +222,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, ['Inf', 'Inf', 'Inf', 'Inf'])
 
-        Q = ciw.Simulation(Arrival_rates=Arrival_rates,
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
                            Queue_capacities=Queue_capacities,
                            Service_distributions=Service_distributions,
@@ -245,7 +245,7 @@ class TestSimulation(unittest.TestCase):
                                                   [0.0, 1.0, 0.0],
                                                   [0.0, 0.0, 1.0]]])
 
-        Q = ciw.Simulation(Arrival_rates=Arrival_rates,
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
                            Queue_capacities=Queue_capacities,
                            Service_distributions=Service_distributions,
@@ -259,7 +259,7 @@ class TestSimulation(unittest.TestCase):
                            cycle_length=cycle_length)
         self.assertEqual(Q.schedules, [False, False, True, False])
 
-        Q = ciw.Simulation(Arrival_rates = {'Class 2': [['Exponential', 2.0],
+        Q = ciw.Simulation(Arrival_distributions = {'Class 2': [['Exponential', 2.0],
                                                         ['Exponential', 1.0],
                                                         ['Exponential', 2.0],
                                                         ['Exponential', 0.5]],
@@ -301,7 +301,7 @@ class TestSimulation(unittest.TestCase):
                                                                [0.2, 0.2, 0.0, 0.1],
                                                                [0.0, 0.8, 0.1, 0.1],
                                                                [0.4, 0.1, 0.1, 0.0]]})
-        self.assertEqual(Q.parameters, {'Arrival_rates': {'Class 2': [['Exponential', 2.0],
+        self.assertEqual(Q.parameters, {'Arrival_distributions': {'Class 2': [['Exponential', 2.0],
                                                                       ['Exponential', 1.0],
                                                                       ['Exponential', 2.0],
                                                                       ['Exponential', 0.5]],
@@ -368,7 +368,7 @@ class TestSimulation(unittest.TestCase):
                                Simulation_time=Simulation_time)
 
             expected_dictionary = {
-                'Arrival_rates': {'Class 0': [['Exponential', arrival_rate]]},
+                'Arrival_distributions': {'Class 0': [['Exponential', arrival_rate]]},
                 'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
                 'Transition_matrices': {'Class 0': [[0.0]]},
                 'Number_of_servers': [number_of_servers],
@@ -413,7 +413,7 @@ class TestSimulation(unittest.TestCase):
                                Simulation_time=Simulation_time)
 
             expected_dictionary = {
-                'Arrival_rates': {'Class 0': [['Exponential', arrival_rate]]},
+                'Arrival_distributions': {'Class 0': [['Exponential', arrival_rate]]},
                 'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
                 'Transition_matrices': {'Class 0': [[0.0]]},
                 'Number_of_servers': [number_of_servers],
@@ -556,7 +556,7 @@ class TestSimulation(unittest.TestCase):
             setstate(state)
 
     def test_raising_errors(self):
-        Arrival_rates = {'Class 0':[['Exponential', 3.0]]}
+        Arrival_distributions = {'Class 0':[['Exponential', 3.0]]}
         Service_distributions = {'Class 0':[['Exponential', 7.0]]}
         Service_distributions2 = {'Class 0':[['Exponential', 7.0], ['Lognormal', 0.5, 0.25]]}
         Number_of_servers = [9]
@@ -572,35 +572,35 @@ class TestSimulation(unittest.TestCase):
         Number_of_nodes = 1
         Queue_capacities = ['Inf']
 
-        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
                                                       Service_distributions=Service_distributions,
                                                       Number_of_servers=Number_of_servers2,
                                                       Transition_matrices=Transition_matrices,
                                                       Simulation_time=Simulation_time,
                                                       Number_of_nodes=Number_of_nodes,
                                                       Queue_capacities=Queue_capacities)
-        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
                                                       Service_distributions=Service_distributions2,
                                                       Number_of_servers=Number_of_servers,
                                                       Transition_matrices=Transition_matrices,
                                                       Simulation_time=Simulation_time,
                                                       Number_of_nodes=Number_of_nodes,
                                                       Queue_capacities=Queue_capacities)
-        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
                                                       Service_distributions=Service_distributions,
                                                       Number_of_servers=Number_of_servers,
                                                       Transition_matrices=Transition_matrices2,
                                                       Simulation_time=Simulation_time,
                                                       Number_of_nodes=Number_of_nodes,
                                                       Queue_capacities=Queue_capacities)
-        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
                                                       Service_distributions=Service_distributions,
                                                       Number_of_servers=Number_of_servers,
                                                       Transition_matrices=Transition_matrices3,
                                                       Simulation_time=Simulation_time,
                                                       Number_of_nodes=Number_of_nodes,
                                                       Queue_capacities=Queue_capacities)
-        self.assertRaises(ValueError, ciw.Simulation, Arrival_rates=Arrival_rates,
+        self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
                                                       Service_distributions=Service_distributions,
                                                       Number_of_servers=Number_of_servers,
                                                       Transition_matrices=Transition_matrices,
@@ -609,7 +609,7 @@ class TestSimulation(unittest.TestCase):
                                                       Queue_capacities=Queue_capacities)
 
     def test_sampling_service_times(self):
-        Arrival_rates = {'Class 0': [['Uniform', 2.2, 3.3],
+        Arrival_distributions = {'Class 0': [['Uniform', 2.2, 3.3],
                                      ['Deterministic', 4.4],
                                      ['Triangular', 1.1, 6.6, 1.5],
                                      ['Exponential', 4.4],
@@ -636,7 +636,7 @@ class TestSimulation(unittest.TestCase):
                                            [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
         Simulation_time = [2222]
 
-        Q = ciw.Simulation(Arrival_rates=Arrival_rates,
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Service_distributions=Service_distributions,
                            Number_of_servers=Number_of_servers,
                            Transition_matrices=Transition_matrices,

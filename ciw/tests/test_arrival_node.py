@@ -82,7 +82,7 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_no_arrivals_example(self):
         params = ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/')
-        params['Arrival_rates']['Class 0'] = ['NoArrivals', ['Exponential', 1.0], ['Exponential', 4.0], ['Exponential', 3.5]]
+        params['Arrival_distributions']['Class 0'] = ['NoArrivals', ['Exponential', 1.0], ['Exponential', 4.0], ['Exponential', 3.5]]
         Q = ciw.Simulation(params)
         AN = Q.nodes[0]
         self.assertEqual(AN.simulation.lmbda[0][0], 'NoArrivals')

@@ -1,4 +1,4 @@
-Arrival_rates:
+Arrival_distributions:
   Class 0:
   - - Exponential
     - 3.0

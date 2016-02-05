@@ -35,7 +35,7 @@ class Simulation:
 
         # Default arguments
         default_dict ={'Number_of_nodes': len(self.parameters['Number_of_servers']),
-                       'Number_of_classes': len(self.parameters['Arrival_rates']),
+                       'Number_of_classes': len(self.parameters['Arrival_distributions']),
                        'Queue_capacities': ['Inf' for _ in
                                             range(len(self.parameters['Number_of_servers']))],
                        'detect_deadlock': False}
@@ -47,7 +47,7 @@ class Simulation:
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
-        self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        self.lmbda = [self.parameters['Arrival_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         
         if any(len(lmbdacls) != len(self.c) for lmbdacls in self.lmbda):
             raise ValueError('Lambda should have same length as c for every class')
@@ -93,7 +93,7 @@ class Simulation:
         """
         Builds the parameters dictionary for an M/M/C queue
         """
-        return {'Arrival_rates' : {'Class 0' : [['Exponential', arrival_rate]]},
+        return {'Arrival_distributions' : {'Class 0' : [['Exponential', arrival_rate]]},
                 'Service_distributions' : {'Class 0' : [['Exponential', service_rate]]},
                 'Transition_matrices' : {'Class 0' : [[0.0]]},
                 'Number_of_servers' : [number_of_servers],
