@@ -18,10 +18,10 @@ Set up a Simulation object, from which all parameters can also be accessed::
     3 # doctest:+SKIP
     >>> Q.queue_capacities # doctest:+SKIP
     ['Inf', 'Inf', 10] # doctest:+SKIP
-    >>> Q.lmbda    # The arrival rates of the system # doctest:+SKIP
-    [[1.0, 1.8, 7.25], [6.0, 4.5, 2.0]] # doctest:+SKIP
-    >>> Q.lmbda[0]    # Arrival rates of the 0th class # doctest:+SKIP
-    [1.0, 1.8, 7.2] # doctest:+SKIP
+    >>> Q.lmbda    # The arrival distributions of the system # doctest:+SKIP
+    [[['Exponential', 1.0], ['Exponential', 1.8], ['Exponential', 7.25]], [['Exponential', 6.0], ['Exponential', 4.5], ['Exponential', 2.0]]] # doctest:+SKIP
+    >>> Q.lmbda[0]    # Arrival distributions of the 0th class # doctest:+SKIP
+    [['Exponential', 1.0], ['Exponential', 1.8], ['Exponential', 7.2]] # doctest:+SKIP
 
 A full list of Ciw's objects and attributes can be found here: :ref:`objects-attributes`
 Now to run a simulation simply run the following method::

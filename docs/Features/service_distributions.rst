@@ -1,10 +1,10 @@
 .. _service-distributions:
 
-==========================
-Service Time Distributions
-==========================
+==========================================
+Service & Inter-Arrival Time Distributions
+==========================================
 
-Ciw currently allows the following continuous service rate distributions:
+Ciw currently allows the following continuous service and inter-arrival time distributions:
 
 - :ref:`uniform_dist`
 - :ref:`deterministic_dist`

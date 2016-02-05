@@ -29,7 +29,7 @@ This queueing network contains 2 nodes:
 We wish to simulate this system for 1000 time units. This system is defined by the following parameters dictionary::
 
     >>> params = {
-    ... 'Arrival_rates': {'Class 0': [6.0, 2.5]},
+    ... 'Arrival_distributions': {'Class 0': [['Exponential', 6.0], ['Exponential', 2.5]]},
     ... 'Number_of_nodes': 2,
     ... 'detect_deadlock': False,
     ... 'Simulation_time': 1000,

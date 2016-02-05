@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# QNetSim documentation build configuration file, created by
+# Ciw documentation build configuration file, created by
 # sphinx-quickstart on Fri Oct 23 13:08:27 2015.
 #
 # This file is execfile()d with the current directory set to its
