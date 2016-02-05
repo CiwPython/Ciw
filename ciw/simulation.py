@@ -35,7 +35,7 @@ class Simulation:
 
         # Default arguments
         default_dict ={'Number_of_nodes': len(self.parameters['Number_of_servers']),
-                       'Number_of_classes': len(self.parameters['Arrival_rates']),
+                       'Number_of_classes': len(self.parameters['Arrival_distributions']),
                        'Queue_capacities': ['Inf' for _ in
                                             range(len(self.parameters['Number_of_servers']))],
                        'detect_deadlock': False}
@@ -47,13 +47,10 @@ class Simulation:
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
-        self.lmbda = [self.parameters['Arrival_rates']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        self.lmbda = [self.parameters['Arrival_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         
         if any(len(lmbdacls) != len(self.c) for lmbdacls in self.lmbda):
             raise ValueError('Lambda should have same length as c for every class')
-        if any(l < 0 for lmbdaclass in self.lmbda for l in lmbdaclass):
-            raise ValueError('All arrival rates should be positive')
-
 
         self.mu = [self.parameters['Service_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         
@@ -82,9 +79,11 @@ class Simulation:
         if self.max_simulation_time < 0:
             raise ValueError('Maximum simulation time should be positive')
 
+        self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
-        self.service_times = self.find_service_time_dictionary()
+        self.service_times = self.find_times_dictionary(self.mu)
+        self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
         self.state = [[0, 0] for i in range(self.number_of_nodes)]
         initial_state = [[0, 0] for i in range(self.number_of_nodes)]
         self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
@@ -94,7 +93,7 @@ class Simulation:
         """
         Builds the parameters dictionary for an M/M/C queue
         """
-        return {'Arrival_rates' : {'Class 0' : [arrival_rate]},
+        return {'Arrival_distributions' : {'Class 0' : [['Exponential', arrival_rate]]},
                 'Service_distributions' : {'Class 0' : [['Exponential', service_rate]]},
                 'Transition_matrices' : {'Class 0' : [[0.0]]},
                 'Number_of_servers' : [number_of_servers],
@@ -114,27 +113,28 @@ class Simulation:
         else:
             return self.nodes[next_active_node_indices[0]]
 
-    def find_service_time(self, n, c):
+    def find_distributions(self, n, c, source):
         """
-        Finds the service time function
+        Finds distribution functions
         """
-
-        if self.mu[c][n][0] == 'Uniform':
-            return lambda : uniform(self.mu[c][n][1], self.mu[c][n][2])
-        if self.mu[c][n][0] == 'Deterministic':
-            return lambda : self.mu[c][n][1]
-        if self.mu[c][n][0] == 'Triangular':
-            return lambda : triangular(self.mu[c][n][1], self.mu[c][n][2], self.mu[c][n][3])
-        if self.mu[c][n][0] == 'Exponential':
-            return lambda : expovariate(self.mu[c][n][1])
-        if self.mu[c][n][0] == 'Gamma':
-            return lambda : gammavariate(self.mu[c][n][1], self.mu[c][n][2])
-        if self.mu[c][n][0] == 'Lognormal':
-            return lambda : lognormvariate(self.mu[c][n][1], self.mu[c][n][2])
-        if self.mu[c][n][0] == 'Weibull':
-            return lambda : weibullvariate(self.mu[c][n][1], self.mu[c][n][2])
-        if self.mu[c][n][0] == 'Custom':
-            P, V = zip(*self.parameters[self.mu[c][n][1]])
+        if source[c][n] == 'NoArrivals':
+            return lambda : 'Inf'
+        if source[c][n][0] == 'Uniform':
+            return lambda : uniform(source[c][n][1], source[c][n][2])
+        if source[c][n][0] == 'Deterministic':
+            return lambda : source[c][n][1]
+        if source[c][n][0] == 'Triangular':
+            return lambda : triangular(source[c][n][1], source[c][n][2], source[c][n][3])
+        if source[c][n][0] == 'Exponential':
+            return lambda : expovariate(source[c][n][1])
+        if source[c][n][0] == 'Gamma':
+            return lambda : gammavariate(source[c][n][1], source[c][n][2])
+        if source[c][n][0] == 'Lognormal':
+            return lambda : lognormvariate(source[c][n][1], source[c][n][2])
+        if source[c][n][0] == 'Weibull':
+            return lambda : weibullvariate(source[c][n][1], source[c][n][2])
+        if source[c][n][0] == 'Custom':
+            P, V = zip(*self.parameters[source[c][n][1]])
             probs = list(P)
             cum_probs = [sum(probs[0:i+1]) for i in range(len(probs))]
             values = list(V)
@@ -150,11 +150,11 @@ class Simulation:
             if rnd_num < cum_probs[p]:
                 return values[p]
 
-    def find_service_time_dictionary(self):
+    def find_times_dictionary(self, source):
         """
         Finds the dictionary of service time functions for each node for each class
         """
-        return {node+1:{customer_class:self.find_service_time(node, customer_class) for customer_class in range(len(self.lmbda))} for node in range(self.number_of_nodes)}
+        return {node+1:{customer_class:self.find_distributions(node, customer_class, source) for customer_class in range(len(self.lmbda))} for node in range(self.number_of_nodes)}
 
     def simulate_until_max_time(self):
         """

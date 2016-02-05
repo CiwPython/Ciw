@@ -1,10 +1,10 @@
 .. _custom-distributions:
 
-======================================
-Custom Discrete PDFs for Service Times
-======================================
+====================
+Custom Discrete PDFs
+====================
 
-Ciw allows users to define their own discrete service time distributions.
+Ciw allows users to define their own discrete service and inter-arrival time distributions.
 An example distribution may look like this:
 
 	+------+------+------+------+------+------+------+

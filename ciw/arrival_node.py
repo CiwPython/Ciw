@@ -23,10 +23,7 @@ class ArrivalNode:
         """
         for nd in self.next_event_dates_dict:
             for cls in self.next_event_dates_dict[nd]:
-                if self.simulation.lmbda[cls][nd-1] == 0:
-                    self.next_event_dates_dict[nd][cls] = 'Inf'
-                else:
-                    self.next_event_dates_dict[nd][cls] = expovariate(self.simulation.lmbda[cls][nd-1])
+                self.next_event_dates_dict[nd][cls] = self.simulation.inter_arrival_times[nd][cls]()
 
 
     def __repr__(self):
@@ -51,9 +48,7 @@ class ArrivalNode:
         """
         Expovariate but omits zero
         """
-        if self.simulation.lmbda[cls][nd-1] == 0:
-            return 0
-        return expovariate(self.simulation.lmbda[cls][nd-1])
+        return self.simulation.inter_arrival_times[nd][cls]()
 
 
     def find_next_event_date(self):

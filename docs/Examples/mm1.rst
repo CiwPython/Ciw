@@ -11,7 +11,7 @@ Standard queueing theory gives the expected wait in an M/M/1 queue as :math:`\ma
 
 We set up the parameters in Ciw::
 
-    >>> params_dict = {'Arrival_rates': {'Class 0': [3.0]},
+    >>> params_dict = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]]},
     ...                'Service_distributions': {'Class 0': [['Exponential', 5.0]]},
     ...                'Simulation_time': 250,
     ...                'Transition_matrices': {'Class 0': [[0.0]]},

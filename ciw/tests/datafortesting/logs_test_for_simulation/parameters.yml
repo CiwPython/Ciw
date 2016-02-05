@@ -1,19 +1,31 @@
-Arrival_rates:
+Arrival_distributions:
   Class 0:
-  - 3.0
-  - 7.0
-  - 4.0
-  - 1.0
+  - - Exponential
+    - 3.0
+  - - Exponential
+    - 7.0
+  - - Exponential
+    - 4.0
+  - - Exponential
+    - 1.0
   Class 1:
-  - 2.0
-  - 3.0
-  - 6.0
-  - 4.0
+  - - Exponential
+    - 2.0
+  - - Exponential
+    - 3.0
+  - - Exponential
+    - 6.0
+  - - Exponential
+    - 4.0
   Class 2:
-  - 2.0
-  - 1.0
-  - 2.0
-  - 0.5
+  - - Exponential
+    - 2.0
+  - - Exponential
+    - 1.0
+  - - Exponential
+    - 2.0
+  - - Exponential
+    - 0.5
 detect_deadlock: False
 Number_of_classes: 3
 Number_of_nodes: 4

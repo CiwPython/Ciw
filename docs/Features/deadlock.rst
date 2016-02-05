@@ -28,7 +28,7 @@ Consider the M/M/1/3 queue where customers have probability 0.5 of rejoining the
 
 Parameters::
 
-    >>> params = {'Arrival_rates': {'Class 0': [6.0]},
+    >>> params = {'Arrival_distributions': {'Class 0': [['Exponential', 6.0]]},
     ...           'Number_of_nodes': 1,
     ...           'detect_deadlock': True,
     ...           'Simulation_time': 2500,
