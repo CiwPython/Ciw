@@ -1,7 +1,9 @@
 Arrival_rates:
   Class 0:
-  - 20.0
-  - 30.0
+  - - Exponential
+    - 20.0
+  - - Exponential
+    - 30.0
 detect_deadlock: True
 Number_of_classes: 1
 Number_of_nodes: 2

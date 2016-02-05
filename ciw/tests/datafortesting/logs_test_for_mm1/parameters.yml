@@ -1,6 +1,7 @@
 Arrival_rates:
   Class 0:
-  - 7.0
+  - - Exponential
+    - 7.0
 Number_of_nodes: 1
 Number_of_servers:
 - 1

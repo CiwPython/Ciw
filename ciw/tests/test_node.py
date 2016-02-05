@@ -26,7 +26,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.scheduled_servers, True)
         self.assertEqual(N.cyclelength, 100)
         self.assertEqual(N.c, 1)
-        self.assertEqual(N.masterschedule, [30, 60, 90, 100, 130, 160, 190, 200, 230, 260, 290])
+        self.assertEqual(N.masterschedule, [30, 60, 90, 100, 130, 160, 190, 200, 230, 260, 290, 300, 330, 360, 390])
         self.assertEqual(N.next_event_date, 30)
 
     def test_find_cdf_class_changes_method(self):
