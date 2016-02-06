@@ -21,7 +21,7 @@ class ExitNode:
 
     def accept(self, next_individual, current_time):
         """
-        Accepts a new customer to the queue
+        Adds customer to the list of completed customers
         """
         self.individuals.append(next_individual)
 
