@@ -34,7 +34,7 @@ class ArrivalNode:
 
     def have_event(self):
         """
-        Update node when a service happens.
+        Send new arrival to relevent node.
         """
         self.number_of_individuals += 1
         next_individual = Individual(self.number_of_individuals, self.next_class)
