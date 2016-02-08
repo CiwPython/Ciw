@@ -6,7 +6,7 @@ from hypothesis.strategies import integers
 class TestServer(unittest.TestCase):
 
     def test_init_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = Q.transitive_nodes[1]
         s = ciw.Server(N, 3)
         self.assertEqual(s.id_number, 3)
@@ -17,7 +17,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(s.offduty, False)
 
     def test_repr_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = Q.transitive_nodes[0]
         s = ciw.Server(N, 4)
         self.assertEqual(str(s), 'Server 4 at Node 1')

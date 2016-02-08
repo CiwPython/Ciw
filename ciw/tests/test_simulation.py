@@ -8,7 +8,7 @@ import os
 class TestSimulation(unittest.TestCase):
 
     def test_init_method_from_dict(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         self.assertEqual(Q.lmbda, [[['Exponential', 3.0],
                                     ['Exponential', 7.0],
                                     ['Exponential', 4.0],
@@ -52,11 +52,11 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.schedules, [False, False, False, False])
 
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
         self.assertEqual(Q.class_change_matrix, [[[0.7, 0.3], [0.2, 0.8]], [[1.0, 0.0], [0.0, 1.0]]])
 
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         self.assertEqual(Q.schedules, [True, False])
 
 
@@ -437,14 +437,14 @@ class TestSimulation(unittest.TestCase):
 
 
     def test_find_next_active_node_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         i = 0
         for node in Q.nodes[:-1]:
             node.next_event_date = i
             i += 1
         self.assertEqual(str(Q.find_next_active_node()), 'Arrival Node')
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         i = 10
         for node in Q.nodes[:-1]:
             node.next_event_date = i
@@ -453,7 +453,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_custom_pdf_method(self):
         seed(45)
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 10.7)
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
@@ -462,7 +462,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
         self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 9.5)
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_custom_dist/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_custom_dist/parameters.yml'))
         self.assertEqual(Q.service_times[1][0](), 5.0)
         self.assertEqual(Q.service_times[1][0](), 6.0)
         self.assertEqual(Q.service_times[1][0](), 6.0)
@@ -479,13 +479,13 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulate_until_max_time_method(self):
         seed(2)
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         Q.max_simulation_time = 600
         Q.simulate_until_max_time()
         L = Q.get_all_individuals()
         self.assertEqual(round(L[300].data_records.values()[0][0].service_start_date, 8), 8.18087789)
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
         Q.simulate_until_max_time()
         L = Q.get_all_individuals()
         drl = []
@@ -495,12 +495,12 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulate_until_deadlock_method(self):
         seed(3)
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         times = Q.simulate_until_deadlock()
         self.assertEqual(round(times[((0, 0), (0, 0))], 8), 9.09939457)
 
     def test_detect_deadlock_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         nodes = ['A', 'B', 'C', 'D', 'E']
         connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
         for nd in nodes:
@@ -509,7 +509,7 @@ class TestSimulation(unittest.TestCase):
             Q.digraph.add_edge(cnctn[0], cnctn[1])
         self.assertEqual(Q.detect_deadlock(), True)
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         nodes = ['A', 'B', 'C', 'D']
         connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         for nd in nodes:
@@ -518,7 +518,7 @@ class TestSimulation(unittest.TestCase):
             Q.digraph.add_edge(cnctn[0], cnctn[1])
         self.assertEqual(Q.detect_deadlock(), False)
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         nodes = ['A', 'B']
         for nd in nodes:
             Q.digraph.add_node(nd)
@@ -529,7 +529,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.detect_deadlock(), True)
 
     def test_mm1_from_file(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
         self.assertEqual(Q.transition_matrix, [[[0.0]]])
 
 
@@ -837,7 +837,7 @@ class TestSimulation(unittest.TestCase):
 
 
     def test_writing_data_files(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         Q.max_simulation_time = 500
         Q.simulate_until_max_time()
         files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
@@ -847,7 +847,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual('data.csv' in files, True)
         os.remove('ciw/tests/datafortesting/logs_test_for_simulation/data.csv')
 
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
         Q.max_simulation_time = 500
         Q.simulate_until_max_time()
         files = [x for x in os.walk('ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
