@@ -4,13 +4,13 @@ import os
 from csv import writer
 import yaml
 import networkx as nx
+import copy
 from node import Node
 from arrival_node import ArrivalNode
 from exit_node import ExitNode
 from server import Server
 from individual import Individual
 from data_record import DataRecord
-
 
 class Simulation:
     """
@@ -21,7 +21,7 @@ class Simulation:
         Initialise a queue instance.
         """
         if args:  # Catching if dictionary is passed
-            parameters = args[0]
+            parameters = copy.deepcopy(args[0])
         else:
             parameters = kwargs
 
