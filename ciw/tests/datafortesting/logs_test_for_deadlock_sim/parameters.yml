@@ -12,9 +12,7 @@ Number_of_servers:
 - 1
 Queue_capacities:
 - 3
-- "Inf"
 - 2
-- "Inf"
 Service_distributions:
   Class 0:
   - - Exponential

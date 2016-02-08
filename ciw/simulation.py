@@ -26,6 +26,7 @@ class Simulation:
             parameters = kwargs
 
         self.parameters = self.build_parameters(parameters)
+        self.check_valid_parameters()
 
         self.c = self.parameters['Number_of_servers']
         self.number_of_nodes = self.parameters['Number_of_nodes']
@@ -82,6 +83,86 @@ class Simulation:
 
         return params
 
+    def check_valid_parameters(self):
+        """
+        Raises errors if parameter set isn't valid
+        """
+        if not isinstance(self.parameters['Number_of_classes'], int) or self.parameters['Number_of_classes'] <= 0:
+            raise ValueError('Number_of_classes must be a positive integer.')
+        if not isinstance(self.parameters['Number_of_nodes'], int) or self.parameters['Number_of_nodes'] <= 0:
+            raise ValueError('Number_of_nodes must be a positive integer.')
+        if len(self.parameters['Number_of_servers']) != self.parameters['Number_of_nodes']:
+            raise ValueError('Number_of_servers must be list of length Number_of_nodes.')
+        for x in self.parameters['Number_of_servers']:
+            if isinstance(x, int):
+                if x < 0:
+                    raise ValueError('Number_of_servers must be list of positive integers or valid server schedules.')
+            if isinstance(x, str):
+                if x != 'Inf':
+                    if x not in self.parameters:
+                        raise ValueError('Number_of_servers must be list of positive integers or valid server schedules.')
+        if not isinstance(self.parameters['detect_deadlock'], bool):
+            raise ValueError('detect_deadlock must be a boolean.')
+        if len(self.parameters['Queue_capacities']) != self.parameters['Number_of_nodes']:
+            raise ValueError('Queue_capacities must be list of length Number_of_nodes.')
+        for x in self.parameters['Queue_capacities']:
+            if isinstance(x, int):
+                if x < 0:
+                    raise ValueError('Queue_capacities must be list of positive integers.')
+        if not isinstance(self.parameters['Arrival_distributions'], dict) or len(self.parameters['Arrival_distributions']) != self.parameters['Number_of_classes']:
+            raise ValueError('Arrival_distributions must be dictionary with classes as keys.')
+        for x in self.parameters['Arrival_distributions'].keys():
+            if not isinstance(x, str) or x[:6] != 'Class ':
+                raise ValueError('Keys of Arrival_distributions must be strings numbered "Class #".')
+        for x in self.parameters['Arrival_distributions'].values():
+            if not isinstance(x, list) or len(x) != self.parameters['Number_of_nodes']:
+                raise ValueError('Arrival_distributions for each class must be a list of length Number_of_nodes')
+        if not isinstance(self.parameters['Service_distributions'], dict) or len(self.parameters['Service_distributions']) != self.parameters['Number_of_classes']:
+            raise ValueError('Service_distributions must be dictionary with classes as keys.')
+        for x in self.parameters['Service_distributions'].keys():
+            if not isinstance(x, str) or x[:6] != 'Class ':
+                raise ValueError('Keys of Service_distributions must be strings numbered "Class #".')
+        for x in self.parameters['Service_distributions'].values():
+            if not isinstance(x, list) or len(x) != self.parameters['Number_of_nodes']:
+                raise ValueError('Service_distributions for each class must be a list of length Number_of_nodes')
+        if not isinstance(self.parameters['Transition_matrices'], dict) or len(self.parameters['Transition_matrices']) != self.parameters['Number_of_classes']:
+            raise ValueError('Transition_matrices must be dictionary with classes as keys.')
+        for x in self.parameters['Transition_matrices'].keys():
+            if not isinstance(x, str) or x[:6] != 'Class ':
+                raise ValueError('Keys of Transition_matrices must be strings numbered "Class #".')
+        for x in self.parameters['Transition_matrices'].values():
+            if not isinstance(x, list) or len(x) != self.parameters['Number_of_nodes']:
+                raise ValueError('Transition_matrices for each class must be list of lists of shape Number_of_nodes x Number_of_nodes.')
+            for y in x:
+                if not isinstance(y, list) or len(y) != self.parameters['Number_of_nodes']:
+                    raise ValueError('Transition_matrices for each class must be list of lists of shape Number_of_nodes x Number_of_nodes.')
+                for z in y:
+                    if not isinstance(z, float) or z < 0.0:
+                        raise ValueError('Entries of Transition_matrices must be floats between 0.0 and 1.0.')
+                if sum(y) > 1.0:
+                    raise ValueError('Rows of Transition_matrices must sum to 1.0 or less.')
+        if 'Class_change_matrices' in self.parameters:
+            if not isinstance(self.parameters['Class_change_matrices'], dict) or len(self.parameters['Class_change_matrices']) != self.parameters['Number_of_nodes']:
+                raise ValueError('Class_change_matrices must be dictionary with nodes as keys.')
+            for x in self.parameters['Class_change_matrices'].keys():
+                if not isinstance(x, str) or x[:5] != 'Node ':
+                    raise ValueError('Keys of Class_change_matrices must be strings numbered "Node #".')
+            for x in self.parameters['Class_change_matrices'].values():
+                if not isinstance(x, list) or len(x) != self.parameters['Number_of_classes']:
+                    raise ValueError('Class_change_matrices for each class must be list of lists of shape Number_of_classes x Number_of_classes.')
+                for y in x:
+                    if not isinstance(y, list) or len(y) != self.parameters['Number_of_classes']:
+                        raise ValueError('Class_change_matrices for each class must be list of lists of shape Number_of_classes x Number_of_classes.')
+                    for z in y:
+                        if not isinstance(z, float) or z < 0.0:
+                            raise ValueError('Entries of Class_change_matrices must be floats between 0.0 and 1.0.')
+                    if sum(y) > 1.0:
+                        raise ValueError('Rows of Class_change_matrices must sum to 1.0 or less.')
+        if self.parameters['Simulation_time'] <= 0:
+            raise ValueError('Simulation_time must be a positive number.')
+
+
+
 
     def find_next_active_node(self):
         """
@@ -129,7 +210,6 @@ class Simulation:
         for p in range(len(cum_probs)):
             if rnd_num < cum_probs[p]:
                 return values[p]
-        return choice(values) # To catch the very slim chance it reaches here, due to floating points
 
     def find_times_dictionary(self, source):
         """

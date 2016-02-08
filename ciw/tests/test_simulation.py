@@ -4,6 +4,7 @@ from random import seed, getstate, setstate
 from hypothesis import given
 from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries
 import os
+import copy
 
 class TestSimulation(unittest.TestCase):
 
@@ -500,7 +501,7 @@ class TestSimulation(unittest.TestCase):
         seed(3)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         times = Q.simulate_until_deadlock()
-        self.assertEqual(round(times[((0, 0), (0, 0))], 8), 9.09939457)
+        self.assertEqual(round(times[((0, 0), (0, 0))], 8), 0.22816288)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -561,58 +562,77 @@ class TestSimulation(unittest.TestCase):
         finally:
             setstate(state)
 
-    # def test_raising_errors(self):
-    #     Arrival_distributions = {'Class 0':[['Exponential', 3.0]]}
-    #     Service_distributions = {'Class 0':[['Exponential', 7.0]]}
-    #     Service_distributions2 = {'Class 0':[['Exponential', 7.0], ['Lognormal', 0.5, 0.25]]}
-    #     Number_of_servers = [9]
-    #     Number_of_servers2 = [9, 10]
-    #     Transition_matrices = {'Class 0': [[0.5]]}
-    #     Transition_matrices3 = {'Class 0': [[1.2]]}
-    #     Transition_matrices2 = {'Class 0': [[0.1, 0.2, 0.1, 0.4],
-    #                                        [0.2, 0.2, 0.0, 0.1],
-    #                                        [0.0, 0.8, 0.1, 0.1],
-    #                                        [0.4, 0.1, 0.1, 0.0]]}
-    #     Simulation_time = 400
-    #     Simulation_time2 = -30
-    #     Number_of_nodes = 1
-    #     Queue_capacities = ['Inf']
+    def test_raising_errors(self):
+        params = {'Arrival_distributions': {'Class 0':[['Exponential', 3.0]]},
+                  'Service_distributions': {'Class 0':[['Exponential', 7.0]]},
+                  'Number_of_servers': [9],
+                  'Number_of_classes': 1,
+                  'Transition_matrices': {'Class 0': [[0.5]]},
+                  'Simulation_time': 400,
+                  'Number_of_nodes': 1,
+                  'Queue_capacities': ['Inf'],
+                  'detect_deadlock': False}
 
-    #     self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
-    #                                                   Service_distributions=Service_distributions,
-    #                                                   Number_of_servers=Number_of_servers2,
-    #                                                   Transition_matrices=Transition_matrices,
-    #                                                   Simulation_time=Simulation_time,
-    #                                                   Number_of_nodes=Number_of_nodes,
-    #                                                   Queue_capacities=Queue_capacities)
-    #     self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
-    #                                                   Service_distributions=Service_distributions2,
-    #                                                   Number_of_servers=Number_of_servers,
-    #                                                   Transition_matrices=Transition_matrices,
-    #                                                   Simulation_time=Simulation_time,
-    #                                                   Number_of_nodes=Number_of_nodes,
-    #                                                   Queue_capacities=Queue_capacities)
-    #     self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
-    #                                                   Service_distributions=Service_distributions,
-    #                                                   Number_of_servers=Number_of_servers,
-    #                                                   Transition_matrices=Transition_matrices2,
-    #                                                   Simulation_time=Simulation_time,
-    #                                                   Number_of_nodes=Number_of_nodes,
-    #                                                   Queue_capacities=Queue_capacities)
-    #     self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
-    #                                                   Service_distributions=Service_distributions,
-    #                                                   Number_of_servers=Number_of_servers,
-    #                                                   Transition_matrices=Transition_matrices3,
-    #                                                   Simulation_time=Simulation_time,
-    #                                                   Number_of_nodes=Number_of_nodes,
-    #                                                   Queue_capacities=Queue_capacities)
-    #     self.assertRaises(ValueError, ciw.Simulation, Arrival_distributions=Arrival_distributions,
-    #                                                   Service_distributions=Service_distributions,
-    #                                                   Number_of_servers=Number_of_servers,
-    #                                                   Transition_matrices=Transition_matrices,
-    #                                                   Simulation_time=Simulation_time2,
-    #                                                   Number_of_nodes=Number_of_nodes,
-    #                                                   Queue_capacities=Queue_capacities)
+        params_list = [copy.deepcopy(params) for i in range(27)]
+
+        params_list[0]['Number_of_classes'] = -2
+        self.assertRaises(ValueError, ciw.Simulation, params_list[0])
+        params_list[1]['Number_of_nodes'] = -2
+        self.assertRaises(ValueError, ciw.Simulation, params_list[1])
+        params_list[2]['Number_of_servers'] = [5, 6, 7]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[2])
+        params_list[3]['Number_of_servers'] = [-3]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[3])
+        params_list[4]['Number_of_servers'] = ['my_missing_schedule']
+        self.assertRaises(ValueError, ciw.Simulation, params_list[4])
+        params_list[5]['detect_deadlock'] = 'No'
+        self.assertRaises(ValueError, ciw.Simulation, params_list[5])
+        params_list[6]['Queue_capacities'] = ['Inf', 1, 2]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[6])
+        params_list[7]['Queue_capacities'] = [-2]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[7])
+        params_list[8]['Arrival_distributions'] = {'Class 0':[['Exponential', 3.2]], 'Class 1':[['Exponential', 2.1]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[8])
+        params_list[9]['Arrival_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[9])
+        params_list[10]['Arrival_distributions']['Class 0'] = [['Exponential', 3.1], ['Exponential', 2.4]]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[10])
+        params_list[11]['Service_distributions'] = {'Class 0':[['Exponential', 3.2]], 'Class 1':[['Exponential', 2.1]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[11])
+        params_list[12]['Service_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[12])
+        params_list[13]['Service_distributions']['Class 0'] = [['Exponential', 3.1], ['Exponential', 2.4]]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[13])
+        params_list[14]['Transition_matrices'] = {'Class 0':[[0.2]], 'Class 1':[[0.3]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[14])
+        params_list[15]['Transition_matrices'] = {'Patient 0':[[0.5]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[15])
+        params_list[16]['Transition_matrices']['Class 0'] = [[0.2], [0.1]]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[16])
+        params_list[17]['Transition_matrices']['Class 0'] = [[0.2, 0.1]]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[17])
+        params_list[18]['Transition_matrices']['Class 0'] = [[-0.6]]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[18])
+        params_list[19]['Transition_matrices']['Class 0'] = [[1.4]]
+        self.assertRaises(ValueError, ciw.Simulation, params_list[19])
+        params_list[20]['Simulation_time'] = -2000
+        self.assertRaises(ValueError, ciw.Simulation, params_list[20])
+        params_list[21]['Class_change_matrices'] = {'Node 0':[[0.0]], 'Node 1':[[0.0]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[21])
+        params_list[22]['Class_change_matrices'] = {'Patient 0':[[0.0]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[22])
+        params_list[23]['Class_change_matrices'] = {'Node 0':[[0.1], [0.2]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[23])
+        params_list[24]['Class_change_matrices'] = {'Node 0':[[0.0, 0.3]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[24])
+        params_list[25]['Class_change_matrices'] = {'Node 0':[[-0.4]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[25])
+        params_list[26]['Class_change_matrices'] = {'Node 0':[[1.5]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[26])
+
+
+
+
 
     def test_sampling_service_times(self):
         Arrival_distributions = {'Class 0': [['Uniform', 2.2, 3.3],
