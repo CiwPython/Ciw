@@ -24,39 +24,16 @@ class Simulation:
             parameters = args[0]
         else:
             parameters = kwargs
-        self.parameters = parameters
 
-        if set(['arrival_rate', 'number_of_servers',
-            'service_rate', 'Simulation_time']) == set(self.parameters.keys()):
-            self.parameters = self.build_mmc_parameters(self.parameters['arrival_rate'],
-                                                   self.parameters['service_rate'],
-                                                   self.parameters['number_of_servers'],
-                                                   self.parameters['Simulation_time'])
-
-        # Default arguments
-        default_dict ={'Number_of_nodes': len(self.parameters['Number_of_servers']),
-                       'Number_of_classes': len(self.parameters['Arrival_distributions']),
-                       'Queue_capacities': ['Inf' for _ in
-                                            range(len(self.parameters['Number_of_servers']))],
-                       'detect_deadlock': False}
-        for a in default_dict:
-            self.parameters[a] = self.parameters.get(a, default_dict[a])
-
+        self.parameters = self.build_parameters(parameters)
 
         self.c = self.parameters['Number_of_servers']
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
         self.lmbda = [self.parameters['Arrival_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
-        
-        if any(len(lmbdacls) != len(self.c) for lmbdacls in self.lmbda):
-            raise ValueError('Lambda should have same length as c for every class')
-
         self.mu = [self.parameters['Service_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
         
-        if any(len(mucls) != len(self.c) for mucls in self.mu):
-            raise ValueError('Mu should have same length as c for every class')
-
         self.schedules = [False for i in range(len(self.c))]
         for i in range(len(self.c)):
             if type(self.c[i])==type('string') and self.c[i]!='Inf':
@@ -64,20 +41,12 @@ class Simulation:
         self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
 
-        if any(len(transmatrxcls) != len(self.c) for transmatrxcls in self.transition_matrix):
-            raise ValueError('Transition matrix should be square matrix of length c for every class')
-        if any(tmval < 0 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(tmval > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls for tmval in transmatrxrow) or any(sum(transmatrxrow) > 1 for transmatrxcls in self.transition_matrix for transmatrxrow in transmatrxcls):
-            raise ValueError('All transition matrix entries should be probabilities 0<=p<=1 and all transition matrix rows should sum to 1 or less')
-
         if 'Class_change_matrices' in self.parameters:
             self.class_change_matrix = [self.parameters['Class_change_matrices']['Node ' + str(i)] for i in range(self.parameters['Number_of_nodes'])]
         else:
             self.class_change_matrix = 'NA'
 
         self.max_simulation_time = self.parameters['Simulation_time']
-
-        if self.max_simulation_time < 0:
-            raise ValueError('Maximum simulation time should be positive')
 
         self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
         self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
@@ -89,18 +58,29 @@ class Simulation:
         self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
 
 
-    def build_mmc_parameters(self, arrival_rate, service_rate, number_of_servers, Simulation_time):
+    def build_parameters(self, params):
         """
         Builds the parameters dictionary for an M/M/C queue
         """
-        return {'Arrival_distributions' : {'Class 0' : [['Exponential', arrival_rate]]},
-                'Service_distributions' : {'Class 0' : [['Exponential', service_rate]]},
-                'Transition_matrices' : {'Class 0' : [[0.0]]},
-                'Number_of_servers' : [number_of_servers],
-                'Number_of_nodes' : 1,
-                'Number_of_classes' : 1,
-                'Queue_capacities' : ['Inf'],
-                'Simulation_time' : Simulation_time}
+        if isinstance(params['Arrival_distributions'], list):
+            arr_dists = params['Arrival_distributions']
+            params['Arrival_distributions'] = {'Class 0': arr_dists}
+        if isinstance(params['Service_distributions'], list):
+            srv_dists = params['Service_distributions']
+            params['Service_distributions'] = {'Class 0': srv_dists}
+        if isinstance(params['Transition_matrices'], list):
+            trns_mat = params['Transition_matrices']
+            params['Transition_matrices'] = {'Class 0': trns_mat}
+
+        default_dict ={'Number_of_nodes': len(params['Number_of_servers']),
+                       'Number_of_classes': len(params['Arrival_distributions']),
+                       'Queue_capacities': ['Inf' for _ in range(len(params['Number_of_servers']))],
+                       'detect_deadlock': False}
+
+        for a in default_dict:
+            params[a] = params.get(a, default_dict[a])
+
+        return params
 
 
     def find_next_active_node(self):
