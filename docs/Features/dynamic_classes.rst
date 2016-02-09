@@ -18,6 +18,7 @@ Below is an example of a class change matrix for a given node:
 | 0.5 | 0.1 | 0.4 |
 +-----+-----+-----+
 
+
 +-----------------+
 | Node 2          |
 +=====+=====+=====+

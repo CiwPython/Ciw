@@ -42,9 +42,9 @@ A full list of data records can be obtained, with or without headers::
     
     >>> records = Q.get_all_records(headers=True) # doctest:+SKIP
     >>> records[:3] # doctest:+SKIP
-    [['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date'], # doctest:+SKIP
-    [1, 0, 1, 0.16207509531905792, 0.0, 0.16207509531905792, 0.014861757967438763, 0.1769368532864967, 0.0, 0.1769368532864967], # doctest:+SKIP
-    [2, 0, 1, 0.4628182409609607, 0.0, 0.4628182409609607, 0.13420139243827206, 0.5970196333992328, 0.0, 0.5970196333992328]] # doctest:+SKIP
+    [['I.D. Number', 'Customer Class', 'Node', 'Arrival Date', 'Waiting Time', 'Service Start Date', 'Service Time', 'Service End Date', 'Time Blocked', 'Exit Date', 'Destination', 'Queue Size at Arrival', 'Queue Size at Departure'],
+    [87963, 1, 3, 2499.3093833546704, 0.0, 2499.3093833546704, 0.3418038435924479, 2499.651187198263, 0.0, 2499.651187198263, 1, 6, 3],
+    [87958, 0, 2, 2499.442870003776, 0.12156349515498732, 2499.564433498931, 0.051149145815214084, 2499.615582644746, 0.0, 2499.615582644746, 2, 13, 10]] # doctest:+SKIP
 
 
 The full list data records can be written to a csv file::
