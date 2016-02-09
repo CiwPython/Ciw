@@ -7,5 +7,5 @@ setup(
     author_email=('palmer.geraint@googlemail.com'),
     packages = ['ciw'],
     description='A discrete event simulation framework for open queueing networks',
-    install_requires=["PyYAML", "networkx", "docopt", "hypothesis"]
+    install_requires=["PyYAML", "networkx", "hypothesis"]
 )
