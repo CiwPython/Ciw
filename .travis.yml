@@ -4,6 +4,9 @@ python:
 install:
   - pip install -r requirements.txt
   - python setup.py develop
+  - pip install coveralls
 script:
   - python -m unittest discover ciw.tests
   - python doctests.py
+  - coverage run --source=ciw -m unittest discover ciw
+after_success: coveralls
