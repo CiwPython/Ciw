@@ -1,7 +1,7 @@
 from __future__ import division
 from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
 import os
-from csv import writer
+from csv import writer, reader
 import yaml
 import networkx as nx
 import copy
@@ -200,7 +200,25 @@ class Simulation:
             cum_probs = [sum(probs[0:i+1]) for i in range(len(probs))]
             values = list(V)
             return lambda : self.custom_pdf(cum_probs, values)
+        if source[c][n][0] == 'Empirical':
+            if isinstance(source[c][n][1], str):
+                empirical_dist = self.import_empirical_dist(source[c][n][1])
+                return lambda : choice(empirical_dist)
+            return lambda : choice(source[c][n][1])
         return False
+
+    def import_empirical_dist(self, dist_file):
+        """
+        Imports an empirical distribution from a .csv file
+        """
+        root = os.getcwd()
+        file_name = root + '/' + dist_file
+        empirical_file = open(file_name, 'r')
+        rdr = reader(empirical_file)
+        empirical_dist = [[float(x) for x in row] for row in rdr][0]
+        empirical_file.close()
+        return empirical_dist
+
 
     def custom_pdf(self, cum_probs, values):
         """

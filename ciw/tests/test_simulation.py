@@ -635,6 +635,7 @@ class TestSimulation(unittest.TestCase):
 
 
     def test_sampling_service_times(self):
+        my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
         Arrival_distributions = {'Class 0': [['Uniform', 2.2, 3.3],
                                      ['Deterministic', 4.4],
                                      ['Triangular', 1.1, 6.6, 1.5],
@@ -642,7 +643,8 @@ class TestSimulation(unittest.TestCase):
                                      ['Gamma', 0.6, 1.2],
                                      ['Lognormal', 0.8, 0.2],
                                      ['Weibull', 0.9, 0.8],
-                                     ['Exponential', 2.0]]}
+                                     'NoArrivals',
+                                     ['Empirical', 'ciw/tests/datafortesting/sample_empirical_dist.csv']]}
         Service_distributions = {'Class 0':[['Uniform', 2.2, 3.3],
                                             ['Deterministic', 4.4],
                                             ['Triangular', 1.1, 6.6, 1.5],
@@ -650,16 +652,18 @@ class TestSimulation(unittest.TestCase):
                                             ['Gamma', 0.6, 1.2],
                                             ['Lognormal', 0.8, 0.2],
                                             ['Weibull', 0.9, 0.8],
-                                            ['testerror', 9]]}
-        Number_of_servers = [1, 1, 1, 1, 1, 1, 1, 1]
-        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
+                                            ['testerror', 9],
+                                            ['Empirical', my_empirical_dist]]}
+        Number_of_servers = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
         Simulation_time = [2222]
 
         Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
@@ -675,6 +679,7 @@ class TestSimulation(unittest.TestCase):
         Nl = Q.transitive_nodes[5]
         Nw = Q.transitive_nodes[6]
         Nf = Q.transitive_nodes[7]
+        Nem = Q.transitive_nodes[8]
         seed(5)
 
         self.assertEqual(round(Nu.simulation.service_times[Nu.id_number][0](), 2), 2.89)
@@ -719,13 +724,20 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.25)
         self.assertEqual(round(Nw.simulation.service_times[Nw.id_number][0](), 2), 0.82)
 
+        self.assertEqual(round(Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
+        self.assertEqual(round(Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
+        self.assertEqual(round(Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
+        self.assertEqual(round(Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
+        self.assertEqual(round(Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
+
+
         self.assertEqual(Q.service_times[8][0], False)
 
-        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.2)
-        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.95)
-        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.57)
-        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.54)
-        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 3.1)
+        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.73)
+        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.55)
+        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.73)
+        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.98)
+        self.assertEqual(round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.26)
 
         self.assertEqual(round(Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
         self.assertEqual(round(Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
@@ -733,35 +745,43 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(round(Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
         self.assertEqual(round(Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
 
-        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 2.78)
-        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 2.22)
-        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 2.79)
-        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 3.72)
-        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 1.45)
+        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 5.76)
+        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 1.32)
+        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 3.95)
+        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 4.51)
+        self.assertEqual(round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 1.30)
 
-        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.84)
-        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.01)
-        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.31)
-        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.42)
+        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.35)
+        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.10)
+        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.20)
         self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.00)
+        self.assertEqual(round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.01)
 
-        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 1.12)
-        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.67)
+        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.11)
+        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.28)
+        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.04)
         self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.01)
-        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 2.87)
-        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 2.57)
+        self.assertEqual(round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.03)
 
-        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.00)
-        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.47)
-        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 3.39)
-        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 1.93)
-        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.77)
+        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 3.54)
+        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.28)
+        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.06)
+        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.13)
+        self.assertEqual(round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.68)
 
-        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 2.94)
-        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.67)
-        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.26)
-        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.27)
-        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.12)
+        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.48)
+        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.42)
+        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.03)
+        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 2.80)
+        self.assertEqual(round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.01)
+
+        self.assertEqual(round(Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
+        self.assertEqual(round(Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.2)
+        self.assertEqual(round(Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
+        self.assertEqual(round(Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
+        self.assertEqual(round(Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.3)
+
+        self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
 
 
     @given(u=lists(floats(min_value=0.0, max_value=10000), min_size=2, max_size=2, unique=True).map(sorted),
@@ -776,8 +796,10 @@ class TestSimulation(unittest.TestCase):
           wb=floats(min_value=0.01, max_value=200),
           custs=lists(floats(min_value=0.001, max_value=10000), unique=True, min_size=2),
           terr=floats(),
+          dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=100),
           myseed=integers())
-    def test_sampling_service_times_hypothesis(self, u, d, t, e, ga, gb, lm, lsd, wa, wb, custs, terr, myseed):
+    def test_sampling_service_times_hypothesis(self, u, d, t, e, ga, gb, lm, lsd, wa, wb, custs, terr, dist, myseed):
+        my_empirical_dist = dist
         ul, uh = u[0], u[1]
         tl, tm, th = t[0], t[1], t[2]
         Arrival_distributions = {'Class 0': [['Uniform', ul, uh],
@@ -788,7 +810,8 @@ class TestSimulation(unittest.TestCase):
                                      ['Lognormal', lm, lsd],
                                      ['Weibull', wa, wb],
                                      'NoArrivals',
-                                     ['Custom', 'my_custom_dist']]}
+                                     ['Custom', 'my_custom_dist'],
+                                     ['Empirical', my_empirical_dist]]}
         Service_distributions = {'Class 0':[['Uniform', ul, uh],
                                             ['Deterministic', d],
                                             ['Triangular', tl, th, tm],
@@ -797,17 +820,19 @@ class TestSimulation(unittest.TestCase):
                                             ['Lognormal', lm, lsd],
                                             ['Weibull', wa, wb],
                                             ['testerror', terr],
-                                            ['Custom', 'my_custom_dist']]}
-        Number_of_servers = [1, 1, 1, 1, 1, 1, 1, 1, 1]
-        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
+                                            ['Custom', 'my_custom_dist'],
+                                            ['Empirical', 'ciw/tests/datafortesting/sample_empirical_dist.csv']]}
+        Number_of_servers = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
         Simulation_time = [2222]
         cust_vals = [round(i, 10) for i in custs]
         numprobs = len(cust_vals)
@@ -832,6 +857,7 @@ class TestSimulation(unittest.TestCase):
             Nw = Q.transitive_nodes[6]
             Nf = Q.transitive_nodes[7]
             Nc = Q.transitive_nodes[8]
+            Nem = Q.transitive_nodes[9]
 
             # The tests
             for itr in range(10): # Because repition happens in the simulation
@@ -845,6 +871,7 @@ class TestSimulation(unittest.TestCase):
                 self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
                 self.assertEqual(Nf.simulation.service_times[Nf.id_number][0], False)
                 self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
+                self.assertTrue(Nem.simulation.service_times[Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
 
                 self.assertEqual(round(sum(probs), 10), 1.0)
                 self.assertTrue(ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
@@ -856,7 +883,7 @@ class TestSimulation(unittest.TestCase):
                 self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
                 self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
                 self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
-
+                self.assertTrue(Nem.simulation.inter_arrival_times[Nem.id_number][0]() in set(my_empirical_dist))
 
         finally:
             setstate(state)
