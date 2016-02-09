@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Ciw',
-    version='0.0.2',
+    version='0.0.3',
     author='Geraint Palmer, Vincent Knight',
     author_email=('palmer.geraint@googlemail.com'),
     packages = ['ciw'],
