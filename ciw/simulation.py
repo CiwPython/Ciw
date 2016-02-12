@@ -200,12 +200,27 @@ class Simulation:
             cum_probs = [sum(probs[0:i+1]) for i in range(len(probs))]
             values = list(V)
             return lambda : self.custom_pdf(cum_probs, values)
+        if source[c][n][0] == 'UserDefined':
+            return lambda : self.sample_from_user_defined_dist(source[c][n][1])
         if source[c][n][0] == 'Empirical':
             if isinstance(source[c][n][1], str):
                 empirical_dist = self.import_empirical_dist(source[c][n][1])
                 return lambda : choice(empirical_dist)
             return lambda : choice(source[c][n][1])
         return False
+
+    def sample_from_user_defined_dist(self, func):
+        """
+        Safely sample from a user defined distribution
+        """
+        sample = func()
+
+        if not isinstance(sample, float):
+            raise TypeError("User defined function returns invalid type: {}".format(type(sample)))
+
+        elif sample < 0: 
+            raise ValueError("User defined function returns invalid value: {}".format(sample))
+        return sample
 
     def import_empirical_dist(self, dist_file):
         """

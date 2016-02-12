@@ -1,10 +1,11 @@
 import unittest
 import ciw
 from random import seed, getstate, setstate
-from hypothesis import given
-from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries
+from hypothesis import given, assume
+from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries, text, random_module
 import os
 import copy
+import random
 
 class TestSimulation(unittest.TestCase):
 
@@ -455,6 +456,22 @@ class TestSimulation(unittest.TestCase):
             i -= 1
         self.assertEqual(str(Q.find_next_active_node()), 'Node 4')
 
+
+    @given(positive=floats(min_value=0.0, max_value=100.0),
+           negative=floats(min_value=-100.0, max_value=0.0),
+           word=text(),
+           rm=random_module())
+    def test_sample_from_user_defined_dist(self, positive, negative, word, rm):
+        assume(negative < 0)
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive), positive)
+        with self.assertRaises(ValueError):
+            Q.sample_from_user_defined_dist(lambda : negative)
+        with self.assertRaises(TypeError):
+            Q.sample_from_user_defined_dist(lambda : word)
+
+
+
     def test_custom_pdf_method(self):
         seed(45)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -811,6 +828,8 @@ class TestSimulation(unittest.TestCase):
                                      ['Weibull', wa, wb],
                                      'NoArrivals',
                                      ['Custom', 'my_custom_dist'],
+                                     ['UserDefined', 
+                                         lambda : random.choice(my_empirical_dist)],
                                      ['Empirical', my_empirical_dist]]}
         Service_distributions = {'Class 0':[['Uniform', ul, uh],
                                             ['Deterministic', d],
@@ -821,18 +840,11 @@ class TestSimulation(unittest.TestCase):
                                             ['Weibull', wa, wb],
                                             ['testerror', terr],
                                             ['Custom', 'my_custom_dist'],
+                                            ['UserDefined', 
+                                                lambda : random.choice(my_empirical_dist)],
                                             ['Empirical', 'ciw/tests/datafortesting/sample_empirical_dist.csv']]}
-        Number_of_servers = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
+        Number_of_servers = [1] * 11
+        Transition_matrices = {'Class 0': [[0.09] * 11] * 11}
         Simulation_time = [2222]
         cust_vals = [round(i, 10) for i in custs]
         numprobs = len(cust_vals)
@@ -857,7 +869,8 @@ class TestSimulation(unittest.TestCase):
             Nw = Q.transitive_nodes[6]
             Nf = Q.transitive_nodes[7]
             Nc = Q.transitive_nodes[8]
-            Nem = Q.transitive_nodes[9]
+            Nus = Q.transitive_nodes[9]
+            Nem = Q.transitive_nodes[10]
 
             # The tests
             for itr in range(10): # Because repition happens in the simulation
@@ -871,6 +884,8 @@ class TestSimulation(unittest.TestCase):
                 self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
                 self.assertEqual(Nf.simulation.service_times[Nf.id_number][0], False)
                 self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
+                self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
+                self.assertTrue(Nus.simulation.service_times[Nus.id_number][0]() in set(my_empirical_dist))
                 self.assertTrue(Nem.simulation.service_times[Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
 
                 self.assertEqual(round(sum(probs), 10), 1.0)
@@ -883,6 +898,7 @@ class TestSimulation(unittest.TestCase):
                 self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
                 self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
                 self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
+                self.assertTrue(Nus.simulation.inter_arrival_times[Nus.id_number][0]() in set(my_empirical_dist))
                 self.assertTrue(Nem.simulation.inter_arrival_times[Nem.id_number][0]() in set(my_empirical_dist))
 
         finally:
