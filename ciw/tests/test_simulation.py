@@ -60,7 +60,6 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         self.assertEqual(Q.schedules, [True, False])
 
-
     def test_init_method_from_kws(self):
         # Define parameters
         Arrival_distributions = {'Class 0':[['Exponential', 3.0],
@@ -350,11 +349,7 @@ class TestSimulation(unittest.TestCase):
            number_of_servers=integers(min_value=1),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
            myseed=integers())
-    def test_simple_init_method(self, arrival_rate,
-                                service_rate,
-                                number_of_servers,
-                                Simulation_time,
-                                myseed):
+    def test_simple_init_method(self, arrival_rate, service_rate, number_of_servers, Simulation_time, myseed):
         """
         Test for creating M/M/c queues
         """
@@ -394,18 +389,12 @@ class TestSimulation(unittest.TestCase):
         finally:
             setstate(state)
 
-
     @given(arrival_rate=floats(min_value=0.1, max_value=100),
            service_rate=floats(min_value=0.1, max_value=100),
            number_of_servers=integers(min_value=1),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
            myseed=integers())
-    def test_build_mmc_parameters(self,
-                                  arrival_rate,
-                                  service_rate,
-                                  number_of_servers,
-                                  Simulation_time,
-                                  myseed):
+    def test_build_mmc_parameters(self, arrival_rate, service_rate, number_of_servers, Simulation_time, myseed):
         try:
             # Stuff to make random work with hypothesis
             state = getstate()
@@ -433,12 +422,6 @@ class TestSimulation(unittest.TestCase):
             self.assertEqual(Q.build_parameters(params), expected_dictionary)
         finally:
             setstate(state)
-
-
-
-
-
-
 
     def test_find_next_active_node_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -536,7 +519,6 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
         self.assertEqual(Q.transition_matrix, [[[0.0]]])
 
-
     @given(arrival_rate=floats(min_value=0.1, max_value=100),
            service_rate=floats(min_value=0.1, max_value=100),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
@@ -629,10 +611,6 @@ class TestSimulation(unittest.TestCase):
         self.assertRaises(ValueError, ciw.Simulation, params_list[25])
         params_list[26]['Class_change_matrices'] = {'Node 0':[[1.5]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[26])
-
-
-
-
 
     def test_sampling_service_times(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
@@ -783,7 +761,6 @@ class TestSimulation(unittest.TestCase):
 
         self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
 
-
     @given(u=lists(floats(min_value=0.0, max_value=10000), min_size=2, max_size=2, unique=True).map(sorted),
           d=floats(min_value=0.0, max_value=10000),
           t=lists(floats(min_value=0.0, max_value=10000), min_size=3, max_size=3, unique=True).map(sorted),
@@ -887,8 +864,6 @@ class TestSimulation(unittest.TestCase):
 
         finally:
             setstate(state)
-
-
 
     def test_writing_data_files(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))

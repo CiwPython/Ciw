@@ -34,7 +34,6 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.queue_size_at_arrival, 32)
         self.assertEqual(r.queue_size_at_departure, 21)
 
-
     def test_init_error(self):
         self.assertRaises(ValueError, ciw.DataRecord, 2, 3, 2, 1, 1, -1, 2, 0, 0)
         self.assertRaises(ValueError, ciw.DataRecord, 2, -3, 2, 8, 1, 2, 2, 2, 0)
@@ -48,16 +47,7 @@ class TestDataRecord(unittest.TestCase):
            customer_class=integers(),
            queue_size_at_arrival=integers(),
            queue_size_at_departure=integers())
-    def test_init_methodh(self,
-                          arrival_date,
-                          service_time,
-                          inter_service_start_date,
-                          inter_exit_date,
-                          node,
-                          destination,
-                          customer_class,
-                          queue_size_at_arrival,
-                          queue_size_at_departure):
+    def test_init_methodh(self, arrival_date, service_time, inter_service_start_date, inter_exit_date, node, destination, customer_class, queue_size_at_arrival, queue_size_at_departure):
         # Define parameters
         service_start_date = arrival_date+inter_service_start_date
         exit_date = service_start_date+inter_exit_date+service_time
@@ -77,8 +67,6 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.queue_size_at_arrival, queue_size_at_arrival)
         self.assertEqual(r.queue_size_at_departure, queue_size_at_departure)
 
-
-
     @given(arrival_date=floats(min_value=0.01, max_value=99999.99),
            service_time=floats(min_value=0.0, max_value=99999.99),
            neg_service_time=floats(min_value=-99999.99, max_value=-0.01),
@@ -89,17 +77,7 @@ class TestDataRecord(unittest.TestCase):
            customer_class=integers(),
            queue_size_at_arrival=integers(),
            queue_size_at_departure=integers())
-    def test_init_errorh(self,
-                        arrival_date,
-                        service_time,
-                        neg_service_time,
-                        inter_service_start_date,
-                        inter_exit_date,
-                        node,
-                        destination,
-                        customer_class,
-                        queue_size_at_arrival,
-                        queue_size_at_departure):
+    def test_init_errorh(self, arrival_date, service_time, neg_service_time, inter_service_start_date, inter_exit_date, node, destination, customer_class, queue_size_at_arrival, queue_size_at_departure):
         service_start_date = arrival_date+inter_service_start_date
         exit_date = service_start_date+inter_exit_date+service_time
         self.assertRaises(ValueError, ciw.DataRecord, arrival_date, service_time, service_start_date, (arrival_date/2), node, destination, customer_class, queue_size_at_arrival, queue_size_at_departure)
