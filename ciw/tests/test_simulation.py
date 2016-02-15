@@ -773,7 +773,7 @@ class TestSimulation(unittest.TestCase):
           wb=floats(min_value=0.01, max_value=200),
           custs=lists(floats(min_value=0.001, max_value=10000), unique=True, min_size=2),
           terr=floats(),
-          dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=100),
+          dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=20),
           myseed=integers())
     def test_sampling_service_times_hypothesis(self, u, d, t, e, ga, gb, lm, lsd, wa, wb, custs, terr, dist, myseed):
         my_empirical_dist = dist
