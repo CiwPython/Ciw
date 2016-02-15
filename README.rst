@@ -1,5 +1,9 @@
 Ciw - The Queueing Network Simulation
 =====================================
+
+.. image:: https://badges.gitter.im/geraintpalmer/Ciw.svg
+   :alt: Join the chat at https://gitter.im/geraintpalmer/Ciw
+   :target: https://gitter.im/geraintpalmer/Ciw?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 .. image:: https://travis-ci.org/geraintpalmer/Ciw.svg?branch=master
     :target: https://travis-ci.org/geraintpalmer/Ciw
 
