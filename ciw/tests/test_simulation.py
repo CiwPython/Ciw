@@ -61,7 +61,6 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         self.assertEqual(Q.schedules, [True, False])
 
-
     def test_init_method_from_kws(self):
         # Define parameters
         Arrival_distributions = {'Class 0':[['Exponential', 3.0],
@@ -350,96 +349,66 @@ class TestSimulation(unittest.TestCase):
            service_rate=floats(min_value=0.1, max_value=100),
            number_of_servers=integers(min_value=1),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
-           myseed=integers())
-    def test_simple_init_method(self, arrival_rate,
-                                service_rate,
-                                number_of_servers,
-                                Simulation_time,
-                                myseed):
+           rm=random_module())
+    def test_simple_init_method(self, arrival_rate, service_rate, number_of_servers, Simulation_time, rm):
         """
         Test for creating M/M/c queues
         """
-        try:
-            # Stuff to make random work with hypothesis
-            state = getstate()
-            seed(myseed)
+        params = {'Arrival_distributions':[['Exponential', arrival_rate]],
+                  'Service_distributions':[['Exponential', service_rate]],
+                  'Number_of_servers':[number_of_servers],
+                  'Simulation_time':Simulation_time,
+                  'Transition_matrices':[[0.0]]}
 
-            params = {'Arrival_distributions':[['Exponential', arrival_rate]],
-                      'Service_distributions':[['Exponential', service_rate]],
-                      'Number_of_servers':[number_of_servers],
-                      'Simulation_time':Simulation_time,
-                      'Transition_matrices':[[0.0]]}
+        Q = ciw.Simulation(params)
 
-            Q = ciw.Simulation(params)
-
-            expected_dictionary = {
-                'Arrival_distributions': {'Class 0': [['Exponential', arrival_rate]]},
-                'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
-                'Transition_matrices': {'Class 0': [[0.0]]},
-                'Number_of_servers': [number_of_servers],
-                'Number_of_nodes': 1,
-                'Number_of_classes': 1,
-                'Queue_capacities': ['Inf'],
-                'Simulation_time': Simulation_time,
-                'detect_deadlock': False
-            }
-            self.assertEqual(Q.parameters, expected_dictionary)
-            self.assertEqual(Q.lmbda, [[['Exponential', arrival_rate]]])
-            self.assertEqual(Q.mu, [[['Exponential', service_rate]]])
-            self.assertEqual(Q.c, [number_of_servers])
-            self.assertEqual(Q.transition_matrix, [[[0.0]]])
-            self.assertEqual([str(obs) for obs in Q.nodes], ['Arrival Node', 'Node 1', 'Exit Node'])
-            self.assertEqual(Q.max_simulation_time, Simulation_time)
-            self.assertEqual(Q.class_change_matrix, 'NA')
-            self.assertEqual(Q.schedules, [False])
-        finally:
-            setstate(state)
-
+        expected_dictionary = {
+            'Arrival_distributions': {'Class 0': [['Exponential', arrival_rate]]},
+            'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
+            'Transition_matrices': {'Class 0': [[0.0]]},
+            'Number_of_servers': [number_of_servers],
+            'Number_of_nodes': 1,
+            'Number_of_classes': 1,
+            'Queue_capacities': ['Inf'],
+            'Simulation_time': Simulation_time,
+            'detect_deadlock': False
+        }
+        self.assertEqual(Q.parameters, expected_dictionary)
+        self.assertEqual(Q.lmbda, [[['Exponential', arrival_rate]]])
+        self.assertEqual(Q.mu, [[['Exponential', service_rate]]])
+        self.assertEqual(Q.c, [number_of_servers])
+        self.assertEqual(Q.transition_matrix, [[[0.0]]])
+        self.assertEqual([str(obs) for obs in Q.nodes], ['Arrival Node', 'Node 1', 'Exit Node'])
+        self.assertEqual(Q.max_simulation_time, Simulation_time)
+        self.assertEqual(Q.class_change_matrix, 'NA')
+        self.assertEqual(Q.schedules, [False])
 
     @given(arrival_rate=floats(min_value=0.1, max_value=100),
            service_rate=floats(min_value=0.1, max_value=100),
            number_of_servers=integers(min_value=1),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
-           myseed=integers())
-    def test_build_mmc_parameters(self,
-                                  arrival_rate,
-                                  service_rate,
-                                  number_of_servers,
-                                  Simulation_time,
-                                  myseed):
-        try:
-            # Stuff to make random work with hypothesis
-            state = getstate()
-            seed(myseed)
+           rm=random_module())
+    def test_build_mmc_parameters(self, arrival_rate, service_rate, number_of_servers, Simulation_time, rm):
+        params = {'Arrival_distributions':[['Exponential', arrival_rate]],
+                  'Service_distributions':[['Exponential', service_rate]],
+                  'Number_of_servers':[number_of_servers],
+                  'Simulation_time':Simulation_time,
+                  'Transition_matrices':[[0.0]]}
 
-            params = {'Arrival_distributions':[['Exponential', arrival_rate]],
-                      'Service_distributions':[['Exponential', service_rate]],
-                      'Number_of_servers':[number_of_servers],
-                      'Simulation_time':Simulation_time,
-                      'Transition_matrices':[[0.0]]}
+        Q = ciw.Simulation(params)
 
-            Q = ciw.Simulation(params)
-
-            expected_dictionary = {
-                'Arrival_distributions': {'Class 0': [['Exponential', arrival_rate]]},
-                'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
-                'Transition_matrices': {'Class 0': [[0.0]]},
-                'Number_of_servers': [number_of_servers],
-                'Number_of_nodes': 1,
-                'Number_of_classes': 1,
-                'Queue_capacities': ['Inf'],
-                'Simulation_time': Simulation_time,
-                'detect_deadlock': False
-            }
-            self.assertEqual(Q.build_parameters(params), expected_dictionary)
-        finally:
-            setstate(state)
-
-
-
-
-
-
+        expected_dictionary = {
+            'Arrival_distributions': {'Class 0': [['Exponential', arrival_rate]]},
+            'Service_distributions': {'Class 0': [['Exponential', service_rate]]},
+            'Transition_matrices': {'Class 0': [[0.0]]},
+            'Number_of_servers': [number_of_servers],
+            'Number_of_nodes': 1,
+            'Number_of_classes': 1,
+            'Queue_capacities': ['Inf'],
+            'Simulation_time': Simulation_time,
+            'detect_deadlock': False
+        }
+        self.assertEqual(Q.build_parameters(params), expected_dictionary)
 
     def test_find_next_active_node_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -553,31 +522,22 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
         self.assertEqual(Q.transition_matrix, [[[0.0]]])
 
-
     @given(arrival_rate=floats(min_value=0.1, max_value=100),
            service_rate=floats(min_value=0.1, max_value=100),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
-           myseed=integers())
-    def test_mminf_node(self, arrival_rate, service_rate, Simulation_time, myseed):
-        try:
-            # Stuff to make random work with hypothesis
-            state = getstate()
-            seed(myseed)
+           rm=random_module())
+    def test_mminf_node(self, arrival_rate, service_rate, Simulation_time, rm):
+        params = {'Arrival_distributions':[['Exponential', arrival_rate]],
+                  'Service_distributions':[['Exponential', service_rate]],
+                  'Number_of_servers':['Inf'],
+                  'Simulation_time':Simulation_time,
+                  'Transition_matrices':[[0.0]]}
 
-            params = {'Arrival_distributions':[['Exponential', arrival_rate]],
-                      'Service_distributions':[['Exponential', service_rate]],
-                      'Number_of_servers':['Inf'],
-                      'Simulation_time':Simulation_time,
-                      'Transition_matrices':[[0.0]]}
-
-            Q = ciw.Simulation(params)
-            Q.simulate_until_max_time()
-            inds = Q.get_all_individuals()
-            waits = [ind.data_records[1][0].wait for ind in inds]
-            self.assertEqual(sum(waits), 0.0)
-
-        finally:
-            setstate(state)
+        Q = ciw.Simulation(params)
+        Q.simulate_until_max_time()
+        inds = Q.get_all_individuals()
+        waits = [ind.data_records[1][0].wait for ind in inds]
+        self.assertEqual(sum(waits), 0.0)
 
     def test_raising_errors(self):
         params = {'Arrival_distributions': {'Class 0':[['Exponential', 3.0]]},
@@ -646,10 +606,6 @@ class TestSimulation(unittest.TestCase):
         self.assertRaises(ValueError, ciw.Simulation, params_list[25])
         params_list[26]['Class_change_matrices'] = {'Node 0':[[1.5]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[26])
-
-
-
-
 
     def test_sampling_service_times(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
@@ -800,111 +756,123 @@ class TestSimulation(unittest.TestCase):
 
         self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
 
-
     @given(u=lists(floats(min_value=0.0, max_value=10000), min_size=2, max_size=2, unique=True).map(sorted),
-          d=floats(min_value=0.0, max_value=10000),
-          t=lists(floats(min_value=0.0, max_value=10000), min_size=3, max_size=3, unique=True).map(sorted),
-          e=floats(min_value=0.001, max_value=10000),
-          ga=floats(min_value=0.001, max_value=10000),
-          gb=floats(min_value=0.001, max_value=10000),
-          lm=floats(min_value=-200, max_value=200),
-          lsd=floats(min_value=0.001, max_value=80),
-          wa=floats(min_value=0.01, max_value=200),
-          wb=floats(min_value=0.01, max_value=200),
-          custs=lists(floats(min_value=0.001, max_value=10000), unique=True, min_size=2),
-          terr=floats(),
-          dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=100),
-          myseed=integers())
-    def test_sampling_service_times_hypothesis(self, u, d, t, e, ga, gb, lm, lsd, wa, wb, custs, terr, dist, myseed):
-        my_empirical_dist = dist
+           d=floats(min_value=0.0, max_value=10000),
+           t=lists(floats(min_value=0.0, max_value=10000), min_size=3, max_size=3, unique=True).map(sorted),
+           e=floats(min_value=0.001, max_value=10000),
+           ga=floats(min_value=0.001, max_value=10000),
+           gb=floats(min_value=0.001, max_value=10000),
+           rm=random_module())
+    def test_sampling_service_times_hypothesis_1(self, u, d, t, e, ga, gb, rm):
         ul, uh = u[0], u[1]
         tl, tm, th = t[0], t[1], t[2]
         Arrival_distributions = {'Class 0': [['Uniform', ul, uh],
-                                     ['Deterministic', d],
-                                     ['Triangular', tl, th, tm],
-                                     ['Exponential', e],
-                                     ['Gamma', ga, gb],
-                                     ['Lognormal', lm, lsd],
-                                     ['Weibull', wa, wb],
-                                     'NoArrivals',
-                                     ['Custom', 'my_custom_dist'],
-                                     ['UserDefined', 
-                                         lambda : random.choice(my_empirical_dist)],
-                                     ['Empirical', my_empirical_dist]]}
+                                            ['Deterministic', d],
+                                            ['Triangular', tl, th, tm],
+                                            ['Exponential', e],
+                                            ['Gamma', ga, gb]]}
         Service_distributions = {'Class 0':[['Uniform', ul, uh],
                                             ['Deterministic', d],
                                             ['Triangular', tl, th, tm],
                                             ['Exponential', e],
-                                            ['Gamma', ga, gb],
-                                            ['Lognormal', lm, lsd],
+                                            ['Gamma', ga, gb]]}
+        Number_of_servers = [1, 1, 1, 1, 1]
+        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1]]}
+        Simulation_time = [2222]
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
+                           Service_distributions=Service_distributions,
+                           Number_of_servers=Number_of_servers,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time)
+        Nu = Q.transitive_nodes[0]
+        Nd = Q.transitive_nodes[1]
+        Nt = Q.transitive_nodes[2]
+        Ne = Q.transitive_nodes[3]
+        Ng = Q.transitive_nodes[4]
+
+        # The tests
+        for itr in range(10): # Because repition happens in the simulation
+            self.assertTrue(ul <= Nu.simulation.service_times[Nu.id_number][0]() <= uh)
+            self.assertEqual(Nd.simulation.service_times[Nd.id_number][0](), d)
+            self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number][0]() <= th)
+            self.assertTrue(Ne.simulation.service_times[Ne.id_number][0]() >= 0.0)
+            self.assertTrue(Ng.simulation.service_times[Ng.id_number][0]() >= 0.0)
+
+            self.assertTrue(ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
+            self.assertEqual(Nd.simulation.inter_arrival_times[Nd.id_number][0](), d)
+            self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]() <= th)
+            self.assertTrue(Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
+            self.assertTrue(Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
+
+    @given(lm=floats(min_value=-200, max_value=200),
+           lsd=floats(min_value=0.001, max_value=80),
+           wa=floats(min_value=0.01, max_value=200),
+           wb=floats(min_value=0.01, max_value=200),
+           custs=lists(floats(min_value=0.001, max_value=10000), unique=True, min_size=2),
+           terr=floats(),
+           dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=20),
+           rm=random_module())
+    def test_sampling_service_times_hypothesis_2(self, lm, lsd, wa, wb, custs, terr, dist, rm):
+        my_empirical_dist = dist
+        Arrival_distributions = {'Class 0':[['Lognormal', lm, lsd],
+                                            ['Weibull', wa, wb],
+                                             'NoArrivals',
+                                            ['Custom', 'my_custom_dist'],
+                                            ['UserDefined',
+                                                lambda : random.choice(my_empirical_dist)],
+                                            ['Empirical', my_empirical_dist]]}
+        Service_distributions = {'Class 0':[['Lognormal', lm, lsd],
                                             ['Weibull', wa, wb],
                                             ['testerror', terr],
                                             ['Custom', 'my_custom_dist'],
-                                            ['UserDefined', 
+                                            ['UserDefined',
                                                 lambda : random.choice(my_empirical_dist)],
                                             ['Empirical', 'ciw/tests/datafortesting/sample_empirical_dist.csv']]}
-        Number_of_servers = [1] * 11
-        Transition_matrices = {'Class 0': [[0.09] * 11] * 11}
+        Number_of_servers = [1, 1, 1, 1, 1, 1]
+        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
         Simulation_time = [2222]
         cust_vals = [round(i, 10) for i in custs]
         numprobs = len(cust_vals)
         probs = [1.0/numprobs for i in range(numprobs)]
         my_custom_dist = [list(i) for i in (zip(probs, cust_vals))]
-        try:
-            # Stuff to make random work with hypothesis
-            state = getstate()
-            seed(myseed)
-            Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                               Service_distributions=Service_distributions,
-                               Number_of_servers=Number_of_servers,
-                               Transition_matrices=Transition_matrices,
-                               Simulation_time=Simulation_time,
-                               my_custom_dist=my_custom_dist)
-            Nu = Q.transitive_nodes[0]
-            Nd = Q.transitive_nodes[1]
-            Nt = Q.transitive_nodes[2]
-            Ne = Q.transitive_nodes[3]
-            Ng = Q.transitive_nodes[4]
-            Nl = Q.transitive_nodes[5]
-            Nw = Q.transitive_nodes[6]
-            Nf = Q.transitive_nodes[7]
-            Nc = Q.transitive_nodes[8]
-            Nus = Q.transitive_nodes[9]
-            Nem = Q.transitive_nodes[10]
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
+                           Service_distributions=Service_distributions,
+                           Number_of_servers=Number_of_servers,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time,
+                           my_custom_dist=my_custom_dist)
+        Nl = Q.transitive_nodes[0]
+        Nw = Q.transitive_nodes[1]
+        Nf = Q.transitive_nodes[2]
+        Nc = Q.transitive_nodes[3]
+        Nus = Q.transitive_nodes[4]
+        Nem = Q.transitive_nodes[5]
 
-            # The tests
-            for itr in range(10): # Because repition happens in the simulation
-                self.assertEqual(round(sum(probs), 10), 1.0)
-                self.assertTrue(ul <= Nu.simulation.service_times[Nu.id_number][0]() <= uh)
-                self.assertEqual(Nd.simulation.service_times[Nd.id_number][0](), d)
-                self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number][0]() <= th)
-                self.assertTrue(Ne.simulation.service_times[Ne.id_number][0]() >= 0.0)
-                self.assertTrue(Ng.simulation.service_times[Ng.id_number][0]() >= 0.0)
-                self.assertTrue(Nl.simulation.service_times[Nl.id_number][0]() >= 0.0)
-                self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
-                self.assertEqual(Nf.simulation.service_times[Nf.id_number][0], False)
-                self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
-                self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
-                self.assertTrue(Nus.simulation.service_times[Nus.id_number][0]() in set(my_empirical_dist))
-                self.assertTrue(Nem.simulation.service_times[Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
+        # The tests
+        for itr in range(10): # Because repition happens in the simulation
+            self.assertEqual(round(sum(probs), 10), 1.0)
+            self.assertTrue(Nl.simulation.service_times[Nl.id_number][0]() >= 0.0)
+            self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
+            self.assertEqual(Nf.simulation.service_times[Nf.id_number][0], False)
+            self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
+            self.assertTrue(Nus.simulation.service_times[Nus.id_number][0]() in set(my_empirical_dist))
+            self.assertTrue(Nem.simulation.service_times[Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
 
-                self.assertEqual(round(sum(probs), 10), 1.0)
-                self.assertTrue(ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
-                self.assertEqual(Nd.simulation.inter_arrival_times[Nd.id_number][0](), d)
-                self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]() <= th)
-                self.assertTrue(Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
-                self.assertTrue(Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
-                self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
-                self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
-                self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
-                self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
-                self.assertTrue(Nus.simulation.inter_arrival_times[Nus.id_number][0]() in set(my_empirical_dist))
-                self.assertTrue(Nem.simulation.inter_arrival_times[Nem.id_number][0]() in set(my_empirical_dist))
-
-        finally:
-            setstate(state)
-
-
+            self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
+            self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
+            self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
+            self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
+            self.assertTrue(Nus.simulation.inter_arrival_times[Nus.id_number][0]() in set(my_empirical_dist))
+            self.assertTrue(Nem.simulation.inter_arrival_times[Nem.id_number][0]() in set(my_empirical_dist))
 
     def test_writing_data_files(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))

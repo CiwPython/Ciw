@@ -16,15 +16,12 @@ class TestExitNode(unittest.TestCase):
         self.assertEqual(n.next_event_date, 'Inf')
         self.assertEqual(n.node_capacity, 'Inf')
 
-
-
     def test_repr_method(self):
         n = ciw.ExitNode(500)
         self.assertEqual(str(n), 'Exit Node')
 
         n = ciw.ExitNode(2500)
         self.assertEqual(str(n), 'Exit Node')
-
 
     def test_accept_method(self):
         n = ciw.ExitNode(200)

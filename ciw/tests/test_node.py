@@ -316,7 +316,6 @@ class TestNode(unittest.TestCase):
         N.detatch_server(N.servers[0], ind)
         self.assertEqual([str(obs) for obs in N.servers], ['Server 3 at Node 1'])
 
-
     def test_add_new_server_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         N = Q.transitive_nodes[0]
@@ -324,7 +323,6 @@ class TestNode(unittest.TestCase):
         s_indx = 3
         N.add_new_server(s_indx,1)
         self.assertEqual([str(obs) for obs in N.servers], ['Server 1 at Node 1', 'Server 2 at Node 1', 'Server 3 at Node 1', 'Server 4 at Node 1'])
-
 
     def test_update_next_event_date_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
