@@ -1,11 +1,18 @@
 import unittest
 import ciw
 from random import seed
+from numpy import random as nprandom
+
+
+def set_seed(x):
+    seed(x)
+    nprandom.seed(x)
+
 
 class TestArrivalNode(unittest.TestCase):
 
     def test_init_method(self):
-        seed(5)
+        set_seed(5)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
@@ -14,7 +21,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual({nd:{obs:round(N.next_event_dates_dict[nd][obs], 10) for obs in N.next_event_dates_dict[nd]} for nd in N.next_event_dates_dict}, dates_dict)
 
     def test_initialise_next_event_dates_dict_method(self):
-        seed(6)
+        set_seed(6)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = ciw.ArrivalNode(Q)
         dates_dict_1 = {1: {0: 0.4362282541, 1: 0.2672232406, 2: 0.3864256273}, 2: {0: 0.1636952311, 1: 0.0714709565, 2: 0.8065738414}, 3: {0: 0.4088480190, 1: 0.0514323248, 2: 0.8132038176}, 4: {0: 1.1573751438, 1: 0.4649276714, 2: 0.8176876727}}
@@ -29,7 +36,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(str(N), 'Arrival Node')
 
     def test_find_next_event_date_method(self):
-        seed(1)
+        set_seed(1)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00105)
@@ -44,7 +51,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_class, 1)
 
     def test_have_event_method(self):
-        seed(1)
+        set_seed(1)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual([str(obj) for obj in Q.transitive_nodes[0].individuals], [])
@@ -62,7 +69,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(round(N.next_event_date, 5), 0.00518)
         self.assertEqual(N.next_node, 3)
 
-        seed(12)
+        set_seed(12)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual([str(obj) for obj in Q.transitive_nodes[0].individuals], [])

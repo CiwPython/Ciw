@@ -6,6 +6,7 @@ from csv import writer
 import yaml
 import shutil
 import networkx as nx
+import numpy.random as nprandom
 
 from data_record import DataRecord
 from server import Server
@@ -28,15 +29,12 @@ class Node:
             self.masterschedule = [i*self.cyclelength + obs for i in range(int(self.simulation.max_simulation_time//self.cyclelength) + 2) for obs in [t[0] for t in  self.schedule]][1:]
         else:
             self.c = self.simulation.c[id_number-1]
-
         self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
         if self.simulation.class_change_matrix != 'NA':
             self.class_change_for_node = self.simulation.class_change_matrix[id_number-1]
-            self.class_change_cdf = self.find_cdf_class_changes()
         self.individuals = []
         self.id_number = id_number
-        self.cum_transition_row = self.find_cum_transition_row()
         if self.scheduled_servers:
             self.next_event_date = self.masterschedule[0]
         else:
@@ -47,26 +45,6 @@ class Node:
             if simulation.detecting_deadlock:
                 self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
         self.highest_id = 0
-
-    def find_cdf_class_changes(self):
-        """
-        Turning the pdf of the class change probabilities into a cdf.
-        """
-        return [[sum(self.class_change_for_node[j][0:i+1]) for i in range(len(self.class_change_for_node[j]))] for j in range(len(self.class_change_for_node))]
-
-    def find_cum_transition_row(self):
-        """
-        Finds the cumulative transition row for the node
-        """
-
-        cum_transition_row = []
-        for cls in range(len(self.transition_row)):
-            sum_p = 0
-            cum_transition_row.append([])
-            for p in self.transition_row[cls]:
-                sum_p += p
-                cum_transition_row[cls].append(sum_p)
-        return cum_transition_row
 
     def __repr__(self):
         """
@@ -88,7 +66,6 @@ class Node:
                 ind = inds[0]
                 if ind != individual:
                     self.simulation.digraph.add_edge(str(ind.server), str(server))
-
 
     def detatch_server(self, server, individual):
         """
@@ -113,7 +90,6 @@ class Node:
         else:
             self.finish_service()
 
-
     def change_shift(self):
         """
         Add servers and deletes or indicates which servers should go off duty
@@ -137,7 +113,6 @@ class Node:
         """
         Gathers servers that should be deleted
         """
-
         to_delete = []
         for srvr in self.servers:
             if srvr.busy:
@@ -154,7 +129,6 @@ class Node:
         if self.scheduled_servers:
             return self.next_event_date == self.masterschedule[0]
         return False
-
 
     def finish_service(self):
         """
@@ -184,16 +158,8 @@ class Node:
         Takes individual and changes customer class according to a probability distribution.
         """
         if self.simulation.class_change_matrix != 'NA':
-            rnd_num=random()
-            cdf=self.class_change_cdf[individual.customer_class]
             individual.previous_class=individual.customer_class
-            
-            inx=0
-            for i in cdf:
-                if rnd_num<=i:
-                    individual.customer_class=inx
-                    break
-                inx+=1
+            individual.customer_class=nprandom.choice(range(len(self.class_change_for_node)), p=self.class_change_for_node[individual.previous_class])
 
     def block_individual(self, individual, next_node):
         """
@@ -205,7 +171,6 @@ class Node:
         if self.simulation.detecting_deadlock:
             for svr in next_node.servers:
                 self.simulation.digraph.add_edge(str(individual.server), str(svr))
-
 
     def release(self, next_individual_index, next_node, current_time):
         """
@@ -324,7 +289,6 @@ class Node:
         for i in range(num_servers):
             self.servers.append(Server(self, highest_id+i+1))
 
-
     def update_next_event_date(self, current_time):
         """
         Finds the time of the next event at this node
@@ -340,11 +304,7 @@ class Node:
         """
         Finds the next node according the random distribution.
         """
-        rnd_num = random()
-        for p in range(len(self.cum_transition_row[customer_class])):
-            if rnd_num < self.cum_transition_row[customer_class][p]:
-                return self.simulation.transitive_nodes[p]
-        return self.simulation.nodes[-1]
+        return nprandom.choice(self.simulation.nodes[1:], p=self.transition_row[customer_class]+[1.0-sum(self.transition_row[customer_class])])
 
     def write_individual_record(self, individual):
         """

@@ -1,6 +1,13 @@
 import unittest
 import ciw
 from random import seed
+from numpy import random as nprandom
+
+def set_seed(x):
+    seed(x)
+    nprandom.seed(x)
+
+
 
 class TestNode(unittest.TestCase):
 
@@ -13,11 +20,10 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, 'Inf')
         self.assertEqual(N.individuals, [])
         self.assertEqual(N.id_number, 1)
-        self.assertEqual([[round(obs, 1) for obs in row] for row in N.cum_transition_row], [[0.1, 0.3, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]])
 
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
         N1 = Q.transitive_nodes[0]
-        self.assertEqual(N1.class_change_for_node, [[0.7, 0.3], [0.2, 0.8]])
+        self.assertEqual(N1.class_change_for_node, [[0.5, 0.5], [0.5, 0.5]])
         N2 = Q.transitive_nodes[1]
         self.assertEqual(N2.class_change_for_node, [[1.0, 0.0], [0.0, 1.0]])
        
@@ -28,16 +34,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 1)
         self.assertEqual(N.masterschedule, [30, 60, 90, 100, 130, 160, 190, 200, 230, 260, 290, 300, 330, 360, 390])
         self.assertEqual(N.next_event_date, 30)
-
-    def test_find_cdf_class_changes_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
-        N1 = Q.transitive_nodes[0]
-        self.assertEqual(N1.find_cdf_class_changes(), [[0.7, 1.0], [0.2, 1.0]])
-
-    def test_find_cum_transition_row_method(self):
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        N = ciw.Node(1, Q)
-        self.assertEqual([[round(obs, 1) for obs in row] for row in N.find_cum_transition_row()], [[0.1, 0.3, 0.4, 0.8], [0.6, 0.6, 0.6, 0.8], [0.0, 0.0, 0.4, 0.7]])
 
     def test_repr_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -98,7 +94,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.check_if_shiftchange(), False)
 
     def test_finish_service_method(self):
-        seed(4)
+        set_seed(4)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = Q.transitive_nodes[0]
         inds = [ciw.Individual(i+1) for i in range(3)]
@@ -111,16 +107,10 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N.individuals], ['Individual 1', 'Individual 3'])
 
     def test_change_customer_class_method(self):
-        seed(14)
+        set_seed(14)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
         N1 = Q.transitive_nodes[0]
         ind = ciw.Individual(254, 0)
-        self.assertEqual(ind.customer_class, 0)
-        self.assertEqual(ind.previous_class, 0)
-        N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 0)
-        self.assertEqual(ind.previous_class, 0)
-        N1.change_customer_class(ind)
         self.assertEqual(ind.customer_class, 0)
         self.assertEqual(ind.previous_class, 0)
         N1.change_customer_class(ind)
@@ -129,9 +119,15 @@ class TestNode(unittest.TestCase):
         N1.change_customer_class(ind)
         self.assertEqual(ind.customer_class, 1)
         self.assertEqual(ind.previous_class, 1)
+        N1.change_customer_class(ind)
+        self.assertEqual(ind.customer_class, 1)
+        self.assertEqual(ind.previous_class, 1)
+        N1.change_customer_class(ind)
+        self.assertEqual(ind.customer_class, 0)
+        self.assertEqual(ind.previous_class, 1)
 
     def test_block_individual_method(self):
-        seed(4)
+        set_seed(4)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         inds = [ciw.Individual(i+1) for i in range(7)]
         N1 = Q.transitive_nodes[0]
@@ -147,7 +143,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(Q.digraph.edges(), [('Server 1 at Node 2', 'Server 2 at Node 1'), ('Server 1 at Node 2', 'Server 1 at Node 1')])
 
     def test_release_method(self):
-        seed(4)
+        set_seed(4)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = Q.transitive_nodes[0]
         inds = [ciw.Individual(i+1) for i in range(3)]
@@ -165,7 +161,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
 
     def test_begin_service_if_possible_release_method(self):
-        seed(50)
+        set_seed(50)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         inds = [ciw.Individual(i) for i in range(30)]
         Q.transitive_nodes[0].individuals = inds
@@ -239,7 +235,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(Q.state, [[0, 0], [0, 0], [4, 1], [0, 0]])
 
     def test_accept_method(self):
-        seed(6)
+        set_seed(6)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 0.0
@@ -283,7 +279,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind10.service_time, 5), 0.16534)
 
     def test_begin_service_if_possible_accept_method(self):
-        seed(50)
+        set_seed(50)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         ind = ciw.Individual(1)
         self.assertEqual(Q.digraph.nodes(), ['Server 2 at Node 1', 'Server 1 at Node 2', 'Server 1 at Node 1'])
@@ -377,30 +373,30 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, 30)
 
     def test_next_node_method(self):
-        seed(6)
+        set_seed(6)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         node = Q.transitive_nodes[0]
-        self.assertEqual(str(node.next_node(0)), 'Node 4')
-        self.assertEqual(str(node.next_node(0)), 'Node 4')
-        self.assertEqual(str(node.next_node(0)), 'Node 4')
-        self.assertEqual(str(node.next_node(0)), 'Node 4')
+        self.assertEqual(str(node.next_node(0)), 'Exit Node')
+        self.assertEqual(str(node.next_node(0)), 'Node 3')
+        self.assertEqual(str(node.next_node(0)), 'Exit Node')
+        self.assertEqual(str(node.next_node(0)), 'Node 1')
         self.assertEqual(str(node.next_node(0)), 'Node 2')
         self.assertEqual(str(node.next_node(0)), 'Node 4')
 
-        seed(54)
+        set_seed(54)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         node = Q.transitive_nodes[2]
         self.assertEqual(str(node.next_node(0)), 'Node 2')
-        self.assertEqual(str(node.next_node(0)), 'Node 4')
         self.assertEqual(str(node.next_node(0)), 'Node 2')
         self.assertEqual(str(node.next_node(0)), 'Node 2')
         self.assertEqual(str(node.next_node(0)), 'Node 2')
         self.assertEqual(str(node.next_node(0)), 'Node 2')
         self.assertEqual(str(node.next_node(0)), 'Node 4')
+        self.assertEqual(str(node.next_node(0)), 'Node 3')
         self.assertEqual(str(node.next_node(0)), 'Node 2')
 
     def test_write_individual_record_method(self):
-        seed(7)
+        set_seed(7)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         N = Q.transitive_nodes[0]
         ind = ciw.Individual(6)
