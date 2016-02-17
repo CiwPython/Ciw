@@ -1,10 +1,21 @@
 import unittest
 import ciw
 from random import seed, getstate, setstate
-from hypothesis import given
-from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries, random_module
+from hypothesis import given, assume
+from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries, text, random_module
 import os
 import copy
+import random
+
+def custom_function():
+    """
+    Custom function to test user defined function functionality
+    """
+    val = random.choice(range(100))
+    if int(str(val)[0]) % 2 == 0:
+        return 2 * val
+    else:
+        return val / 2.0
 
 class TestSimulation(unittest.TestCase):
 
@@ -424,6 +435,26 @@ class TestSimulation(unittest.TestCase):
             i -= 1
         self.assertEqual(str(Q.find_next_active_node()), 'Node 4')
 
+
+    #@given(positive_float=floats(min_value=0.0, max_value=100.0),
+            #positive_int=integers(min_value=0, max_value=100),
+           #negative_int=integers(min_value=-100, max_value=-1),
+           #negative_float=floats(min_value=-100.0, max_value=0.0),
+           #word=text(),
+           #rm=random_module())
+    #def test_sample_from_user_defined_dist(self, positive_float, positive_int, negative_float, negative_int, word, rm):
+        #assume(negative_float < 0)
+        #Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        #self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_int), positive_int)
+        #self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_float), positive_float)
+        #with self.assertRaises(ValueError):
+            #Q.sample_from_user_defined_dist(lambda : negative_int)
+            #Q.sample_from_user_defined_dist(lambda : negative_float)
+        #with self.assertRaises(TypeError):
+            #Q.sample_from_user_defined_dist(lambda : word)
+
+
+
     def test_custom_pdf_method(self):
         seed(45)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -750,21 +781,31 @@ class TestSimulation(unittest.TestCase):
         ul, uh = u[0], u[1]
         tl, tm, th = t[0], t[1], t[2]
         Arrival_distributions = {'Class 0': [['Uniform', ul, uh],
-                                             ['Deterministic', d],
-                                             ['Triangular', tl, th, tm],
-                                             ['Exponential', e],
-                                             ['Gamma', ga, gb]]}
+                                            ['Deterministic', d],
+                                            ['Triangular', tl, th, tm],
+                                            ['Exponential', e],
+                                            ['Gamma', ga, gb],
+                                            ['UserDefined',
+                                                lambda : random.random()],
+                                            ['UserDefined',
+                                                lambda : custom_function()]]}
         Service_distributions = {'Class 0':[['Uniform', ul, uh],
                                             ['Deterministic', d],
                                             ['Triangular', tl, th, tm],
                                             ['Exponential', e],
-                                            ['Gamma', ga, gb]]}
-        Number_of_servers = [1, 1, 1, 1, 1]
-        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1]]}
+                                            ['Gamma', ga, gb],
+                                            ['UserDefined',
+                                                lambda : random.random()],
+                                            ['UserDefined',
+                                                lambda : custom_function()]]}
+        Number_of_servers = [1, 1, 1, 1, 1, 1, 1]
+        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
         Simulation_time = [2222]
         Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Service_distributions=Service_distributions,
@@ -776,6 +817,8 @@ class TestSimulation(unittest.TestCase):
         Nt = Q.transitive_nodes[2]
         Ne = Q.transitive_nodes[3]
         Ng = Q.transitive_nodes[4]
+        Nus1 = Q.transitive_nodes[5]
+        Nus2 = Q.transitive_nodes[6]
 
         # The tests
         for itr in range(10): # Because repition happens in the simulation
@@ -784,12 +827,16 @@ class TestSimulation(unittest.TestCase):
             self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number][0]() <= th)
             self.assertTrue(Ne.simulation.service_times[Ne.id_number][0]() >= 0.0)
             self.assertTrue(Ng.simulation.service_times[Ng.id_number][0]() >= 0.0)
+            self.assertTrue(0 <= Nus1.simulation.service_times[Nus1.id_number][0]() <= 1)
+            self.assertTrue(0 <= Nus2.simulation.service_times[Nus2.id_number][0]() <= 200)
 
             self.assertTrue(ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
             self.assertEqual(Nd.simulation.inter_arrival_times[Nd.id_number][0](), d)
             self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]() <= th)
             self.assertTrue(Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
             self.assertTrue(Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
+            self.assertTrue(0 <= Nus1.simulation.service_times[Nus1.id_number][0]() <= 1)
+            self.assertTrue(0 <= Nus2.simulation.service_times[Nus2.id_number][0]() <= 200)
 
     @given(lm=floats(min_value=-200, max_value=200),
            lsd=floats(min_value=0.001, max_value=80),
@@ -805,18 +852,28 @@ class TestSimulation(unittest.TestCase):
                                             ['Weibull', wa, wb],
                                              'NoArrivals',
                                             ['Custom', 'my_custom_dist'],
+                                            ['UserDefined',
+                                                lambda : random.choice(my_empirical_dist)],
+                                            ['UserDefined',
+                                                lambda : lsd],
                                             ['Empirical', my_empirical_dist]]}
         Service_distributions = {'Class 0':[['Lognormal', lm, lsd],
                                             ['Weibull', wa, wb],
                                             ['testerror', terr],
                                             ['Custom', 'my_custom_dist'],
+                                            ['UserDefined',
+                                                lambda : random.choice(my_empirical_dist)],
+                                            ['UserDefined',
+                                                lambda : lsd],
                                             ['Empirical', 'ciw/tests/datafortesting/sample_empirical_dist.csv']]}
-        Number_of_servers = [1, 1, 1, 1, 1]
-        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1],
-                                           [0.1, 0.1, 0.1, 0.1, 0.1]]}
+        Number_of_servers = [1, 1, 1, 1, 1, 1, 1]
+        Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+                                           [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]}
         Simulation_time = [2222]
         cust_vals = [round(i, 10) for i in custs]
         numprobs = len(cust_vals)
@@ -832,7 +889,9 @@ class TestSimulation(unittest.TestCase):
         Nw = Q.transitive_nodes[1]
         Nf = Q.transitive_nodes[2]
         Nc = Q.transitive_nodes[3]
-        Nem = Q.transitive_nodes[4]
+        Nus1 = Q.transitive_nodes[4]
+        Nus2 = Q.transitive_nodes[5]
+        Nem = Q.transitive_nodes[6]
 
         # The tests
         for itr in range(10): # Because repition happens in the simulation
@@ -841,12 +900,16 @@ class TestSimulation(unittest.TestCase):
             self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
             self.assertEqual(Nf.simulation.service_times[Nf.id_number][0], False)
             self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
+            self.assertTrue(Nus1.simulation.service_times[Nus1.id_number][0]() in set(my_empirical_dist))
+            self.assertTrue(Nus2.simulation.service_times[Nus2.id_number][0]() == lsd)
             self.assertTrue(Nem.simulation.service_times[Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
 
             self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
             self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
             self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
+            self.assertTrue(Nus1.simulation.inter_arrival_times[Nus1.id_number][0]() in set(my_empirical_dist))
+            self.assertTrue(Nus2.simulation.inter_arrival_times[Nus2.id_number][0]() == lsd)
             self.assertTrue(Nem.simulation.inter_arrival_times[Nem.id_number][0]() in set(my_empirical_dist))
 
     def test_writing_data_files(self):
