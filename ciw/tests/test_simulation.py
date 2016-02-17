@@ -2,7 +2,7 @@ import unittest
 import ciw
 from random import seed, getstate, setstate
 from hypothesis import given, assume
-from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries, text, random_module, settings
+from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries, text, random_module
 import os
 import copy
 import random
