@@ -436,22 +436,22 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(str(Q.find_next_active_node()), 'Node 4')
 
 
-    #@given(positive_float=floats(min_value=0.0, max_value=100.0),
-            #positive_int=integers(min_value=0, max_value=100),
-           #negative_int=integers(min_value=-100, max_value=-1),
-           #negative_float=floats(min_value=-100.0, max_value=0.0),
-           #word=text(),
-           #rm=random_module())
-    #def test_sample_from_user_defined_dist(self, positive_float, positive_int, negative_float, negative_int, word, rm):
-        #assume(negative_float < 0)
-        #Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        #self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_int), positive_int)
-        #self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_float), positive_float)
-        #with self.assertRaises(ValueError):
-            #Q.sample_from_user_defined_dist(lambda : negative_int)
-            #Q.sample_from_user_defined_dist(lambda : negative_float)
-        #with self.assertRaises(TypeError):
-            #Q.sample_from_user_defined_dist(lambda : word)
+    @given(positive_float=floats(min_value=0.0, max_value=100.0),
+            positive_int=integers(min_value=0, max_value=100),
+           negative_int=integers(min_value=-100, max_value=-1),
+           negative_float=floats(min_value=-100.0, max_value=0.0),
+           word=text(),
+           rm=random_module())
+    def test_sample_from_user_defined_dist(self, positive_float, positive_int, negative_float, negative_int, word, rm):
+        assume(negative_float < 0)
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_int), positive_int)
+        self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_float), positive_float)
+        with self.assertRaises(ValueError):
+            Q.sample_from_user_defined_dist(lambda : negative_int)
+            Q.sample_from_user_defined_dist(lambda : negative_float)
+        with self.assertRaises(TypeError):
+            Q.sample_from_user_defined_dist(lambda : word)
 
 
 
@@ -845,9 +845,8 @@ class TestSimulation(unittest.TestCase):
            custs=lists(floats(min_value=0.001, max_value=10000), unique=True, min_size=2),
            terr=floats(),
            dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=20),
-           const=floats(min_value = 0.02, max_value=200),
            rm=random_module())
-    def test_sampling_service_times_hypothesis_2(self, lm, lsd, wa, wb, custs, terr, dist, const, rm):
+    def test_sampling_service_times_hypothesis_2(self, lm, lsd, wa, wb, custs, terr, dist, rm):
         my_empirical_dist = dist
         Arrival_distributions = {'Class 0':[['Lognormal', lm, lsd],
                                             ['Weibull', wa, wb],
@@ -856,7 +855,7 @@ class TestSimulation(unittest.TestCase):
                                             ['UserDefined',
                                                 lambda : random.choice(my_empirical_dist)],
                                             ['UserDefined',
-                                                lambda : const],
+                                                lambda : lsd],
                                             ['Empirical', my_empirical_dist]]}
         Service_distributions = {'Class 0':[['Lognormal', lm, lsd],
                                             ['Weibull', wa, wb],
@@ -865,7 +864,7 @@ class TestSimulation(unittest.TestCase):
                                             ['UserDefined',
                                                 lambda : random.choice(my_empirical_dist)],
                                             ['UserDefined',
-                                                lambda : const],
+                                                lambda : lsd],
                                             ['Empirical', 'ciw/tests/datafortesting/sample_empirical_dist.csv']]}
         Number_of_servers = [1, 1, 1, 1, 1, 1, 1]
         Transition_matrices = {'Class 0': [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
@@ -902,7 +901,7 @@ class TestSimulation(unittest.TestCase):
             self.assertEqual(Nf.simulation.service_times[Nf.id_number][0], False)
             self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
             self.assertTrue(Nus1.simulation.service_times[Nus1.id_number][0]() in set(my_empirical_dist))
-            self.assertTrue(Nus2.simulation.service_times[Nus2.id_number][0]() == const)
+            self.assertTrue(Nus2.simulation.service_times[Nus2.id_number][0]() == lsd)
             self.assertTrue(Nem.simulation.service_times[Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
 
             self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
@@ -910,7 +909,7 @@ class TestSimulation(unittest.TestCase):
             self.assertEqual(Nf.simulation.inter_arrival_times[Nf.id_number][0](), 'Inf')
             self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
             self.assertTrue(Nus1.simulation.inter_arrival_times[Nus1.id_number][0]() in set(my_empirical_dist))
-            self.assertTrue(Nus2.simulation.inter_arrival_times[Nus2.id_number][0]() == const)
+            self.assertTrue(Nus2.simulation.inter_arrival_times[Nus2.id_number][0]() == lsd)
             self.assertTrue(Nem.simulation.inter_arrival_times[Nem.id_number][0]() in set(my_empirical_dist))
 
     def test_writing_data_files(self):
