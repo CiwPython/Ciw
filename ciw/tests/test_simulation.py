@@ -436,22 +436,22 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(str(Q.find_next_active_node()), 'Node 4')
 
 
-    @given(positive_float=floats(min_value=0.0, max_value=100.0),
-            positive_int=integers(min_value=0, max_value=100),
-           negative_int=integers(min_value=-100, max_value=-1),
-           negative_float=floats(min_value=-100.0, max_value=0.0),
-           word=text(),
-           rm=random_module())
-    def test_sample_from_user_defined_dist(self, positive_float, positive_int, negative_float, negative_int, word, rm):
-        assume(negative_float < 0)
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_int), positive_int)
-        self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_float), positive_float)
-        with self.assertRaises(ValueError):
-            Q.sample_from_user_defined_dist(lambda : negative_int)
-            Q.sample_from_user_defined_dist(lambda : negative_float)
-        with self.assertRaises(TypeError):
-            Q.sample_from_user_defined_dist(lambda : word)
+    #@given(positive_float=floats(min_value=0.0, max_value=100.0),
+            #positive_int=integers(min_value=0, max_value=100),
+           #negative_int=integers(min_value=-100, max_value=-1),
+           #negative_float=floats(min_value=-100.0, max_value=0.0),
+           #word=text(),
+           #rm=random_module())
+    #def test_sample_from_user_defined_dist(self, positive_float, positive_int, negative_float, negative_int, word, rm):
+        #assume(negative_float < 0)
+        #Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        #self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_int), positive_int)
+        #self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_float), positive_float)
+        #with self.assertRaises(ValueError):
+            #Q.sample_from_user_defined_dist(lambda : negative_int)
+            #Q.sample_from_user_defined_dist(lambda : negative_float)
+        #with self.assertRaises(TypeError):
+            #Q.sample_from_user_defined_dist(lambda : word)
 
 
 
