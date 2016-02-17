@@ -473,7 +473,7 @@ class TestSimulation(unittest.TestCase):
         drl = []
         for dr in L[0].data_records[1]:
             drl.append((dr.customer_class, dr.service_time))
-        self.assertEqual(drl, [(0, 5.0), (0, 5.0), (0, 5.0), (0, 5.0), (0, 5.0), (0, 5.0), (1, 10.0)])
+        self.assertEqual(drl, [(1, 10.0), (0, 5.0), (0, 5.0)])
 
     def test_simulate_until_deadlock_method(self):
         set_seed(3)
