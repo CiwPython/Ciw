@@ -215,7 +215,7 @@ class Simulation:
         """
         sample = func()
 
-        if not isinstance(sample, float):
+        if not (isinstance(sample, float) or isinstance(sample, int)):
             raise TypeError("User defined function returns invalid type: {}".format(type(sample)))
 
         elif sample < 0: 
