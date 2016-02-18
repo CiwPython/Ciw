@@ -1,5 +1,5 @@
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
+from random import random, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
 import os
 from csv import writer, reader
 import yaml
@@ -11,6 +11,8 @@ from exit_node import ExitNode
 from server import Server
 from individual import Individual
 from data_record import DataRecord
+import numpy.random as nprandom
+
 
 class Simulation:
     """
@@ -57,7 +59,6 @@ class Simulation:
         self.state = [[0, 0] for i in range(self.number_of_nodes)]
         initial_state = [[0, 0] for i in range(self.number_of_nodes)]
         self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
-
 
     def build_parameters(self, params):
         """
@@ -161,9 +162,6 @@ class Simulation:
         if self.parameters['Simulation_time'] <= 0:
             raise ValueError('Simulation_time must be a positive number.')
 
-
-
-
     def find_next_active_node(self):
         """
         Return the next active node:
@@ -196,10 +194,8 @@ class Simulation:
             return lambda : weibullvariate(source[c][n][1], source[c][n][2])
         if source[c][n][0] == 'Custom':
             P, V = zip(*self.parameters[source[c][n][1]])
-            probs = list(P)
-            cum_probs = [sum(probs[0:i+1]) for i in range(len(probs))]
-            values = list(V)
-            return lambda : self.custom_pdf(cum_probs, values)
+            probs, values = list(P), list(V)
+            return lambda : nprandom.choice(values, p=probs)
         if source[c][n][0] == 'UserDefined':
             return lambda : self.sample_from_user_defined_dist(source[c][n][1])
         if source[c][n][0] == 'Empirical':
@@ -233,16 +229,6 @@ class Simulation:
         empirical_dist = [[float(x) for x in row] for row in rdr][0]
         empirical_file.close()
         return empirical_dist
-
-
-    def custom_pdf(self, cum_probs, values):
-        """
-        Samples from a custom pdf
-        """
-        rnd_num = random()
-        for p in range(len(cum_probs)):
-            if rnd_num < cum_probs[p]:
-                return values[p]
 
     def find_times_dictionary(self, source):
         """

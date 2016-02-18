@@ -1,6 +1,6 @@
 import unittest
 import ciw
-from hypothesis import given, assume
+from hypothesis import given
 from hypothesis.strategies import floats, integers
 
 class TestDataRecord(unittest.TestCase):

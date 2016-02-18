@@ -43,10 +43,10 @@ Transition_matrices:
     - 0.0
 Class_change_matrices:
   Node 0:
-  - - 0.7
-    - 0.3
-  - - 0.2
-    - 0.8
+  - - 0.5
+    - 0.5
+  - - 0.5
+    - 0.5
   Node 1:
   - - 1.0
     - 0.0
