@@ -11,6 +11,8 @@ from exit_node import ExitNode
 from server import Server
 from individual import Individual
 from data_record import DataRecord
+import numpy.random as nprandom
+
 
 class Simulation:
     """
@@ -192,10 +194,8 @@ class Simulation:
             return lambda : weibullvariate(source[c][n][1], source[c][n][2])
         if source[c][n][0] == 'Custom':
             P, V = zip(*self.parameters[source[c][n][1]])
-            probs = list(P)
-            cum_probs = [sum(probs[0:i+1]) for i in range(len(probs))]
-            values = list(V)
-            return lambda : self.custom_pdf(cum_probs, values)
+            probs, values = list(P), list(V)
+            return lambda : nprandom.choice(values, p=probs)
         if source[c][n][0] == 'Empirical':
             if isinstance(source[c][n][1], str):
                 empirical_dist = self.import_empirical_dist(source[c][n][1])
@@ -214,15 +214,6 @@ class Simulation:
         empirical_dist = [[float(x) for x in row] for row in rdr][0]
         empirical_file.close()
         return empirical_dist
-
-    def custom_pdf(self, cum_probs, values):
-        """
-        Samples from a custom pdf
-        """
-        rnd_num = random()
-        for p in range(len(cum_probs)):
-            if rnd_num < cum_probs[p]:
-                return values[p]
 
     def find_times_dictionary(self, source):
         """

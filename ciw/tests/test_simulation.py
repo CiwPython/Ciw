@@ -430,32 +430,6 @@ class TestSimulation(unittest.TestCase):
             i -= 1
         self.assertEqual(str(Q.find_next_active_node()), 'Node 4')
 
-    def test_custom_pdf_method(self):
-        set_seed(45)
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 10.7)
-        self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
-        self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
-        self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 10.7)
-        self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
-        self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 14.6)
-        self.assertEqual(Q.custom_pdf([0.1, 0.4, 1.0], [9.5, 10.7, 14.6]), 9.5)
-
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_custom_dist/parameters.yml'))
-        self.assertEqual(Q.service_times[1][0](), 5.0)
-        self.assertEqual(Q.service_times[1][0](), 6.0)
-        self.assertEqual(Q.service_times[1][0](), 6.0)
-        self.assertEqual(Q.service_times[1][1](), 5.0)
-        self.assertEqual(Q.service_times[1][1](), 5.0)
-        self.assertEqual(Q.service_times[1][1](), 6.0)
-        self.assertEqual(Q.service_times[2][1](), 1.3)
-        self.assertEqual(Q.service_times[2][1](), 1.3)
-        self.assertEqual(Q.service_times[2][1](), 2.1)
-        self.assertEqual(Q.service_times[2][1](), 1.9)
-        self.assertEqual(Q.service_times[2][1](), 1.5)
-        self.assertEqual(Q.service_times[2][1](), 2.1)
-        self.assertEqual(Q.service_times[2][1](), 1.9)
-
     def test_simulate_until_max_time_method(self):
         set_seed(2)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
