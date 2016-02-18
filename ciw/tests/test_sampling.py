@@ -518,10 +518,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_int), positive_int)
         self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_float), positive_float)
-        with self.assertRaises(ValueError):
-            Q.sample_from_user_defined_dist(lambda : negative_int)
-            Q.sample_from_user_defined_dist(lambda : negative_float)
-        with self.assertRaises(TypeError):
-            Q.sample_from_user_defined_dist(lambda : word)
-
+        self.assertRaises(ValueError, Q.sample_from_user_defined_dist, lambda : negative_int)
+        self.assertRaises(ValueError, Q.sample_from_user_defined_dist, lambda : negative_float)
+        self.assertRaises(TypeError, Q.sample_from_user_defined_dist, lambda : word)
 
