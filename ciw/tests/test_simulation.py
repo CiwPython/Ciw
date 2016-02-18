@@ -357,7 +357,7 @@ class TestSimulation(unittest.TestCase):
 
     @given(arrival_rate=floats(min_value=0.1, max_value=100),
            service_rate=floats(min_value=0.1, max_value=100),
-           number_of_servers=integers(min_value=1),
+           number_of_servers=integers(min_value=1, max_value=30),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
            rm=random_module())
     def test_simple_init_method(self, arrival_rate, service_rate, number_of_servers, Simulation_time, rm):
@@ -395,7 +395,7 @@ class TestSimulation(unittest.TestCase):
 
     @given(arrival_rate=floats(min_value=0.1, max_value=100),
            service_rate=floats(min_value=0.1, max_value=100),
-           number_of_servers=integers(min_value=1),
+           number_of_servers=integers(min_value=1, max_value=30),
            Simulation_time=floats(min_value=1.0, max_value=10.0),
            rm=random_module())
     def test_build_mmc_parameters(self, arrival_rate, service_rate, number_of_servers, Simulation_time, rm):
