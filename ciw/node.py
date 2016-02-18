@@ -1,10 +1,7 @@
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
-from datetime import datetime
+from random import random, choice
 import os
 from csv import writer
-import yaml
-import shutil
 import networkx as nx
 
 from data_record import DataRecord
@@ -89,7 +86,6 @@ class Node:
                 if ind != individual:
                     self.simulation.digraph.add_edge(str(ind.server), str(server))
 
-
     def detatch_server(self, server, individual):
         """
         Detatches a server from an individual, and vice versa
@@ -112,7 +108,6 @@ class Node:
             self.change_shift()
         else:
             self.finish_service()
-
 
     def change_shift(self):
         """
@@ -154,7 +149,6 @@ class Node:
         if self.scheduled_servers:
             return self.next_event_date == self.masterschedule[0]
         return False
-
 
     def finish_service(self):
         """
@@ -206,7 +200,6 @@ class Node:
             for svr in next_node.servers:
                 self.simulation.digraph.add_edge(str(individual.server), str(svr))
 
-
     def release(self, next_individual_index, next_node, current_time):
         """
         Update node when an individual is released.
@@ -244,7 +237,6 @@ class Node:
                     self.attach_server(self.find_free_server(), ind)
                     ind.service_start_date = current_time
                     ind.service_end_date = ind.service_start_date + ind.service_time
-
 
     def release_blocked_individual(self, current_time):
         """
@@ -323,7 +315,6 @@ class Node:
         num_servers = self.schedule[shift_indx][1]
         for i in range(num_servers):
             self.servers.append(Server(self, highest_id+i+1))
-
 
     def update_next_event_date(self, current_time):
         """
