@@ -1,8 +1,8 @@
 import unittest
 import ciw
-from random import seed
+from random import seed, random, choice
 from hypothesis import given
-from hypothesis.strategies import floats, integers, lists, random_module
+from hypothesis.strategies import floats, integers, lists, random_module, assume, text
 import os
 import copy
 from numpy import random as nprandom
@@ -11,6 +11,15 @@ from numpy import random as nprandom
 def set_seed(x):
     seed(x)
     nprandom.seed(x)
+
+def custom_function():
+    """
+    Custom function to test user defined function functionality
+    """
+    val = random()
+    if int(str(val*10)[0]) % 2 == 0:
+        return 2 * val
+    return val / 2.0
 
 class TestSimulation(unittest.TestCase):
 
@@ -406,6 +415,68 @@ class TestSimulation(unittest.TestCase):
             self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
             self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
 
+    def test_sampling_function_dist(self):
+        Arrival_distributions = [['UserDefined', lambda : random()], ['UserDefined', lambda : custom_function()]]
+        Service_distributions = [['UserDefined', lambda : random()], ['UserDefined', lambda : custom_function()]]
+        Number_of_servers = [1, 1]
+        Transition_matrices = [[0.1, 0.1],
+                               [0.1, 0.1]]
+        Simulation_time = 2222
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
+                           Service_distributions=Service_distributions,
+                           Number_of_servers=Number_of_servers,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time)
+        N1 = Q.transitive_nodes[0]
+        N2 = Q.transitive_nodes[1]
+        set_seed(5)
+        self.assertEqual(round(N1.simulation.service_times[N1.id_number][0](), 2), 0.62)
+        self.assertEqual(round(N1.simulation.service_times[N1.id_number][0](), 2), 0.74)
+        self.assertEqual(round(N1.simulation.service_times[N1.id_number][0](), 2), 0.80)
+        self.assertEqual(round(N1.simulation.service_times[N1.id_number][0](), 2), 0.94)
+        self.assertEqual(round(N1.simulation.service_times[N1.id_number][0](), 2), 0.74)
+        self.assertEqual(round(N2.simulation.service_times[N2.id_number][0](), 2), 0.46)
+        self.assertEqual(round(N2.simulation.service_times[N2.id_number][0](), 2), 0.06)
+        self.assertEqual(round(N2.simulation.service_times[N2.id_number][0](), 2), 0.93)
+        self.assertEqual(round(N2.simulation.service_times[N2.id_number][0](), 2), 0.47)
+        self.assertEqual(round(N2.simulation.service_times[N2.id_number][0](), 2), 1.30)
+
+        self.assertEqual(round(N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.90)
+        self.assertEqual(round(N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.11)
+        self.assertEqual(round(N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.47)
+        self.assertEqual(round(N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.25)
+        self.assertEqual(round(N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.54)
+        self.assertEqual(round(N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.29)
+        self.assertEqual(round(N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.03)
+        self.assertEqual(round(N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.43)
+        self.assertEqual(round(N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.56)
+        self.assertEqual(round(N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.46)
+
+    @given(const=floats(min_value = 0.02, max_value=200),
+           dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=20),
+           rm=random_module())
+    def test_sampling_function_dist_hypothesis(self, const, dist, rm):
+        my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
+        Arrival_distributions = [['UserDefined', lambda : choice(my_empirical_dist)], ['UserDefined', lambda : const]]
+        Service_distributions = [['UserDefined', lambda : random()], ['UserDefined', lambda : custom_function()]]
+        Number_of_servers = [1, 1]
+        Transition_matrices = [[0.1, 0.1],
+                               [0.1, 0.1]]
+        Simulation_time = 2222
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
+                           Service_distributions=Service_distributions,
+                           Number_of_servers=Number_of_servers,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time)
+        N1 = Q.transitive_nodes[0]
+        N2 = Q.transitive_nodes[1]
+        set_seed(5)
+        for itr in range(10): # Because repition happens in the simulation
+            self.assertTrue(N1.simulation.inter_arrival_times[N1.id_number][0]() in set(my_empirical_dist))
+            self.assertTrue(N2.simulation.inter_arrival_times[N2.id_number][0]() == const)
+            self.assertTrue(0.0 <= N1.simulation.service_times[N1.id_number][0]() <= 1.0)
+            self.assertTrue(0.0 <= N2.simulation.service_times[N2.id_number][0]() <= 2.0)
+
     def test_no_arrivals_dist(self):
         Arrival_distributions = ['NoArrivals']
         Service_distributions = [['Deterministic', 6.6]]
@@ -435,4 +506,22 @@ class TestSimulation(unittest.TestCase):
         Nna = Q.transitive_nodes[0]
         set_seed(5)
         self.assertEqual(Nna.simulation.service_times[Nna.id_number][0], False)
+
+    @given(positive_float=floats(min_value=0.0, max_value=100.0),
+           positive_int=integers(min_value=0, max_value=100),
+           negative_int=integers(min_value=-100, max_value=-1),
+           negative_float=floats(min_value=-100.0, max_value=0.0),
+           word=text(),
+           rm=random_module())
+    def test_sample_from_user_defined_dist(self, positive_float, positive_int, negative_float, negative_int, word, rm):
+        assume(negative_float < 0)
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_int), positive_int)
+        self.assertEqual(Q.sample_from_user_defined_dist(lambda : positive_float), positive_float)
+        with self.assertRaises(ValueError):
+            Q.sample_from_user_defined_dist(lambda : negative_int)
+            Q.sample_from_user_defined_dist(lambda : negative_float)
+        with self.assertRaises(TypeError):
+            Q.sample_from_user_defined_dist(lambda : word)
+
 
