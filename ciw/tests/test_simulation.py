@@ -451,7 +451,7 @@ class TestSimulation(unittest.TestCase):
         set_seed(3)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         times = Q.simulate_until_deadlock()
-        self.assertEqual(round(times[((0, 0), (0, 0))], 8), 0.27861044)
+        self.assertEqual(round(times[((0, 0), (0, 0))], 8), 31.26985409)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))

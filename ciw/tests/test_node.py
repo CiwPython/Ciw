@@ -140,7 +140,7 @@ class TestNode(unittest.TestCase):
         N2.block_individual(inds[6], N1)
         self.assertEqual(inds[6].is_blocked, True)
         [(2, 7)]
-        self.assertEqual(Q.digraph.edges(), [('Server 1 at Node 2', 'Server 2 at Node 1'), ('Server 1 at Node 2', 'Server 1 at Node 1')])
+        self.assertEqual(Q.digraph.edges(), [('Server 1 at Node 2', 'Server 2 at Node 1'), ('Server 1 at Node 2', 'Server 5 at Node 1'), ('Server 1 at Node 2', 'Server 3 at Node 1'), ('Server 1 at Node 2', 'Server 1 at Node 1'), ('Server 1 at Node 2', 'Server 4 at Node 1')])
 
     def test_release_method(self):
         set_seed(4)
@@ -168,7 +168,7 @@ class TestNode(unittest.TestCase):
         ind = Q.transitive_nodes[0].individuals[Q.transitive_nodes[0].c - 1]
         ind.service_time = 3.14
         ind.arrival_date = 100.0
-        self.assertEqual(Q.digraph.nodes(), ['Server 2 at Node 1', 'Server 1 at Node 2', 'Server 1 at Node 1'])
+        self.assertEqual(Q.digraph.nodes(), ['Server 5 at Node 2', 'Server 5 at Node 1', 'Server 3 at Node 2', 'Server 1 at Node 2', 'Server 1 at Node 1', 'Server 2 at Node 1', 'Server 2 at Node 2', 'Server 3 at Node 1', 'Server 4 at Node 1', 'Server 4 at Node 2'])
         self.assertEqual(ind.arrival_date, 100.0)
         self.assertEqual(ind.service_time, 3.14)
         self.assertEqual(ind.service_start_date, False)
@@ -190,19 +190,19 @@ class TestNode(unittest.TestCase):
         for ind in N2.individuals[:1]:
             N2.attach_server(N2.find_free_server(), ind)
 
-        self.assertEqual([str(obs) for obs in N1.individuals], ['Individual 0', 'Individual 1', 'Individual 2', 'Individual 3', 'Individual 4'])
-        self.assertEqual([str(obs) for obs in N2.individuals], ['Individual 100', 'Individual 101', 'Individual 102', 'Individual 103', 'Individual 104'])
+        self.assertEqual([str(obs) for obs in N1.individuals], ['Individual 0', 'Individual 1', 'Individual 2', 'Individual 3', 'Individual 4', 'Individual 5', 'Individual 6', 'Individual 7'])
+        self.assertEqual([str(obs) for obs in N2.individuals], ['Individual 100', 'Individual 101', 'Individual 102', 'Individual 103', 'Individual 104', 'Individual 105', 'Individual 106', 'Individual 107', 'Individual 108'])
         N1.release_blocked_individual(100)
-        self.assertEqual([str(obs) for obs in N1.individuals], ['Individual 0', 'Individual 1', 'Individual 2', 'Individual 3', 'Individual 4'])
-        self.assertEqual([str(obs) for obs in N2.individuals], ['Individual 100', 'Individual 101', 'Individual 102', 'Individual 103', 'Individual 104'])
+        self.assertEqual([str(obs) for obs in N1.individuals], ['Individual 0', 'Individual 1', 'Individual 2', 'Individual 3', 'Individual 4', 'Individual 5', 'Individual 6', 'Individual 7'])
+        self.assertEqual([str(obs) for obs in N2.individuals], ['Individual 100', 'Individual 101', 'Individual 102', 'Individual 103', 'Individual 104', 'Individual 105', 'Individual 106', 'Individual 107', 'Individual 108'])
 
         N1.blocked_queue = [(1, 1), (2, 100)]
         rel_ind = N1.individuals.pop(0)
         N1.detatch_server(rel_ind.server, rel_ind)
 
         N1.release_blocked_individual(110)
-        self.assertEqual([str(obs) for obs in N1.individuals], ['Individual 2', 'Individual 3', 'Individual 4', 'Individual 100', 'Individual 1'])
-        self.assertEqual([str(obs) for obs in N2.individuals], ['Individual 101', 'Individual 102', 'Individual 103', 'Individual 104'])
+        self.assertEqual([str(obs) for obs in N1.individuals], ['Individual 2', 'Individual 3', 'Individual 4', 'Individual 5', 'Individual 6', 'Individual 7', 'Individual 100', 'Individual 1'])
+        self.assertEqual([str(obs) for obs in N2.individuals], ['Individual 101', 'Individual 102', 'Individual 103', 'Individual 104', 'Individual 105', 'Individual 106', 'Individual 107', 'Individual 108'])
 
     def test_change_state_release_method(self):
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -282,7 +282,7 @@ class TestNode(unittest.TestCase):
         set_seed(50)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         ind = ciw.Individual(1)
-        self.assertEqual(Q.digraph.nodes(), ['Server 2 at Node 1', 'Server 1 at Node 2', 'Server 1 at Node 1'])
+        self.assertEqual(Q.digraph.nodes(), ['Server 5 at Node 2', 'Server 5 at Node 1', 'Server 3 at Node 2', 'Server 1 at Node 2', 'Server 1 at Node 1', 'Server 2 at Node 1', 'Server 2 at Node 2', 'Server 3 at Node 1', 'Server 4 at Node 1', 'Server 4 at Node 2'])
         self.assertEqual(ind.arrival_date, False)
         self.assertEqual(ind.service_time, False)
         self.assertEqual(ind.service_start_date, False)

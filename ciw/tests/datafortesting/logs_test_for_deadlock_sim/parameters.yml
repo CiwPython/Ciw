@@ -1,18 +1,18 @@
 Arrival_distributions:
   Class 0:
   - - Exponential
-    - 20.0
+    - 35.0
   - - Exponential
-    - 30.0
+    - 35.0
 detect_deadlock: True
 Number_of_classes: 1
 Number_of_nodes: 2
 Number_of_servers:
-- 2
-- 1
+- 5
+- 5
 Queue_capacities:
-- 3
-- 2
+- 5
+- 5
 Service_distributions:
   Class 0:
   - - Exponential
@@ -22,7 +22,7 @@ Service_distributions:
 Simulation_time: 2500
 Transition_matrices:
   Class 0:
-  - - 0.1
+  - - 0.3
     - 0.4
-  - - 0.5
+  - - 0.4
     - 0.3
