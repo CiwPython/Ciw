@@ -4,7 +4,7 @@
 Service & Inter-Arrival Time Distributions
 ==========================================
 
-Ciw currently allows the following continuous service and inter-arrival time distributions, as well as empirical distributions:
+Ciw currently allows the following continuous service and inter-arrival time distributions, as well as empirical distributions and imputting your own functions:
 
 - :ref:`uniform_dist`
 - :ref:`deterministic_dist`
@@ -14,6 +14,7 @@ Ciw currently allows the following continuous service and inter-arrival time dis
 - :ref:`lognormal_dist`
 - :ref:`weibull_dist`
 - :ref:`empirical_dist`
+- :ref:`own_functions`
 
 
 See :ref:`custom-distributions` for how to define custom discrete service time distributions.
@@ -142,3 +143,17 @@ Input list of observations::
 Input path to :code:`.csv` file::
 
     ['Empirical', '<path_to_file>']
+
+
+
+
+
+.. _own_functions:
+
+-------------------
+Inputting Functions
+-------------------
+
+Ciw allows users to input their own function to generate service and inter-arrival times. This is done by feeding in a function in the following way::
+
+	['UserDefined', lambda : random.random()]
