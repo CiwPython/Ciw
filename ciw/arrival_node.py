@@ -1,5 +1,4 @@
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate
 from individual import Individual
 
 
@@ -25,7 +24,6 @@ class ArrivalNode:
             for cls in self.next_event_dates_dict[nd]:
                 self.next_event_dates_dict[nd][cls] = self.simulation.inter_arrival_times[nd][cls]()
 
-
     def __repr__(self):
         """
         Representation of a node::
@@ -49,7 +47,6 @@ class ArrivalNode:
         Expovariate but omits zero
         """
         return self.simulation.inter_arrival_times[nd][cls]()
-
 
     def find_next_event_date(self):
         """

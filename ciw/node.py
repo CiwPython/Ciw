@@ -1,10 +1,7 @@
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
-from datetime import datetime
+from random import random, choice
 import os
 from csv import writer
-import yaml
-import shutil
 import networkx as nx
 import numpy.random as nprandom
 
@@ -209,7 +206,6 @@ class Node:
                     self.attach_server(self.find_free_server(), ind)
                     ind.service_start_date = current_time
                     ind.service_end_date = ind.service_start_date + ind.service_time
-
 
     def release_blocked_individual(self, current_time):
         """

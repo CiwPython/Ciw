@@ -1,5 +1,5 @@
 from __future__ import division
-from random import random, seed, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
+from random import random, expovariate, uniform, triangular, gammavariate, gauss, lognormvariate, weibullvariate, choice
 import os
 from csv import writer, reader
 import yaml
@@ -57,7 +57,6 @@ class Simulation:
         self.state = [[0, 0] for i in range(self.number_of_nodes)]
         initial_state = [[0, 0] for i in range(self.number_of_nodes)]
         self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
-
 
     def build_parameters(self, params):
         """
@@ -161,9 +160,6 @@ class Simulation:
         if self.parameters['Simulation_time'] <= 0:
             raise ValueError('Simulation_time must be a positive number.')
 
-
-
-
     def find_next_active_node(self):
         """
         Return the next active node:
@@ -218,7 +214,6 @@ class Simulation:
         empirical_dist = [[float(x) for x in row] for row in rdr][0]
         empirical_file.close()
         return empirical_dist
-
 
     def custom_pdf(self, cum_probs, values):
         """

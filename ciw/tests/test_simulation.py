@@ -1,8 +1,8 @@
 import unittest
 import ciw
-from random import seed, getstate, setstate
+from random import seed
 from hypothesis import given
-from hypothesis.strategies import floats, integers, composite, lists, fixed_dictionaries, random_module
+from hypothesis.strategies import floats, integers, lists, random_module
 import os
 import copy
 from numpy import random as nprandom
