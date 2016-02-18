@@ -592,3 +592,20 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual('data_1.csv' in files, True)
         os.remove('ciw/tests/datafortesting/logs_test_for_mm1/data_1.csv')
 
+    def test_simultaneous_events_example(self):
+        Arrival_distributions = [['Deterministic', 10.0], 'NoArrivals']
+        Service_distributions = [['Deterministic', 5.0], ['Deterministic', 5.0]]
+        Transition_matrices = [[1.0, 0.0], [0.0, 0.0]]
+        Simulation_time = 36
+        Number_of_servers = [2, 1]
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
+                           Service_distributions=Service_distributions,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time,
+                           Number_of_servers=Number_of_servers)
+        Q.simulate_until_max_time()
+        inds = Q.get_all_individuals()
+        recs = Q.get_all_records()
+        self.assertEqual(len(inds), 3)
+        self.assertTrue(all([x[6]==5.0 for x in recs[1:]]))
+
