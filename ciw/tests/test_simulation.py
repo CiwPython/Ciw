@@ -33,7 +33,7 @@ class TestSimulation(unittest.TestCase):
                                  ['Gamma', 0.4, 0.6],
                                  ['Deterministic', 0.5]],
                                 [['Exponential', 7.0],
-                                 ['Triangular', 0.1, 0.8, 0.85],
+                                 ['Triangular', 0.1, 0.85, 0.8],
                                  ['Exponential', 8.0],
                                  ['Exponential', 5.0]],
                                 [['Deterministic', 0.3],
@@ -85,7 +85,7 @@ class TestSimulation(unittest.TestCase):
                                             ['Gamma', 0.4, 0.6],
                                             ['Deterministic', 0.5]],
                                  'Class 1':[['Exponential', 7.0],
-                                            ['Triangular', 0.1, 0.8, 0.85],
+                                            ['Triangular', 0.1, 0.85, 0.8],
                                             ['Exponential', 8.0],
                                             ['Exponential', 5.0]],
                                  'Class 2':[['Deterministic', 0.3],
@@ -154,7 +154,7 @@ class TestSimulation(unittest.TestCase):
                                  ['Gamma', 0.4, 0.6],
                                  ['Deterministic', 0.5]],
                                 [['Exponential', 7.0],
-                                 ['Triangular', 0.1, 0.8, 0.85],
+                                 ['Triangular', 0.1, 0.85, 0.8],
                                  ['Exponential', 8.0],
                                  ['Exponential', 5.0]],
                                 [['Deterministic', 0.3],
@@ -202,7 +202,7 @@ class TestSimulation(unittest.TestCase):
                                  ['Gamma', 0.4, 0.6],
                                  ['Deterministic', 0.5]],
                                 [['Exponential', 7.0],
-                                 ['Triangular', 0.1, 0.8, 0.85],
+                                 ['Triangular', 0.1, 0.85, 0.8],
                                  ['Exponential', 8.0],
                                  ['Exponential', 5.0]],
                                 [['Deterministic', 0.3],
@@ -288,7 +288,7 @@ class TestSimulation(unittest.TestCase):
                                                         ['Exponential', 8.0],
                                                         ['Exponential', 9.0]],
                                             'Class 1': [['Exponential', 7.0],
-                                                        ['Triangular', 0.1, 0.8, 0.85],
+                                                        ['Triangular', 0.1, 0.85, 0.8],
                                                         ['Exponential', 8.0],
                                                         ['Exponential', 5.0]],
                                             'Class 0': [['Exponential', 7.0],
@@ -330,7 +330,7 @@ class TestSimulation(unittest.TestCase):
                                                                               ['Exponential', 8.0],
                                                                               ['Exponential', 9.0]],
                                                                   'Class 1': [['Exponential', 7.0],
-                                                                              ['Triangular', 0.1, 0.8, 0.85],
+                                                                              ['Triangular', 0.1, 0.85, 0.8],
                                                                               ['Exponential', 8.0],
                                                                               ['Exponential', 5.0]],
                                                                   'Class 0': [['Exponential', 7.0],
@@ -436,7 +436,7 @@ class TestSimulation(unittest.TestCase):
         Q.max_simulation_time = 600
         Q.simulate_until_max_time()
         L = Q.get_all_individuals()
-        self.assertEqual(round(L[300].data_records.values()[0][0].service_start_date, 8), 8.8086502)
+        self.assertEqual(round(L[300].data_records.values()[0][0].service_start_date, 8), 8.93542607)
 
         set_seed(60)
         Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))

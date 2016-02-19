@@ -161,6 +161,66 @@ class Simulation:
                         raise ValueError('Rows of Class_change_matrices must sum to 1.0 or less.')
         if self.parameters['Simulation_time'] <= 0:
             raise ValueError('Simulation_time must be a positive number.')
+        for cls in self.parameters['Service_distributions'].values():
+            for nd in cls:
+                if nd[0] not in ['Uniform', 'Triangular', 'Deterministic', 'Exponential', 'Gamma', 'Lognormal', 'Weibull', 'Empirical', 'Custom', 'UserDefined']:
+                    raise ValueError("Service distribution must be one of 'Uniform', 'Triangular', 'Deterministic', 'Exponential', 'Gamma', 'Lognormal', 'Weibull', 'Empirical', 'Custom', or 'UserDefined'")
+                if nd[0] == 'Uniform':
+                    if nd[1] < 0.0 or nd[2] < 0.0:
+                        raise ValueError('Uniform distribution must sample positive numbers only.')
+                    if nd[2] <= nd[1]:
+                        raise ValueError('Upper limit of Uniform distribution must be greater than the lower limit.')
+                if nd[0] == 'Deterministic':
+                    if nd[1] < 0.0:
+                        raise ValueError('Deterministic distribution must sample positive numbers only.')
+                if nd[0] == 'Triangular':
+                    if nd[1] < 0.0 or nd[2] < 0.0 or nd[3] < 0.0:
+                        raise ValueError('Triangular distribution must sample positive numbers only.')
+                    if nd[1] > nd[2] or nd[1] >= nd[3] or nd[3] >= nd[2]:
+                        raise ValueError('Triangular distribution\'s median must lie between the lower and upper limits.')
+                if nd[0] == 'Custom':
+                        P, V = zip(*self.parameters[nd[1]])
+                        for el in P:
+                            if not isinstance(el, float) or el < 0.0:
+                                raise ValueError('Probabilities for Custom distribution need to be floats between 0.0 and 1.0.')
+                        for el in V:
+                            if el < 0.0:
+                                raise ValueError('Custom distribution must sample positive values only.')
+                if nd[0] == 'Empirical':
+                    if isinstance(nd[1], list):
+                        if any([el<0.0 for el in nd[1]]):
+                            raise ValueError('Empirical distribution must sample positive floats.')
+        for cls in self.parameters['Arrival_distributions'].values():
+            for nd in cls:
+                if nd != 'NoArrivals':
+                    if nd[0] not in ['Uniform', 'Triangular', 'Deterministic', 'Exponential', 'Gamma', 'Lognormal', 'Weibull', 'Empirical', 'Custom', 'UserDefined']:
+                        raise ValueError("Arrival distribution must be one of 'Uniform', 'Triangular', 'Deterministic', 'Exponential', 'Gamma', 'Lognormal', 'Weibull', 'Empirical', 'Custom', 'UserDefined', or 'NoArrivals'.")
+                    if nd[0] == 'Uniform':
+                        if nd[1] < 0.0 or nd[2] < 0.0:
+                            raise ValueError('Uniform distribution must sample positive numbers only.')
+                        if nd[2] <= nd[1]:
+                            raise ValueError('Upper limit of Uniform distribution must be greater than the lower limit.')
+                    if nd[0] == 'Deterministic':
+                        if nd[1] < 0.0:
+                            raise ValueError('Deterministic distribution must sample positive numbers only.')
+                    if nd[0] == 'Triangular':
+                        if nd[1] < 0.0 or nd[2] < 0.0 or nd[3] < 0.0:
+                            raise ValueError('Triangular distribution must sample positive numbers only.')
+                        if nd[1] > nd[2] or nd[1] >= nd[3] or nd[3] >= nd[2]:
+                            raise ValueError('Triangular distribution\'s median must lie between the lower and upper limits.')
+                    if nd[0] == 'Custom':
+                            P, V = zip(*self.parameters[nd[1]])
+                            for el in P:
+                                if not isinstance(el, float) or el < 0.0:
+                                    raise ValueError('Probabilities for Custom distribution need to be floats between 0.0 and 1.0.')
+                            for el in V:
+                                if el < 0.0:
+                                    raise ValueError('Custom distribution must sample positive values only.')
+                    if nd[0] == 'Empirical':
+                        if isinstance(nd[1], list):
+                            if any([el<0.0 for el in nd[1]]):
+                                raise ValueError('Empirical distribution must sample positive floats.')
+
 
     def find_next_active_node(self):
         """
@@ -203,7 +263,6 @@ class Simulation:
                 empirical_dist = self.import_empirical_dist(source[c][n][1])
                 return lambda : choice(empirical_dist)
             return lambda : choice(source[c][n][1])
-        return False
 
     def sample_from_user_defined_dist(self, func):
         """

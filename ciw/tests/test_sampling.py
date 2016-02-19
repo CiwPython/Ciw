@@ -66,6 +66,21 @@ class TestSimulation(unittest.TestCase):
             self.assertTrue(ul <= Nu.simulation.service_times[Nu.id_number][0]() <= uh)
             self.assertTrue(ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
 
+    def test_error_uniform_dist(self):
+        Arrival_distributions = [['Uniform', 2.2, 3.3]]
+        Arrival_distributions_E = [['Uniform', -2.2, 3.3]]
+        Arrival_distributions_EE = [['Uniform', 3.3, 2.2]]
+        Service_distributions = [['Uniform', 2.2, 3.3]]
+        Service_distributions_E = [['Uniform', 2.2, -3.3]]
+        Service_distributions_EE = [['Uniform', 3.3, 2.2]]
+        Number_of_servers = [1]
+        Transition_matrices = [[0.1]]
+        Simulation_time = 2222
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_E, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_EE, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_E, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_EE, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+
     def test_sampling_deterministic_dist(self):
         Arrival_distributions = [['Deterministic', 4.4]]
         Service_distributions = [['Deterministic', 4.4]]
@@ -107,6 +122,17 @@ class TestSimulation(unittest.TestCase):
         for itr in range(10): # Because repition happens in the simulation
             self.assertEqual(Nd.simulation.service_times[Nd.id_number][0](), d)
             self.assertEqual(Nd.simulation.inter_arrival_times[Nd.id_number][0](), d)
+
+    def test_error_deterministic_dist(self):
+        Arrival_distributions = [['Deterministic', 2.2]]
+        Arrival_distributions_E = [['Deterministic', -2.2]]
+        Service_distributions = [['Deterministic', 3.3]]
+        Service_distributions_E = [['Deterministic', -3.3]]
+        Number_of_servers = [1]
+        Transition_matrices = [[0.1]]
+        Simulation_time = 2222
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_E, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_E, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
 
     def test_sampling_triangular_dist(self):
         Arrival_distributions = [['Triangular', 1.1, 6.6, 1.5]]
@@ -150,6 +176,21 @@ class TestSimulation(unittest.TestCase):
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number][0]() <= th)
             self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]() <= th)
+
+    def test_error_triangular_dist(self):
+        Arrival_distributions = [['Triangular', 2.2, 3.3, 2.8]]
+        Arrival_distributions_E = [['Triangular', -2.2, 3.3, 2.8]]
+        Arrival_distributions_EE = [['Triangular', 3.3, 2.2, 2.1]]
+        Service_distributions = [['Triangular', 2.2, 3.3, 2.8]]
+        Service_distributions_E = [['Triangular', 2.2, -3.3, 2.8]]
+        Service_distributions_EE = [['Triangular', 2.2, 2.6, 2.9]]
+        Number_of_servers = [1]
+        Transition_matrices = [[0.1]]
+        Simulation_time = 2222
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_E, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_EE, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_E, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_EE, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
 
     def test_sampling_exponential_dist(self):
         Arrival_distributions = [['Exponential', 4.4]]
@@ -366,6 +407,19 @@ class TestSimulation(unittest.TestCase):
             self.assertTrue(Nem.simulation.service_times[Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
             self.assertTrue(Nem.simulation.inter_arrival_times[Nem.id_number][0]() in set(my_empirical_dist))
 
+    def test_error_empirical_dist(self):
+        my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
+        my_empirical_dist_E = [8.0, 8.0, 8.0, -8.8, 8.8, 12.3]
+        Arrival_distributions = [['Empirical', my_empirical_dist]]
+        Arrival_distributions_E = [['Empirical', my_empirical_dist_E]]
+        Service_distributions = [['Empirical', my_empirical_dist]]
+        Service_distributions_E = [['Empirical', my_empirical_dist_E]]
+        Number_of_servers = [1]
+        Transition_matrices = [[0.1]]
+        Simulation_time = 2222
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_E, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_E, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time})
+
     def test_sampling_custom_dist(self):
         my_custom_dist = [[0.2, 3.7], [0.5, 3.8], [0.3, 4.1]]
         Arrival_distributions = [['Custom', 'my_custom_dist']]
@@ -414,6 +468,24 @@ class TestSimulation(unittest.TestCase):
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]() in set(cust_vals))
             self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]() in set(cust_vals))
+
+    def test_error_custom_dist(self):
+        my_custom_dist = [[0.2, 3.7], [0.5, 3.8], [0.3, 4.1]]
+        my_custom_dist_E = [[0.2, 3.7], [0.5, -3.8], [0.3, 4.1]]
+        my_custom_dist_EE = [[0.2, 3.7], [-0.5, 3.8], [0.3, 4.1]]
+        Arrival_distributions = [['Custom', 'my_custom_dist']]
+        Arrival_distributions_E = [['Custom', 'my_custom_dist_E']]
+        Arrival_distributions_EE = [['Custom', 'my_custom_dist_EE']]
+        Service_distributions = [['Custom', 'my_custom_dist']]
+        Service_distributions_E = [['Custom', 'my_custom_dist_E']]
+        Service_distributions_EE = [['Custom', 'my_custom_dist_EE']]
+        Number_of_servers = [1]
+        Transition_matrices = [[0.1]]
+        Simulation_time = 2222
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_E, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time, 'my_custom_dist':my_custom_dist, 'my_custom_dist_E':my_custom_dist_E, 'my_custom_dist_EE':my_custom_dist_EE})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions_EE, 'Service_distributions':Service_distributions, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time, 'my_custom_dist':my_custom_dist, 'my_custom_dist_E':my_custom_dist_E, 'my_custom_dist_EE':my_custom_dist_EE})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_E, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time, 'my_custom_dist':my_custom_dist, 'my_custom_dist_E':my_custom_dist_E, 'my_custom_dist_EE':my_custom_dist_EE})
+        self.assertRaises(ValueError, ciw.Simulation, {'Arrival_distributions':Arrival_distributions, 'Service_distributions':Service_distributions_EE, 'Number_of_servers':Number_of_servers, 'Transition_matrices':Transition_matrices, 'Simulation_time':Simulation_time, 'my_custom_dist':my_custom_dist, 'my_custom_dist_E':my_custom_dist_E, 'my_custom_dist_EE':my_custom_dist_EE})
 
     def test_sampling_function_dist(self):
         Arrival_distributions = [['UserDefined', lambda : random()], ['UserDefined', lambda : custom_function()]]
@@ -493,19 +565,18 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Nna.simulation.inter_arrival_times[Nna.id_number][0](), 'Inf')
 
     def test_error_dist(self):
-        Arrival_distributions = ['NoArrivals']
-        Service_distributions = [['testerror', 9]]
-        Number_of_servers = [1]
-        Transition_matrices = [[0.1]]
-        Simulation_time = 2222
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Service_distributions=Service_distributions,
-                           Number_of_servers=Number_of_servers,
-                           Transition_matrices=Transition_matrices,
-                           Simulation_time=Simulation_time)
-        Nna = Q.transitive_nodes[0]
-        set_seed(5)
-        self.assertEqual(Nna.simulation.service_times[Nna.id_number][0], False)
+        params = {'Arrival_distributions': ['NoArrivals'],
+                  'Service_distributions': [['dlkjdlksj', 9]],
+                  'Number_of_servers': [1],
+                  'Transition_matrices': [[0.1]],
+                  'Simulation_time': 2222}
+        self.assertRaises(ValueError, ciw.Simulation, params)
+        params = {'Arrival_distributions': [['skjfhkjsfhjk']],
+                  'Service_distributions': [['Exponential', 9.5]],
+                  'Number_of_servers': [1],
+                  'Transition_matrices': [[0.1]],
+                  'Simulation_time': 2222}
+        self.assertRaises(ValueError, ciw.Simulation, params)
 
     @given(positive_float=floats(min_value=0.0, max_value=100.0),
            positive_int=integers(min_value=0, max_value=100),
