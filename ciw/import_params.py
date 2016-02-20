@@ -12,5 +12,4 @@ def load_parameters(directory_name):
     parameter_file = open(parameter_file_name, 'r')
     parameters = yaml.load(parameter_file)
     parameter_file.close()
-
     return parameters

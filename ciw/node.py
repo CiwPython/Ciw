@@ -59,6 +59,26 @@ class Node:
         """
         return 'Node %s' % self.id_number
 
+    def accept(self, next_individual, current_time):
+        """
+        Accepts a new customer to the queue.
+        """
+        next_individual.exit_date = False
+        next_individual.is_blocked = False
+        self.begin_service_if_possible_accept(
+            next_individual, current_time)
+        next_individual.queue_size_at_arrival = len(self.individuals)
+        self.individuals.append(next_individual)
+        self.change_state_accept()
+
+    def add_new_server(self, shift_indx, highest_id):
+        """
+        Add appropriate amount of servers for the given shift.
+        """
+        num_servers = self.schedule[shift_indx][1]
+        for i in xrange(num_servers):
+            self.servers.append(Server(self, highest_id+i+1))
+
     def attach_server(self, server, individual):
         """
         Attaches a server to an individual, and vice versa.
@@ -75,133 +95,19 @@ class Node:
                 if ind != individual:
                     self.simulation.digraph.add_edge(str(ind.server), str(server))
 
-    def detatch_server(self, server, individual):
+    def begin_service_if_possible_accept(self, next_individual, current_time):
         """
-        Detatches a server from an individual, and vice versa
+        Begins the service of the next individual, giving
+        that customer a service time, end date and node.
         """
-        server.cust = False
-        server.busy = False
-        individual.server = False
-
-        if self.simulation.detecting_deadlock:
-            self.simulation.digraph.remove_edges_from(
-                self.simulation.digraph.in_edges(
-                str(server)) + self.simulation.digraph.out_edges(
-                str(server)))
-
-        if server.offduty:
-            self.kill_server(server)
-
-    def have_event(self):
-        """
-        Has an event
-        """
-        if self.check_if_shiftchange():
-            self.change_shift()
-        else:
-            self.finish_service()
-
-    def change_shift(self):
-        """
-        Add servers and deletes or indicates which servers
-        should go off duty.
-        """
-        if len(self.servers) != 0:
-            self.highest_id = max([srvr.id_number
-                for srvr in self.servers])
-        shift = self.next_event_date%self.cyclelength
-
-        try: inx = self.schedule.index(shift)
-        except:
-            tms = [obs[0] for obs in self.schedule]
-            diffs = [abs(x-shift) for x in tms]
-            indx = diffs.index(min(diffs))
-
-        self.take_servers_off_duty()
-        self.add_new_server(indx, self.highest_id)
-
-        self.c = self.schedule[indx][1]
-        self.masterschedule.pop(0)
-        self.begin_service_if_possible_change_shift(self.next_event_date)
-
-    def take_servers_off_duty(self):
-        """
-        Gathers servers that should be deleted.
-        """
-        to_delete = []
-        for srvr in self.servers:
-            if srvr.busy:
-                srvr.offduty = True
-            else:
-                to_delete.append(srvr)
-        for obs in to_delete:
-            self.kill_server(obs)
-
-    def check_if_shiftchange(self):
-        """
-        Check whether current time is a shift change.
-        """
-        if self.scheduled_servers:
-            return self.next_event_date == self.masterschedule[0]
-        return False
-
-    def finish_service(self):
-        """
-        The next individual finishes service
-        """
-        next_individual_indices = [i for i, x in
-            enumerate([ind.service_end_date for ind in self.individuals])
-            if x == self.next_event_date]
-        if len(next_individual_indices) > 1:
-            next_individual_index = choice(next_individual_indices)
-        else:
-            next_individual_index = next_individual_indices[0]
-        next_individual = self.individuals[next_individual_index]
-        self.change_customer_class(next_individual)
-        next_node = self.next_node(next_individual.customer_class)
-        next_individual.destination = next_node.id_number
-        if len(next_node.individuals) < next_node.node_capacity:
-            self.release(next_individual_index, next_node, self.next_event_date)
-        else:
-            self.block_individual(next_individual, next_node)
-
-    def change_customer_class(self,individual):
-        """
-        Takes individual and changes customer class according to a probability distribution.
-        """
-        if self.simulation.class_change_matrix != 'NA':
-            individual.previous_class=individual.customer_class
-            individual.customer_class=nprandom.choice(
-                xrange(len(self.class_change_for_node)),
-                p=self.class_change_for_node[individual.previous_class])
-
-    def block_individual(self, individual, next_node):
-        """
-        Blocks the individual from entering the next node.
-        """
-        individual.is_blocked = True
-        self.change_state_block()
-        next_node.blocked_queue.append(
-            (self.id_number, individual.id_number))
-        if self.simulation.detecting_deadlock:
-            for svr in next_node.servers:
-                self.simulation.digraph.add_edge(
-                    str(individual.server), str(svr))
-
-    def release(self, next_individual_index, next_node, current_time):
-        """
-        Update node when an individual is released.
-        """
-        next_individual = self.individuals.pop(next_individual_index)
-        next_individual.queue_size_at_departure = len(self.individuals)
-        next_individual.exit_date = current_time
-        if self.c < 'Inf':
-            self.detatch_server(next_individual.server, next_individual)
-        self.write_individual_record(next_individual)
-        self.change_state_release(next_individual)
-        self.release_blocked_individual(current_time)
-        self.begin_service_if_possible_release(current_time)
-        next_node.accept(next_individual, current_time)
+        next_individual.arrival_date = current_time
+        next_individual.service_time = self.simulation.service_times[
+            self.id_number][next_individual.customer_class]()
+        if len(self.individuals) < self.c:
+            if self.c < 'Inf':
+                self.attach_server(self.find_free_server(), next_individual)
+            next_individual.service_start_date = current_time
+            next_individual.service_end_date = current_time + next_individual.service_time
 
     def begin_service_if_possible_change_shift(self, current_time):
         """
@@ -228,6 +134,165 @@ class Node:
                     ind.service_start_date = current_time
                     ind.service_end_date = ind.service_start_date + ind.service_time
 
+    def block_individual(self, individual, next_node):
+        """
+        Blocks the individual from entering the next node.
+        """
+        individual.is_blocked = True
+        self.change_state_block()
+        next_node.blocked_queue.append(
+            (self.id_number, individual.id_number))
+        if self.simulation.detecting_deadlock:
+            for svr in next_node.servers:
+                self.simulation.digraph.add_edge(
+                    str(individual.server), str(svr))
+
+    def change_customer_class(self,individual):
+        """
+        Takes individual and changes customer class according to a probability distribution.
+        """
+        if self.simulation.class_change_matrix != 'NA':
+            individual.previous_class=individual.customer_class
+            individual.customer_class=nprandom.choice(
+                xrange(len(self.class_change_for_node)),
+                p=self.class_change_for_node[individual.previous_class])
+
+    def change_shift(self):
+        """
+        Add servers and deletes or indicates which servers
+        should go off duty.
+        """
+        if len(self.servers) != 0:
+            self.highest_id = max([srvr.id_number
+                for srvr in self.servers])
+        shift = self.next_event_date%self.cyclelength
+
+        try: inx = self.schedule.index(shift)
+        except:
+            tms = [obs[0] for obs in self.schedule]
+            diffs = [abs(x-shift) for x in tms]
+            indx = diffs.index(min(diffs))
+
+        self.take_servers_off_duty()
+        self.add_new_server(indx, self.highest_id)
+
+        self.c = self.schedule[indx][1]
+        self.masterschedule.pop(0)
+        self.begin_service_if_possible_change_shift(self.next_event_date)
+
+    def change_state_accept(self):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        self.simulation.state[self.id_number-1][0] += 1
+
+    def change_state_block(self):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        self.simulation.state[self.id_number-1][1] += 1
+        self.simulation.state[self.id_number-1][0] -= 1
+
+    def change_state_release(self, next_individual):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        if next_individual.is_blocked:
+            self.simulation.state[self.id_number-1][1] -= 1
+        else:
+            self.simulation.state[self.id_number-1][0] -= 1
+
+    def check_if_shiftchange(self):
+        """
+        Check whether current time is a shift change.
+        """
+        if self.scheduled_servers:
+            return self.next_event_date == self.masterschedule[0]
+        return False
+
+    def detatch_server(self, server, individual):
+        """
+        Detatches a server from an individual, and vice versa
+        """
+        server.cust = False
+        server.busy = False
+        individual.server = False
+
+        if self.simulation.detecting_deadlock:
+            self.simulation.digraph.remove_edges_from(
+                self.simulation.digraph.in_edges(
+                str(server)) + self.simulation.digraph.out_edges(
+                str(server)))
+
+        if server.offduty:
+            self.kill_server(server)
+
+    def find_free_server(self):
+        """
+        Finds a free server.
+        """
+        free_servers = [svr for svr in self.servers if not svr.busy]
+        return free_servers[0]
+
+    def finish_service(self):
+        """
+        The next individual finishes service
+        """
+        next_individual_indices = [i for i, x in
+            enumerate([ind.service_end_date for ind in self.individuals])
+            if x == self.next_event_date]
+        if len(next_individual_indices) > 1:
+            next_individual_index = choice(next_individual_indices)
+        else:
+            next_individual_index = next_individual_indices[0]
+        next_individual = self.individuals[next_individual_index]
+        self.change_customer_class(next_individual)
+        next_node = self.next_node(next_individual.customer_class)
+        next_individual.destination = next_node.id_number
+        if len(next_node.individuals) < next_node.node_capacity:
+            self.release(next_individual_index, next_node, self.next_event_date)
+        else:
+            self.block_individual(next_individual, next_node)
+
+    def have_event(self):
+        """
+        Has an event
+        """
+        if self.check_if_shiftchange():
+            self.change_shift()
+        else:
+            self.finish_service()
+
+    def kill_server(self,srvr):
+        """
+        Kills server.
+        """
+        indx = self.servers.index(srvr)
+        del self.servers[indx]
+
+    def next_node(self, customer_class):
+        """
+        Finds the next node according the random distribution.
+        """
+        return nprandom.choice(self.simulation.nodes[1:],
+            p=self.transition_row[customer_class]+[1.0-sum(
+            self.transition_row[customer_class])])
+
+    def release(self, next_individual_index, next_node, current_time):
+        """
+        Update node when an individual is released.
+        """
+        next_individual = self.individuals.pop(next_individual_index)
+        next_individual.queue_size_at_departure = len(self.individuals)
+        next_individual.exit_date = current_time
+        if self.c < 'Inf':
+            self.detatch_server(next_individual.server, next_individual)
+        self.write_individual_record(next_individual)
+        self.change_state_release(next_individual)
+        self.release_blocked_individual(current_time)
+        self.begin_service_if_possible_release(current_time)
+        next_node.accept(next_individual, current_time)
+
     def release_blocked_individual(self, current_time):
         """
         Releases an individual who becomes unblocked
@@ -244,75 +309,18 @@ class Node:
             node_to_receive_from.release(individual_to_receive_index,
                                          self, current_time)
 
-    def change_state_release(self, next_individual):
+    def take_servers_off_duty(self):
         """
-        Changes the state of the system when a customer gets blocked.
+        Gathers servers that should be deleted.
         """
-        if next_individual.is_blocked:
-            self.simulation.state[self.id_number-1][1] -= 1
-        else:
-            self.simulation.state[self.id_number-1][0] -= 1
-
-    def change_state_block(self):
-        """
-        Changes the state of the system when a customer gets blocked.
-        """
-        self.simulation.state[self.id_number-1][1] += 1
-        self.simulation.state[self.id_number-1][0] -= 1
-
-    def change_state_accept(self):
-        """
-        Changes the state of the system when a customer gets blocked.
-        """
-        self.simulation.state[self.id_number-1][0] += 1
-
-    def accept(self, next_individual, current_time):
-        """
-        Accepts a new customer to the queue.
-        """
-        next_individual.exit_date = False
-        next_individual.is_blocked = False
-        self.begin_service_if_possible_accept(
-            next_individual, current_time)
-        next_individual.queue_size_at_arrival = len(self.individuals)
-        self.individuals.append(next_individual)
-        self.change_state_accept()
-
-    def begin_service_if_possible_accept(self, next_individual, current_time):
-        """
-        Begins the service of the next individual, giving
-        that customer a service time, end date and node.
-        """
-        next_individual.arrival_date = current_time
-        next_individual.service_time = self.simulation.service_times[
-            self.id_number][next_individual.customer_class]()
-        if len(self.individuals) < self.c:
-            if self.c < 'Inf':
-                self.attach_server(self.find_free_server(), next_individual)
-            next_individual.service_start_date = current_time
-            next_individual.service_end_date = current_time + next_individual.service_time
-
-    def find_free_server(self):
-        """
-        Finds a free server.
-        """
-        free_servers = [svr for svr in self.servers if not svr.busy]
-        return free_servers[0]
-
-    def kill_server(self,srvr):
-        """
-        Kills server.
-        """
-        indx = self.servers.index(srvr)
-        del self.servers[indx]
-
-    def add_new_server(self, shift_indx, highest_id):
-        """
-        Add appropriate amount of servers for the given shift.
-        """
-        num_servers = self.schedule[shift_indx][1]
-        for i in xrange(num_servers):
-            self.servers.append(Server(self, highest_id+i+1))
+        to_delete = []
+        for srvr in self.servers:
+            if srvr.busy:
+                srvr.offduty = True
+            else:
+                to_delete.append(srvr)
+        for obs in to_delete:
+            self.kill_server(obs)
 
     def update_next_event_date(self, current_time):
         """
@@ -327,14 +335,6 @@ class Node:
             self.next_event_date = min(next_end_service, next_shift_change)
         else:
             self.next_event_date = next_end_service
-
-    def next_node(self, customer_class):
-        """
-        Finds the next node according the random distribution.
-        """
-        return nprandom.choice(self.simulation.nodes[1:],
-            p=self.transition_row[customer_class]+[1.0-sum(
-            self.transition_row[customer_class])])
 
     def write_individual_record(self, individual):
         """

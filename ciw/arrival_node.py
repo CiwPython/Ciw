@@ -18,38 +18,11 @@ class ArrivalNode:
         self.initialise_event_dates_dict()
         self.find_next_event_date()
 
-    def initialise_event_dates_dict(self):
-        """
-        Initialises the next event dates dictionary
-        with random times for each node and class.
-        """
-        for nd in self.event_dates_dict:
-            for cls in self.event_dates_dict[nd]:
-                self.event_dates_dict[nd][cls] = self.simulation.inter_arrival_times[nd][cls]()
-
     def __repr__(self):
         """
         Representation of an arrival node.
         """
         return 'Arrival Node'
-
-    def have_event(self):
-        """
-        Send new arrival to relevent node.
-        """
-        self.number_of_individuals += 1
-        next_individual = Individual(self.number_of_individuals, self.next_class)
-        next_node = self.simulation.transitive_nodes[self.next_node-1]
-        if len(next_node.individuals) < next_node.node_capacity:
-            next_node.accept(next_individual, self.next_event_date)
-        self.event_dates_dict[self.next_node][self.next_class] += self.inter_arrival(self.next_node, self.next_class)
-        self.find_next_event_date()
-
-    def inter_arrival(self, nd, cls):
-        """
-        Samples the inter-arrival time for next class and node.
-        """
-        return self.simulation.inter_arrival_times[nd][cls]()
 
     def find_next_event_date(self):
         """
@@ -64,6 +37,33 @@ class ArrivalNode:
         self.next_node = nd + 1
         self.next_class = cls
         self.next_event_date = self.event_dates_dict[self.next_node][self.next_class]
+
+    def have_event(self):
+        """
+        Send new arrival to relevent node.
+        """
+        self.number_of_individuals += 1
+        next_individual = Individual(self.number_of_individuals, self.next_class)
+        next_node = self.simulation.transitive_nodes[self.next_node-1]
+        if len(next_node.individuals) < next_node.node_capacity:
+            next_node.accept(next_individual, self.next_event_date)
+        self.event_dates_dict[self.next_node][self.next_class] += self.inter_arrival(self.next_node, self.next_class)
+        self.find_next_event_date()
+
+    def initialise_event_dates_dict(self):
+        """
+        Initialises the next event dates dictionary
+        with random times for each node and class.
+        """
+        for nd in self.event_dates_dict:
+            for cls in self.event_dates_dict[nd]:
+                self.event_dates_dict[nd][cls] = self.simulation.inter_arrival_times[nd][cls]()
+
+    def inter_arrival(self, nd, cls):
+        """
+        Samples the inter-arrival time for next class and node.
+        """
+        return self.simulation.inter_arrival_times[nd][cls]()
 
     def update_next_event_date(self):
         """

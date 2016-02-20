@@ -88,6 +88,15 @@ class Simulation:
             params[a] = params.get(a, default_dict[a])
         return params
 
+    def check_userdef_dist(self, func):
+        """
+        Safely sample from a user defined distribution
+        """
+        sample = func()
+        if not isinstance(sample, float) or sample < 0:
+            raise ValueError("UserDefined function must return positive float.")
+        return sample
+
     def check_valid_parameters(self):
         """
         Raises errors if parameter set isn't valid
@@ -225,16 +234,30 @@ class Simulation:
                             if any([el<0.0 for el in nd[1]]):
                                 raise ValueError('Empirical distribution must sample positive floats.')
 
-    def find_next_active_node(self):
+    def detect_deadlock(self):
         """
-        Return the next active node:
+        Detects whether the system is in a deadlocked state,
+        that is, is there a knot. Note that this code is taken
+        and adapted from the NetworkX Developer Zone Ticket
+        #663 knot.py (09/06/2015)
         """
-        next_active_node_indices = [i for i, x in enumerate([
-            nd.next_event_date for nd in self.nodes]) if x == min([
-            nd.next_event_date for nd in self.nodes])]
-        if len(next_active_node_indices) > 1:
-            return self.nodes[choice(next_active_node_indices)]
-        return self.nodes[next_active_node_indices[0]]
+        knots = []
+        for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
+            nodes = set(subgraph.nodes())
+            if len(nodes) == 1:
+                n = nodes.pop()
+                nodes.add(n)
+                if set(self.digraph.successors(n)) == nodes:
+                    knots.append(subgraph)
+            else:
+                for n in nodes:
+                    successors = nx.descendants(self.digraph, n)
+                    if successors <= nodes:
+                        knots.append(subgraph)
+                        break
+        if len(knots) > 0:
+            return True
+        return False
 
     def find_distributions(self, n, c, source):
         """
@@ -274,26 +297,16 @@ class Simulation:
                 return lambda : choice(empirical_dist)
             return lambda : choice(source[c][n][1])
 
-    def check_userdef_dist(self, func):
+    def find_next_active_node(self):
         """
-        Safely sample from a user defined distribution
+        Return the next active node:
         """
-        sample = func()
-        if not isinstance(sample, float) or sample < 0:
-            raise ValueError("UserDefined function must return positive float.")
-        return sample
-
-    def import_empirical(self, dist_file):
-        """
-        Imports an empirical distribution from a .csv file
-        """
-        root = os.getcwd()
-        file_name = root + '/' + dist_file
-        empirical_file = open(file_name, 'r')
-        rdr = reader(empirical_file)
-        empirical_dist = [[float(x) for x in row] for row in rdr][0]
-        empirical_file.close()
-        return empirical_dist
+        next_active_node_indices = [i for i, x in enumerate([
+            nd.next_event_date for nd in self.nodes]) if x == min([
+            nd.next_event_date for nd in self.nodes])]
+        if len(next_active_node_indices) > 1:
+            return self.nodes[choice(next_active_node_indices)]
+        return self.nodes[next_active_node_indices[0]]
 
     def find_times_dictionary(self, source):
         """
@@ -304,69 +317,6 @@ class Simulation:
             customer_class:self.find_distributions(node, customer_class, source)
             for customer_class in xrange(len(self.lmbda))}
             for node in xrange(self.number_of_nodes)}
-
-    def simulate_until_max_time(self):
-        """
-        Run the actual simulation.
-        """
-        self.nodes[0].update_next_event_date()
-        next_active_node = self.find_next_active_node()
-        current_time = next_active_node.next_event_date
-        while current_time < self.max_simulation_time:
-            next_active_node.have_event()
-            for node in self.transitive_nodes:
-                node.update_next_event_date(current_time)
-            next_active_node = self.find_next_active_node()
-            current_time = next_active_node.next_event_date
-
-    def simulate_until_deadlock(self):
-        """
-        Run the actual simulation.
-        """
-        deadlocked = False
-        self.nodes[0].update_next_event_date()
-        next_active_node = self.find_next_active_node()
-        current_time = next_active_node.next_event_date
-        while not deadlocked:
-            next_active_node.have_event()
-            current_state = tuple(tuple(self.state[i])
-                for i in xrange(len(self.state)))
-            if current_state not in self.times_dictionary:
-                self.times_dictionary[current_state] = current_time
-            for node in self.transitive_nodes:
-                node.update_next_event_date(current_time)
-            deadlocked = self.detect_deadlock()
-            if deadlocked:
-                time_of_deadlock = current_time
-            next_active_node = self.find_next_active_node()
-            current_time = next_active_node.next_event_date
-        return {state: time_of_deadlock - self.times_dictionary[state]
-        for state in self.times_dictionary.keys()}
-
-    def detect_deadlock(self):
-        """
-        Detects whether the system is in a deadlocked state,
-        that is, is there a knot. Note that this code is taken
-        and adapted from the NetworkX Developer Zone Ticket
-        #663 knot.py (09/06/2015)
-        """
-        knots = []
-        for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
-            nodes = set(subgraph.nodes())
-            if len(nodes) == 1:
-                n = nodes.pop()
-                nodes.add(n)
-                if set(self.digraph.successors(n)) == nodes:
-                    knots.append(subgraph)
-            else:
-                for n in nodes:
-                    successors = nx.descendants(self.digraph, n)
-                    if successors <= nodes:
-                        knots.append(subgraph)
-                        break
-        if len(knots) > 0:
-            return True
-        return False
 
     def get_all_individuals(self):
         """
@@ -413,6 +363,56 @@ class Simulation:
                                     record.queue_size_at_departure])
         self.all_records = records
         return records
+
+    def import_empirical(self, dist_file):
+        """
+        Imports an empirical distribution from a .csv file
+        """
+        root = os.getcwd()
+        file_name = root + '/' + dist_file
+        empirical_file = open(file_name, 'r')
+        rdr = reader(empirical_file)
+        empirical_dist = [[float(x) for x in row] for row in rdr][0]
+        empirical_file.close()
+        return empirical_dist
+
+    def simulate_until_deadlock(self):
+        """
+        Run the actual simulation.
+        """
+        deadlocked = False
+        self.nodes[0].update_next_event_date()
+        next_active_node = self.find_next_active_node()
+        current_time = next_active_node.next_event_date
+        while not deadlocked:
+            next_active_node.have_event()
+            current_state = tuple(tuple(self.state[i])
+                for i in xrange(len(self.state)))
+            if current_state not in self.times_dictionary:
+                self.times_dictionary[current_state] = current_time
+            for node in self.transitive_nodes:
+                node.update_next_event_date(current_time)
+            deadlocked = self.detect_deadlock()
+            if deadlocked:
+                time_of_deadlock = current_time
+            next_active_node = self.find_next_active_node()
+            current_time = next_active_node.next_event_date
+        return {state: time_of_deadlock - self.times_dictionary[state]
+        for state in self.times_dictionary.keys()}
+
+    def simulate_until_max_time(self):
+        """
+        Run the actual simulation.
+        """
+        self.nodes[0].update_next_event_date()
+        next_active_node = self.find_next_active_node()
+        current_time = next_active_node.next_event_date
+        while current_time < self.max_simulation_time:
+            next_active_node.have_event()
+            for node in self.transitive_nodes:
+                node.update_next_event_date(current_time)
+            next_active_node = self.find_next_active_node()
+            current_time = next_active_node.next_event_date
 
     def write_records_to_file(self, file_name, headers=True):
         """
