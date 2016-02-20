@@ -74,6 +74,8 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters(
           'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         self.assertEqual(Q.schedules, [True, False])
+        self.assertEqual(str(Q), 'Ciw Simulation')
+
 
     def test_init_method_from_kws(self):
         # Define parameters
@@ -192,6 +194,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, [20, 'Inf', 30, 'Inf'])
+        self.assertEqual(str(Q), 'Ciw Simulation')
 
         Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
@@ -246,6 +249,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, ['Inf', 'Inf', 'Inf', 'Inf'])
+        self.assertEqual(str(Q), 'Ciw Simulation')
 
         Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
@@ -283,6 +287,7 @@ class TestSimulation(unittest.TestCase):
                            schedule_1=schedule_1,
                            cycle_length=cycle_length)
         self.assertEqual(Q.schedules, [False, False, True, False])
+        self.assertEqual(str(Q), 'Ciw Simulation')
 
         Q = ciw.Simulation(Arrival_distributions = {'Class 2': [['Exponential', 2.0],
                                                         ['Exponential', 1.0],

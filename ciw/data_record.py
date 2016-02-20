@@ -29,3 +29,9 @@ class DataRecord:
         self.blocked = exit_date - self.service_end_date
         self.node = node
         self.destination = destination
+
+    def __repr__(self):
+        """
+        Represents the Data Record
+        """
+        return "Data Record"

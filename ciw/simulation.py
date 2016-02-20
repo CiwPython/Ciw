@@ -63,6 +63,12 @@ class Simulation:
         self.times_dictionary = {tuple(tuple(self.state[i])
             for i in xrange(self.number_of_nodes)): 0.0}
 
+    def __repr__(self):
+        """
+        Represents the simulation
+        """
+        return "Ciw Simulation"
+
     def build_parameters(self, params):
         """
         Builds the parameters dictionary for an M/M/C queue

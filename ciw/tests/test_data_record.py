@@ -19,6 +19,7 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.customer_class, 2)
         self.assertEqual(r.queue_size_at_arrival, 0)
         self.assertEqual(r.queue_size_at_departure, 3)
+        self.assertEqual(str(r), 'Data Record')
 
         r = ciw.DataRecord(5.7, 2.1, 8.2, 10.3, 1, -1, 3, 32, 21)
         self.assertEqual(r.arrival_date, 5.7)
@@ -33,6 +34,7 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.customer_class, 3)
         self.assertEqual(r.queue_size_at_arrival, 32)
         self.assertEqual(r.queue_size_at_departure, 21)
+        self.assertEqual(str(r), 'Data Record')
 
     @given(arrival_date=floats(min_value=0.0, max_value=99999.99),
            service_time=floats(min_value=0.0, max_value=99999.99),
@@ -71,3 +73,4 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.customer_class, customer_class)
         self.assertEqual(r.queue_size_at_arrival, queue_size_at_arrival)
         self.assertEqual(r.queue_size_at_departure, queue_size_at_departure)
+        self.assertEqual(str(r), 'Data Record')
