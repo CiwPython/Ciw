@@ -9,7 +9,7 @@ Arrival_distributions:
     - 3.0
   - - Exponential
     - 5.0
-detect_deadlock: False
+Detect_deadlock: False
 Number_of_classes: 2
 Number_of_nodes: 2
 Number_of_servers:

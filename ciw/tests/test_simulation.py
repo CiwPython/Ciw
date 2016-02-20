@@ -115,7 +115,7 @@ class TestSimulation(unittest.TestCase):
                                            [0.1, 0.1, 0.1, 0.1],
                                            [0.1, 0.3, 0.2, 0.2],
                                            [0.0, 0.0, 0.0, 0.3]]}
-        detect_deadlock = False
+        Detect_deadlock = False
         Simulation_time = 2500
         Number_of_classes = 3
         Number_of_nodes = 4
@@ -143,7 +143,7 @@ class TestSimulation(unittest.TestCase):
                            Transition_matrices=Transition_matrices,
                            Number_of_classes=Number_of_classes,
                            Number_of_nodes=Number_of_nodes,
-                           detect_deadlock=detect_deadlock)
+                           Detect_deadlock=Detect_deadlock)
         self.assertEqual(Q.lmbda, [[['Exponential', 3.0],
                                     ['Exponential', 7.0],
                                     ['Exponential', 4.0],
@@ -255,7 +255,7 @@ class TestSimulation(unittest.TestCase):
                            Transition_matrices=Transition_matrices,
                            Number_of_classes=Number_of_classes,
                            Number_of_nodes=Number_of_nodes,
-                           detect_deadlock=detect_deadlock,
+                           Detect_deadlock=Detect_deadlock,
                            Class_change_matrices=Class_change_matrices)
         self.assertEqual(Q.class_change_matrix, [[[0.7, 0.3, 0.0],
                                                   [0.2, 0.7, 0.1],
@@ -278,7 +278,7 @@ class TestSimulation(unittest.TestCase):
                            Transition_matrices=Transition_matrices,
                            Number_of_classes=Number_of_classes,
                            Number_of_nodes=Number_of_nodes,
-                           detect_deadlock=detect_deadlock,
+                           Detect_deadlock=Detect_deadlock,
                            Class_change_matrices=Class_change_matrices,
                            schedule_1=schedule_1,
                            cycle_length=cycle_length)
@@ -297,7 +297,7 @@ class TestSimulation(unittest.TestCase):
                                                         ['Exponential', 4.0],
                                                         ['Exponential', 1.0]]},
                            Number_of_nodes = 4,
-                           detect_deadlock = False,
+                           Detect_deadlock = False,
                            Simulation_time = 2500,
                            Number_of_servers = [9, 10, 8, 8],
                            Queue_capacities = [20, 'Inf', 30, 'Inf'],
@@ -340,7 +340,7 @@ class TestSimulation(unittest.TestCase):
                                                                       ['Exponential', 1.0]]},
                                         'Number_of_nodes': 4,
                                         'Simulation_time': 2500,
-                                        'detect_deadlock': False,
+                                        'Detect_deadlock': False,
                                         'Number_of_servers': [9, 10, 8, 8],
                                         'Queue_capacities': [20, 'Inf', 30, 'Inf'],
                                         'Number_of_classes': 3,
@@ -400,7 +400,7 @@ class TestSimulation(unittest.TestCase):
             'Number_of_classes': 1,
             'Queue_capacities': ['Inf'],
             'Simulation_time': Simulation_time,
-            'detect_deadlock': False
+            'Detect_deadlock': False
         }
         self.assertEqual(Q.parameters, expected_dictionary)
         self.assertEqual(Q.lmbda, [[['Exponential', arrival_rate]]])
@@ -439,7 +439,7 @@ class TestSimulation(unittest.TestCase):
             'Number_of_classes': 1,
             'Queue_capacities': ['Inf'],
             'Simulation_time': Simulation_time,
-            'detect_deadlock': False
+            'Detect_deadlock': False
         }
         self.assertEqual(Q.build_parameters(params), expected_dictionary)
 
@@ -550,7 +550,7 @@ class TestSimulation(unittest.TestCase):
                   'Simulation_time': 400,
                   'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf'],
-                  'detect_deadlock': False}
+                  'Detect_deadlock': False}
         params_list = [copy.deepcopy(params) for i in range(27)]
 
         params_list[0]['Number_of_classes'] = -2
@@ -563,7 +563,7 @@ class TestSimulation(unittest.TestCase):
         self.assertRaises(ValueError, ciw.Simulation, params_list[3])
         params_list[4]['Number_of_servers'] = ['my_missing_schedule']
         self.assertRaises(ValueError, ciw.Simulation, params_list[4])
-        params_list[5]['detect_deadlock'] = 'No'
+        params_list[5]['Detect_deadlock'] = 'No'
         self.assertRaises(ValueError, ciw.Simulation, params_list[5])
         params_list[6]['Queue_capacities'] = ['Inf', 1, 2]
         self.assertRaises(ValueError, ciw.Simulation, params_list[6])

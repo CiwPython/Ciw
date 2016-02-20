@@ -32,7 +32,7 @@ class Simulation:
         self.check_valid_parameters()
         self.c = self.parameters['Number_of_servers']
         self.number_of_nodes = self.parameters['Number_of_nodes']
-        self.detecting_deadlock = self.parameters['detect_deadlock']
+        self.detecting_deadlock = self.parameters['Detect_deadlock']
         self.digraph = nx.DiGraph()
         self.lmbda = [self.parameters['Arrival_distributions'][
             'Class ' + str(i)] for i in xrange(self.parameters[
@@ -81,7 +81,7 @@ class Simulation:
             'Number_of_nodes': len(params['Number_of_servers']),
             'Number_of_classes': len(params['Arrival_distributions']),
             'Queue_capacities': ['Inf' for _ in xrange(len(params['Number_of_servers']))],
-            'detect_deadlock': False
+            'Detect_deadlock': False
             }
 
         for a in default_dict:
@@ -106,7 +106,7 @@ class Simulation:
                 if x != 'Inf':
                     if x not in self.parameters:
                         raise ValueError('Number_of_servers must be list of positive integers or valid server schedules.')
-        if not isinstance(self.parameters['detect_deadlock'], bool):
+        if not isinstance(self.parameters['Detect_deadlock'], bool):
             raise ValueError('detect_deadlock must be a boolean.')
         if len(self.parameters['Queue_capacities']) != self.parameters['Number_of_nodes']:
             raise ValueError('Queue_capacities must be list of length Number_of_nodes.')
