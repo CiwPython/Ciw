@@ -8,12 +8,6 @@ class DataRecord:
         """
         An example of a data record instance.
         """
-        if exit_date < arrival_date:
-            raise ValueError('Arrival date should preceed exit date')
-
-        if service_time < 0:
-            raise ValueError('Service time should be positive')
-
         self.arrival_date = arrival_date
         self.service_time = service_time
         self.service_start_date = service_start_date
