@@ -95,9 +95,11 @@ class Node:
             self.highest_id = max([srvr.id_number for srvr in self.servers])
         shift = self.next_event_date%self.cyclelength
 
-        tms = [obs[0] for obs in self.schedule]
-        diffs = [abs(x-shift) for x in tms]
-        indx = diffs.index(min(diffs))
+        try: inx = self.schedule.index(shift)
+        except:
+            tms = [obs[0] for obs in self.schedule]
+            diffs = [abs(x-shift) for x in tms]
+            indx = diffs.index(min(diffs))
 
         self.take_servers_off_duty()
         self.add_new_server(indx, self.highest_id)
