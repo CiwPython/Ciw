@@ -8,6 +8,7 @@ import numpy.random as nprandom
 from data_record import DataRecord
 from server import Server
 
+
 class Node:
     """
     Class for a node on our network
@@ -17,17 +18,17 @@ class Node:
         Initialise a node.
         """
         self.simulation = simulation
-        self.mu = [self.simulation.mu[cls][id_number-1] for cls in range(len(self.simulation.mu))]
+        self.mu = [self.simulation.mu[cls][id_number-1] for cls in xrange(len(self.simulation.mu))]
         self.scheduled_servers = self.simulation.schedules[id_number-1]
         if self.scheduled_servers:
             self.schedule = self.simulation.parameters[self.simulation.c[id_number-1]]
             self.cyclelength = self.simulation.parameters['cycle_length']
             self.c = self.schedule[0][1]
-            self.masterschedule = [i*self.cyclelength + obs for i in range(int(self.simulation.max_simulation_time//self.cyclelength) + 2) for obs in [t[0] for t in  self.schedule]][1:]
+            self.masterschedule = [i*self.cyclelength + obs for i in xrange(int(self.simulation.max_simulation_time//self.cyclelength) + 2) for obs in [t[0] for t in  self.schedule]][1:]
         else:
             self.c = self.simulation.c[id_number-1]
         self.node_capacity = "Inf" if self.simulation.queue_capacities[id_number-1] == "Inf" else self.simulation.queue_capacities[id_number-1] + self.c
-        self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in range(len(self.simulation.transition_matrix))]
+        self.transition_row = [self.simulation.transition_matrix[j][id_number-1] for j in xrange(len(self.simulation.transition_matrix))]
         if self.simulation.class_change_matrix != 'NA':
             self.class_change_for_node = self.simulation.class_change_matrix[id_number-1]
         self.individuals = []
@@ -38,7 +39,7 @@ class Node:
             self.next_event_date = "Inf"
         self.blocked_queue = []
         if self.c < 'Inf':
-            self.servers = [Server(self, i+1) for i in range(self.c)]
+            self.servers = [Server(self, i+1) for i in xrange(self.c)]
             if simulation.detecting_deadlock:
                 self.simulation.digraph.add_nodes_from([str(s) for s in self.servers])
         self.highest_id = 0
@@ -158,7 +159,7 @@ class Node:
         """
         if self.simulation.class_change_matrix != 'NA':
             individual.previous_class=individual.customer_class
-            individual.customer_class=nprandom.choice(range(len(self.class_change_for_node)), p=self.class_change_for_node[individual.previous_class])
+            individual.customer_class=nprandom.choice(xrange(len(self.class_change_for_node)), p=self.class_change_for_node[individual.previous_class])
 
     def block_individual(self, individual, next_node):
         """
@@ -284,7 +285,7 @@ class Node:
         Add appropriate amount of servers for the given shift
         """
         num_servers = self.schedule[shift_indx][1]
-        for i in range(num_servers):
+        for i in xrange(num_servers):
             self.servers.append(Server(self, highest_id+i+1))
 
     def update_next_event_date(self, current_time):

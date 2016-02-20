@@ -13,7 +13,6 @@ from individual import Individual
 from data_record import DataRecord
 import numpy.random as nprandom
 
-
 class Simulation:
     """
     Overall simulation class
@@ -34,31 +33,31 @@ class Simulation:
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['detect_deadlock']
         self.digraph = nx.DiGraph()
-        self.lmbda = [self.parameters['Arrival_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
-        self.mu = [self.parameters['Service_distributions']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        self.lmbda = [self.parameters['Arrival_distributions']['Class ' + str(i)] for i in xrange(self.parameters['Number_of_classes'])]
+        self.mu = [self.parameters['Service_distributions']['Class ' + str(i)] for i in xrange(self.parameters['Number_of_classes'])]
         
-        self.schedules = [False for i in range(len(self.c))]
-        for i in range(len(self.c)):
+        self.schedules = [False for i in xrange(len(self.c))]
+        for i in xrange(len(self.c)):
             if type(self.c[i])==type('string') and self.c[i]!='Inf':
                 self.schedules[i] =  True
         self.queue_capacities = self.parameters['Queue_capacities']
-        self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in range(self.parameters['Number_of_classes'])]
+        self.transition_matrix = [self.parameters['Transition_matrices']['Class ' + str(i)] for i in xrange(self.parameters['Number_of_classes'])]
 
         if 'Class_change_matrices' in self.parameters:
-            self.class_change_matrix = [self.parameters['Class_change_matrices']['Node ' + str(i)] for i in range(self.parameters['Number_of_nodes'])]
+            self.class_change_matrix = [self.parameters['Class_change_matrices']['Node ' + str(i)] for i in xrange(self.parameters['Number_of_nodes'])]
         else:
             self.class_change_matrix = 'NA'
 
         self.max_simulation_time = self.parameters['Simulation_time']
 
         self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
-        self.transitive_nodes = [Node(i + 1, self) for i in range(len(self.c))]
+        self.transitive_nodes = [Node(i + 1, self) for i in xrange(len(self.c))]
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
         self.service_times = self.find_times_dictionary(self.mu)
         self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
-        self.state = [[0, 0] for i in range(self.number_of_nodes)]
-        initial_state = [[0, 0] for i in range(self.number_of_nodes)]
-        self.times_dictionary = {tuple(tuple(initial_state[i]) for i in range(self.number_of_nodes)): 0.0}
+        self.state = [[0, 0] for i in xrange(self.number_of_nodes)]
+        initial_state = [[0, 0] for i in xrange(self.number_of_nodes)]
+        self.times_dictionary = {tuple(tuple(initial_state[i]) for i in xrange(self.number_of_nodes)): 0.0}
 
     def build_parameters(self, params):
         """
@@ -76,7 +75,7 @@ class Simulation:
 
         default_dict ={'Number_of_nodes': len(params['Number_of_servers']),
                        'Number_of_classes': len(params['Arrival_distributions']),
-                       'Queue_capacities': ['Inf' for _ in range(len(params['Number_of_servers']))],
+                       'Queue_capacities': ['Inf' for _ in xrange(len(params['Number_of_servers']))],
                        'detect_deadlock': False}
 
         for a in default_dict:
@@ -293,7 +292,7 @@ class Simulation:
         """
         Finds the dictionary of service time functions for each node for each class
         """
-        return {node+1:{customer_class:self.find_distributions(node, customer_class, source) for customer_class in range(len(self.lmbda))} for node in range(self.number_of_nodes)}
+        return {node+1:{customer_class:self.find_distributions(node, customer_class, source) for customer_class in xrange(len(self.lmbda))} for node in xrange(self.number_of_nodes)}
 
     def simulate_until_max_time(self):
         """
@@ -320,7 +319,7 @@ class Simulation:
         while not deadlocked:
             next_active_node.have_event()
 
-            current_state = tuple(tuple(self.state[i]) for i in range(len(self.state)))
+            current_state = tuple(tuple(self.state[i]) for i in xrange(len(self.state)))
             if current_state not in self.times_dictionary:
                 self.times_dictionary[current_state] = current_time
 
