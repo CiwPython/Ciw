@@ -23,7 +23,7 @@ A full example of the parameters file for a three node network with two classes 
         - 1.8
       - - Exponential
         - 7.25
-    detect_deadlock: False
+    Detect_deadlock: False
     Number_of_classes: 2
     Number_of_nodes: 3
     Number_of_servers:

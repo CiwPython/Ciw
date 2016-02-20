@@ -29,7 +29,7 @@ A full example of the parameters dictionary for a three node network with two cl
     >>> params = {'Arrival_distributions': {'Class 1': [['Exponential', 1.0], ['Exponential', 1.8], ['Exponential', 7.25]],
     ...                             'Class 0': [['Exponential', 6.0], ['Exponential', 4.5], ['Exponential', 2.0]]},
     ...           'Number_of_nodes': 3,
-    ...           'detect_deadlock': False,
+    ...           'Detect_deadlock': False,
     ...           'Simulation_time': 2500,
     ...           'Number_of_servers': [2, 1, 1],
     ...           'Queue_capacities': ['Inf', 'Inf', 10],
