@@ -392,8 +392,7 @@ class Simulation:
         current_time = next_active_node.next_event_date
         while not deadlocked:
             next_active_node.have_event()
-            current_state = tuple(tuple(self.state[i])
-                for i in xrange(len(self.state)))
+            current_state = self.statetracker.hash_state()
             if current_state not in self.times_dictionary:
                 self.times_dictionary[current_state] = current_time
             for node in self.transitive_nodes:
