@@ -15,6 +15,9 @@ class ArrivalNode:
         self.event_dates_dict = {nd + 1:{cls:False
             for cls in range(self.simulation.parameters['Number_of_classes'])}
             for nd in range(self.simulation.number_of_nodes)}
+        self.rejection_dict = {nd + 1:{cls:[]
+            for cls in range(self.simulation.parameters['Number_of_classes'])}
+            for nd in range(self.simulation.number_of_nodes)}
         self.initialise_event_dates_dict()
         self.find_next_event_date()
 
@@ -47,6 +50,8 @@ class ArrivalNode:
         next_node = self.simulation.transitive_nodes[self.next_node-1]
         if len(next_node.individuals) < next_node.node_capacity:
             next_node.accept(next_individual, self.next_event_date)
+        else:
+            self.rejection_dict[next_node.id_number][self.next_class].append(self.next_event_date)
         self.event_dates_dict[self.next_node][self.next_class] += self.inter_arrival(self.next_node, self.next_class)
         self.find_next_event_date()
 
