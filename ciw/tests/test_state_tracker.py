@@ -34,6 +34,13 @@ class TestStateTracker(unittest.TestCase):
         B.change_state_release(1, 1, True)
         self.assertEqual(B.state, None)
 
+    def test_naive_hash_state_method(self):
+        Q = ciw.Simulation(ciw.load_parameters(
+          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        B = ciw.StateTracker(Q)
+        self.assertEqual(B.hash_state(), None)
+
+
 
 class TestNaiveTracker(unittest.TestCase):
 
@@ -69,3 +76,10 @@ class TestNaiveTracker(unittest.TestCase):
         self.assertEqual(B.state, [[1, 1], [3, 0], [1, 0], [4, 4]])
         B.change_state_release(1, 1, True)
         self.assertEqual(B.state, [[1, 0], [3, 0], [1, 0], [4, 4]])
+
+    def test_naive_hash_state_method(self):
+        Q = ciw.Simulation(ciw.load_parameters(
+          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        B = ciw.NaiveTracker(Q)
+        B.state = [[3, 4], [1, 2], [0, 1], [0, 0]]
+        self.assertEqual(B.hash_state(), ((3, 4), (1, 2), (0, 1), (0, 0)))

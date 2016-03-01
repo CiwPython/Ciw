@@ -43,7 +43,7 @@ class Simulation:
         self.schedules = [False for i in xrange(len(self.c))]
         for i in xrange(len(self.c)):
             if isinstance(self.c[i], str) and self.c[i] != 'Inf':
-                self.schedules[i] =  True
+                self.schedules[i] = True
         self.queue_capacities = self.parameters['Queue_capacities']
         self.transition_matrix = [self.parameters[
             'Transition_matrices']['Class ' + str(i)]
@@ -60,9 +60,8 @@ class Simulation:
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
         self.service_times = self.find_times_dictionary(self.mu)
         self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
-        self.state = [[0, 0] for i in xrange(self.number_of_nodes)]
-        self.times_dictionary = {tuple(tuple(self.state[i])
-            for i in xrange(self.number_of_nodes)): 0.0}
+        self.statetracker = NaiveTracker(self)
+        self.times_dictionary = {self.statetracker.hash_state(): 0.0}
 
     def __repr__(self):
         """

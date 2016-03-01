@@ -29,6 +29,12 @@ class StateTracker:
         """
         pass
 
+    def hash_state(self):
+        """
+        Returns a hashable state
+        """
+        return None
+
 
 class NaiveTracker(StateTracker):
     """
@@ -68,3 +74,9 @@ class NaiveTracker(StateTracker):
             self.state[node_id-1][1] -= 1
         else:
             self.state[node_id-1][0] -= 1
+
+    def hash_state(self):
+        """
+        Returns a hashable state
+        """
+        return tuple(tuple(obs) for obs in self.state)
