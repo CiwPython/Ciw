@@ -15,6 +15,7 @@ from exit_node import ExitNode
 from server import Server
 from individual import Individual
 from data_record import DataRecord
+from state_tracker import *
 
 class Simulation:
     """

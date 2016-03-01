@@ -5,6 +5,7 @@ from individual import Individual
 from arrival_node import ArrivalNode
 from exit_node import ExitNode
 from node import Node
+from state_tracker import *
 from import_params import load_parameters
 
 __version__ = '0.0.4'
