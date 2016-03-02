@@ -60,7 +60,7 @@ class Simulation:
         self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
         self.service_times = self.find_times_dictionary(self.mu)
         self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
-        self.statetracker = NaiveTracker(self)
+        self.statetracker = self.choose_tracker()
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
 
     def __repr__(self):
@@ -240,6 +240,23 @@ class Simulation:
                             if any([el<0.0 for el in nd[1]]):
                                 raise ValueError('Empirical distribution must sample positive floats.')
 
+    def choose_tracker(self):
+        """
+        Chooses the state tracker to use for the simulation.
+        If no tracker is selected, the basic StateTracker is
+        used, unless Detect_deadlock is on, then NaiveTracker
+        is the default.
+        """
+        if 'Tracker' in self.parameters:
+            if self.parameters['Tracker'] == 'Naive':
+                return NaiveTracker(self)
+            if self.parameters['Tracker'] == 'Matrix':
+                return MatrixTracker(self)
+        elif self.parameters['Detect_deadlock']:
+            return NaiveTracker(self)
+        else:
+            return StateTracker(self)
+    
     def detect_deadlock(self):
         """
         Detects whether the system is in a deadlocked state,

@@ -34,11 +34,49 @@ class TestStateTracker(unittest.TestCase):
         B.change_state_release(1, 1, 1, True)
         self.assertEqual(B.state, None)
 
-    def test_naive_hash_state_method(self):
+    def test_base_hash_state_method(self):
         Q = ciw.Simulation(ciw.load_parameters(
           'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         B = ciw.StateTracker(Q)
         self.assertEqual(B.hash_state(), None)
+
+    def test_base_release_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        inds = [ciw.Individual(i) for i in xrange(5)]
+        N.individuals = inds
+        for ind in N.individuals:
+            srvr = N.find_free_server()
+            N.attach_server(srvr, ind)
+        self.assertEqual(Q.statetracker.state, None)
+        N.release(0, Q.nodes[1], 43.11)
+        self.assertEqual(Q.statetracker.state, None)
+        N.individuals[1].is_blocked = True
+        N.release(1, Q.nodes[1], 46.72)
+        self.assertEqual(Q.statetracker.state, None)
+        N.release(1, Q.nodes[-1], 46.72)
+        self.assertEqual(Q.statetracker.state, None)
+
+    def test_base_block_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        self.assertEqual(Q.statetracker.state, None)
+        N.block_individual(ciw.Individual(1), Q.nodes[1])
+        self.assertEqual(Q.statetracker.state, None)
+
+    def test_base_accept_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        self.assertEqual(Q.statetracker.state, None)
+        N.accept(ciw.Individual(3, 2), 45.6)
+        self.assertEqual(Q.statetracker.state, None)
+
 
 
 
@@ -83,6 +121,49 @@ class TestNaiveTracker(unittest.TestCase):
         B = ciw.NaiveTracker(Q)
         B.state = [[3, 4], [1, 2], [0, 1], [0, 0]]
         self.assertEqual(B.hash_state(), ((3, 4), (1, 2), (0, 1), (0, 0)))
+
+    def test_naive_release_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        params['Tracker'] = 'Naive'
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        inds = [ciw.Individual(i) for i in xrange(5)]
+        N.individuals = inds
+        for ind in N.individuals:
+            srvr = N.find_free_server()
+            N.attach_server(srvr, ind)
+        Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
+        self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
+        N.release(0, Q.nodes[1], 43.11)
+        self.assertEqual(Q.statetracker.state, [[5, 1], [3, 0], [4, 1], [0, 0]])
+        N.individuals[1].is_blocked = True
+        N.release(1, Q.nodes[1], 46.72)
+        self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [4, 0], [0, 0]])
+        N.release(1, Q.nodes[-1], 46.72)
+        self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [3, 0], [0, 0]])
+
+    def test_naive_block_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        params['Tracker'] = 'Naive'
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
+        self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
+        N.block_individual(ciw.Individual(1), Q.nodes[1])
+        self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [4, 2], [0, 0]])
+
+    def test_naive_accept_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        params['Tracker'] = 'Naive'
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
+        N.accept(ciw.Individual(3, 2), 45.6)
+        self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [1, 0], [0, 0]])
+
 
 
 
@@ -179,3 +260,87 @@ class TestMatrixTracker(unittest.TestCase):
                                            ((),   (), (),     ()),
                                            ((),   (), (),     ())),
                                            (2, 3, 0, 0)))
+
+    def test_matrix_release_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        params['Tracker'] = 'Matrix'
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        inds = [ciw.Individual(i) for i in xrange(5)]
+        N.individuals = inds
+        for ind in N.individuals:
+            srvr = N.find_free_server()
+            N.attach_server(srvr, ind)
+        Q.statetracker.state = [[[[],  [2], [], []],
+                                 [[],  [],  [], []],
+                                 [[1], [],  [], []],
+                                 [[],  [],  [], []]],
+                                 [5, 3, 6, 0]]
+        Q.statetracker.increment = 3
+        self.assertEqual(Q.statetracker.state, [[[[],  [2], [], []],
+                                                 [[],  [],  [], []],
+                                                 [[1], [],  [], []],
+                                                 [[],  [],  [], []]],
+                                                 [5, 3, 6, 0]])
+        N.release(0, Q.nodes[1], 43.11)
+        self.assertEqual(Q.statetracker.state, [[[[],  [2], [], []],
+                                                 [[],  [],  [], []],
+                                                 [[1], [],  [], []],
+                                                 [[],  [],  [], []]],
+                                                 [6, 3, 5, 0]])
+        N.individuals[1].is_blocked = True
+        N.release(1, Q.nodes[1], 46.72)
+        self.assertEqual(Q.statetracker.state, [[[[], [1], [], []],
+                                                 [[], [],  [], []],
+                                                 [[], [],  [], []],
+                                                 [[], [],  [], []]],
+                                                 [7, 3, 4, 0]])
+        N.release(1, Q.nodes[-1], 48.39)
+        self.assertEqual(Q.statetracker.state, [[[[], [1], [], []],
+                                                 [[], [],  [], []],
+                                                 [[], [],  [], []],
+                                                 [[], [],  [], []]],
+                                                 [7, 3, 3, 0]])
+
+    def test_matrix_block_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        params['Tracker'] = 'Matrix'
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        Q.statetracker.state = [[[[],  [2], [], []],
+                                 [[],  [],  [], []],
+                                 [[1], [],  [], []],
+                                 [[],  [],  [], []]],
+                                 [5, 3, 6, 0]]
+        Q.statetracker.increment = 3
+        self.assertEqual(Q.statetracker.state, [[[[],  [2], [], []],
+                                                 [[],  [],  [], []],
+                                                 [[1], [],  [], []],
+                                                 [[],  [],  [], []]],
+                                                 [5, 3, 6, 0]])
+        N.block_individual(ciw.Individual(1), Q.nodes[1])
+        self.assertEqual(Q.statetracker.state, [[[[],     [2], [], []],
+                                                 [[],     [],  [], []],
+                                                 [[1, 3], [],  [], []],
+                                                 [[],     [],  [], []]],
+                                                 [5, 3, 6, 0]])
+
+    def test_matrix_accept_method_within_simulation(self):
+        params = ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        params['Tracker'] = 'Matrix'
+        Q = ciw.Simulation(params)
+        N = Q.transitive_nodes[2]
+        self.assertEqual(Q.statetracker.state, [[[[], [], [], []],
+                                                 [[], [], [], []],
+                                                 [[], [], [], []],
+                                                 [[], [], [], []]],
+                                                 [0, 0, 0, 0]])
+        N.accept(ciw.Individual(3, 2), 45.6)
+        self.assertEqual(Q.statetracker.state, [[[[], [], [], []],
+                                                 [[], [], [], []],
+                                                 [[], [], [], []],
+                                                 [[], [], [], []]],
+                                                 [0, 0, 1, 0]])
