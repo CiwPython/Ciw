@@ -315,10 +315,10 @@ class TestNode(unittest.TestCase):
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in xrange(3)]
         N.individuals = inds
-        N.simulation.statetracker.change_state_release(N.id_number, 0, False)
+        N.simulation.statetracker.change_state_release(N.id_number, 2, 0, False)
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [1, 1], [0, 0]])
         inds[1].is_blocked = True
-        N.simulation.statetracker.change_state_release(N.id_number, 0, True)
+        N.simulation.statetracker.change_state_release(N.id_number, 1, 1, True)
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [1, 0], [0, 0]])
 
     def test_change_state_block_method(self):
@@ -326,9 +326,9 @@ class TestNode(unittest.TestCase):
             'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
         Q.statetracker.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
         N = Q.transitive_nodes[2]
-        N.simulation.statetracker.change_state_block(N.id_number, 0)
+        N.simulation.statetracker.change_state_block(N.id_number, 2, 0)
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [1, 2], [0, 0]])
-        N.simulation.statetracker.change_state_block(N.id_number, 0)
+        N.simulation.statetracker.change_state_block(N.id_number, 1, 0)
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [0, 3], [0, 0]])
 
     def test_change_state_accept_method(self):

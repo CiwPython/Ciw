@@ -139,7 +139,7 @@ class Node:
         Blocks the individual from entering the next node.
         """
         individual.is_blocked = True
-        self.simulation.statetracker.change_state_block(self.id_number, individual.customer_class)
+        self.simulation.statetracker.change_state_block(self.id_number, next_node.id_number, individual.customer_class)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
         if self.simulation.detecting_deadlock:
@@ -266,7 +266,7 @@ class Node:
         if self.c < 'Inf':
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
-        self.simulation.statetracker.change_state_release(self.id_number, next_individual.customer_class, next_individual.is_blocked)
+        self.simulation.statetracker.change_state_release(self.id_number, next_node.id_number, next_individual.customer_class, next_individual.is_blocked)
         self.release_blocked_individual(current_time)
         self.begin_service_if_possible_release(current_time)
         next_node.accept(next_individual, current_time)
