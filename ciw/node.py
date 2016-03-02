@@ -69,7 +69,7 @@ class Node:
             next_individual, current_time)
         next_individual.queue_size_at_arrival = len(self.individuals)
         self.individuals.append(next_individual)
-        self.change_state_accept()
+        self.simulation.statetracker.change_state_accept(self.id_number, next_individual.customer_class)
 
     def add_new_server(self, shift_indx, highest_id):
         """
@@ -139,7 +139,7 @@ class Node:
         Blocks the individual from entering the next node.
         """
         individual.is_blocked = True
-        self.change_state_block()
+        self.simulation.statetracker.change_state_block(self.id_number, next_node.id_number, individual.customer_class)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
         if self.simulation.detecting_deadlock:
@@ -179,28 +179,6 @@ class Node:
         self.c = self.schedule[indx][1]
         self.masterschedule.pop(0)
         self.begin_service_if_possible_change_shift(self.next_event_date)
-
-    def change_state_accept(self):
-        """
-        Changes the state of the system when a customer gets blocked.
-        """
-        self.simulation.state[self.id_number-1][0] += 1
-
-    def change_state_block(self):
-        """
-        Changes the state of the system when a customer gets blocked.
-        """
-        self.simulation.state[self.id_number-1][1] += 1
-        self.simulation.state[self.id_number-1][0] -= 1
-
-    def change_state_release(self, next_individual):
-        """
-        Changes the state of the system when a customer gets blocked.
-        """
-        if next_individual.is_blocked:
-            self.simulation.state[self.id_number-1][1] -= 1
-        else:
-            self.simulation.state[self.id_number-1][0] -= 1
 
     def check_if_shiftchange(self):
         """
@@ -288,7 +266,7 @@ class Node:
         if self.c < 'Inf':
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
-        self.change_state_release(next_individual)
+        self.simulation.statetracker.change_state_release(self.id_number, next_node.id_number, next_individual.customer_class, next_individual.is_blocked)
         self.release_blocked_individual(current_time)
         self.begin_service_if_possible_release(current_time)
         next_node.accept(next_individual, current_time)

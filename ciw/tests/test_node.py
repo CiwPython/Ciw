@@ -308,39 +308,6 @@ class TestNode(unittest.TestCase):
              'Individual 107',
              'Individual 108'])
 
-    def test_change_state_release_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
-        N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in xrange(3)]
-        N.individuals = inds
-        N.change_state_release(inds[0])
-        self.assertEqual(Q.state, [[0, 0], [0, 0], [1, 1], [0, 0]])
-        inds[1].is_blocked = True
-        N.change_state_release(inds[1])
-        self.assertEqual(Q.state, [[0, 0], [0, 0], [1, 0], [0, 0]])
-
-    def test_change_state_block_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
-        N = Q.transitive_nodes[2]
-        N.change_state_block()
-        self.assertEqual(Q.state, [[0, 0], [0, 0], [1, 2], [0, 0]])
-        N.change_state_block()
-        self.assertEqual(Q.state, [[0, 0], [0, 0], [0, 3], [0, 0]])
-
-    def test_change_state_accept_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        Q.state = [[0, 0], [0, 0], [2, 1], [0, 0]]
-        N = Q.transitive_nodes[2]
-        N.change_state_accept()
-        self.assertEqual(Q.state, [[0, 0], [0, 0], [3, 1], [0, 0]])
-        N.change_state_accept()
-        self.assertEqual(Q.state, [[0, 0], [0, 0], [4, 1], [0, 0]])
-
     def test_accept_method(self):
         set_seed(6)
         Q = ciw.Simulation(ciw.load_parameters(
