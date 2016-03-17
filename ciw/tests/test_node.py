@@ -208,7 +208,7 @@ class TestNode(unittest.TestCase):
             'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         inds = [ciw.Individual(i) for i in xrange(30)]
         Q.transitive_nodes[0].individuals = inds
-        ind = Q.transitive_nodes[0].individuals[Q.transitive_nodes[0].c - 1]
+        ind = Q.transitive_nodes[0].individuals[0]
         ind.service_time = 3.14
         ind.arrival_date = 100.0
         self.assertEqual(Q.digraph.nodes(),

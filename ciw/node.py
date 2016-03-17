@@ -103,7 +103,7 @@ class Node:
         next_individual.arrival_date = current_time
         next_individual.service_time = self.simulation.service_times[
             self.id_number][next_individual.customer_class]()
-        if len(self.individuals) < self.c:
+        if self.free_server():
             if self.c < 'Inf':
                 self.attach_server(self.find_free_server(), next_individual)
             next_individual.service_start_date = current_time
@@ -127,12 +127,20 @@ class Node:
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
         """
-        if len(self.individuals) >= self.c:
-            for ind in self.individuals[:self.c]:
-                if not ind.service_start_date:
-                    self.attach_server(self.find_free_server(), ind)
-                    ind.service_start_date = current_time
-                    ind.service_end_date = ind.service_start_date + ind.service_time
+        if self.free_server() and self.c != 'Inf':
+            srvr = self.find_free_server()
+            if len([i for i in self.individuals if not i.server]) > 0:
+                ind = [i for i in self.individuals if not i.server][0]
+                self.attach_server(srvr, ind)
+                ind.service_start_date = current_time
+                ind.service_end_date = ind.service_start_date + ind.service_time
+
+        # if len(self.individuals) >= self.c:
+        #     for ind in self.individuals[:self.c]:
+        #         if not ind.service_start_date:
+        #             self.attach_server(self.find_free_server(), ind)
+        #             ind.service_start_date = current_time
+        #             ind.service_end_date = ind.service_start_date + ind.service_time
 
     def block_individual(self, individual, next_node):
         """
@@ -205,12 +213,21 @@ class Node:
         if server.offduty:
             self.kill_server(server)
 
+    def free_server(self):
+        """
+        Returns True if a server is available, False otherwise
+        """
+        if self.c == 'Inf':
+            return True
+        return len([svr for svr in self.servers if not svr.busy]) > 0
+
     def find_free_server(self):
         """
         Finds a free server.
         """
-        free_servers = [svr for svr in self.servers if not svr.busy]
-        return free_servers[0]
+        for svr in self.servers:
+            if not svr.busy:
+                return svr
 
     def finish_service(self):
         """
@@ -266,9 +283,11 @@ class Node:
         if self.c < 'Inf':
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
-        self.simulation.statetracker.change_state_release(self.id_number, next_node.id_number, next_individual.customer_class, next_individual.is_blocked)
-        self.release_blocked_individual(current_time)
+        self.simulation.statetracker.change_state_release(self.id_number,
+            next_node.id_number, next_individual.customer_class,
+            next_individual.is_blocked)
         self.begin_service_if_possible_release(current_time)
+        self.release_blocked_individual(current_time)
         next_node.accept(next_individual, current_time)
 
     def release_blocked_individual(self, current_time):
@@ -285,7 +304,7 @@ class Node:
                 individual_to_receive_index]
             self.blocked_queue.pop(0)
             node_to_receive_from.release(individual_to_receive_index,
-                                         self, current_time)
+                self, current_time)
 
     def take_servers_off_duty(self):
         """
