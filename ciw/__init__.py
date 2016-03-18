@@ -8,4 +8,4 @@ from node import Node
 from state_tracker import *
 from import_params import load_parameters
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
