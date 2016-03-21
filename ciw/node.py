@@ -23,22 +23,28 @@ class Node:
             for cls in xrange(len(self.simulation.mu))]
         self.scheduled_servers = self.simulation.schedules[id_-1]
         if self.scheduled_servers:
-            self.schedule = self.simulation.parameters[self.simulation.c[id_-1]]
-            self.cyclelength = self.simulation.parameters['Cycle_length']
+            self.schedule = self.simulation.parameters[
+                self.simulation.c[id_-1]]
+            self.cyclelength = self.simulation.parameters[
+                'Cycle_length']
             self.c = self.schedule[0][1]
             self.masterschedule = [i*self.cyclelength + obs
-                for i in xrange(int(self.simulation.max_simulation_time//self.cyclelength) + 2)
-                for obs in [t[0] for t in self.schedule]][1:]
+                for i in xrange(int(
+                self.simulation.max_simulation_time//self.cyclelength
+                ) + 2) for obs in [t[0] for t in self.schedule]][1:]
         else:
             self.c = self.simulation.c[id_-1]
         if self.simulation.queue_capacities[id_-1] == "Inf":
             self.node_capacity = "Inf"
         else:
-            self.node_capacity = self.simulation.queue_capacities[id_-1] + self.c
-        self.transition_row = [self.simulation.transition_matrix[j][id_-1]
-            for j in xrange(len(self.simulation.transition_matrix))]
+            self.node_capacity = self.simulation.queue_capacities[
+            id_-1] + self.c
+        self.transition_row = [self.simulation.transition_matrix[j][
+            id_-1] for j in xrange(len(
+            self.simulation.transition_matrix))]
         if self.simulation.class_change_matrix != 'NA':
-            self.class_change_for_node = self.simulation.class_change_matrix[id_-1]
+            self.class_change = self.simulation.class_change_matrix[
+            id_-1]
         self.individuals = []
         self.id_number = id_
         if self.scheduled_servers:
@@ -69,9 +75,10 @@ class Node:
             next_individual, current_time)
         next_individual.queue_size_at_arrival = len(self.individuals)
         self.individuals.append(next_individual)
-        self.simulation.statetracker.change_state_accept(self.id_number, next_individual.customer_class)
+        self.simulation.statetracker.change_state_accept(
+            self.id_number, next_individual.customer_class)
 
-    def add_new_server(self, shift_indx, highest_id):
+    def add_new_servers(self, shift_indx, highest_id):
         """
         Add appropriate amount of servers for the given shift.
         """
@@ -93,9 +100,12 @@ class Node:
                     blq[0]].individuals if ind.id_number==blq[1]]
                 ind = inds[0]
                 if ind != individual:
-                    self.simulation.digraph.add_edge(str(ind.server), str(server))
+                    self.simulation.digraph.add_edge(
+                        str(ind.server), str(server))
 
-    def begin_service_if_possible_accept(self, next_individual, current_time):
+    def begin_service_if_possible_accept(self,
+                                         next_individual,
+                                         current_time):
         """
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
@@ -105,9 +115,11 @@ class Node:
             self.id_number][next_individual.customer_class]()
         if self.free_server():
             if self.c < 'Inf':
-                self.attach_server(self.find_free_server(), next_individual)
+                self.attach_server(self.find_free_server(),
+                                   next_individual)
             next_individual.service_start_date = current_time
-            next_individual.service_end_date = current_time + next_individual.service_time
+            next_individual.service_end_date = (current_time + 
+                next_individual.service_time)
 
     def begin_service_if_possible_change_shift(self, current_time):
         """
@@ -120,7 +132,8 @@ class Node:
                 ind = [i for i in self.individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = current_time
-                ind.service_end_date = ind.service_start_date + ind.service_time
+                ind.service_end_date = (ind.service_start_date +
+                    ind.service_time)
 
     def begin_service_if_possible_release(self, current_time):
         """
@@ -133,21 +146,17 @@ class Node:
                 ind = [i for i in self.individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = current_time
-                ind.service_end_date = ind.service_start_date + ind.service_time
-
-        # if len(self.individuals) >= self.c:
-        #     for ind in self.individuals[:self.c]:
-        #         if not ind.service_start_date:
-        #             self.attach_server(self.find_free_server(), ind)
-        #             ind.service_start_date = current_time
-        #             ind.service_end_date = ind.service_start_date + ind.service_time
+                ind.service_end_date = (ind.service_start_date +
+                    ind.service_time)
 
     def block_individual(self, individual, next_node):
         """
         Blocks the individual from entering the next node.
         """
         individual.is_blocked = True
-        self.simulation.statetracker.change_state_block(self.id_number, next_node.id_number, individual.customer_class)
+        self.simulation.statetracker.change_state_block(
+            self.id_number, next_node.id_number,
+            individual.customer_class)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
         if self.simulation.detecting_deadlock:
@@ -157,13 +166,14 @@ class Node:
 
     def change_customer_class(self,individual):
         """
-        Takes individual and changes customer class according to a probability distribution.
+        Takes individual and changes customer class
+        according to a probability distribution.
         """
         if self.simulation.class_change_matrix != 'NA':
             individual.previous_class=individual.customer_class
             individual.customer_class=nprandom.choice(
-                xrange(len(self.class_change_for_node)),
-                p=self.class_change_for_node[individual.previous_class])
+                xrange(len(self.class_change)),
+                p=self.class_change[individual.previous_class])
 
     def change_shift(self):
         """
@@ -182,11 +192,12 @@ class Node:
             indx = diffs.index(min(diffs))
 
         self.take_servers_off_duty()
-        self.add_new_server(indx, self.highest_id)
+        self.add_new_servers(indx, self.highest_id)
 
         self.c = self.schedule[indx][1]
         self.masterschedule.pop(0)
-        self.begin_service_if_possible_change_shift(self.next_event_date)
+        self.begin_service_if_possible_change_shift(
+            self.next_event_date)
 
     def check_if_shiftchange(self):
         """
@@ -233,9 +244,9 @@ class Node:
         """
         The next individual finishes service
         """
-        next_individual_indices = [i for i, x in
-            enumerate([ind.service_end_date for ind in self.individuals])
-            if x == self.next_event_date]
+        next_individual_indices = [i for i, x in enumerate(
+            [ind.service_end_date for ind in self.individuals]
+            ) if x == self.next_event_date]
         if len(next_individual_indices) > 1:
             next_individual_index = choice(next_individual_indices)
         else:
@@ -245,7 +256,8 @@ class Node:
         next_node = self.next_node(next_individual.customer_class)
         next_individual.destination = next_node.id_number
         if len(next_node.individuals) < next_node.node_capacity:
-            self.release(next_individual_index, next_node, self.next_event_date)
+            self.release(next_individual_index, next_node,
+                self.next_event_date)
         else:
             self.block_individual(next_individual, next_node)
 
@@ -296,7 +308,8 @@ class Node:
         when another individual is released.
         """
         if len(self.blocked_queue) > 0:
-            node_to_receive_from = self.simulation.nodes[self.blocked_queue[0][0]]
+            node_to_receive_from = self.simulation.nodes[
+                self.blocked_queue[0][0]]
             individual_to_receive_index = [ind.id_number
                 for ind in node_to_receive_from.individuals].index(
                 self.blocked_queue[0][1])
@@ -329,7 +342,8 @@ class Node:
             if ind.service_end_date>=current_time] + ["Inf"])
         if self.scheduled_servers:
             next_shift_change = self.masterschedule[0]
-            self.next_event_date = min(next_end_service, next_shift_change)
+            self.next_event_date = min(
+                next_end_service, next_shift_change)
         else:
             self.next_event_date = next_end_service
 

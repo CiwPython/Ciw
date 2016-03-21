@@ -23,7 +23,8 @@ class StateTracker:
         """
         pass
 
-    def change_state_release(self, node_id, destination, cust_cls, blocked):
+    def change_state_release(self, node_id, destination,
+        cust_cls, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -43,15 +44,17 @@ class NaiveTracker(StateTracker):
 
     Example:
         ((3, 0), (1, 4))
-        This denotes 3 customers at the first node, 0 of which are blocked,
-        5 customers at the second node, 4 of which are blocked.
+        This denotes 3 customers at the first node, 0 of which
+        are blocked, 5 customers at the second node, 4 of which
+        are blocked.
     """
     def __init__(self, simulation):
         """
         Initialises the naive tracker class
         """
         self.simulation = simulation
-        self.state = [[0, 0] for i in xrange(self.simulation.number_of_nodes)]
+        self.state = [[0, 0] for i in xrange(
+            self.simulation.number_of_nodes)]
 
     def change_state_accept(self, node_id, cust_cls):
         """
@@ -66,7 +69,8 @@ class NaiveTracker(StateTracker):
         self.state[node_id-1][1] += 1
         self.state[node_id-1][0] -= 1
 
-    def change_state_release(self, node_id, destination, cust_cls, blocked):
+    def change_state_release(self, node_id, destination,
+        cust_cls, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -103,9 +107,10 @@ class MatrixTracker(StateTracker):
         Initialises the naive tracker class
         """
         self.simulation = simulation
-        self.state = [[[[] for i in xrange(self.simulation.number_of_nodes)]
-            for i in xrange(self.simulation.number_of_nodes)], [0
-            for i in xrange(self.simulation.number_of_nodes)]]
+        self.state = [[[[] for i in xrange(
+            self.simulation.number_of_nodes)] for i in xrange(
+            self.simulation.number_of_nodes)], [0 for i in xrange(
+            self.simulation.number_of_nodes)]]
         self.increment = 1
 
     def change_state_accept(self, node_id, cust_cls):
@@ -121,14 +126,16 @@ class MatrixTracker(StateTracker):
         self.state[0][node_id-1][destination-1].append(self.increment)
         self.increment += 1
 
-    def change_state_release(self, node_id, destination, cust_cls, blocked):
+    def change_state_release(self, node_id, destination,
+        cust_cls, blocked):
         """
         Changes the state of the system when a customer is released.
         """
         if blocked:
             self.state[-1][node_id-1] -= 1
             self.increment -= 1
-            position = self.find_blocked_position_and_pop(node_id, destination)
+            position = self.find_blocked_position_and_pop(
+                node_id, destination)
             self.adjust_positions(position)
         else:
             self.state[-1][node_id-1] -= 1
@@ -142,7 +149,8 @@ class MatrixTracker(StateTracker):
 
     def adjust_positions(self, position):
         """
-        Loops through whole matrix, reducing any positions > position by 1
+        Loops through whole matrix, reducing any
+        positions > position by 1
         """
         for r in xrange(len(self.state[0])):
             for c in xrange(len(self.state[0][r])):
@@ -155,5 +163,6 @@ class MatrixTracker(StateTracker):
         Returns a hashable state
         """
         naive = tuple(self.state[-1])
-        matrix = tuple(tuple(tuple(obs for obs in col) for col in row) for row in self.state[0])
+        matrix = tuple(tuple(tuple(obs for obs in col)
+            for col in row) for row in self.state[0])
         return (matrix, naive)

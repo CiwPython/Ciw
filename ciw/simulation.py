@@ -38,8 +38,9 @@ class Simulation:
         self.lmbda = [self.parameters['Arrival_distributions'][
             'Class ' + str(i)] for i in xrange(self.parameters[
             'Number_of_classes'])]
-        self.mu = [self.parameters['Service_distributions']['Class ' + str(i)]
-            for i in xrange(self.parameters['Number_of_classes'])]
+        self.mu = [self.parameters['Service_distributions'][
+            'Class ' + str(i)] for i in xrange(
+            self.parameters['Number_of_classes'])]
         self.schedules = [False for i in xrange(len(self.c))]
         for i in xrange(len(self.c)):
             if isinstance(self.c[i], str) and self.c[i] != 'Inf':
@@ -55,11 +56,13 @@ class Simulation:
         else:
             self.class_change_matrix = 'NA'
         self.max_simulation_time = self.parameters['Simulation_time']
-        self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
-        self.transitive_nodes = [Node(i + 1, self) for i in xrange(len(self.c))]
-        self.nodes = [ArrivalNode(self)] + self.transitive_nodes + [ExitNode("Inf")]
-        self.service_times = self.find_times_dictionary(self.mu)
-        self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
+        self.inter_arrival_times = self.find_times_dict(self.lmbda)
+        self.service_times = self.find_times_dict(self.mu)
+        self.transitive_nodes = [Node(i + 1, self)
+            for i in xrange(len(self.c))]
+        self.nodes = ([ArrivalNode(self)] +
+                      self.transitive_nodes +
+                      [ExitNode("Inf")])
         self.statetracker = self.choose_tracker()
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
@@ -73,7 +76,9 @@ class Simulation:
 
     def build_parameters(self, params):
         """
-        Builds the parameters dictionary for an M/M/C queue
+        Fills out the parameters dictionary with any
+        default arguments. Creates dictionaries for
+        things if onyl 1 class is given.
         """
         if isinstance(params['Arrival_distributions'], list):
             arr_dists = params['Arrival_distributions']
@@ -88,7 +93,8 @@ class Simulation:
         default_dict = {
             'Number_of_nodes': len(params['Number_of_servers']),
             'Number_of_classes': len(params['Arrival_distributions']),
-            'Queue_capacities': ['Inf' for _ in xrange(len(params['Number_of_servers']))],
+            'Queue_capacities': ['Inf' for _ in xrange(len(
+                params['Number_of_servers']))],
             'Detect_deadlock': False
             }
 
@@ -256,8 +262,7 @@ class Simulation:
                 return MatrixTracker(self)
         elif self.parameters['Detect_deadlock']:
             return NaiveTracker(self)
-        else:
-            return StateTracker(self)
+        return StateTracker(self)
     
     def detect_deadlock(self):
         """
@@ -324,7 +329,7 @@ class Simulation:
 
     def find_next_active_node(self):
         """
-        Return the next active node:
+        Returns the next active node:
         """
         next_active_node_indices = [i for i, x in enumerate([
             nd.next_event_date for nd in self.nodes]) if x == min([
@@ -333,14 +338,14 @@ class Simulation:
             return self.nodes[choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
 
-    def find_times_dictionary(self, source):
+    def find_times_dict(self, source):
         """
-        Finds the dictionary of service time
+        Create the dictionary of service time
         functions for each node for each class
         """
-        return {node+1:{
-            customer_class:self.find_distributions(node, customer_class, source)
-            for customer_class in xrange(len(self.lmbda))}
+        return {node+1: {
+            cls: self.find_distributions(node, cls, source)
+            for cls in xrange(len(self.lmbda))}
             for node in xrange(self.number_of_nodes)}
 
     def get_all_individuals(self):
@@ -403,7 +408,7 @@ class Simulation:
 
     def simulate_until_deadlock(self):
         """
-        Run the actual simulation.
+        Runs the simulation until deadlock is reached.
         """
         deadlocked = False
         self.nodes[0].update_next_event_date()
@@ -421,11 +426,13 @@ class Simulation:
                 time_of_deadlock = current_time
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
-        self.times_to_deadlock = {state: time_of_deadlock - self.times_dictionary[state] for state in self.times_dictionary.keys()}
+        self.times_to_deadlock = {state:
+            time_of_deadlock - self.times_dictionary[state]
+            for state in self.times_dictionary.keys()}
 
     def simulate_until_max_time(self):
         """
-        Run the actual simulation.
+        Runs the simulation until max_simulation_time is reached.
         """
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()

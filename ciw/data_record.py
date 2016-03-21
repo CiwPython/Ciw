@@ -15,7 +15,7 @@ class DataRecord:
                 queue_size_at_arrival,
                 queue_size_at_departure):
         """
-        An example of a data record instance.
+        Initialises a data record instance.
         """
         self.arrival_date = arrival_date
         self.service_time = service_time

@@ -18,4 +18,5 @@ class Server:
         """
         Represents the Server instance as a string
         """
-        return 'Server %s at Node %s' % (self.id_number, self.node.id_number)
+        return 'Server %s at Node %s' % (self.id_number,
+            self.node.id_number)

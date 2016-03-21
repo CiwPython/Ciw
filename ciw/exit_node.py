@@ -15,7 +15,7 @@ class ExitNode:
 
     def __repr__(self):
         """
-        Representation of a node::
+        Representation of a node.
         """
         return 'Exit Node'
 
@@ -28,5 +28,7 @@ class ExitNode:
     def update_next_event_date(self):
         """
         Finds the time of the next event at this node
+        Just passes as next_event_date always set to
+        the max_simulation_time
         """
         pass

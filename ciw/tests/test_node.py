@@ -29,11 +29,11 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
         N1 = Q.transitive_nodes[0]
-        self.assertEqual(N1.class_change_for_node, [[0.5, 0.5],
-                                                    [0.5, 0.5]])
+        self.assertEqual(N1.class_change, [[0.5, 0.5],
+                                           [0.5, 0.5]])
         N2 = Q.transitive_nodes[1]
-        self.assertEqual(N2.class_change_for_node, [[1.0, 0.0],
-                                                    [0.0, 1.0]])
+        self.assertEqual(N2.class_change, [[1.0, 0.0],
+                                           [0.0, 1.0]])
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         N = Q.transitive_nodes[0]
@@ -87,7 +87,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         N = Q.transitive_nodes[0]
-        N.add_new_server(3, 1)
+        N.add_new_servers(3, 1)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
              'Server 2 at Node 1',
@@ -419,14 +419,14 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 3 at Node 1'])
 
-    def test_add_new_server_method(self):
+    def test_add_new_servers_method(self):
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         N = Q.transitive_nodes[0]
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1'])
         s_indx = 3
-        N.add_new_server(s_indx,1)
+        N.add_new_servers(s_indx,1)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
              'Server 2 at Node 1',
