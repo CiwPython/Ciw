@@ -12,7 +12,7 @@ Arrival_distributions:
 Detect_deadlock: False
 Number_of_classes: 2
 Number_of_nodes: 2
-cycle_length: 100
+Cycle_length: 100
 Number_of_servers:
 - 'schedule_1'
 - 3

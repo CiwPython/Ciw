@@ -24,7 +24,7 @@ class Node:
         self.scheduled_servers = self.simulation.schedules[id_-1]
         if self.scheduled_servers:
             self.schedule = self.simulation.parameters[self.simulation.c[id_-1]]
-            self.cyclelength = self.simulation.parameters['cycle_length']
+            self.cyclelength = self.simulation.parameters['Cycle_length']
             self.c = self.schedule[0][1]
             self.masterschedule = [i*self.cyclelength + obs
                 for i in xrange(int(self.simulation.max_simulation_time//self.cyclelength) + 2)

@@ -134,7 +134,7 @@ class TestSimulation(unittest.TestCase):
                                            [0.0, 1.0, 0.0],
                                            [0.0, 0.0, 1.0]]}
         schedule_1 = [[0, 1], [30, 2], [60, 1], [90, 3]]
-        cycle_length=100
+        Cycle_length=100
         Queue_capacities = [20, 'Inf', 30, 'Inf']
 
         Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
@@ -285,7 +285,7 @@ class TestSimulation(unittest.TestCase):
                            Detect_deadlock=Detect_deadlock,
                            Class_change_matrices=Class_change_matrices,
                            schedule_1=schedule_1,
-                           cycle_length=cycle_length)
+                           Cycle_length=Cycle_length)
         self.assertEqual(Q.schedules, [False, False, True, False])
         self.assertEqual(str(Q), 'Ciw Simulation')
 
