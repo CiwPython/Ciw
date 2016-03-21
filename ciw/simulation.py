@@ -63,6 +63,7 @@ class Simulation:
         self.statetracker = self.choose_tracker()
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
+        self.rejection_dict = self.nodes[0].rejection_dict
 
     def __repr__(self):
         """

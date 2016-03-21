@@ -128,7 +128,7 @@ class TestArrivalNode(unittest.TestCase):
                   'Number_of_servers':[1, 1],
                   'Queue_capacities':[1, 1]}
         Q = ciw.Simulation(params)
-        self.assertEqual(Q.nodes[0].rejection_dict, {1:{0:[]}, 2:{0:[]}})
+        self.assertEqual(Q.rejection_dict, {1:{0:[]}, 2:{0:[]}})
         Q.simulate_until_max_time()
-        self.assertEqual(Q.nodes[0].rejection_dict, {1:{0:[9.0, 12.0, 18.0]}, 2:{0:[12.0, 16.0]}})
+        self.assertEqual(Q.rejection_dict, {1:{0:[9.0, 12.0, 18.0]}, 2:{0:[12.0, 16.0]}})
 
