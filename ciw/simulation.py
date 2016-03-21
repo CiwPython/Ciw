@@ -62,6 +62,7 @@ class Simulation:
         self.inter_arrival_times = self.find_times_dictionary(self.lmbda)
         self.statetracker = self.choose_tracker()
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
+        self.times_to_deadlock = {}
 
     def __repr__(self):
         """
@@ -419,8 +420,7 @@ class Simulation:
                 time_of_deadlock = current_time
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
-        return {state: time_of_deadlock - self.times_dictionary[state]
-        for state in self.times_dictionary.keys()}
+        self.times_to_deadlock = {state: time_of_deadlock - self.times_dictionary[state] for state in self.times_dictionary.keys()}
 
     def simulate_until_max_time(self):
         """
