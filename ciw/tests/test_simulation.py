@@ -14,6 +14,18 @@ def set_seed(x):
 
 class TestSimulation(unittest.TestCase):
 
+    def test_repr_method(self):
+        params1 = ciw.load_parameters(
+          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        Q = ciw.Simulation(params1)
+        self.assertEqual(str(Q), 'Simulation')
+
+        params2 = ciw.load_parameters(
+          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+        params2['Name'] = 'My special simulation instance!'
+        Q = ciw.Simulation(params2)
+        self.assertEqual(str(Q), 'My special simulation instance!')
+
     def test_init_method_from_dict(self):
         Q = ciw.Simulation(ciw.load_parameters(
           'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
@@ -74,7 +86,6 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters(
           'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         self.assertEqual(Q.schedules, [True, False])
-        self.assertEqual(str(Q), 'Ciw Simulation')
 
 
     def test_init_method_from_kws(self):
@@ -194,7 +205,6 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, [20, 'Inf', 30, 'Inf'])
-        self.assertEqual(str(Q), 'Ciw Simulation')
 
         Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
@@ -249,7 +259,6 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, ['Inf', 'Inf', 'Inf', 'Inf'])
-        self.assertEqual(str(Q), 'Ciw Simulation')
 
         Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
                            Simulation_time=Simulation_time,
@@ -287,7 +296,6 @@ class TestSimulation(unittest.TestCase):
                            schedule_1=schedule_1,
                            Cycle_length=Cycle_length)
         self.assertEqual(Q.schedules, [False, False, True, False])
-        self.assertEqual(str(Q), 'Ciw Simulation')
 
         Q = ciw.Simulation(Arrival_distributions = {'Class 2': [['Exponential', 2.0],
                                                         ['Exponential', 1.0],
@@ -346,6 +354,7 @@ class TestSimulation(unittest.TestCase):
                                         'Number_of_nodes': 4,
                                         'Simulation_time': 2500,
                                         'Detect_deadlock': False,
+                                        'Name': 'Simulation',
                                         'Number_of_servers': [9, 10, 8, 8],
                                         'Queue_capacities': [20, 'Inf', 30, 'Inf'],
                                         'Number_of_classes': 3,
@@ -403,6 +412,7 @@ class TestSimulation(unittest.TestCase):
             'Number_of_servers': [number_of_servers],
             'Number_of_nodes': 1,
             'Number_of_classes': 1,
+            'Name': 'Simulation',
             'Queue_capacities': ['Inf'],
             'Simulation_time': Simulation_time,
             'Detect_deadlock': False
@@ -444,7 +454,8 @@ class TestSimulation(unittest.TestCase):
             'Number_of_classes': 1,
             'Queue_capacities': ['Inf'],
             'Simulation_time': Simulation_time,
-            'Detect_deadlock': False
+            'Detect_deadlock': False,
+            'Name': 'Simulation'
         }
         self.assertEqual(Q.build_parameters(params), expected_dictionary)
 

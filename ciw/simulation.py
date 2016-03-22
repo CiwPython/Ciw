@@ -31,6 +31,7 @@ class Simulation:
             parameters = kwargs
         self.parameters = self.build_parameters(parameters)
         self.check_valid_parameters()
+        self.name = self.parameters['Name']
         self.c = self.parameters['Number_of_servers']
         self.number_of_nodes = self.parameters['Number_of_nodes']
         self.detecting_deadlock = self.parameters['Detect_deadlock']
@@ -72,7 +73,7 @@ class Simulation:
         """
         Represents the simulation
         """
-        return "Ciw Simulation"
+        return self.name
 
     def build_parameters(self, params):
         """
@@ -91,6 +92,7 @@ class Simulation:
             params['Transition_matrices'] = {'Class 0': trns_mat}
 
         default_dict = {
+            'Name': 'Simulation',
             'Number_of_nodes': len(params['Number_of_servers']),
             'Number_of_classes': len(params['Arrival_distributions']),
             'Queue_capacities': ['Inf' for _ in xrange(len(
