@@ -97,12 +97,22 @@ class Simulation:
             'Number_of_classes': len(params['Arrival_distributions']),
             'Queue_capacities': ['Inf' for _ in xrange(len(
                 params['Number_of_servers']))],
-            'Detect_deadlock': False
+            'Detect_deadlock': False,
+            'Simulation_time': None
             }
 
         for a in default_dict:
             params[a] = params.get(a, default_dict[a])
         return params
+
+    def check_simulation_time(self):
+        """
+        Raises errors if there is an invalide simulation time
+        """
+        if self.parameters['Simulation_time'] is None:
+            raise ValueError('Simulation_time not set.')
+        if self.parameters['Simulation_time'] <= 0:
+            raise ValueError('Simulation_time must be a positive number.')
 
     def check_userdef_dist(self, func):
         """
@@ -132,7 +142,7 @@ class Simulation:
                     if x not in self.parameters:
                         raise ValueError('Number_of_servers must be list of positive integers or valid server schedules.')
         if not isinstance(self.parameters['Detect_deadlock'], bool):
-            raise ValueError('detect_deadlock must be a boolean.')
+            raise ValueError('Detect_deadlock must be a boolean.')
         if len(self.parameters['Queue_capacities']) != self.parameters['Number_of_nodes']:
             raise ValueError('Queue_capacities must be list of length Number_of_nodes.')
         for x in self.parameters['Queue_capacities']:
@@ -188,8 +198,6 @@ class Simulation:
                             raise ValueError('Entries of Class_change_matrices must be floats between 0.0 and 1.0.')
                     if sum(y) > 1.0:
                         raise ValueError('Rows of Class_change_matrices must sum to 1.0 or less.')
-        if self.parameters['Simulation_time'] <= 0:
-            raise ValueError('Simulation_time must be a positive number.')
         for cls in self.parameters['Service_distributions'].values():
             for nd in cls:
                 if nd[0] not in ['Uniform', 'Triangular', 'Deterministic', 'Exponential', 'Gamma', 'Lognormal', 'Weibull', 'Empirical', 'Custom', 'UserDefined']:
@@ -436,6 +444,7 @@ class Simulation:
         """
         Runs the simulation until max_simulation_time is reached.
         """
+        self.check_simulation_time()
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date

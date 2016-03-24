@@ -567,7 +567,7 @@ class TestSimulation(unittest.TestCase):
                   'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf'],
                   'Detect_deadlock': False}
-        params_list = [copy.deepcopy(params) for i in range(27)]
+        params_list = [copy.deepcopy(params) for i in range(28)]
 
         params_list[0]['Number_of_classes'] = -2
         self.assertRaises(ValueError, ciw.Simulation, params_list[0])
@@ -615,20 +615,24 @@ class TestSimulation(unittest.TestCase):
         params_list[19]['Transition_matrices']['Class 0'] = [[1.4]]
         self.assertRaises(ValueError, ciw.Simulation, params_list[19])
         params_list[20]['Simulation_time'] = -2000
-        self.assertRaises(ValueError, ciw.Simulation, params_list[20])
-        params_list[21]['Class_change_matrices'] = {'Node 0':[[0.0]],
+        Q = ciw.Simulation(params_list[20])
+        self.assertRaises(ValueError, Q.simulate_until_max_time,)
+        del(params_list[21]['Simulation_time'])
+        Q = ciw.Simulation(params_list[21])
+        self.assertRaises(ValueError, Q.simulate_until_max_time,)
+        params_list[22]['Class_change_matrices'] = {'Node 0':[[0.0]],
                                                     'Node 1':[[0.0]]}
-        self.assertRaises(ValueError, ciw.Simulation, params_list[21])
-        params_list[22]['Class_change_matrices'] = {'Patient 0':[[0.0]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[22])
-        params_list[23]['Class_change_matrices'] = {'Node 0':[[0.1], [0.2]]}
+        params_list[23]['Class_change_matrices'] = {'Patient 0':[[0.0]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[23])
-        params_list[24]['Class_change_matrices'] = {'Node 0':[[0.0, 0.3]]}
+        params_list[24]['Class_change_matrices'] = {'Node 0':[[0.1], [0.2]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[24])
-        params_list[25]['Class_change_matrices'] = {'Node 0':[[-0.4]]}
+        params_list[25]['Class_change_matrices'] = {'Node 0':[[0.0, 0.3]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[25])
-        params_list[26]['Class_change_matrices'] = {'Node 0':[[1.5]]}
+        params_list[26]['Class_change_matrices'] = {'Node 0':[[-0.4]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[26])
+        params_list[27]['Class_change_matrices'] = {'Node 0':[[1.5]]}
+        self.assertRaises(ValueError, ciw.Simulation, params_list[27])
 
     def test_writing_data_files(self):
         Q = ciw.Simulation(ciw.load_parameters(
