@@ -35,4 +35,4 @@ The :code:`write_records_to_file` method writes a header as default. To disable 
 The Rejection Dictionary
 ------------------------
 
-When nodes have a limited queueing capacity, some arriving customers are rejected from the system. Data about these rejected customers is kept in the Arrival Node's :code:`rejection_dict`. This is a dictionary of dictionaries, with nodes and customer classes as keys, and a list of arrival dates as values. For example :code:`Q.nodes[0].rejection_dict[1][2]` gives a list of the times that new arriving customers of class 2 were rejected from node 1.
+When nodes have a limited queueing capacity, some arriving customers are rejected from the system. Data about these rejected customers is kept in the Simulation object's :code:`rejection_dict`. This is a dictionary of dictionaries, with nodes and customer classes as keys, and a list of arrival dates as values. For example :code:`Q.rejection_dict[1][2]` gives a list of the times that new arriving customers of class 2 were rejected from node 1.

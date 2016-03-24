@@ -31,7 +31,6 @@ Parameters::
     >>> params = {'Arrival_distributions': {'Class 0': [['Exponential', 6.0]]},
     ...           'Number_of_nodes': 1,
     ...           'Detect_deadlock': True,
-    ...           'Simulation_time': 2500,
     ...           'Number_of_servers': [1],
     ...           'Queue_capacities': [3],
     ...           'Number_of_classes': 1,
@@ -44,8 +43,8 @@ Running until deadlock::
     >>> from random import seed
     >>> seed(99)
     >>> Q = ciw.Simulation(params)
-    >>> times = Q.simulate_until_deadlock()
-    >>> times # doctest:+SKIP
+    >>> Q.simulate_until_deadlock()
+    >>> self.times_to_deadlock # doctest:+SKIP
     {((1, 0),): 1.0845416939916719, ((3, 0),): 0.5436399978272065, ((0, 0),): 1.1707879982560288, ((4, 0),): 0.15650986183172932, ((3, 1),): 0.0, ((2, 0),): 1.0517097907100657}
 
 Here the state :code:`((i, j),)` denotes the state where there are `i` customers at the node, `j` of which are blocked
