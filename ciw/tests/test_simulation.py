@@ -6,6 +6,7 @@ from hypothesis.strategies import floats, integers, lists, random_module
 import os
 import copy
 from numpy import random as nprandom
+from decimal import Decimal
 
 
 def set_seed(x):
@@ -354,6 +355,7 @@ class TestSimulation(unittest.TestCase):
                                         'Number_of_nodes': 4,
                                         'Simulation_time': 2500,
                                         'Detect_deadlock': False,
+                                        'Exact': False,
                                         'Name': 'Simulation',
                                         'Number_of_servers': [9, 10, 8, 8],
                                         'Queue_capacities': [20, 'Inf', 30, 'Inf'],
@@ -415,7 +417,8 @@ class TestSimulation(unittest.TestCase):
             'Name': 'Simulation',
             'Queue_capacities': ['Inf'],
             'Simulation_time': Simulation_time,
-            'Detect_deadlock': False
+            'Detect_deadlock': False,
+            'Exact': False
         }
         self.assertEqual(Q.parameters, expected_dictionary)
         self.assertEqual(Q.lmbda, [[['Exponential', arrival_rate]]])
@@ -455,6 +458,7 @@ class TestSimulation(unittest.TestCase):
             'Queue_capacities': ['Inf'],
             'Simulation_time': Simulation_time,
             'Detect_deadlock': False,
+            'Exact': False,
             'Name': 'Simulation'
         }
         self.assertEqual(Q.build_parameters(params), expected_dictionary)
@@ -679,4 +683,47 @@ class TestSimulation(unittest.TestCase):
         recs = Q.get_all_records()
         self.assertEqual(len(inds), 3)
         self.assertTrue(all([x[6]==5.0 for x in recs[1:]]))
+
+    def test_exactness(self):
+        set_seed(777)
+        Arrival_distributions = [['Exponential', 20]]
+        Service_distributions = [['Deterministic', 0.01]]
+        Transition_matrices = [[0.0]]
+        Simulation_time = 10
+        Number_of_servers = ['server_schedule']
+        Cycle_length = 3
+        server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
+                           Service_distributions=Service_distributions,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time,
+                           Number_of_servers=Number_of_servers,
+                           Cycle_length=Cycle_length,
+                           server_schedule=server_schedule)
+        Q.simulate_until_max_time()
+        recs = Q.get_all_records(headers=False)
+        mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
+        self.assertNotEqual(set(mod_service_starts), set([0.50, 0.51, 0.52, 0.53, 0.54]))
+
+        set_seed(777)
+        Arrival_distributions = [['Exponential', 20]]
+        Service_distributions = [['Deterministic', 0.01]]
+        Transition_matrices = [[0.0]]
+        Simulation_time = 10
+        Number_of_servers = ['server_schedule']
+        Cycle_length = 3
+        server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
+        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
+                           Service_distributions=Service_distributions,
+                           Transition_matrices=Transition_matrices,
+                           Simulation_time=Simulation_time,
+                           Number_of_servers=Number_of_servers,
+                           Cycle_length=Cycle_length,
+                           server_schedule=server_schedule,
+                           Exact=14)
+        Q.simulate_until_max_time()
+        recs = Q.get_all_records(headers=False)
+        mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
+        self.assertEqual(set(mod_service_starts), set([Decimal(k) for k in ['0.50', '0.51', '0.52', '0.53', '0.54']]))
+
 
