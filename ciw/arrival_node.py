@@ -56,9 +56,17 @@ class ArrivalNode:
             self.rejection_dict[next_node.id_number][
                 self.next_class].append(self.next_event_date)
         self.event_dates_dict[self.next_node][
-            self.next_class] += self.inter_arrival(
-            self.next_node, self.next_class)
+            self.next_class] = self.increment_time(
+            self.event_dates_dict[self.next_node][
+            self.next_class], self.inter_arrival(
+            self.next_node, self.next_class))
         self.find_next_event_date()
+
+    def increment_time(self, original, increment):
+        """
+        Increments the original time by the increment
+        """
+        return original + increment
 
     def initialise_event_dates_dict(self):
         """

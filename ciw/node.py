@@ -261,12 +261,6 @@ class Node:
         else:
             self.block_individual(next_individual, next_node)
 
-    def get_min(self, lst):
-        """
-        Gets the minimum of a list
-        """
-        return min(lst)
-
     def get_now(self, current_time):
         """
         Gets the current time

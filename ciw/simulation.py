@@ -70,7 +70,7 @@ class Simulation:
         self.service_times = self.find_times_dict(self.mu)
         self.transitive_nodes = [NodeType(i + 1, self)
             for i in xrange(len(self.c))]
-        self.nodes = ([ArrivalNode(self)] +
+        self.nodes = ([ArrivalNodeType(self)] +
                       self.transitive_nodes +
                       [ExitNode("Inf")])
         self.statetracker = self.choose_tracker()

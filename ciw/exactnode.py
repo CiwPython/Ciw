@@ -20,12 +20,6 @@ class ExactNode(Node):
         """
         return Decimal(str(self.simulation.service_times[self.id_number][cls]()))
 
-    def get_min(self, lst):
-        """
-        Gets the minimum of a list
-        """
-        return Decimal(str(min(lst)))
-
     def get_now(self, current_time):
         """
         Gets the current time
@@ -39,6 +33,12 @@ class ExactArrivalNode(ArrivalNode):
     more precise version of addition to fix discrepencies
     with floating point numbers.
     """
+    def increment_time(self, original, increment):
+        """
+        Increments the original time by the increment
+        """
+        return Decimal(str(original)) + Decimal(str(increment))
+
     def inter_arrival(self, nd, cls):
         """
         Samples the inter-arrival time for next class and node.
