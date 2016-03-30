@@ -10,11 +10,12 @@ In order to take advantage of this feature, set deadlock detection option to Tru
 
     Detect_deadlock: True
 
-Then use the :code:`simulate_until_deadlock` method to return the times to deadlock from each state::
+Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state::
 
    >>> import ciw
    >>> Q = ciw.Simulation(deadlock_params) # doctest:+SKIP
-   >>> times = Q.simulate_until_deadlock() # doctest:+SKIP
+   >>> Q.simulate_until_deadlock() # doctest:+SKIP
+   >>> times = Q.times_to_deadlock # doctest:+SKIP
 
 where :code:`times` is a dictionary with states as keys and times to deadlock as values. Note that :code:`Simulation_time` is ingnored in this case.
 
