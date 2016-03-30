@@ -4,12 +4,14 @@ from random import (random, expovariate, uniform, triangular,
     gammavariate, gauss, lognormvariate, weibullvariate, choice)
 from csv import writer, reader
 import copy
+from decimal import Decimal, getcontext
 
 import yaml
 import networkx as nx
 import numpy.random as nprandom
 
 from node import Node
+from exactnode import ExactNode, ExactArrivalNode
 from arrival_node import ArrivalNode
 from exit_node import ExitNode
 from server import Server
@@ -31,6 +33,13 @@ class Simulation:
             parameters = kwargs
         self.parameters = self.build_parameters(parameters)
         self.check_valid_parameters()
+        if not self.parameters['Exact']:
+            NodeType = Node
+            ArrivalNodeType = ArrivalNode
+        else:
+            NodeType = ExactNode
+            ArrivalNodeType = ExactArrivalNode
+            getcontext().prec = self.parameters['Exact']
         self.name = self.parameters['Name']
         self.c = self.parameters['Number_of_servers']
         self.number_of_nodes = self.parameters['Number_of_nodes']
@@ -59,9 +68,9 @@ class Simulation:
         self.max_simulation_time = self.parameters['Simulation_time']
         self.inter_arrival_times = self.find_times_dict(self.lmbda)
         self.service_times = self.find_times_dict(self.mu)
-        self.transitive_nodes = [Node(i + 1, self)
+        self.transitive_nodes = [NodeType(i + 1, self)
             for i in xrange(len(self.c))]
-        self.nodes = ([ArrivalNode(self)] +
+        self.nodes = ([ArrivalNodeType(self)] +
                       self.transitive_nodes +
                       [ExitNode("Inf")])
         self.statetracker = self.choose_tracker()
@@ -98,7 +107,8 @@ class Simulation:
             'Queue_capacities': ['Inf' for _ in xrange(len(
                 params['Number_of_servers']))],
             'Detect_deadlock': False,
-            'Simulation_time': None
+            'Simulation_time': None,
+            'Exact': False
             }
 
         for a in default_dict:

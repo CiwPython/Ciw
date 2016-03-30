@@ -24,9 +24,9 @@ class DataRecord:
         self.customer_class = customer_class
         self.queue_size_at_arrival = queue_size_at_arrival
         self.queue_size_at_departure = queue_size_at_departure
-        self.service_end_date = service_start_date + service_time
-        self.wait = service_start_date - arrival_date
-        self.blocked = exit_date - self.service_end_date
+        self.service_end_date = self.service_start_date + self.service_time
+        self.wait = self.service_start_date - self.arrival_date
+        self.blocked = self.exit_date - self.service_end_date
         self.node = node
         self.destination = destination
 

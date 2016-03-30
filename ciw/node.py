@@ -19,32 +19,32 @@ class Node:
         Initialise a node.
         """
         self.simulation = simulation
-        self.mu = [self.simulation.mu[cls][id_-1]
+        self.mu = [self.simulation.mu[cls][id_ - 1]
             for cls in xrange(len(self.simulation.mu))]
-        self.scheduled_servers = self.simulation.schedules[id_-1]
+        self.scheduled_servers = self.simulation.schedules[id_ - 1]
         if self.scheduled_servers:
             self.schedule = self.simulation.parameters[
-                self.simulation.c[id_-1]]
+                self.simulation.c[id_ - 1]]
             self.cyclelength = self.simulation.parameters[
                 'Cycle_length']
             self.c = self.schedule[0][1]
-            self.masterschedule = [i*self.cyclelength + obs
-                for i in xrange(int(
+            self.masterschedule = [self.increment_time(i*self.cyclelength,
+                obs) for i in xrange(int(
                 self.simulation.max_simulation_time//self.cyclelength
                 ) + 2) for obs in [t[0] for t in self.schedule]][1:]
         else:
-            self.c = self.simulation.c[id_-1]
-        if self.simulation.queue_capacities[id_-1] == "Inf":
+            self.c = self.simulation.c[id_ - 1]
+        if self.simulation.queue_capacities[id_ - 1] == "Inf":
             self.node_capacity = "Inf"
         else:
             self.node_capacity = self.simulation.queue_capacities[
-            id_-1] + self.c
+            id_ - 1] + self.c
         self.transition_row = [self.simulation.transition_matrix[j][
-            id_-1] for j in xrange(len(
+            id_ - 1] for j in xrange(len(
             self.simulation.transition_matrix))]
         if self.simulation.class_change_matrix != 'NA':
             self.class_change = self.simulation.class_change_matrix[
-            id_-1]
+            id_ - 1]
         self.individuals = []
         self.id_number = id_
         if self.scheduled_servers:
@@ -53,7 +53,7 @@ class Node:
             self.next_event_date = "Inf"
         self.blocked_queue = []
         if self.c < 'Inf':
-            self.servers = [Server(self, i+1) for i in xrange(self.c)]
+            self.servers = [Server(self, i + 1) for i in xrange(self.c)]
             if simulation.detecting_deadlock:
                 self.simulation.digraph.add_nodes_from([str(s)
                     for s in self.servers])
@@ -110,16 +110,16 @@ class Node:
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
         """
-        next_individual.arrival_date = current_time
-        next_individual.service_time = self.simulation.service_times[
-            self.id_number][next_individual.customer_class]()
+        next_individual.arrival_date = self.get_now(current_time)
+        next_individual.service_time = self.get_service_time(
+            next_individual.customer_class)
         if self.free_server():
             if self.c < 'Inf':
                 self.attach_server(self.find_free_server(),
                                    next_individual)
-            next_individual.service_start_date = current_time
-            next_individual.service_end_date = (current_time + 
-                next_individual.service_time)
+            next_individual.service_start_date = self.get_now(current_time)
+            next_individual.service_end_date = self.increment_time(
+                current_time, next_individual.service_time)
 
     def begin_service_if_possible_change_shift(self, current_time):
         """
@@ -131,9 +131,9 @@ class Node:
             if len([i for i in self.individuals if not i.server]) > 0:
                 ind = [i for i in self.individuals if not i.server][0]
                 self.attach_server(srvr, ind)
-                ind.service_start_date = current_time
-                ind.service_end_date = (ind.service_start_date +
-                    ind.service_time)
+                ind.service_start_date = self.get_now(current_time)
+                ind.service_end_date = self.increment_time(
+                    ind.service_start_date, ind.service_time)
 
     def begin_service_if_possible_release(self, current_time):
         """
@@ -145,9 +145,9 @@ class Node:
             if len([i for i in self.individuals if not i.server]) > 0:
                 ind = [i for i in self.individuals if not i.server][0]
                 self.attach_server(srvr, ind)
-                ind.service_start_date = current_time
-                ind.service_end_date = (ind.service_start_date +
-                    ind.service_time)
+                ind.service_start_date = self.get_now(current_time)
+                ind.service_end_date = self.increment_time(
+                    ind.service_start_date, ind.service_time)
 
     def block_individual(self, individual, next_node):
         """
@@ -170,10 +170,10 @@ class Node:
         according to a probability distribution.
         """
         if self.simulation.class_change_matrix != 'NA':
-            individual.previous_class=individual.customer_class
-            individual.customer_class=nprandom.choice(
+            individual.previous_class = individual.customer_class
+            individual.customer_class = nprandom.choice(
                 xrange(len(self.class_change)),
-                p=self.class_change[individual.previous_class])
+                p = self.class_change[individual.previous_class])
 
     def change_shift(self):
         """
@@ -188,7 +188,7 @@ class Node:
         try: inx = self.schedule.index(shift)
         except:
             tms = [obs[0] for obs in self.schedule]
-            diffs = [abs(x-shift) for x in tms]
+            diffs = [abs(x-float(shift)) for x in tms]
             indx = diffs.index(min(diffs))
 
         self.take_servers_off_duty()
@@ -261,6 +261,12 @@ class Node:
         else:
             self.block_individual(next_individual, next_node)
 
+    def get_now(self, current_time):
+        """
+        Gets the current time
+        """
+        return current_time
+
     def have_event(self):
         """
         Has an event
@@ -269,6 +275,12 @@ class Node:
             self.change_shift()
         else:
             self.finish_service()
+
+    def increment_time(self, original, increment):
+        """
+        Increments the original time by the increment
+        """
+        return original + increment
 
     def kill_server(self,srvr):
         """
@@ -282,7 +294,7 @@ class Node:
         Finds the next node according the random distribution.
         """
         return nprandom.choice(self.simulation.nodes[1:],
-            p=self.transition_row[customer_class]+[1.0-sum(
+            p = self.transition_row[customer_class] + [1.0 - sum(
             self.transition_row[customer_class])])
 
     def release(self, next_individual_index, next_node, current_time):
@@ -319,6 +331,12 @@ class Node:
             node_to_receive_from.release(individual_to_receive_index,
                 self, current_time)
 
+    def get_service_time(self, cls):
+        """
+        Returns a service time for the given customer class
+        """
+        return self.simulation.service_times[self.id_number][cls]()
+
     def take_servers_off_duty(self):
         """
         Gathers servers that should be deleted.
@@ -339,7 +357,7 @@ class Node:
         next_end_service = min([ind.service_end_date
             for ind in self.individuals
             if not ind.is_blocked
-            if ind.service_end_date>=current_time] + ["Inf"])
+            if ind.service_end_date >= current_time] + ["Inf"])
         if self.scheduled_servers:
             next_shift_change = self.masterschedule[0]
             self.next_event_date = min(
