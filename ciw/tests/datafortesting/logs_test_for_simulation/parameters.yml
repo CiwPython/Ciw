@@ -70,7 +70,7 @@ Service_distributions:
     - 8.0
   - - Exponential
     - 9.0
-Simulation_time: 2500
+Simulation_time: 150
 Transition_matrices:
   Class 0:
   - - 0.1

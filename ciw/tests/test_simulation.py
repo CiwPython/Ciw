@@ -74,7 +74,7 @@ class TestSimulation(unittest.TestCase):
            'Node 3',
            'Node 4',
            'Exit Node'])
-        self.assertEqual(Q.max_simulation_time, 2500)
+        self.assertEqual(Q.max_simulation_time, 150)
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
 
@@ -91,30 +91,30 @@ class TestSimulation(unittest.TestCase):
 
     def test_init_method_from_kws(self):
         # Define parameters
-        Arrival_distributions = {'Class 0':[['Exponential', 3.0],
-                                    ['Exponential', 7.0],
-                                    ['Exponential', 4.0],
-                                    ['Exponential', 1.0]],
-                         'Class 1':[['Exponential', 2.0],
-                                    ['Exponential', 3.0],
-                                    ['Exponential', 6.0],
-                                    ['Exponential', 4.0]],
-                         'Class 2':[['Exponential', 2.0],
-                                    ['Exponential', 1.0],
-                                    ['Exponential', 2.0],
-                                    ['Exponential', 0.5]]}
-        Service_distributions = {'Class 0':[['Exponential', 7.0],
-                                            ['Exponential', 7.0],
-                                            ['Gamma', 0.4, 0.6],
-                                            ['Deterministic', 0.5]],
-                                 'Class 1':[['Exponential', 7.0],
-                                            ['Triangular', 0.1, 0.85, 0.8],
-                                            ['Exponential', 8.0],
-                                            ['Exponential', 5.0]],
-                                 'Class 2':[['Deterministic', 0.3],
-                                            ['Deterministic', 0.2],
-                                            ['Exponential', 8.0],
-                                            ['Exponential', 9.0]]}
+        Arrival_distributions = {'Class 0': [['Exponential', 3.0],
+                                             ['Exponential', 7.0],
+                                             ['Exponential', 4.0],
+                                             ['Exponential', 1.0]],
+                                 'Class 1': [['Exponential', 2.0],
+                                             ['Exponential', 3.0],
+                                             ['Exponential', 6.0],
+                                             ['Exponential', 4.0]],
+                                 'Class 2': [['Exponential', 2.0],
+                                             ['Exponential', 1.0],
+                                             ['Exponential', 2.0],
+                                             ['Exponential', 0.5]]}
+        Service_distributions = {'Class 0': [['Exponential', 7.0],
+                                             ['Exponential', 7.0],
+                                             ['Gamma', 0.4, 0.6],
+                                             ['Deterministic', 0.5]],
+                                  'Class 1':[['Exponential', 7.0],
+                                             ['Triangular', 0.1, 0.85, 0.8],
+                                             ['Exponential', 8.0],
+                                             ['Exponential', 5.0]],
+                                  'Class 2':[['Deterministic', 0.3],
+                                             ['Deterministic', 0.2],
+                                             ['Exponential', 8.0],
+                                             ['Exponential', 9.0]]}
         Number_of_servers = [9, 10, 8, 8]
         Number_of_servers2 = [9, 10, 'schedule_1', 8]
         Transition_matrices = {'Class 0': [[0.1, 0.2, 0.1, 0.4],
@@ -130,34 +130,34 @@ class TestSimulation(unittest.TestCase):
                                            [0.1, 0.3, 0.2, 0.2],
                                            [0.0, 0.0, 0.0, 0.3]]}
         Detect_deadlock = False
-        Simulation_time = 2500
+        Simulation_time = 150
         Number_of_classes = 3
         Number_of_nodes = 4
-        Class_change_matrices = {'Node 0':[[0.7, 0.3, 0.0],
-                                           [0.2, 0.7, 0.1],
-                                           [0.2, 0.7, 0.1]],
-                                 'Node 1':[[1.0, 0.0, 0.0],
-                                           [0.0, 1.0, 0.0],
-                                           [0.0, 0.0, 1.0]],
-                                 'Node 2':[[0.7, 0.3, 0.0],
-                                           [0.2, 0.7, 0.1],
-                                           [0.2, 0.7, 0.1]],
-                                 'Node 3':[[1.0, 0.0, 0.0],
-                                           [0.0, 1.0, 0.0],
-                                           [0.0, 0.0, 1.0]]}
+        Class_change_matrices = {'Node 0': [[0.7, 0.3, 0.0],
+                                            [0.2, 0.7, 0.1],
+                                            [0.2, 0.7, 0.1]],
+                                 'Node 1': [[1.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 1.0]],
+                                 'Node 2': [[0.7, 0.3, 0.0],
+                                            [0.2, 0.7, 0.1],
+                                            [0.2, 0.7, 0.1]],
+                                 'Node 3': [[1.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 1.0]]}
         schedule_1 = [[0, 1], [30, 2], [60, 1], [90, 3]]
-        Cycle_length=100
+        Cycle_length = 100
         Queue_capacities = [20, 'Inf', 30, 'Inf']
 
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Simulation_time=Simulation_time,
-                           Queue_capacities=Queue_capacities,
-                           Service_distributions=Service_distributions,
-                           Number_of_servers=Number_of_servers,
-                           Transition_matrices=Transition_matrices,
-                           Number_of_classes=Number_of_classes,
-                           Number_of_nodes=Number_of_nodes,
-                           Detect_deadlock=Detect_deadlock)
+        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                           Simulation_time = Simulation_time,
+                           Queue_capacities = Queue_capacities,
+                           Service_distributions = Service_distributions,
+                           Number_of_servers = Number_of_servers,
+                           Transition_matrices = Transition_matrices,
+                           Number_of_classes = Number_of_classes,
+                           Number_of_nodes = Number_of_nodes,
+                           Detect_deadlock = Detect_deadlock)
         self.assertEqual(Q.lmbda, [[['Exponential', 3.0],
                                     ['Exponential', 7.0],
                                     ['Exponential', 4.0],
@@ -202,16 +202,16 @@ class TestSimulation(unittest.TestCase):
            'Node 3',
            'Node 4',
            'Exit Node'])
-        self.assertEqual(Q.max_simulation_time, 2500)
+        self.assertEqual(Q.max_simulation_time, 150)
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, [20, 'Inf', 30, 'Inf'])
 
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Simulation_time=Simulation_time,
-                           Service_distributions=Service_distributions,
-                           Number_of_servers=Number_of_servers,
-                           Transition_matrices=Transition_matrices)
+        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                           Simulation_time = Simulation_time,
+                           Service_distributions = Service_distributions,
+                           Number_of_servers = Number_of_servers,
+                           Transition_matrices = Transition_matrices)
         self.assertEqual(Q.lmbda, [[['Exponential', 3.0],
                                     ['Exponential', 7.0],
                                     ['Exponential', 4.0],
@@ -247,8 +247,8 @@ class TestSimulation(unittest.TestCase):
                                                 [0.2, 0.1, 0.1, 0.1]],
                                                [[0.0, 0.0, 0.4, 0.3],
                                                 [0.1, 0.1, 0.1, 0.1],
-                                                    [0.1, 0.3, 0.2, 0.2],
-                                            [0.0, 0.0, 0.0, 0.3]]])
+                                                [0.1, 0.3, 0.2, 0.2],
+                                                [0.0, 0.0, 0.0, 0.3]]])
         self.assertEqual([str(obs) for obs in Q.nodes],
           ['Arrival Node',
            'Node 1',
@@ -256,21 +256,21 @@ class TestSimulation(unittest.TestCase):
            'Node 3',
            'Node 4',
            'Exit Node'])
-        self.assertEqual(Q.max_simulation_time, 2500)
+        self.assertEqual(Q.max_simulation_time, 150)
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, ['Inf', 'Inf', 'Inf', 'Inf'])
 
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Simulation_time=Simulation_time,
-                           Queue_capacities=Queue_capacities,
-                           Service_distributions=Service_distributions,
-                           Number_of_servers=Number_of_servers,
-                           Transition_matrices=Transition_matrices,
-                           Number_of_classes=Number_of_classes,
-                           Number_of_nodes=Number_of_nodes,
-                           Detect_deadlock=Detect_deadlock,
-                           Class_change_matrices=Class_change_matrices)
+        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                           Simulation_time = Simulation_time,
+                           Queue_capacities = Queue_capacities,
+                           Service_distributions = Service_distributions,
+                           Number_of_servers = Number_of_servers,
+                           Transition_matrices = Transition_matrices,
+                           Number_of_classes = Number_of_classes,
+                           Number_of_nodes = Number_of_nodes,
+                           Detect_deadlock = Detect_deadlock,
+                           Class_change_matrices = Class_change_matrices)
         self.assertEqual(Q.class_change_matrix, [[[0.7, 0.3, 0.0],
                                                   [0.2, 0.7, 0.1],
                                                   [0.2, 0.7, 0.1]],
@@ -284,126 +284,125 @@ class TestSimulation(unittest.TestCase):
                                                   [0.0, 1.0, 0.0],
                                                   [0.0, 0.0, 1.0]]])
 
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Simulation_time=Simulation_time,
-                           Queue_capacities=Queue_capacities,
-                           Service_distributions=Service_distributions,
-                           Number_of_servers=Number_of_servers2,
-                           Transition_matrices=Transition_matrices,
-                           Number_of_classes=Number_of_classes,
-                           Number_of_nodes=Number_of_nodes,
-                           Detect_deadlock=Detect_deadlock,
-                           Class_change_matrices=Class_change_matrices,
-                           schedule_1=schedule_1,
-                           Cycle_length=Cycle_length)
+        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                           Simulation_time = Simulation_time,
+                           Queue_capacities = Queue_capacities,
+                           Service_distributions = Service_distributions,
+                           Number_of_servers = Number_of_servers2,
+                           Transition_matrices = Transition_matrices,
+                           Number_of_classes = Number_of_classes,
+                           Number_of_nodes = Number_of_nodes,
+                           Detect_deadlock = Detect_deadlock,
+                           Class_change_matrices = Class_change_matrices,
+                           schedule_1 = schedule_1,
+                           Cycle_length = Cycle_length)
         self.assertEqual(Q.schedules, [False, False, True, False])
 
-        Q = ciw.Simulation(Arrival_distributions = {'Class 2': [['Exponential', 2.0],
-                                                        ['Exponential', 1.0],
-                                                        ['Exponential', 2.0],
-                                                        ['Exponential', 0.5]],
-                                            'Class 1': [['Exponential', 2.0],
-                                                        ['Exponential', 3.0],
-                                                        ['Exponential', 6.0],
-                                                        ['Exponential', 4.0]],
-                                            'Class 0': [['Exponential', 3.0],
-                                                        ['Exponential', 7.0],
-                                                        ['Exponential', 4.0],
-                                                        ['Exponential', 1.0]]},
-                           Number_of_nodes = 4,
-                           Detect_deadlock = False,
-                           Simulation_time = 2500,
-                           Number_of_servers = [9, 10, 8, 8],
-                           Queue_capacities = [20, 'Inf', 30, 'Inf'],
-                           Number_of_classes = 3,
-                           Service_distributions = {'Class 2': [['Deterministic', 0.3],
-                                                        ['Deterministic', 0.2],
-                                                        ['Exponential', 8.0],
-                                                        ['Exponential', 9.0]],
-                                            'Class 1': [['Exponential', 7.0],
-                                                        ['Triangular', 0.1, 0.85, 0.8],
-                                                        ['Exponential', 8.0],
-                                                        ['Exponential', 5.0]],
-                                            'Class 0': [['Exponential', 7.0],
-                                                        ['Exponential', 7.0],
-                                                        ['Gamma', 0.4, 0.6],
-                                                        ['Deterministic', 0.5]]},
-                            Transition_matrices = {'Class 2': [[0.0, 0.0, 0.4, 0.3],
-                                                               [0.1, 0.1, 0.1, 0.1],
-                                                               [0.1, 0.3, 0.2, 0.2],
-                                                               [0.0, 0.0, 0.0, 0.3]],
-                                                   'Class 1': [[0.6, 0.0, 0.0, 0.2],
-                                                               [0.1, 0.1, 0.2, 0.2],
-                                                               [0.9, 0.0, 0.0, 0.0],
-                                                               [0.2, 0.1, 0.1, 0.1]],
-                                                   'Class 0': [[0.1, 0.2, 0.1, 0.4],
-                                                               [0.2, 0.2, 0.0, 0.1],
-                                                               [0.0, 0.8, 0.1, 0.1],
-                                                               [0.4, 0.1, 0.1, 0.0]]})
-        self.assertEqual(Q.parameters, {'Arrival_distributions': {'Class 2': [['Exponential', 2.0],
-                                                                      ['Exponential', 1.0],
-                                                                      ['Exponential', 2.0],
-                                                                      ['Exponential', 0.5]],
-                                                          'Class 1': [['Exponential', 2.0],
-                                                                      ['Exponential', 3.0],
-                                                                      ['Exponential', 6.0],
-                                                                      ['Exponential', 4.0]],
-                                                          'Class 0': [['Exponential', 3.0],
-                                                                      ['Exponential', 7.0],
-                                                                      ['Exponential', 4.0],
-                                                                      ['Exponential', 1.0]]},
-                                        'Number_of_nodes': 4,
-                                        'Simulation_time': 2500,
-                                        'Detect_deadlock': False,
-                                        'Exact': False,
-                                        'Name': 'Simulation',
-                                        'Number_of_servers': [9, 10, 8, 8],
-                                        'Queue_capacities': [20, 'Inf', 30, 'Inf'],
-                                        'Number_of_classes': 3,
-                                        'Service_distributions': {'Class 2': [['Deterministic', 0.3],
-                                                                              ['Deterministic', 0.2],
-                                                                              ['Exponential', 8.0],
-                                                                              ['Exponential', 9.0]],
-                                                                  'Class 1': [['Exponential', 7.0],
-                                                                              ['Triangular', 0.1, 0.85, 0.8],
-                                                                              ['Exponential', 8.0],
-                                                                              ['Exponential', 5.0]],
-                                                                  'Class 0': [['Exponential', 7.0],
-                                                                              ['Exponential', 7.0],
-                                                                              ['Gamma', 0.4, 0.6],
-                                                                              ['Deterministic', 0.5]]},
-                                        'Transition_matrices': {'Class 2': [[0.0, 0.0, 0.4, 0.3],
-                                                                            [0.1, 0.1, 0.1, 0.1],
-                                                                            [0.1, 0.3, 0.2, 0.2],
-                                                                            [0.0, 0.0, 0.0, 0.3]],
-                                                                'Class 1': [[0.6, 0.0, 0.0, 0.2],
-                                                                            [0.1, 0.1, 0.2, 0.2],
-                                                                            [0.9, 0.0, 0.0, 0.0],
-                                                                            [0.2, 0.1, 0.1, 0.1]],
-                                                                'Class 0': [[0.1, 0.2, 0.1, 0.4],
-                                                                            [0.2, 0.2, 0.0, 0.1],
-                                                                            [0.0, 0.8, 0.1, 0.1],
-                                                                            [0.4, 0.1, 0.1, 0.0]]}})
+        Q = ciw.Simulation(
+            Arrival_distributions = {'Class 2': [['Exponential', 2.0],
+                                                 ['Exponential', 1.0],
+                                                 ['Exponential', 2.0],
+                                                 ['Exponential', 0.5]],
+                                     'Class 1': [['Exponential', 2.0],
+                                                 ['Exponential', 3.0],
+                                                 ['Exponential', 6.0],
+                                                 ['Exponential', 4.0]],
+                                     'Class 0': [['Exponential', 3.0],
+                                                 ['Exponential', 7.0],
+                                                 ['Exponential', 4.0],
+                                                 ['Exponential', 1.0]]},
+            Number_of_nodes = 4,
+            Detect_deadlock = False,
+            Simulation_time = 150,
+            Number_of_servers = [9, 10, 8, 8],
+            Queue_capacities = [20, 'Inf', 30, 'Inf'],
+            Number_of_classes = 3,
+            Service_distributions = {'Class 2': [['Deterministic', 0.3],
+                                                 ['Deterministic', 0.2],
+                                                 ['Exponential', 8.0],
+                                                 ['Exponential', 9.0]],
+                                     'Class 1': [['Exponential', 7.0],
+                                                 ['Triangular', 0.1, 0.85, 0.8],
+                                                 ['Exponential', 8.0],
+                                                 ['Exponential', 5.0]],
+                                     'Class 0': [['Exponential', 7.0],
+                                                 ['Exponential', 7.0],
+                                                 ['Gamma', 0.4, 0.6],
+                                                 ['Deterministic', 0.5]]},
+            Transition_matrices = {'Class 2': [[0.0, 0.0, 0.4, 0.3],
+                                               [0.1, 0.1, 0.1, 0.1],
+                                               [0.1, 0.3, 0.2, 0.2],
+                                               [0.0, 0.0, 0.0, 0.3]],
+                                   'Class 1': [[0.6, 0.0, 0.0, 0.2],
+                                               [0.1, 0.1, 0.2, 0.2],
+                                               [0.9, 0.0, 0.0, 0.0],
+                                               [0.2, 0.1, 0.1, 0.1]],
+                                   'Class 0': [[0.1, 0.2, 0.1, 0.4],
+                                               [0.2, 0.2, 0.0, 0.1],
+                                               [0.0, 0.8, 0.1, 0.1],
+                                               [0.4, 0.1, 0.1, 0.0]]})
+        self.assertEqual(Q.parameters, {
+            'Arrival_distributions': {'Class 2': [['Exponential', 2.0],
+                                                  ['Exponential', 1.0],
+                                                  ['Exponential', 2.0],
+                                                  ['Exponential', 0.5]],
+                                      'Class 1': [['Exponential', 2.0],
+                                                  ['Exponential', 3.0],
+                                                  ['Exponential', 6.0],
+                                                  ['Exponential', 4.0]],
+                                      'Class 0': [['Exponential', 3.0],
+                                                  ['Exponential', 7.0],
+                                                  ['Exponential', 4.0],
+                                                  ['Exponential', 1.0]]},
+            'Number_of_nodes': 4,
+            'Simulation_time': 150,
+            'Detect_deadlock': False,
+            'Exact': False,
+            'Name': 'Simulation',
+            'Number_of_servers': [9, 10, 8, 8],
+            'Queue_capacities': [20, 'Inf', 30, 'Inf'],
+            'Number_of_classes': 3,
+            'Service_distributions': {'Class 2': [['Deterministic', 0.3],
+                                                  ['Deterministic', 0.2],
+                                                  ['Exponential', 8.0],
+                                                  ['Exponential', 9.0]],
+                                      'Class 1': [['Exponential', 7.0],
+                                                  ['Triangular', 0.1, 0.85, 0.8],
+                                                  ['Exponential', 8.0],
+                                                  ['Exponential', 5.0]],
+                                      'Class 0': [['Exponential', 7.0],
+                                                  ['Exponential', 7.0],
+                                                  ['Gamma', 0.4, 0.6],
+                                                  ['Deterministic', 0.5]]},
+            'Transition_matrices': {'Class 2': [[0.0, 0.0, 0.4, 0.3],
+                                                [0.1, 0.1, 0.1, 0.1],
+                                                [0.1, 0.3, 0.2, 0.2],
+                                                [0.0, 0.0, 0.0, 0.3]],
+                                    'Class 1': [[0.6, 0.0, 0.0, 0.2],
+                                                [0.1, 0.1, 0.2, 0.2],
+                                                [0.9, 0.0, 0.0, 0.0],
+                                                [0.2, 0.1, 0.1, 0.1]],
+                                    'Class 0': [[0.1, 0.2, 0.1, 0.4],
+                                                [0.2, 0.2, 0.0, 0.1],
+                                                [0.0, 0.8, 0.1, 0.1],
+                                                [0.4, 0.1, 0.1, 0.0]]}})
 
-    @given(arrival_rate=floats(min_value=0.1, max_value=100),
-           service_rate=floats(min_value=0.1, max_value=100),
-           number_of_servers=integers(min_value=1, max_value=30),
-           Simulation_time=floats(min_value=1.0, max_value=10.0),
-           rm=random_module())
+    @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
+           service_rate = floats(min_value = 0.1, max_value = 100),
+           number_of_servers = integers(min_value = 1, max_value = 30),
+           Simulation_time = floats(min_value = 1.0, max_value = 10.0),
+           rm = random_module())
     def test_simple_init_method(self,
                                 arrival_rate,
                                 service_rate,
                                 number_of_servers,
                                 Simulation_time,
                                 rm):
-        """
-        Test for creating M/M/c queues
-        """
-        params = {'Arrival_distributions':[['Exponential', arrival_rate]],
-                  'Service_distributions':[['Exponential', service_rate]],
-                  'Number_of_servers':[number_of_servers],
-                  'Simulation_time':Simulation_time,
-                  'Transition_matrices':[[0.0]]}
+        params = {'Arrival_distributions': [['Exponential', arrival_rate]],
+                  'Service_distributions': [['Exponential', service_rate]],
+                  'Number_of_servers': [number_of_servers],
+                  'Simulation_time': Simulation_time,
+                  'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(params)
 
@@ -431,10 +430,10 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False])
 
-    @given(arrival_rate=floats(min_value=0.1, max_value=100),
-           service_rate=floats(min_value=0.1, max_value=100),
-           number_of_servers=integers(min_value=1, max_value=30),
-           Simulation_time=floats(min_value=1.0, max_value=10.0),
+    @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
+           service_rate = floats(min_value = 0.1, max_value = 100),
+           number_of_servers = integers(min_value = 1, max_value = 30),
+           Simulation_time = floats(min_value = 1.0, max_value = 10.0),
            rm=random_module())
     def test_build_mmc_parameters(self,
                                   arrival_rate,
@@ -442,11 +441,11 @@ class TestSimulation(unittest.TestCase):
                                   number_of_servers,
                                   Simulation_time,
                                   rm):
-        params = {'Arrival_distributions':[['Exponential', arrival_rate]],
-                  'Service_distributions':[['Exponential', service_rate]],
-                  'Number_of_servers':[number_of_servers],
-                  'Simulation_time':Simulation_time,
-                  'Transition_matrices':[[0.0]]}
+        params = {'Arrival_distributions': [['Exponential', arrival_rate]],
+                  'Service_distributions': [['Exponential', service_rate]],
+                  'Number_of_servers': [number_of_servers],
+                  'Simulation_time': Simulation_time,
+                  'Transition_matrices': [[0.0]]}
         Q = ciw.Simulation(params)
         expected_dictionary = {
             'Arrival_distributions': {'Class 0': [['Exponential', arrival_rate]]},
@@ -484,11 +483,10 @@ class TestSimulation(unittest.TestCase):
         set_seed(2)
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        Q.max_simulation_time = 600
         Q.simulate_until_max_time()
         L = Q.get_all_individuals()
         self.assertEqual(round(
-            L[300].data_records.values()[0][0].service_start_date, 8), 8.93542607)
+            L[300].data_records.values()[0][0].service_start_date, 8), 8.89002862)
 
         set_seed(60)
         Q = ciw.Simulation(ciw.load_parameters(
@@ -544,16 +542,16 @@ class TestSimulation(unittest.TestCase):
             'ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
         self.assertEqual(Q.transition_matrix, [[[0.0]]])
 
-    @given(arrival_rate=floats(min_value=0.1, max_value=100),
-           service_rate=floats(min_value=0.1, max_value=100),
-           Simulation_time=floats(min_value=1.0, max_value=10.0),
+    @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
+           service_rate = floats(min_value = 0.1, max_value = 100),
+           Simulation_time = floats(min_value = 1.0, max_value = 10.0),
            rm=random_module())
     def test_mminf_node(self, arrival_rate, service_rate, Simulation_time, rm):
-        params = {'Arrival_distributions':[['Exponential', arrival_rate]],
-                  'Service_distributions':[['Exponential', service_rate]],
-                  'Number_of_servers':['Inf'],
-                  'Simulation_time':Simulation_time,
-                  'Transition_matrices':[[0.0]]}
+        params = {'Arrival_distributions': [['Exponential', arrival_rate]],
+                  'Service_distributions': [['Exponential', service_rate]],
+                  'Number_of_servers': ['Inf'],
+                  'Simulation_time': Simulation_time,
+                  'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(params)
         Q.simulate_until_max_time()
@@ -641,7 +639,7 @@ class TestSimulation(unittest.TestCase):
     def test_writing_data_files(self):
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        Q.max_simulation_time = 500
+        Q.max_simulation_time = 50
         Q.simulate_until_max_time()
         files = [x for x in os.walk(
             'ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
@@ -655,7 +653,7 @@ class TestSimulation(unittest.TestCase):
 
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
-        Q.max_simulation_time = 500
+        Q.max_simulation_time = 50
         Q.simulate_until_max_time()
         files = [x for x in os.walk(
             'ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
@@ -673,16 +671,16 @@ class TestSimulation(unittest.TestCase):
         Transition_matrices = [[1.0, 0.0], [0.0, 0.0]]
         Simulation_time = 36
         Number_of_servers = [2, 1]
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Service_distributions=Service_distributions,
-                           Transition_matrices=Transition_matrices,
-                           Simulation_time=Simulation_time,
-                           Number_of_servers=Number_of_servers)
+        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                           Service_distributions = Service_distributions,
+                           Transition_matrices = Transition_matrices,
+                           Simulation_time = Simulation_time,
+                           Number_of_servers = Number_of_servers)
         Q.simulate_until_max_time()
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
         self.assertEqual(len(inds), 3)
-        self.assertTrue(all([x[6]==5.0 for x in recs[1:]]))
+        self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
     def test_exactness(self):
         set_seed(777)
@@ -693,15 +691,15 @@ class TestSimulation(unittest.TestCase):
         Number_of_servers = ['server_schedule']
         Cycle_length = 3
         server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Service_distributions=Service_distributions,
-                           Transition_matrices=Transition_matrices,
-                           Simulation_time=Simulation_time,
-                           Number_of_servers=Number_of_servers,
-                           Cycle_length=Cycle_length,
-                           server_schedule=server_schedule)
+        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                           Service_distributions = Service_distributions,
+                           Transition_matrices = Transition_matrices,
+                           Simulation_time = Simulation_time,
+                           Number_of_servers = Number_of_servers,
+                           Cycle_length = Cycle_length,
+                           server_schedule = server_schedule)
         Q.simulate_until_max_time()
-        recs = Q.get_all_records(headers=False)
+        recs = Q.get_all_records(headers = False)
         mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
         self.assertNotEqual(set(mod_service_starts), set([0.50, 0.51, 0.52, 0.53, 0.54]))
 
@@ -713,17 +711,16 @@ class TestSimulation(unittest.TestCase):
         Number_of_servers = ['server_schedule']
         Cycle_length = 3
         server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
-        Q = ciw.Simulation(Arrival_distributions=Arrival_distributions,
-                           Service_distributions=Service_distributions,
-                           Transition_matrices=Transition_matrices,
-                           Simulation_time=Simulation_time,
-                           Number_of_servers=Number_of_servers,
-                           Cycle_length=Cycle_length,
-                           server_schedule=server_schedule,
-                           Exact=14)
+        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                           Service_distributions = Service_distributions,
+                           Transition_matrices = Transition_matrices,
+                           Simulation_time = Simulation_time,
+                           Number_of_servers = Number_of_servers,
+                           Cycle_length = Cycle_length,
+                           server_schedule = server_schedule,
+                           Exact = 14)
         Q.simulate_until_max_time()
         recs = Q.get_all_records(headers=False)
         mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
-        self.assertEqual(set(mod_service_starts), set([Decimal(k) for k in ['0.50', '0.51', '0.52', '0.53', '0.54']]))
-
-
+        expected_set = set([Decimal(k) for k in ['0.50', '0.51', '0.52', '0.53', '0.54']])
+        self.assertEqual(set(mod_service_starts), expected_set)

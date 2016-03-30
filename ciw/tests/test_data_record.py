@@ -36,15 +36,15 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.queue_size_at_departure, 21)
         self.assertEqual(str(r), 'Data Record')
 
-    @given(arrival_date=floats(min_value=0.0, max_value=99999.99),
-           service_time=floats(min_value=0.0, max_value=99999.99),
-           inter_service_start_date=floats(min_value=0.0, max_value=99999.99),
-           inter_exit_date=floats(min_value=0.0, max_value=99999.99),
-           node=integers(),
+    @given(arrival_date = floats(min_value = 0.0, max_value = 99999.99),
+           service_time = floats(min_value = 0.0, max_value = 99999.99),
+           inter_service_start_date = floats(min_value = 0.0, max_value = 99999.99),
+           inter_exit_date = floats(min_value = 0.0, max_value = 99999.99),
+           node = integers(),
            destination = integers(),
-           customer_class=integers(),
-           queue_size_at_arrival=integers(),
-           queue_size_at_departure=integers())
+           customer_class = integers(),
+           queue_size_at_arrival = integers(),
+           queue_size_at_departure = integers())
     def test_init_methodh(self,
                           arrival_date,
                           service_time,
@@ -56,9 +56,17 @@ class TestDataRecord(unittest.TestCase):
                           queue_size_at_arrival,
                           queue_size_at_departure):
         # Define parameters
-        service_start_date = arrival_date+inter_service_start_date
-        exit_date = service_start_date+inter_exit_date+service_time
-        r = ciw.DataRecord(arrival_date, service_time, service_start_date, exit_date, node, destination, customer_class, queue_size_at_arrival, queue_size_at_departure)
+        service_start_date = arrival_date + inter_service_start_date
+        exit_date = service_start_date + inter_exit_date + service_time
+        r = ciw.DataRecord(arrival_date,
+                           service_time,
+                           service_start_date,
+                           exit_date,
+                           node,
+                           destination,
+                           customer_class,
+                           queue_size_at_arrival,
+                           queue_size_at_departure)
 
         # The tests
         self.assertEqual(r.arrival_date, arrival_date)

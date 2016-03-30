@@ -22,7 +22,7 @@ class TestArrivalNode(unittest.TestCase):
                       2: {0: 0.1218825551, 1: 0.0044003133, 2: 0.2442775601},
                       3: {0: 0.0819463473, 1: 0.4135097542, 2: 0.7256307839},
                       4: {0: 0.1738823223, 1: 0.3988184145, 2: 0.2987813628}}
-        self.assertEqual({nd:{obs:round(N.event_dates_dict[nd][obs], 10)
+        self.assertEqual({nd: {obs: round(N.event_dates_dict[nd][obs], 10)
             for obs in N.event_dates_dict[nd]} for nd in N.event_dates_dict},
             dates_dict)
 
@@ -39,11 +39,11 @@ class TestArrivalNode(unittest.TestCase):
                         2: {0: 0.0841671381, 1: 0.0328245299, 2: 0.2196023847},
                         3: {0: 0.2519089068, 1: 0.0573597814, 2: 1.5117882121},
                         4: {0: 0.8881158889, 1: 0.0560592622, 2: 2.1307650868}}
-        self.assertEqual({nd:{obs:round(N.event_dates_dict[nd][obs], 10)
+        self.assertEqual({nd: {obs: round(N.event_dates_dict[nd][obs], 10)
             for obs in N.event_dates_dict[nd]} for nd in N.event_dates_dict},
             dates_dict_1)
         N.initialise_event_dates_dict()
-        self.assertEqual({nd:{obs:round(N.event_dates_dict[nd][obs], 10)
+        self.assertEqual({nd: {obs: round(N.event_dates_dict[nd][obs], 10)
             for obs in N.event_dates_dict[nd]} for nd in N.event_dates_dict},
             dates_dict_2)
 
@@ -128,7 +128,7 @@ class TestArrivalNode(unittest.TestCase):
                   'Number_of_servers':[1, 1],
                   'Queue_capacities':[1, 1]}
         Q = ciw.Simulation(params)
-        self.assertEqual(Q.rejection_dict, {1:{0:[]}, 2:{0:[]}})
+        self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
         Q.simulate_until_max_time()
-        self.assertEqual(Q.rejection_dict, {1:{0:[9.0, 12.0, 18.0]}, 2:{0:[12.0, 16.0]}})
+        self.assertEqual(Q.rejection_dict, {1: {0: [9.0, 12.0, 18.0]}, 2: {0:[12.0, 16.0]}})
 
