@@ -4,3 +4,4 @@ v0.0.2, 2016-01-06 -- Some kwargs optional, hypothesis tests, minor enhancements
 v0.0.3, 2016-02-09 -- Arrival distributions, mmc options removed, fix server schedule bugs
 v0.0.4, 2016-02-20 -- Empirical and UserDefined distributions added, tidy ups
 v0.0.5, 2016-03-18 -- State space tracker plug-and-playable, add rejection dictionary
+v0.0.6 2016-04-04 -- Exactness implemented, restructure some features e.g. times_to_deadlock, custom simulation names
