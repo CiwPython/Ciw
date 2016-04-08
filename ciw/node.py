@@ -54,9 +54,7 @@ class Node:
         self.blocked_queue = []
         if self.c < 'Inf':
             self.servers = [Server(self, i + 1) for i in xrange(self.c)]
-            if simulation.detecting_deadlock:
-                self.simulation.digraph.add_nodes_from([str(s)
-                    for s in self.servers])
+        self.simulation.deadlock_detector.initialise_at_node(self)
         self.highest_id = 0
 
     def __repr__(self):
@@ -93,15 +91,8 @@ class Node:
         server.cust = individual
         server.busy = True
         individual.server = server
-
-        if self.simulation.detecting_deadlock:
-            for blq in self.blocked_queue:
-                inds = [ind for ind in self.simulation.nodes[
-                    blq[0]].individuals if ind.id_number==blq[1]]
-                ind = inds[0]
-                if ind != individual:
-                    self.simulation.digraph.add_edge(
-                        str(ind.server), str(server))
+        self.simulation.deadlock_detector.action_at_attach_server(
+            self, server, individual)
 
     def begin_service_if_possible_accept(self,
                                          next_individual,
@@ -159,10 +150,8 @@ class Node:
             individual.customer_class)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
-        if self.simulation.detecting_deadlock:
-            for svr in next_node.servers:
-                self.simulation.digraph.add_edge(
-                    str(individual.server), str(svr))
+        self.simulation.deadlock_detector.action_at_blockage(
+            individual, next_node)
 
     def change_customer_class(self,individual):
         """
@@ -214,13 +203,8 @@ class Node:
         server.cust = False
         server.busy = False
         individual.server = False
-
-        if self.simulation.detecting_deadlock:
-            self.simulation.digraph.remove_edges_from(
-                self.simulation.digraph.in_edges(
-                str(server)) + self.simulation.digraph.out_edges(
-                str(server)))
-
+        self.simulation.deadlock_detector.action_at_detach_server(
+            server)
         if server.offduty:
             self.kill_server(server)
 

@@ -170,11 +170,11 @@ class TestNode(unittest.TestCase):
         N2.accept(inds[6], 2)
         self.assertEqual(inds[6].is_blocked, False)
         self.assertEqual(N1.blocked_queue, [])
-        self.assertEqual(Q.digraph.edges(), [])
+        self.assertEqual(Q.deadlock_detector.statedigraph.edges(), [])
         N2.block_individual(inds[6], N1)
         self.assertEqual(inds[6].is_blocked, True)
         [(2, 7)]
-        self.assertEqual(Q.digraph.edges(),
+        self.assertEqual(Q.deadlock_detector.statedigraph.edges(),
             [('Server 1 at Node 2', 'Server 2 at Node 1'),
              ('Server 1 at Node 2', 'Server 5 at Node 1'),
              ('Server 1 at Node 2', 'Server 3 at Node 1'),
@@ -211,7 +211,7 @@ class TestNode(unittest.TestCase):
         ind = Q.transitive_nodes[0].individuals[0]
         ind.service_time = 3.14
         ind.arrival_date = 100.0
-        self.assertEqual(Q.digraph.nodes(),
+        self.assertEqual(Q.deadlock_detector.statedigraph.nodes(),
             ['Server 5 at Node 2',
              'Server 5 at Node 1',
              'Server 3 at Node 2',
@@ -373,7 +373,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         ind = ciw.Individual(1)
-        self.assertEqual(Q.digraph.nodes(),
+        self.assertEqual(Q.deadlock_detector.statedigraph.nodes(),
             ['Server 5 at Node 2', 
              'Server 5 at Node 1',
              'Server 3 at Node 2',
