@@ -8,7 +8,7 @@ Ciw's has built in deadlock detection capability. With Ciw, a queueing network c
 
 In order to take advantage of this feature, set deadlock detection option to True in the parameters file::
 
-    Detect_deadlock: True
+    Detect_deadlock: StateDigraph
 
 Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state::
 
@@ -31,7 +31,7 @@ Parameters::
 
     >>> params = {'Arrival_distributions': {'Class 0': [['Exponential', 6.0]]},
     ...           'Number_of_nodes': 1,
-    ...           'Detect_deadlock': True,
+    ...           'Detect_deadlock': 'StateDigraph',
     ...           'Number_of_servers': [1],
     ...           'Queue_capacities': [3],
     ...           'Number_of_classes': 1,
