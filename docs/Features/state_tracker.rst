@@ -25,6 +25,9 @@ An example for a four node queueing network is shown below::
 
 This denotes 3 customers at the first node, 0 of which are blocked; 5 customers at the second node, 4 of which are blocked; 10 customers at the third node, 0 of which are blocked; and 9 customers at the fourth node, 1 of which are blocked.
 
+In the parameters dictionary, state that the Naïve Tracker should be used as follows::
+
+    'Tracker': 'Naive'
 
 
 .. _matrix:
@@ -43,3 +46,7 @@ An example for a four node queueing network is shown below::
       ( 3, 5, 10, 9) )
 
 This denotes 3 customers at the first node, 5 customers at the second node, 10 customers at the third node, and 9 customers at the fourth node. It also tells us the order and destination of the blockages. Of the customers blocked, the first to be blocked was at node 2 to node 2; the second was at node 2 to node 4; the third was at node 4 to node 1; the fourth was at node 2 to node 2.
+
+In the parameters dictionary, state that the Matrix Tracker should be used as follows::
+
+    'Tracker': 'Matrix'
