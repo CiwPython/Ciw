@@ -34,7 +34,7 @@ Class_change_matrices
 
 A dictionary of class change matrices for each node. For more details see :ref:`dynamic-classes`.
 
-An for a two node network with two classes of customer::
+An example for a two node network with two classes of customer::
 
     'Class_change_matrices': {'Node 0': [[0.3, 0.4, 0.3],
                                          [0.1, 0.9, 0.0],
@@ -189,7 +189,7 @@ Transition_matrices
 *Required*
 
 Describes the transition matrix for each customer class.
-This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) describing the service distributions for each node. If only one class of customer is required it is sufficient to simply enter single transition matrix (a list of lists).
+This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the transition probabilities. If only one class of customer is required it is sufficient to simply enter single transition matrix (a list of lists).
 
 An example is shown::
 
