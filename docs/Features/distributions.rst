@@ -27,7 +27,7 @@ The Uniform Distribution
 ------------------------
 
 The uniform distribution samples a random number between two numbers `a` and `b`.
-Int the parameters dictionary, write a uniform distribution between `4` and `9` as follows::
+In the parameters dictionary, write a uniform distribution between `4` and `9` as follows::
 
     ['Uniform', 4.0, 9.0]
 
@@ -41,7 +41,7 @@ The Deterministic Distribution
 ------------------------------
 
 The deterministic distribution is non-stachastic, and produces the same service time repeatedly.
-Int the parameters dictionary, write a deterministic distribution that repeatedly gives a value of `18.2` as follows::
+In the parameters dictionary, write a deterministic distribution that repeatedly gives a value of `18.2` as follows::
 
     ['Deterministic', 18.2]
 
@@ -55,7 +55,7 @@ The Triangular Distribution
 ---------------------------
 
 The triangular distribution samples a continuous pdf that rises linearly from its minimum value `low` to its mode value `mode`, and then decreases linearly to its highest attainable value `high`.
-Int the parameters dictionary, write a triangular distribution between `2.1` and `7.6` with mode of `3.4` as follows::
+In the parameters dictionary, write a triangular distribution between `2.1` and `7.6` with mode of `3.4` as follows::
 
     ['Triangular', 2.1, 7.6, 3.4]
 
@@ -70,7 +70,7 @@ The Exponential Distribution
 ----------------------------
 
 The exponential distribution samples a random number from the negative exponential distribution with `1 / lambda`.
-Int the parameters dictionary, write an exponential distribution with mean `0.2` as follows::
+In the parameters dictionary, write an exponential distribution with mean `0.2` as follows::
 
     ['Exponential', 5]
 
@@ -87,7 +87,7 @@ The Gamma Distribution
 ----------------------
 
 The gamma distribution samples a random number from the gamma distribution with shape parameter `alpha` and scale parameter `beta`.
-Int the parameters dictionary, write a gamma distribution with parameters `alpha = 0.6` and `beta = 1.2` as follows::
+In the parameters dictionary, write a gamma distribution with parameters `alpha = 0.6` and `beta = 1.2` as follows::
 
     ['Gamma', 0.6, 1.2]
 
@@ -104,7 +104,7 @@ The Lognormal Distribution
 --------------------------
 
 The lognormal distribution samples a random number from the log of the normal distribution with mean `mu` and standard deviation `sigma`.
-Int the parameters dictionary, write a lognomal distribution of the normal distribution with mean `4.5` and standard deviation `2.0` as follows::
+In the parameters dictionary, write a lognomal distribution of the normal distribution with mean `4.5` and standard deviation `2.0` as follows::
 
     ['Lognormal', 4.5, 2.0]
 
@@ -120,7 +120,7 @@ The Weibull Distribution
 ------------------------
 
 The Weibull distribution samples a random number from the Weibull distribution with scale parameter `alpha` and shape parameter `beta`.
-Int the parameters dictionary, write a Weibull distribution with `alpha = 0.9` and `beta = 0.8` as follows::
+In the parameters dictionary, write a Weibull distribution with `alpha = 0.9` and `beta = 0.8` as follows::
 
     ['Weibull', 0.9, 0.8]
 
