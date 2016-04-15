@@ -8,6 +8,6 @@ Due to the `issues and limitations <https://docs.python.org/2/tutorial/floatingp
 
 In order to implement arithmetical exactness, add this option to the parameters dictionary::
 
-    Exact: 26
+    'Exact': 26
 
 The key :code:`Exact` is used to indicate the precision level.
