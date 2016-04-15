@@ -57,7 +57,7 @@ class Node:
             if simulation.detecting_deadlock:
                 self.simulation.digraph.add_nodes_from([str(s)
                     for s in self.servers])
-        self.highest_id = 0
+        self.highest_id = self.c
 
     def __repr__(self):
         """
@@ -78,13 +78,14 @@ class Node:
         self.simulation.statetracker.change_state_accept(
             self.id_number, next_individual.customer_class)
 
-    def add_new_servers(self, shift_indx, highest_id):
+    def add_new_servers(self, shift_indx):
         """
         Add appropriate amount of servers for the given shift.
         """
         num_servers = self.schedule[shift_indx][1]
         for i in xrange(num_servers):
-            self.servers.append(Server(self, highest_id+i+1))
+            self.highest_id += 1
+            self.servers.append(Server(self, self.highest_id))
 
     def attach_server(self, server, individual):
         """
@@ -180,9 +181,6 @@ class Node:
         Add servers and deletes or indicates which servers
         should go off duty.
         """
-        if len(self.servers) != 0:
-            self.highest_id = max([srvr.id_number
-                for srvr in self.servers])
         shift = self.next_event_date%self.cyclelength
 
         try: inx = self.schedule.index(shift)
@@ -192,7 +190,7 @@ class Node:
             indx = diffs.index(min(diffs))
 
         self.take_servers_off_duty()
-        self.add_new_servers(indx, self.highest_id)
+        self.add_new_servers(indx)
 
         self.c = self.schedule[indx][1]
         self.masterschedule.pop(0)

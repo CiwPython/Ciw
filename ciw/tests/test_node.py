@@ -87,7 +87,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
         N = Q.transitive_nodes[0]
-        N.add_new_servers(3, 1)
+        N.add_new_servers(3)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
              'Server 2 at Node 1',
@@ -402,7 +402,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1'])
         N.kill_server(s)
-        N.highest_id += 1
         self.assertEqual(N.servers, [])
         N.next_event_date = 30
         N.have_event()
@@ -426,7 +425,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1'])
         s_indx = 3
-        N.add_new_servers(s_indx,1)
+        N.add_new_servers(s_indx)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
              'Server 2 at Node 1',
