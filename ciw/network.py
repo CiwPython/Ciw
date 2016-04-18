@@ -14,3 +14,19 @@ class ServiceCentre:
         self.queueing_capacity = queueing_capacity
         self.class_change_matrix = class_change_matrix
         self.schedule = schedule
+
+
+class CustomerClass:
+    """
+    An information store for each customer class in the queueing network
+    """
+    def __init__(self,
+                 arrival_distributions,
+                 service_distributions,
+                 transition_matrix):
+        """
+        Initialises the CutomerCass object
+        """
+        self.arrival_distributions = arrival_distributions
+        self.service_distributions = service_distributions
+        self.transition_matrix = transition_matrix
