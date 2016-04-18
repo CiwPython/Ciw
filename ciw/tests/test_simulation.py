@@ -669,41 +669,40 @@ class TestSimulation(unittest.TestCase):
         # This should yield 3 or 2 customers finishing service.
         # Due to randomly choosing the order of events, the seed has
         # a big affect on this.
+        def run_sim():
+            Arrival_distributions = [['Deterministic', 10.0], 'NoArrivals']
+            Service_distributions = [['Deterministic', 5.0], ['Deterministic', 5.0]]
+            Transition_matrices = [[1.0, 0.0], [0.0, 0.0]]
+            Simulation_time = 36
+            Number_of_servers = [2, 1]
+            Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
+                               Service_distributions = Service_distributions,
+                               Transition_matrices = Transition_matrices,
+                               Simulation_time = Simulation_time,
+                               Number_of_servers = Number_of_servers)
+            Q.simulate_until_max_time()
+            inds = Q.get_all_individuals()
+            recs = Q.get_all_records()
+            return inds, recs
 
         set_seed(73)
-        Arrival_distributions = [['Deterministic', 10.0], 'NoArrivals']
-        Service_distributions = [['Deterministic', 5.0], ['Deterministic', 5.0]]
-        Transition_matrices = [[1.0, 0.0], [0.0, 0.0]]
-        Simulation_time = 36
-        Number_of_servers = [2, 1]
-        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
-                           Service_distributions = Service_distributions,
-                           Transition_matrices = Transition_matrices,
-                           Simulation_time = Simulation_time,
-                           Number_of_servers = Number_of_servers)
-        Q.simulate_until_max_time()
-        inds = Q.get_all_individuals()
-        recs = Q.get_all_records()
+        inds, recs = run_sim()
         self.assertEqual(len(inds), 2)
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
-
         set_seed(74)
-        Arrival_distributions = [['Deterministic', 10.0], 'NoArrivals']
-        Service_distributions = [['Deterministic', 5.0], ['Deterministic', 5.0]]
-        Transition_matrices = [[1.0, 0.0], [0.0, 0.0]]
-        Simulation_time = 36
-        Number_of_servers = [2, 1]
-        Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
-                           Service_distributions = Service_distributions,
-                           Transition_matrices = Transition_matrices,
-                           Simulation_time = Simulation_time,
-                           Number_of_servers = Number_of_servers)
-        Q.simulate_until_max_time()
-        inds = Q.get_all_individuals()
-        recs = Q.get_all_records()
+        inds, recs = run_sim()
         self.assertEqual(len(inds), 3)
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
+
+        # Check that have expected ratio
+        completed_inds = []
+        N = 1000
+        for _ in range(N):
+            inds, _ = run_sim()
+            completed_inds.append(len(inds))
+        self.assertAlmostEqual(completed_inds.count(2) / float(N),
+                               1 / 4.0, places=1)
 
     def test_exactness(self):
         set_seed(777)
