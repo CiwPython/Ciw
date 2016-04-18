@@ -124,11 +124,10 @@ class TestArrivalNode(unittest.TestCase):
         params = {'Arrival_distributions':[['Deterministic', 3.0], ['Deterministic', 4.0]],
                   'Service_distributions':[['Deterministic', 10.0], ['Deterministic', 10.0]],
                   'Transition_matrices':[[0.0, 1.0], [0.0, 0.0]],
-                  'Simulation_time': 20,
                   'Number_of_servers':[1, 1],
                   'Queue_capacities':[1, 1]}
         Q = ciw.Simulation(params)
         self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(20)
         self.assertEqual(Q.rejection_dict, {1: {0: [9.0, 12.0, 18.0]}, 2: {0:[12.0, 16.0]}})
 

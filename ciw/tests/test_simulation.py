@@ -8,7 +8,6 @@ import copy
 from numpy import random as nprandom
 from decimal import Decimal
 
-
 def set_seed(x):
     seed(x)
     nprandom.seed(x)
@@ -554,7 +553,7 @@ class TestSimulation(unittest.TestCase):
                   'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(params)
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(Simulation_time)
         inds = Q.get_all_individuals()
         waits = [ind.data_records[1][0].wait for ind in inds]
         self.assertEqual(sum(waits), 0.0)
@@ -616,12 +615,6 @@ class TestSimulation(unittest.TestCase):
         self.assertRaises(ValueError, ciw.Simulation, params_list[18])
         params_list[19]['Transition_matrices']['Class 0'] = [[1.4]]
         self.assertRaises(ValueError, ciw.Simulation, params_list[19])
-        params_list[20]['Simulation_time'] = -2000
-        Q = ciw.Simulation(params_list[20])
-        self.assertRaises(ValueError, Q.simulate_until_max_time,)
-        del(params_list[21]['Simulation_time'])
-        Q = ciw.Simulation(params_list[21])
-        self.assertRaises(ValueError, Q.simulate_until_max_time,)
         params_list[22]['Class_change_matrices'] = {'Node 0':[[0.0]],
                                                     'Node 1':[[0.0]]}
         self.assertRaises(ValueError, ciw.Simulation, params_list[22])
@@ -639,8 +632,7 @@ class TestSimulation(unittest.TestCase):
     def test_writing_data_files(self):
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        Q.max_simulation_time = 50
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(50)
         files = [x for x in os.walk(
             'ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
         self.assertEqual('data.csv' in files, False)
@@ -653,8 +645,7 @@ class TestSimulation(unittest.TestCase):
 
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
-        Q.max_simulation_time = 50
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(50)
         files = [x for x in os.walk(
             'ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
         self.assertEqual('data_1.csv' in files, False)
@@ -674,14 +665,12 @@ class TestSimulation(unittest.TestCase):
         Arrival_distributions = [['Deterministic', 10.0], 'NoArrivals']
         Service_distributions = [['Deterministic', 5.0], ['Deterministic', 5.0]]
         Transition_matrices = [[1.0, 0.0], [0.0, 0.0]]
-        Simulation_time = 36
         Number_of_servers = [2, 1]
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
                            Service_distributions = Service_distributions,
                            Transition_matrices = Transition_matrices,
-                           Simulation_time = Simulation_time,
                            Number_of_servers = Number_of_servers)
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
         self.assertEqual(len(inds), 2)
@@ -692,14 +681,12 @@ class TestSimulation(unittest.TestCase):
         Arrival_distributions = [['Deterministic', 10.0], 'NoArrivals']
         Service_distributions = [['Deterministic', 5.0], ['Deterministic', 5.0]]
         Transition_matrices = [[1.0, 0.0], [0.0, 0.0]]
-        Simulation_time = 36
         Number_of_servers = [2, 1]
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
                            Service_distributions = Service_distributions,
                            Transition_matrices = Transition_matrices,
-                           Simulation_time = Simulation_time,
                            Number_of_servers = Number_of_servers)
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
         self.assertEqual(len(inds), 3)
@@ -710,18 +697,16 @@ class TestSimulation(unittest.TestCase):
         Arrival_distributions = [['Exponential', 20]]
         Service_distributions = [['Deterministic', 0.01]]
         Transition_matrices = [[0.0]]
-        Simulation_time = 10
         Number_of_servers = ['server_schedule']
         Cycle_length = 3
         server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
                            Service_distributions = Service_distributions,
                            Transition_matrices = Transition_matrices,
-                           Simulation_time = Simulation_time,
                            Number_of_servers = Number_of_servers,
                            Cycle_length = Cycle_length,
                            server_schedule = server_schedule)
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers = False)
         mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
         self.assertNotEqual(set(mod_service_starts), set([0.50, 0.51, 0.52, 0.53, 0.54]))
@@ -730,19 +715,17 @@ class TestSimulation(unittest.TestCase):
         Arrival_distributions = [['Exponential', 20]]
         Service_distributions = [['Deterministic', 0.01]]
         Transition_matrices = [[0.0]]
-        Simulation_time = 10
         Number_of_servers = ['server_schedule']
         Cycle_length = 3
         server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
                            Service_distributions = Service_distributions,
                            Transition_matrices = Transition_matrices,
-                           Simulation_time = Simulation_time,
                            Number_of_servers = Number_of_servers,
                            Cycle_length = Cycle_length,
                            server_schedule = server_schedule,
                            Exact = 14)
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers=False)
         mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
         expected_set = set([Decimal(k) for k in ['0.50', '0.51', '0.52', '0.53', '0.54']])

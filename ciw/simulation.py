@@ -115,15 +115,6 @@ class Simulation:
             params[a] = params.get(a, default_dict[a])
         return params
 
-    def check_simulation_time(self):
-        """
-        Raises errors if there is an invalide simulation time
-        """
-        if self.parameters['Simulation_time'] is None:
-            raise ValueError('Simulation_time not set.')
-        if self.parameters['Simulation_time'] <= 0:
-            raise ValueError('Simulation_time must be a positive number.')
-
     def check_userdef_dist(self, func):
         """
         Safely sample from a user defined distribution
@@ -454,7 +445,6 @@ class Simulation:
         """
         Runs the simulation until max_simulation_time is reached.
         """
-        self.check_simulation_time()
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
