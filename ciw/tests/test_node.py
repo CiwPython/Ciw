@@ -40,8 +40,9 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.scheduled_servers, True)
         self.assertEqual(N.cyclelength, 100)
         self.assertEqual(N.c, 1)
-        self.assertEqual(N.masterschedule, [30, 60, 90, 100, 130,
-            160, 190, 200, 230, 260, 290, 300, 330, 360, 390])
+        self.assertEqual(N.schedule, [[0, 1], [30, 2], [60, 1], [90, 3]])
+        #self.assertEqual(N.masterschedule, [30, 60, 90, 100, 130,
+            #160, 190, 200, 230, 260, 290, 300, 330, 360, 390])
         self.assertEqual(N.next_event_date, 30)
 
     def test_repr_method(self):
@@ -374,7 +375,7 @@ class TestNode(unittest.TestCase):
             'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
         ind = ciw.Individual(1)
         self.assertEqual(Q.digraph.nodes(),
-            ['Server 5 at Node 2', 
+            ['Server 5 at Node 2',
              'Server 5 at Node 1',
              'Server 3 at Node 2',
              'Server 1 at Node 2',
@@ -404,7 +405,11 @@ class TestNode(unittest.TestCase):
         N.kill_server(s)
         self.assertEqual(N.servers, [])
         N.next_event_date = 30
+        print "***************"
+        print N.next_shift_change
         N.have_event()
+        print N.next_shift_change
+        print "***************"
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 2 at Node 1', 'Server 3 at Node 1'])
         ind = ciw.Individual(666)
@@ -529,3 +534,15 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind.data_records[1][0].blocked, 5), 5.42106)
         self.assertEqual(ind.data_records[1][0].exit_date, 9)
         self.assertEqual(ind.data_records[1][0].customer_class, 0)
+
+    def test_date_from_schedule_generator(self):
+        Q = ciw.Simulation(ciw.load_parameters(
+            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+
+        sg = Q.nodes[1].date_from_schedule_generator([30, 60, 90, 100])
+        self.assertEqual(sg.next(), 30)
+        self.assertEqual(sg.next(), 60)
+        self.assertEqual(sg.next(), 90)
+        self.assertEqual(sg.next(), 100)
+        self.assertEqual(sg.next(), 130)
+        self.assertEqual(sg.next(), 160)
