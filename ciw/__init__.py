@@ -8,5 +8,6 @@ from node import Node
 from state_tracker import *
 from exactnode import *
 from import_params import load_parameters
+from network import *
 
 __version__ = '0.0.6'
