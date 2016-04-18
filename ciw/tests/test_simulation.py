@@ -522,18 +522,17 @@ class TestSimulation(unittest.TestCase):
             'ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
         self.assertEqual(Q.transition_matrix, [[[0.0]]])
 
-    @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
-           service_rate = floats(min_value = 0.1, max_value = 100),
-           Simulation_time = floats(min_value = 0.1, max_value = 100),
+    @given(arrival_rate=floats(min_value=0.1, max_value=10),
+           service_rate=floats(min_value=0.1, max_value=10),
            rm=random_module())
-    def test_mminf_node(self, arrival_rate, service_rate, Simulation_time, rm):
+    def test_mminf_node(self, arrival_rate, service_rate, rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
                   'Number_of_servers': ['Inf'],
                   'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(params)
-        Q.simulate_until_max_time(Simulation_time)
+        Q.simulate_until_max_time(5)
         inds = Q.get_all_individuals()
         waits = [ind.data_records[1][0].wait for ind in inds]
         self.assertEqual(sum(waits), 0.0)
