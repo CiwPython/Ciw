@@ -483,7 +483,7 @@ class TestSimulation(unittest.TestCase):
         set_seed(2)
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(150)
         L = Q.get_all_individuals()
         self.assertEqual(round(
             L[300].data_records.values()[0][0].service_start_date, 8), 8.89002862)
@@ -491,7 +491,7 @@ class TestSimulation(unittest.TestCase):
         set_seed(60)
         Q = ciw.Simulation(ciw.load_parameters(
             'ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(50)
         L = Q.get_all_individuals()
         drl = []
         for dr in L[0].data_records[1]:

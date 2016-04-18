@@ -450,7 +450,7 @@ class Simulation:
             time_of_deadlock - self.times_dictionary[state]
             for state in self.times_dictionary.keys()}
 
-    def simulate_until_max_time(self):
+    def simulate_until_max_time(self, max_simulation_time):
         """
         Runs the simulation until max_simulation_time is reached.
         """
@@ -458,7 +458,7 @@ class Simulation:
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
-        while current_time < self.max_simulation_time:
+        while current_time < max_simulation_time:
             next_active_node.have_event()
             for node in self.transitive_nodes:
                 node.update_next_event_date(current_time)
