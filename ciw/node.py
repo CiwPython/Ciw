@@ -23,15 +23,18 @@ class Node:
             for cls in xrange(len(self.simulation.mu))]
         self.scheduled_servers = self.simulation.schedules[id_ - 1]
         if self.scheduled_servers:
-            self.schedule = self.simulation.parameters[
+            raw_schedule = self.simulation.parameters[
                 self.simulation.c[id_ - 1]]
-            self.cyclelength = self.simulation.parameters[
-                'Cycle_length']
+            self.cyclelength = raw_schedule[-1][0]
+            boundaries = [0] + [row[0] for row in raw_schedule[:-1]]
+            servers = [row[1] for row in raw_schedule]
+            self.schedule = [list(pair) for pair in zip(boundaries, servers)]
             self.c = self.schedule[0][1]
-            self.masterschedule = [self.increment_time(i*self.cyclelength,
-                obs) for i in xrange(int(
-                self.simulation.max_simulation_time//self.cyclelength
-                ) + 2) for obs in [t[0] for t in self.schedule]][1:]
+
+            schedule = [row[0] for row in self.schedule]
+            self.date_generator = self.date_from_schedule_generator(schedule)
+            self.next_shift_change = self.date_generator.next()
+
         else:
             self.c = self.simulation.c[id_ - 1]
         if self.simulation.queue_capacities[id_ - 1] == "Inf":
@@ -48,7 +51,7 @@ class Node:
         self.individuals = []
         self.id_number = id_
         if self.scheduled_servers:
-            self.next_event_date = self.masterschedule[0]
+            self.next_event_date = self.next_shift_change
         else:
             self.next_event_date = "Inf"
         self.blocked_queue = []
@@ -183,7 +186,7 @@ class Node:
         """
         shift = self.next_event_date%self.cyclelength
 
-        try: inx = self.schedule.index(shift)
+        try: indx = self.schedule.index(shift)
         except:
             tms = [obs[0] for obs in self.schedule]
             diffs = [abs(x-float(shift)) for x in tms]
@@ -193,7 +196,7 @@ class Node:
         self.add_new_servers(indx)
 
         self.c = self.schedule[indx][1]
-        self.masterschedule.pop(0)
+        self.next_shift_change = self.date_generator.next()
         self.begin_service_if_possible_change_shift(
             self.next_event_date)
 
@@ -202,7 +205,7 @@ class Node:
         Check whether current time is a shift change.
         """
         if self.scheduled_servers:
-            return self.next_event_date == self.masterschedule[0]
+            return self.next_event_date == self.next_shift_change
         return False
 
     def detatch_server(self, server, individual):
@@ -357,7 +360,7 @@ class Node:
             if not ind.is_blocked
             if ind.service_end_date >= current_time] + ["Inf"])
         if self.scheduled_servers:
-            next_shift_change = self.masterschedule[0]
+            next_shift_change = self.next_shift_change
             self.next_event_date = min(
                 next_end_service, next_shift_change)
         else:
@@ -401,3 +404,13 @@ class Node:
         individual.queue_size_at_arrival = False
         individual.queue_size_at_departure = False
         individual.destination = False
+
+    def date_from_schedule_generator(self, schedule):
+        """A generator that yields the next time according to a given schedule"""
+        schedule_len = len(schedule)
+        index = 0
+        date = 0
+        while True:
+            date = schedule[index % schedule_len] + (index) // schedule_len * schedule[-1]
+            index += 1
+            yield date
