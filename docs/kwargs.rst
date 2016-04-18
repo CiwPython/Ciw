@@ -17,14 +17,14 @@ This is a dictionary, with keys as customer classes, and values are lists descri
 An example is shown::
 
     'Arrival_distributions': {'Class 0': [['Exponential', 2.4],
-                                        ['Uniform', 0.3, 0.5]],
-                            'Class 1': [['Exponential', 3.0],
-                                        ['Deterministic', 0.8]]}
+                                          ['Uniform', 0.3, 0.5]],
+                              'Class 1': [['Exponential', 3.0],
+                                          ['Deterministic', 0.8]]}
 
 An example where only one class of customer is required::
 
     'Arrival_distributions': [['Exponential', 2.4],
-                            ['Exponential', 2.0]]
+                              ['Exponential', 2.0]]
 
 
 Class_change_matrices

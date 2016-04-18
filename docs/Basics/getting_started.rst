@@ -40,7 +40,7 @@ We wish to simulate this system for 1000 time units. This system is defined by t
     ... 'Transition_matrices': {'Class 0': [[0.0, 0.2], [0.1, 0.0]]}
     ... }
 
-Please see :ref:`parameters-dict` for a fuller explaination of this.
+Please see :ref:`sim-parameters` for a fuller explaination of this.
 Ciw can then use this parameters dictionary to run the simulation::
 
 	>>> import ciw

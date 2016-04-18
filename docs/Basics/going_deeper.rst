@@ -2,7 +2,7 @@ Going Deeper
 ============
 
 In :ref:`getting-started` you saw how to run a simple simulation. This page lets you access the simulation by exploring its attributes and methods.
-First, set up a parameters file as described in :ref:`parameters-file`.
+First, set up a parameters file as described in :ref:`sim-parameters`.
 
 Now importing Ciw and the parameters file as a dictionary is simple::
 
