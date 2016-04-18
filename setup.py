@@ -18,5 +18,5 @@ setup(
     packages=['ciw'],
     description='A discrete event simulation library for open queueing networks',
     long_description=readme + '\n\n' + changes + '\n\n' + authors,
-    install_requires=["PyYAML", "networkx", "hypothesis", "numpy"],
+    install_requires=["PyYAML", "networkx", "hypothesis", "numpy", "tqdm"]
 )

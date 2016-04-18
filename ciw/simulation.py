@@ -7,6 +7,7 @@ import copy
 from decimal import Decimal, getcontext
 from collections import namedtuple
 
+import tqdm
 import yaml
 import numpy.random as nprandom
 
@@ -19,7 +20,6 @@ from .individual import Individual
 from .data_record import DataRecord
 from .state_tracker import *
 from .deadlock_detector import *
-
 
 Record = namedtuple('Record', 'id_number customer_class node arrival_date waiting_time service_start_date service_time service_end_date time_blocked exit_date destination queue_size_at_arrival queue_size_at_departure')
 
@@ -85,6 +85,31 @@ class Simulation(object):
         elif deadlock_detector:
             return NaiveTracker(self)
         return StateTracker(self)
+
+    def detect_deadlock(self):
+        """
+        Detects whether the system is in a deadlocked state,
+        that is, is there a knot. Note that this code is taken
+        and adapted from the NetworkX Developer Zone Ticket
+        #663 knot.py (09/06/2015)
+        """
+        knots = []
+        for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
+            nodes = set(subgraph.nodes())
+            if len(nodes) == 1:
+                n = nodes.pop()
+                nodes.add(n)
+                if set(self.digraph.successors(n)) == nodes:
+                    knots.append(subgraph)
+            else:
+                for n in nodes:
+                    successors = nx.descendants(self.digraph, n)
+                    if successors <= nodes:
+                        knots.append(subgraph)
+                        break
+        if len(knots) > 0:
+            return True
+        return False
 
     def choose_deadlock_detection(self, deadlock_detector):
         """
@@ -236,19 +261,34 @@ class Simulation(object):
             time_of_deadlock - self.times_dictionary[state]
             for state in self.times_dictionary.keys()}
 
-    def simulate_until_max_time(self, max_simulation_time):
+    def simulate_until_max_time(self, max_simulation_time, progress_bar=False):
         """
         Runs the simulation until max_simulation_time is reached.
         """
         self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
+
+        if progress_bar is not False:
+            self.progress_bar = tqdm.tqdm(total=max_simulation_time)
+
         while current_time < max_simulation_time:
             next_active_node.have_event()
             for node in self.transitive_nodes:
                 node.update_next_event_date(current_time)
             next_active_node = self.find_next_active_node()
+
+            if progress_bar:
+                remaining_time = max_simulation_time - self.progress_bar.n
+                time_increment = next_active_node.next_event_date - current_time
+                self.progress_bar.update(min(time_increment, remaining_time))
+
             current_time = next_active_node.next_event_date
+
+        if progress_bar:
+            remaining_time = max(max_simulation_time - self.progress_bar.n, 0)
+            self.progress_bar.update(remaining_time)
+            self.progress_bar.close()
 
     def source(self, c, n, kind):
         """

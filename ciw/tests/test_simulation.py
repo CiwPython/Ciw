@@ -104,6 +104,22 @@ class TestSimulation(unittest.TestCase):
             drl.append((dr.customer_class, dr.service_time))
         self.assertEqual(drl, [(1, 10.0), (0, 5.0), (0, 5.0)])
 
+    def test_simulate_until_max_time_with_pbar_method(self):
+        set_seed(2)
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
+        Q.simulate_until_max_time(150, progress_bar=True)
+        self.assertEqual(Q.progress_bar.total, 150)
+        self.assertEqual(Q.progress_bar.n, 150)
+
+        # Check that results are the same
+        L = Q.get_all_records()
+        self.assertEqual(round(
+            L[300].service_start_date, 8), 2.49842838)
+
+
+
+
     def test_simulate_until_deadlock_method(self):
         ciw.seed(3)
         Q = ciw.Simulation(ciw.create_network(
