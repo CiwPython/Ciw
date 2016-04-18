@@ -73,7 +73,6 @@ class TestSimulation(unittest.TestCase):
            'Node 3',
            'Node 4',
            'Exit Node'])
-        self.assertEqual(Q.max_simulation_time, 150)
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
 
@@ -129,7 +128,6 @@ class TestSimulation(unittest.TestCase):
                                            [0.1, 0.3, 0.2, 0.2],
                                            [0.0, 0.0, 0.0, 0.3]]}
         Detect_deadlock = False
-        Simulation_time = 150
         Number_of_classes = 3
         Number_of_nodes = 4
         Class_change_matrices = {'Node 0': [[0.7, 0.3, 0.0],
@@ -149,7 +147,6 @@ class TestSimulation(unittest.TestCase):
         Queue_capacities = [20, 'Inf', 30, 'Inf']
 
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
-                           Simulation_time = Simulation_time,
                            Queue_capacities = Queue_capacities,
                            Service_distributions = Service_distributions,
                            Number_of_servers = Number_of_servers,
@@ -201,13 +198,11 @@ class TestSimulation(unittest.TestCase):
            'Node 3',
            'Node 4',
            'Exit Node'])
-        self.assertEqual(Q.max_simulation_time, 150)
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, [20, 'Inf', 30, 'Inf'])
 
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
-                           Simulation_time = Simulation_time,
                            Service_distributions = Service_distributions,
                            Number_of_servers = Number_of_servers,
                            Transition_matrices = Transition_matrices)
@@ -255,13 +250,11 @@ class TestSimulation(unittest.TestCase):
            'Node 3',
            'Node 4',
            'Exit Node'])
-        self.assertEqual(Q.max_simulation_time, 150)
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False, False, False, False])
         self.assertEqual(Q.queue_capacities, ['Inf', 'Inf', 'Inf', 'Inf'])
 
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
-                           Simulation_time = Simulation_time,
                            Queue_capacities = Queue_capacities,
                            Service_distributions = Service_distributions,
                            Number_of_servers = Number_of_servers,
@@ -284,7 +277,6 @@ class TestSimulation(unittest.TestCase):
                                                   [0.0, 0.0, 1.0]]])
 
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
-                           Simulation_time = Simulation_time,
                            Queue_capacities = Queue_capacities,
                            Service_distributions = Service_distributions,
                            Number_of_servers = Number_of_servers2,
@@ -312,7 +304,6 @@ class TestSimulation(unittest.TestCase):
                                                  ['Exponential', 1.0]]},
             Number_of_nodes = 4,
             Detect_deadlock = False,
-            Simulation_time = 150,
             Number_of_servers = [9, 10, 8, 8],
             Queue_capacities = [20, 'Inf', 30, 'Inf'],
             Number_of_classes = 3,
@@ -354,7 +345,6 @@ class TestSimulation(unittest.TestCase):
                                                   ['Exponential', 4.0],
                                                   ['Exponential', 1.0]]},
             'Number_of_nodes': 4,
-            'Simulation_time': 150,
             'Detect_deadlock': False,
             'Exact': False,
             'Name': 'Simulation',
@@ -389,18 +379,15 @@ class TestSimulation(unittest.TestCase):
     @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
            service_rate = floats(min_value = 0.1, max_value = 100),
            number_of_servers = integers(min_value = 1, max_value = 30),
-           Simulation_time = floats(min_value = 1.0, max_value = 10.0),
            rm = random_module())
     def test_simple_init_method(self,
                                 arrival_rate,
                                 service_rate,
                                 number_of_servers,
-                                Simulation_time,
                                 rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
                   'Number_of_servers': [number_of_servers],
-                  'Simulation_time': Simulation_time,
                   'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(params)
@@ -414,7 +401,6 @@ class TestSimulation(unittest.TestCase):
             'Number_of_classes': 1,
             'Name': 'Simulation',
             'Queue_capacities': ['Inf'],
-            'Simulation_time': Simulation_time,
             'Detect_deadlock': False,
             'Exact': False
         }
@@ -425,25 +411,21 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.transition_matrix, [[[0.0]]])
         self.assertEqual([str(obs) for obs in Q.nodes],
           ['Arrival Node', 'Node 1', 'Exit Node'])
-        self.assertEqual(Q.max_simulation_time, Simulation_time)
         self.assertEqual(Q.class_change_matrix, 'NA')
         self.assertEqual(Q.schedules, [False])
 
     @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
            service_rate = floats(min_value = 0.1, max_value = 100),
            number_of_servers = integers(min_value = 1, max_value = 30),
-           Simulation_time = floats(min_value = 1.0, max_value = 10.0),
            rm=random_module())
     def test_build_mmc_parameters(self,
                                   arrival_rate,
                                   service_rate,
                                   number_of_servers,
-                                  Simulation_time,
                                   rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
                   'Number_of_servers': [number_of_servers],
-                  'Simulation_time': Simulation_time,
                   'Transition_matrices': [[0.0]]}
         Q = ciw.Simulation(params)
         expected_dictionary = {
@@ -454,7 +436,6 @@ class TestSimulation(unittest.TestCase):
             'Number_of_nodes': 1,
             'Number_of_classes': 1,
             'Queue_capacities': ['Inf'],
-            'Simulation_time': Simulation_time,
             'Detect_deadlock': False,
             'Exact': False,
             'Name': 'Simulation'
@@ -543,13 +524,11 @@ class TestSimulation(unittest.TestCase):
 
     @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
            service_rate = floats(min_value = 0.1, max_value = 100),
-           Simulation_time = floats(min_value = 1.0, max_value = 10.0),
            rm=random_module())
-    def test_mminf_node(self, arrival_rate, service_rate, Simulation_time, rm):
+    def test_mminf_node(self, arrival_rate, service_rate, rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
                   'Number_of_servers': ['Inf'],
-                  'Simulation_time': Simulation_time,
                   'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(params)
@@ -564,7 +543,6 @@ class TestSimulation(unittest.TestCase):
                   'Number_of_servers': [9],
                   'Number_of_classes': 1,
                   'Transition_matrices': {'Class 0': [[0.5]]},
-                  'Simulation_time': 400,
                   'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf'],
                   'Detect_deadlock': False}

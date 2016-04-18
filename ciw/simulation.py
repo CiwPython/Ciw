@@ -65,7 +65,6 @@ class Simulation:
                 for i in xrange(self.parameters['Number_of_nodes'])]
         else:
             self.class_change_matrix = 'NA'
-        self.max_simulation_time = self.parameters['Simulation_time']
         self.inter_arrival_times = self.find_times_dict(self.lmbda)
         self.service_times = self.find_times_dict(self.mu)
         self.transitive_nodes = [NodeType(i + 1, self)
@@ -107,7 +106,6 @@ class Simulation:
             'Queue_capacities': ['Inf' for _ in xrange(len(
                 params['Number_of_servers']))],
             'Detect_deadlock': False,
-            'Simulation_time': None,
             'Exact': False
             }
 
