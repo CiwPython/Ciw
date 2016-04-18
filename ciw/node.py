@@ -25,14 +25,14 @@ class Node:
         if self.scheduled_servers:
             raw_schedule = self.simulation.parameters[
                 self.simulation.c[id_ - 1]]
-            self.cyclelength = raw_schedule[-1][0]
+            self.cyclelength = self.increment_time(0, raw_schedule[-1][0])
             boundaries = [0] + [row[0] for row in raw_schedule[:-1]]
             servers = [row[1] for row in raw_schedule]
             self.schedule = [list(pair) for pair in zip(boundaries, servers)]
             self.c = self.schedule[0][1]
 
-            schedule = [row[0] for row in self.schedule]
-            self.date_generator = self.date_from_schedule_generator(schedule)
+            raw_schedule_boundaries = [row[0] for row in raw_schedule]
+            self.date_generator = self.date_from_schedule_generator(raw_schedule_boundaries)
             self.next_shift_change = self.date_generator.next()
 
         else:
@@ -405,12 +405,12 @@ class Node:
         individual.queue_size_at_departure = False
         individual.destination = False
 
-    def date_from_schedule_generator(self, schedule):
+    def date_from_schedule_generator(self, boundaries):
         """A generator that yields the next time according to a given schedule"""
-        schedule_len = len(schedule)
+        boundaries_len = len(boundaries)
         index = 0
         date = 0
         while True:
-            date = schedule[index % schedule_len] + (index) // schedule_len * schedule[-1]
+            date = self.increment_time(boundaries[index % boundaries_len], (index) // boundaries_len * boundaries[-1])
             index += 1
             yield date

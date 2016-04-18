@@ -524,8 +524,9 @@ class TestSimulation(unittest.TestCase):
 
     @given(arrival_rate = floats(min_value = 0.1, max_value = 100),
            service_rate = floats(min_value = 0.1, max_value = 100),
+           Simulation_time = floats(min_value = 0.1, max_value = 100),
            rm=random_module())
-    def test_mminf_node(self, arrival_rate, service_rate, rm):
+    def test_mminf_node(self, arrival_rate, service_rate, Simulation_time, rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
                   'Number_of_servers': ['Inf'],
@@ -676,17 +677,15 @@ class TestSimulation(unittest.TestCase):
         Service_distributions = [['Deterministic', 0.01]]
         Transition_matrices = [[0.0]]
         Number_of_servers = ['server_schedule']
-        Cycle_length = 3
-        server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
+        server_schedule = [[0.5, 0], [0.55, 1], [3.0, 0]]
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
                            Service_distributions = Service_distributions,
                            Transition_matrices = Transition_matrices,
                            Number_of_servers = Number_of_servers,
-                           Cycle_length = Cycle_length,
                            server_schedule = server_schedule)
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers = False)
-        mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
+        mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
         self.assertNotEqual(set(mod_service_starts), set([0.50, 0.51, 0.52, 0.53, 0.54]))
 
         set_seed(777)
@@ -694,17 +693,15 @@ class TestSimulation(unittest.TestCase):
         Service_distributions = [['Deterministic', 0.01]]
         Transition_matrices = [[0.0]]
         Number_of_servers = ['server_schedule']
-        Cycle_length = 3
-        server_schedule = [[0.0, 0], [0.5, 1], [0.55, 0]]
+        server_schedule = [[0.5, 0], [0.55, 1], [3.0, 0]]
         Q = ciw.Simulation(Arrival_distributions = Arrival_distributions,
                            Service_distributions = Service_distributions,
                            Transition_matrices = Transition_matrices,
                            Number_of_servers = Number_of_servers,
-                           Cycle_length = Cycle_length,
                            server_schedule = server_schedule,
                            Exact = 14)
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers=False)
-        mod_service_starts = [obs%Cycle_length for obs in [r[5] for r in recs]]
+        mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
         expected_set = set([Decimal(k) for k in ['0.50', '0.51', '0.52', '0.53', '0.54']])
         self.assertEqual(set(mod_service_starts), expected_set)

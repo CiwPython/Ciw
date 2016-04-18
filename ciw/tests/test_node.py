@@ -405,11 +405,7 @@ class TestNode(unittest.TestCase):
         N.kill_server(s)
         self.assertEqual(N.servers, [])
         N.next_event_date = 30
-        print "***************"
-        print N.next_shift_change
         N.have_event()
-        print N.next_shift_change
-        print "***************"
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 2 at Node 1', 'Server 3 at Node 1'])
         ind = ciw.Individual(666)
