@@ -134,7 +134,7 @@ Ciw features a :code:`load_parameters` function that imports a parameters file a
 And then to load them in::
 
     >>> import ciw
-    >>> params = ciw.load_parameters('parameters.yml')
-    >>> Q = ciw.Simulation(params)
+    >>> params = ciw.load_parameters('parameters.yml') # doctest:+SKIP
+    >>> Q = ciw.Simulation(params) # doctest:+SKIP
 
 The variable names are identical to the keys of the parameters dictionary.
