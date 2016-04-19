@@ -16,19 +16,19 @@ class TestSimulation(unittest.TestCase):
 
     def test_repr_method(self):
         params1 = ciw.load_parameters(
-          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+          'ciw/tests/testing_parameters/params.yml')
         Q = ciw.Simulation(params1)
         self.assertEqual(str(Q), 'Simulation')
 
         params2 = ciw.load_parameters(
-          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+          'ciw/tests/testing_parameters/params.yml')
         params2['Name'] = 'My special simulation instance!'
         Q = ciw.Simulation(params2)
         self.assertEqual(str(Q), 'My special simulation instance!')
 
     def test_init_method_from_dict(self):
         Q = ciw.Simulation(ciw.load_parameters(
-          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+          'ciw/tests/testing_parameters/params.yml'))
         self.assertEqual(Q.lmbda, [[['Exponential', 3.0],
                                     ['Exponential', 7.0],
                                     ['Exponential', 4.0],
@@ -77,13 +77,13 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.schedules, [False, False, False, False])
 
         Q = ciw.Simulation(ciw.load_parameters(
-          'ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
+          'ciw/tests/testing_parameters/params_change_class.yml'))
         self.assertEqual(Q.class_change_matrix,
           [[[0.5, 0.5], [0.5, 0.5]],
            [[1.0, 0.0], [0.0, 1.0]]])
 
         Q = ciw.Simulation(ciw.load_parameters(
-          'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+          'ciw/tests/testing_parameters/params_schedule.yml'))
         self.assertEqual(Q.schedules, [True, False])
 
 
@@ -444,7 +444,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_find_next_active_node_method(self):
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+            'ciw/tests/testing_parameters/params.yml'))
         i = 0
         for node in Q.nodes[:-1]:
             node.next_event_date = i
@@ -452,7 +452,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(str(Q.find_next_active_node()), 'Arrival Node')
 
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+            'ciw/tests/testing_parameters/params.yml'))
         i = 10
         for node in Q.nodes[:-1]:
             node.next_event_date = i
@@ -462,7 +462,7 @@ class TestSimulation(unittest.TestCase):
     def test_simulate_until_max_time_method(self):
         set_seed(2)
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+            'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(150)
         L = Q.get_all_individuals()
         self.assertEqual(round(
@@ -470,7 +470,7 @@ class TestSimulation(unittest.TestCase):
 
         set_seed(60)
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
+            'ciw/tests/testing_parameters/params_change_class.yml'))
         Q.simulate_until_max_time(50)
         L = Q.get_all_individuals()
         drl = []
@@ -481,13 +481,13 @@ class TestSimulation(unittest.TestCase):
     def test_simulate_until_deadlock_method(self):
         set_seed(3)
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
+            'ciw/tests/testing_parameters/params_deadlock.yml'))
         Q.simulate_until_deadlock()
         self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 31.26985409)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+            'ciw/tests/testing_parameters/params.yml'))
         nodes = ['A', 'B', 'C', 'D', 'E']
         connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
         for nd in nodes:
@@ -497,7 +497,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.detect_deadlock(), True)
 
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+            'ciw/tests/testing_parameters/params.yml'))
         nodes = ['A', 'B', 'C', 'D']
         connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         for nd in nodes:
@@ -507,7 +507,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.detect_deadlock(), False)
 
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+            'ciw/tests/testing_parameters/params.yml'))
         nodes = ['A', 'B']
         for nd in nodes:
             Q.digraph.add_node(nd)
@@ -519,7 +519,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_mm1_from_file(self):
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
+            'ciw/tests/testing_parameters/params_mm1.yml'))
         self.assertEqual(Q.transition_matrix, [[[0.0]]])
 
     @given(arrival_rate=floats(min_value=0.1, max_value=10),
@@ -609,30 +609,30 @@ class TestSimulation(unittest.TestCase):
 
     def test_writing_data_files(self):
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+            'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(50)
         files = [x for x in os.walk(
-            'ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
+            'ciw/tests/testing_parameters/')][0][2]
         self.assertEqual('data.csv' in files, False)
         Q.write_records_to_file(
-            'ciw/tests/datafortesting/logs_test_for_simulation/data.csv')
+            'ciw/tests/testing_parameters/data.csv')
         files = [x for x in os.walk(
-            'ciw/tests/datafortesting/logs_test_for_simulation/')][0][2]
+            'ciw/tests/testing_parameters/')][0][2]
         self.assertEqual('data.csv' in files, True)
-        os.remove('ciw/tests/datafortesting/logs_test_for_simulation/data.csv')
+        os.remove('ciw/tests/testing_parameters/data.csv')
 
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_mm1/parameters.yml'))
+            'ciw/tests/testing_parameters/params_mm1.yml'))
         Q.simulate_until_max_time(50)
         files = [x for x in os.walk(
-            'ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
+            'ciw/tests/testing_parameters/')][0][2]
         self.assertEqual('data_1.csv' in files, False)
         Q.write_records_to_file(
-            'ciw/tests/datafortesting/logs_test_for_mm1/data_1.csv', False)
+            'ciw/tests/testing_parameters/data_1.csv', False)
         files = [x for x in os.walk(
-            'ciw/tests/datafortesting/logs_test_for_mm1/')][0][2]
+            'ciw/tests/testing_parameters/')][0][2]
         self.assertEqual('data_1.csv' in files, True)
-        os.remove('ciw/tests/datafortesting/logs_test_for_mm1/data_1.csv')
+        os.remove('ciw/tests/testing_parameters/data_1.csv')
 
     def test_simultaneous_events_example(self):
         # This should yield 3 or 2 customers finishing service.

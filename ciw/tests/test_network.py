@@ -154,7 +154,7 @@ class TestNetwork(unittest.TestCase):
 
     def test_network_from_file(self):
         N = ciw.Network_From_File(
-          'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+          'ciw/tests/testing_parameters/params.yml')
         self.assertEqual(N.number_of_service_centres, 4)
         self.assertEqual(N.number_of_customer_classes, 3)
         self.assertEqual(N.service_centres[0].queueing_capacity, 20)

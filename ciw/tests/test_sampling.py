@@ -493,7 +493,7 @@ class TestSampling(unittest.TestCase):
     def test_sampling_empirical_dist(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
         Arrival_distributions = [['Empirical',
-            'ciw/tests/datafortesting/sample_empirical_dist.csv']]
+            'ciw/tests/testing_parameters/sample_empirical_dist.csv']]
         Service_distributions = [['Empirical', my_empirical_dist]]
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
@@ -534,7 +534,7 @@ class TestSampling(unittest.TestCase):
         my_empirical_dist = dist
         Arrival_distributions = [['Empirical', my_empirical_dist]]
         Service_distributions = [['Empirical',
-            'ciw/tests/datafortesting/sample_empirical_dist.csv']]
+            'ciw/tests/testing_parameters/sample_empirical_dist.csv']]
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
@@ -808,7 +808,7 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_check_userdef_dist(self, positive_float, negative_float, word, rm):
         assume(negative_float < 0)
-        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.load_parameters('ciw/tests/testing_parameters/params.yml'))
         self.assertEqual(Q.check_userdef_dist(lambda : positive_float), positive_float)
         self.assertRaises(ValueError, Q.check_userdef_dist, lambda : negative_float)
         self.assertRaises(ValueError, Q.check_userdef_dist, lambda : word)
