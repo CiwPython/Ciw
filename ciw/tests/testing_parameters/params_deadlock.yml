@@ -4,7 +4,7 @@ Arrival_distributions:
     - 35.0
   - - Exponential
     - 35.0
-Detect_deadlock: True
+Detect_deadlock: 'StateDigraph'
 Number_of_classes: 1
 Number_of_nodes: 2
 Number_of_servers:

@@ -7,7 +7,6 @@ import copy
 from decimal import Decimal, getcontext
 
 import yaml
-import networkx as nx
 import numpy.random as nprandom
 
 from node import Node
@@ -18,6 +17,7 @@ from server import Server
 from individual import Individual
 from data_record import DataRecord
 from state_tracker import *
+from deadlock_detector import *
 
 class Simulation:
     """
@@ -43,8 +43,7 @@ class Simulation:
         self.name = self.parameters['Name']
         self.c = self.parameters['Number_of_servers']
         self.number_of_nodes = self.parameters['Number_of_nodes']
-        self.detecting_deadlock = self.parameters['Detect_deadlock']
-        self.digraph = nx.DiGraph()
+        self.deadlock_detector = self.choose_deadlock_detection()
         self.lmbda = [self.parameters['Arrival_distributions'][
             'Class ' + str(i)] for i in xrange(self.parameters[
             'Number_of_classes'])]
@@ -140,7 +139,7 @@ class Simulation:
                 if x != 'Inf':
                     if x not in self.parameters:
                         raise ValueError('Number_of_servers must be list of positive integers or valid server schedules.')
-        if not isinstance(self.parameters['Detect_deadlock'], bool):
+        if self.parameters['Detect_deadlock'] not in set([False, 'StateDigraph']):
             raise ValueError('Detect_deadlock must be a boolean.')
         if len(self.parameters['Queue_capacities']) != self.parameters['Number_of_nodes']:
             raise ValueError('Queue_capacities must be list of length Number_of_nodes.')
@@ -272,31 +271,16 @@ class Simulation:
         elif self.parameters['Detect_deadlock']:
             return NaiveTracker(self)
         return StateTracker(self)
-    
-    def detect_deadlock(self):
+
+    def choose_deadlock_detection(self):
         """
-        Detects whether the system is in a deadlocked state,
-        that is, is there a knot. Note that this code is taken
-        and adapted from the NetworkX Developer Zone Ticket
-        #663 knot.py (09/06/2015)
+        Chooses the deadlock detection mechanism to use for the
+        simulation.
         """
-        knots = []
-        for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
-            nodes = set(subgraph.nodes())
-            if len(nodes) == 1:
-                n = nodes.pop()
-                nodes.add(n)
-                if set(self.digraph.successors(n)) == nodes:
-                    knots.append(subgraph)
-            else:
-                for n in nodes:
-                    successors = nx.descendants(self.digraph, n)
-                    if successors <= nodes:
-                        knots.append(subgraph)
-                        break
-        if len(knots) > 0:
-            return True
-        return False
+        if self.parameters['Detect_deadlock'] == False:
+            return NoDeadlockDetection()
+        if self.parameters['Detect_deadlock'] == 'StateDigraph':
+            return StateDigraphMethod()
 
     def find_distributions(self, n, c, source):
         """
@@ -430,7 +414,7 @@ class Simulation:
                 self.times_dictionary[current_state] = current_time
             for node in self.transitive_nodes:
                 node.update_next_event_date(current_time)
-            deadlocked = self.detect_deadlock()
+            deadlocked = self.deadlock_detector.detect_deadlock()
             if deadlocked:
                 time_of_deadlock = current_time
             next_active_node = self.find_next_active_node()

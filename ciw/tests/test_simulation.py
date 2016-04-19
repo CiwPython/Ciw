@@ -7,6 +7,7 @@ import os
 import copy
 from numpy import random as nprandom
 from decimal import Decimal
+import networkx as nx
 
 def set_seed(x):
     seed(x)
@@ -487,35 +488,38 @@ class TestSimulation(unittest.TestCase):
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/testing_parameters/params.yml'))
+            'ciw/tests/testing_parameters/params_deadlock.yml'))
         nodes = ['A', 'B', 'C', 'D', 'E']
         connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
+        Q.deadlock_detector.statedigraph = nx.DiGraph()
         for nd in nodes:
-            Q.digraph.add_node(nd)
+            Q.deadlock_detector.statedigraph.add_node(nd)
         for cnctn in connections:
-            Q.digraph.add_edge(cnctn[0], cnctn[1])
-        self.assertEqual(Q.detect_deadlock(), True)
+            Q.deadlock_detector.statedigraph.add_edge(cnctn[0], cnctn[1])
+        self.assertEqual(Q.deadlock_detector.detect_deadlock(), True)
 
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/testing_parameters/params.yml'))
+            'ciw/tests/testing_parameters/params_deadlock.yml'))
         nodes = ['A', 'B', 'C', 'D']
         connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
+        Q.deadlock_detector.statedigraph = nx.DiGraph()
         for nd in nodes:
-            Q.digraph.add_node(nd)
+            Q.deadlock_detector.statedigraph.add_node(nd)
         for cnctn in connections:
-            Q.digraph.add_edge(cnctn[0], cnctn[1])
-        self.assertEqual(Q.detect_deadlock(), False)
+            Q.deadlock_detector.statedigraph.add_edge(cnctn[0], cnctn[1])
+        self.assertEqual(Q.deadlock_detector.detect_deadlock(), False)
 
         Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/testing_parameters/params.yml'))
+            'ciw/tests/testing_parameters/params_deadlock.yml'))
         nodes = ['A', 'B']
+        Q.deadlock_detector.statedigraph = nx.DiGraph()
         for nd in nodes:
-            Q.digraph.add_node(nd)
-        self.assertEqual(Q.detect_deadlock(), False)
+            Q.deadlock_detector.statedigraph.add_node(nd)
+        self.assertEqual(Q.deadlock_detector.detect_deadlock(), False)
         connections = [('A', 'A')]
         for cnctn in connections:
-            Q.digraph.add_edge(cnctn[0], cnctn[1])
-        self.assertEqual(Q.detect_deadlock(), True)
+            Q.deadlock_detector.statedigraph.add_edge(cnctn[0], cnctn[1])
+        self.assertEqual(Q.deadlock_detector.detect_deadlock(), True)
 
     def test_mm1_from_file(self):
         Q = ciw.Simulation(ciw.load_parameters(
