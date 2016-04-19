@@ -56,3 +56,110 @@ class TestCustomerClass(unittest.TestCase):
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
         self.assertEqual(CC.service_distributions, service_distributions)
         self.assertEqual(CC.transition_matrix, transition_matrix)
+
+
+
+class TestNetwork(unittest.TestCase):
+
+    def test_init_method(self):
+        service_centres = []
+        for i in xrange(4):
+            number_of_servers = 2
+            queueing_capacity = 'Inf'
+            class_change_matrix = [[0.2, 0.8],
+                                   [1.0, 0.0]]
+            schedule = None
+            service_centres.append(ciw.ServiceCentre(number_of_servers,
+                                           queueing_capacity,
+                                           class_change_matrix,
+                                           schedule))
+        customer_classes = []
+        for i in xrange(2):
+            arrival_distributions = [["Uniform", 4.0, 9.0],
+                                     ["Exponential", 5],
+                                     ["Gamma", 0.6, 1.2]]
+            service_distributions = [["Gamma", 4.0, 9.0],
+                                     ["Uniform", 0.6, 1.2],
+                                     ["Exponential", 5]]
+            transition_matrix = [[.2, .6, .2], [0, 0, 0], [.5, 0, 0]]
+            customer_classes.append(ciw.CustomerClass(arrival_distributions,
+                                             service_distributions,
+                                             transition_matrix))
+
+        N = ciw.Network(service_centres, customer_classes)
+
+        self.assertEqual(N.service_centres, service_centres)
+        self.assertEqual(N.customer_classes, customer_classes)
+        self.assertEqual(N.number_of_service_centres, 4)
+        self.assertEqual(N.number_of_customer_classes, 2)
+
+
+    def test_network_from_dictionary(self):
+        params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]]},
+                  'Service_distributions': {'Class 0': [['Exponential', 7.0]]},
+                  'Number_of_servers': [9],
+                  'Number_of_classes': 1,
+                  'Transition_matrices': {'Class 0': [[0.5]]},
+                  'Number_of_nodes': 1,
+                  'Queue_capacities': ['Inf']}
+        N = ciw.Network_From_Dictionary(params)
+        
+        self.assertEqual(N.number_of_service_centres, 1)
+        self.assertEqual(N.number_of_customer_classes, 1)
+        self.assertEqual(N.service_centres[0].queueing_capacity, 'Inf')
+        self.assertEqual(N.service_centres[0].number_of_servers, 9)
+        self.assertEqual(N.service_centres[0].class_change_matrix, None)
+        self.assertEqual(N.service_centres[0].schedule, None)
+        self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0]])
+        self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0]])
+        self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5]])
+
+
+        params = {'Arrival_distributions': [['Exponential', 3.0], ['Uniform', 0.2, 0.6]],
+                  'Service_distributions': [['Exponential', 7.0], ['Deterministic', 0.7]],
+                  'Number_of_servers': ['my_amazing_schedule', 3],
+                  'Transition_matrices': [[0.5, 0.2], [0.0, 0.0]],
+                  'Queue_capacities': [10, 'Inf'],
+                  'my_amazing_schedule': [[20, 1], [50, 4]]}
+        N = ciw.Network_From_Dictionary(params)
+        
+        self.assertEqual(N.number_of_service_centres, 2)
+        self.assertEqual(N.number_of_customer_classes, 1)
+        self.assertEqual(N.service_centres[0].queueing_capacity, 10)
+        self.assertEqual(N.service_centres[0].number_of_servers, 'schedule')
+        self.assertEqual(N.service_centres[0].class_change_matrix, None)
+        self.assertEqual(N.service_centres[0].schedule, [[20, 1], [50, 4]])
+        self.assertEqual(N.service_centres[1].queueing_capacity, 'Inf')
+        self.assertEqual(N.service_centres[1].number_of_servers, 3)
+        self.assertEqual(N.service_centres[1].class_change_matrix, None)
+        self.assertEqual(N.service_centres[1].schedule, None)
+        self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0], ['Uniform', 0.2, 0.6]])
+        self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0], ['Deterministic', 0.7]])
+        self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5, 0.2], [0.0, 0.0]])
+
+
+        params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]],
+                                            'Class 1': [['Exponential', 4.0]]},
+                  'Service_distributions': {'Class 0': [['Exponential', 7.0]],
+                                            'Class 1': [['Uniform', 0.4, 1.2]]},
+                  'Number_of_servers': [9],
+                  'Transition_matrices': {'Class 0': [[0.5]],
+                                          'Class 1': [[0.0]]},
+                  'Number_of_nodes': 1,
+                  'Queue_capacities': ['Inf'],
+                  'Class_change_matrices': {'Node 1': [[0.0, 1.0], [0.2, 0.8]]}}
+        N = ciw.Network_From_Dictionary(params)
+        
+        self.assertEqual(N.number_of_service_centres, 1)
+        self.assertEqual(N.number_of_customer_classes, 2)
+        self.assertEqual(N.service_centres[0].queueing_capacity, 'Inf')
+        self.assertEqual(N.service_centres[0].number_of_servers, 9)
+        self.assertEqual(N.service_centres[0].class_change_matrix, [[0.0, 1.0], [0.2, 0.8]])
+        self.assertEqual(N.service_centres[0].schedule, None)
+        self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0]])
+        self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0]])
+        self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5]])
+        self.assertEqual(N.customer_classes[1].arrival_distributions, [['Exponential', 4.0]])
+        self.assertEqual(N.customer_classes[1].service_distributions, [['Uniform', 0.4, 1.2]])
+        self.assertEqual(N.customer_classes[1].transition_matrix, [[0.0]])
+

@@ -30,3 +30,16 @@ class CustomerClass:
         self.arrival_distributions = arrival_distributions
         self.service_distributions = service_distributions
         self.transition_matrix = transition_matrix
+
+class Network:
+    """
+    An information store the queueing network
+    """
+    def __init__(self, service_centres, customer_classes):
+        """
+        Initialises the Network object
+        """
+        self.service_centres = service_centres
+        self.customer_classes = customer_classes
+        self.number_of_service_centres = len(service_centres)
+        self.number_of_customer_classes = len(customer_classes)
