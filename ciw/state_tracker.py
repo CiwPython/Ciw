@@ -54,7 +54,7 @@ class NaiveTracker(StateTracker):
         """
         self.simulation = simulation
         self.state = [[0, 0] for i in xrange(
-            self.simulation.number_of_nodes)]
+            self.simulation.network.number_of_nodes)]
 
     def change_state_accept(self, node_id, cust_cls):
         """
@@ -108,9 +108,9 @@ class MatrixTracker(StateTracker):
         """
         self.simulation = simulation
         self.state = [[[[] for i in xrange(
-            self.simulation.number_of_nodes)] for i in xrange(
-            self.simulation.number_of_nodes)], [0 for i in xrange(
-            self.simulation.number_of_nodes)]]
+            self.simulation.network.number_of_nodes)] for i in xrange(
+            self.simulation.network.number_of_nodes)], [0 for i in xrange(
+            self.simulation.network.number_of_nodes)]]
         self.increment = 1
 
     def change_state_accept(self, node_id, cust_cls):

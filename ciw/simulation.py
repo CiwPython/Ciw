@@ -23,55 +23,29 @@ class Simulation:
     """
     Overall simulation class
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, network, exact=False, name='Simulation', tracker=False, deadlock_detector=False):
         """
         Initialise a queue instance.
         """
-        if args:
-            parameters = copy.deepcopy(args[0])
-        else:
-            parameters = kwargs
-        self.parameters = self.build_parameters(parameters)
-        self.check_valid_parameters()
-        if not self.parameters['Exact']:
+        self.network = network
+        # self.check_valid_parameters(network)
+        if not exact:
             NodeType = Node
             ArrivalNodeType = ArrivalNode
         else:
             NodeType = ExactNode
             ArrivalNodeType = ExactArrivalNode
-            getcontext().prec = self.parameters['Exact']
-        self.name = self.parameters['Name']
-        self.c = self.parameters['Number_of_servers']
-        self.number_of_nodes = self.parameters['Number_of_nodes']
-        self.deadlock_detector = self.choose_deadlock_detection()
-        self.lmbda = [self.parameters['Arrival_distributions'][
-            'Class ' + str(i)] for i in xrange(self.parameters[
-            'Number_of_classes'])]
-        self.mu = [self.parameters['Service_distributions'][
-            'Class ' + str(i)] for i in xrange(
-            self.parameters['Number_of_classes'])]
-        self.schedules = [False for i in xrange(len(self.c))]
-        for i in xrange(len(self.c)):
-            if isinstance(self.c[i], str) and self.c[i] != 'Inf':
-                self.schedules[i] = True
-        self.queue_capacities = self.parameters['Queue_capacities']
-        self.transition_matrix = [self.parameters[
-            'Transition_matrices']['Class ' + str(i)]
-            for i in xrange(self.parameters['Number_of_classes'])]
-        if 'Class_change_matrices' in self.parameters:
-            self.class_change_matrix = [self.parameters[
-                'Class_change_matrices']['Node ' + str(i)]
-                for i in xrange(self.parameters['Number_of_nodes'])]
-        else:
-            self.class_change_matrix = 'NA'
-        self.inter_arrival_times = self.find_times_dict(self.lmbda)
-        self.service_times = self.find_times_dict(self.mu)
+            getcontext().prec = exact
+        self.name = name
+        self.deadlock_detector = self.choose_deadlock_detection(deadlock_detector)
+        self.inter_arrival_times = self.find_times_dict('Arr')
+        self.service_times = self.find_times_dict('Ser')
         self.transitive_nodes = [NodeType(i + 1, self)
-            for i in xrange(len(self.c))]
+            for i in xrange(network.number_of_nodes)]
         self.nodes = ([ArrivalNodeType(self)] +
                       self.transitive_nodes +
-                      [ExitNode("Inf")])
-        self.statetracker = self.choose_tracker()
+                      [ExitNode()])
+        self.statetracker = self.choose_tracker(tracker, deadlock_detector)
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
         self.rejection_dict = self.nodes[0].rejection_dict
@@ -81,36 +55,6 @@ class Simulation:
         Represents the simulation
         """
         return self.name
-
-    def build_parameters(self, params):
-        """
-        Fills out the parameters dictionary with any
-        default arguments. Creates dictionaries for
-        things if onyl 1 class is given.
-        """
-        if isinstance(params['Arrival_distributions'], list):
-            arr_dists = params['Arrival_distributions']
-            params['Arrival_distributions'] = {'Class 0': arr_dists}
-        if isinstance(params['Service_distributions'], list):
-            srv_dists = params['Service_distributions']
-            params['Service_distributions'] = {'Class 0': srv_dists}
-        if isinstance(params['Transition_matrices'], list):
-            trns_mat = params['Transition_matrices']
-            params['Transition_matrices'] = {'Class 0': trns_mat}
-
-        default_dict = {
-            'Name': 'Simulation',
-            'Number_of_nodes': len(params['Number_of_servers']),
-            'Number_of_classes': len(params['Arrival_distributions']),
-            'Queue_capacities': ['Inf' for _ in xrange(len(
-                params['Number_of_servers']))],
-            'Detect_deadlock': False,
-            'Exact': False
-            }
-
-        for a in default_dict:
-            params[a] = params.get(a, default_dict[a])
-        return params
 
     def check_userdef_dist(self, func):
         """
@@ -256,69 +200,69 @@ class Simulation:
                             if any([el<0.0 for el in nd[1]]):
                                 raise ValueError('Empirical distribution must sample positive floats.')
 
-    def choose_tracker(self):
+    def choose_tracker(self, tracker, deadlock_detector):
         """
         Chooses the state tracker to use for the simulation.
         If no tracker is selected, the basic StateTracker is
         used, unless Detect_deadlock is on, then NaiveTracker
         is the default.
         """
-        if 'Tracker' in self.parameters:
-            if self.parameters['Tracker'] == 'Naive':
+        if tracker:
+            if tracker == 'Naive':
                 return NaiveTracker(self)
-            if self.parameters['Tracker'] == 'Matrix':
+            if tracker == 'Matrix':
                 return MatrixTracker(self)
-        elif self.parameters['Detect_deadlock']:
+        elif deadlock_detector:
             return NaiveTracker(self)
         return StateTracker(self)
 
-    def choose_deadlock_detection(self):
+    def choose_deadlock_detection(self, deadlock_detector):
         """
         Chooses the deadlock detection mechanism to use for the
         simulation.
         """
-        if self.parameters['Detect_deadlock'] == False:
+        if deadlock_detector == False:
             return NoDeadlockDetection()
-        if self.parameters['Detect_deadlock'] == 'StateDigraph':
+        if deadlock_detector == 'StateDigraph':
             return StateDigraphMethod()
 
-    def find_distributions(self, n, c, source):
+    def find_distributions(self, n, c, kind):
         """
         Finds distribution functions
         """
-        if source[c][n] == 'NoArrivals':
+        if self.source(c, n, kind) == 'NoArrivals':
             return lambda : 'Inf'
-        if source[c][n][0] == 'Uniform':
-            return lambda : uniform(source[c][n][1],
-                                    source[c][n][2])
-        if source[c][n][0] == 'Deterministic':
-            return lambda : source[c][n][1]
-        if source[c][n][0] == 'Triangular':
-            return lambda : triangular(source[c][n][1],
-                                       source[c][n][2],
-                                       source[c][n][3])
-        if source[c][n][0] == 'Exponential':
-            return lambda : expovariate(source[c][n][1])
-        if source[c][n][0] == 'Gamma':
-            return lambda : gammavariate(source[c][n][1],
-                                         source[c][n][2])
-        if source[c][n][0] == 'Lognormal':
-            return lambda : lognormvariate(source[c][n][1],
-                                           source[c][n][2])
-        if source[c][n][0] == 'Weibull':
-            return lambda : weibullvariate(source[c][n][1],
-                                           source[c][n][2])
-        if source[c][n][0] == 'Custom':
-            P, V = zip(*self.parameters[source[c][n][1]])
+        if self.source(c, n, kind)[0] == 'Uniform':
+            return lambda : uniform(self.source(c, n, kind)[1],
+                                    self.source(c, n, kind)[2])
+        if self.source(c, n, kind)[0] == 'Deterministic':
+            return lambda : self.source(c, n, kind)[1]
+        if self.source(c, n, kind)[0] == 'Triangular':
+            return lambda : triangular(self.source(c, n, kind)[1],
+                                       self.source(c, n, kind)[2],
+                                       self.source(c, n, kind)[3])
+        if self.source(c, n, kind)[0] == 'Exponential':
+            return lambda : expovariate(self.source(c, n, kind)[1])
+        if self.source(c, n, kind)[0] == 'Gamma':
+            return lambda : gammavariate(self.source(c, n, kind)[1],
+                                         self.source(c, n, kind)[2])
+        if self.source(c, n, kind)[0] == 'Lognormal':
+            return lambda : lognormvariate(self.source(c, n, kind)[1],
+                                           self.source(c, n, kind)[2])
+        if self.source(c, n, kind)[0] == 'Weibull':
+            return lambda : weibullvariate(self.source(c, n, kind)[1],
+                                           self.source(c, n, kind)[2])
+        if self.source(c, n, kind)[0] == 'Custom':
+            P, V = zip(*self.source(c, n, kind)[1])
             probs, values = list(P), list(V)
             return lambda : nprandom.choice(values, p=probs)
-        if source[c][n][0] == 'UserDefined':
-            return lambda : self.check_userdef_dist(source[c][n][1])
-        if source[c][n][0] == 'Empirical':
-            if isinstance(source[c][n][1], str):
-                empirical_dist = self.import_empirical(source[c][n][1])
+        if self.source(c, n, kind)[0] == 'UserDefined':
+            return lambda : self.check_userdef_dist(self.source(c, n, kind)[1])
+        if self.source(c, n, kind)[0] == 'Empirical':
+            if isinstance(self.source(c, n, kind)[1], str):
+                empirical_dist = self.import_empirical(self.source(c, n, kind)[1])
                 return lambda : choice(empirical_dist)
-            return lambda : choice(source[c][n][1])
+            return lambda : choice(self.source(c, n, kind)[1])
 
     def find_next_active_node(self):
         """
@@ -331,15 +275,15 @@ class Simulation:
             return self.nodes[choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
 
-    def find_times_dict(self, source):
+    def find_times_dict(self, kind):
         """
         Create the dictionary of service time
         functions for each node for each class
         """
         return {node+1: {
-            cls: self.find_distributions(node, cls, source)
-            for cls in xrange(len(self.lmbda))}
-            for node in xrange(self.number_of_nodes)}
+            cls: self.find_distributions(node, cls, kind)
+            for cls in xrange(self.network.number_of_classes)}
+            for node in xrange(self.network.number_of_nodes)}
 
     def get_all_individuals(self):
         """
@@ -436,6 +380,16 @@ class Simulation:
                 node.update_next_event_date(current_time)
             next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
+
+    def source(self, c, n, kind):
+        """
+        Returns the location of class c node n's arrival or
+        service distributions information, depending on kind.
+        """
+        if kind == 'Arr':
+            return self.network.customer_classes[c].arrival_distributions[n]
+        if kind == 'Ser':
+            return self.network.customer_classes[c].service_distributions[n]
 
     def write_records_to_file(self, file_name, headers=True):
         """

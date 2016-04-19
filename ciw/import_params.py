@@ -42,7 +42,7 @@ def Network_From_Dictionary(params):
         {'Node ' + str(nd + 1): None for nd in xrange(number_of_nodes)})
     number_of_servers, schedules, nodes, classes = [], [], [], []
     for c in params['Number_of_servers']:
-        if isinstance(c, str):
+        if isinstance(c, str) and c != 'Inf':
             number_of_servers.append('schedule')
             schedules.append(params[c])
         else:

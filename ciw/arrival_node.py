@@ -13,11 +13,11 @@ class ArrivalNode:
         self.simulation = simulation
         self.number_of_individuals = 0
         self.event_dates_dict = {nd + 1: {cls:False for cls in range(
-            self.simulation.parameters['Number_of_classes'])}
-            for nd in range(self.simulation.number_of_nodes)}
+            self.simulation.network.number_of_classes)}
+            for nd in range(self.simulation.network.number_of_nodes)}
         self.rejection_dict = {nd + 1: {cls:[] for cls in range(
-            self.simulation.parameters['Number_of_classes'])}
-            for nd in range(self.simulation.number_of_nodes)}
+            self.simulation.network.number_of_classes)}
+            for nd in range(self.simulation.network.number_of_nodes)}
         self.initialise_event_dates_dict()
         self.find_next_event_date()
 

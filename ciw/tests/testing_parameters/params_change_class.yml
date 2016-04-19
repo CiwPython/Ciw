@@ -9,7 +9,6 @@ Arrival_distributions:
     - 0.04
   - - Exponential
     - 0.06
-Detect_deadlock: False
 Number_of_classes: 2
 Number_of_nodes: 2
 Number_of_servers:
@@ -42,12 +41,12 @@ Transition_matrices:
   - - 0.2
     - 0.0
 Class_change_matrices:
-  Node 0:
-  - - 0.5
-    - 0.5
-  - - 0.5
-    - 0.5
   Node 1:
+  - - 0.5
+    - 0.5
+  - - 0.5
+    - 0.5
+  Node 2:
   - - 1.0
     - 0.0
   - - 0.0

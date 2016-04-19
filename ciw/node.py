@@ -19,38 +19,32 @@ class Node:
         Initialise a node.
         """
         self.simulation = simulation
-        self.mu = [self.simulation.mu[cls][id_ - 1]
-            for cls in xrange(len(self.simulation.mu))]
-        self.scheduled_servers = self.simulation.schedules[id_ - 1]
-        if self.scheduled_servers:
-            raw_schedule = self.simulation.parameters[
-                self.simulation.c[id_ - 1]]
+        node = self.simulation.network.service_centres[id_ - 1]
+        if node.schedule:
+            raw_schedule = node.schedule
             self.cyclelength = self.increment_time(0, raw_schedule[-1][0])
             boundaries = [0] + [row[0] for row in raw_schedule[:-1]]
             servers = [row[1] for row in raw_schedule]
             self.schedule = [list(pair) for pair in zip(boundaries, servers)]
             self.c = self.schedule[0][1]
-
             raw_schedule_boundaries = [row[0] for row in raw_schedule]
             self.date_generator = self.date_from_schedule_generator(raw_schedule_boundaries)
             self.next_shift_change = self.date_generator.next()
-
         else:
-            self.c = self.simulation.c[id_ - 1]
-        if self.simulation.queue_capacities[id_ - 1] == "Inf":
+            self.c = node.number_of_servers
+            self.schedule = None
+        if node.queueing_capacity == "Inf":
             self.node_capacity = "Inf"
         else:
-            self.node_capacity = self.simulation.queue_capacities[
-            id_ - 1] + self.c
-        self.transition_row = [self.simulation.transition_matrix[j][
-            id_ - 1] for j in xrange(len(
-            self.simulation.transition_matrix))]
-        if self.simulation.class_change_matrix != 'NA':
-            self.class_change = self.simulation.class_change_matrix[
-            id_ - 1]
+            self.node_capacity = node.queueing_capacity + self.c
+        self.transition_row = [
+            self.simulation.network.customer_classes[
+            cls].transition_matrix[id_ - 1] for cls in xrange(
+            self.simulation.network.number_of_classes)]
+        self.class_change = node.class_change_matrix
         self.individuals = []
         self.id_number = id_
-        if self.scheduled_servers:
+        if self.schedule:
             self.next_event_date = self.next_shift_change
         else:
             self.next_event_date = "Inf"
@@ -162,7 +156,7 @@ class Node:
         Takes individual and changes customer class
         according to a probability distribution.
         """
-        if self.simulation.class_change_matrix != 'NA':
+        if self.class_change:
             individual.previous_class = individual.customer_class
             individual.customer_class = nprandom.choice(
                 xrange(len(self.class_change)),
@@ -193,7 +187,7 @@ class Node:
         """
         Check whether current time is a shift change.
         """
-        if self.scheduled_servers:
+        if self.schedule:
             return self.next_event_date == self.next_shift_change
         return False
 
@@ -343,7 +337,7 @@ class Node:
             for ind in self.individuals
             if not ind.is_blocked
             if ind.service_end_date >= current_time] + ["Inf"])
-        if self.scheduled_servers:
+        if self.schedule:
             next_shift_change = self.next_shift_change
             self.next_event_date = min(
                 next_end_service, next_shift_change)

@@ -41,5 +41,5 @@ class Network:
         """
         self.service_centres = service_centres
         self.customer_classes = customer_classes
-        self.number_of_service_centres = len(service_centres)
-        self.number_of_customer_classes = len(customer_classes)
+        self.number_of_nodes = len(service_centres)
+        self.number_of_classes = len(customer_classes)

@@ -75,8 +75,8 @@ class TestNetwork(unittest.TestCase):
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)
-        self.assertEqual(N.number_of_service_centres, 4)
-        self.assertEqual(N.number_of_customer_classes, 2)
+        self.assertEqual(N.number_of_nodes, 4)
+        self.assertEqual(N.number_of_classes, 2)
 
 
     def test_network_from_dictionary(self):
@@ -89,8 +89,8 @@ class TestNetwork(unittest.TestCase):
                   'Queue_capacities': ['Inf']}
         N = ciw.Network_From_Dictionary(params)
         
-        self.assertEqual(N.number_of_service_centres, 1)
-        self.assertEqual(N.number_of_customer_classes, 1)
+        self.assertEqual(N.number_of_nodes, 1)
+        self.assertEqual(N.number_of_classes, 1)
         self.assertEqual(N.service_centres[0].queueing_capacity, 'Inf')
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
@@ -111,8 +111,8 @@ class TestNetwork(unittest.TestCase):
                   'my_amazing_schedule': [[20, 1],
                                           [50, 4]]}
         N = ciw.Network_From_Dictionary(params)
-        self.assertEqual(N.number_of_service_centres, 2)
-        self.assertEqual(N.number_of_customer_classes, 1)
+        self.assertEqual(N.number_of_nodes, 2)
+        self.assertEqual(N.number_of_classes, 1)
         self.assertEqual(N.service_centres[0].queueing_capacity, 10)
         self.assertEqual(N.service_centres[0].number_of_servers, 'schedule')
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
@@ -138,8 +138,8 @@ class TestNetwork(unittest.TestCase):
                   'Class_change_matrices': {'Node 1': [[0.0, 1.0],
                                                        [0.2, 0.8]]}}
         N = ciw.Network_From_Dictionary(params)
-        self.assertEqual(N.number_of_service_centres, 1)
-        self.assertEqual(N.number_of_customer_classes, 2)
+        self.assertEqual(N.number_of_nodes, 1)
+        self.assertEqual(N.number_of_classes, 2)
         self.assertEqual(N.service_centres[0].queueing_capacity, 'Inf')
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].class_change_matrix, [[0.0, 1.0], [0.2, 0.8]])
@@ -155,8 +155,8 @@ class TestNetwork(unittest.TestCase):
     def test_network_from_file(self):
         N = ciw.Network_From_File(
           'ciw/tests/testing_parameters/params.yml')
-        self.assertEqual(N.number_of_service_centres, 4)
-        self.assertEqual(N.number_of_customer_classes, 3)
+        self.assertEqual(N.number_of_nodes, 4)
+        self.assertEqual(N.number_of_classes, 3)
         self.assertEqual(N.service_centres[0].queueing_capacity, 20)
         self.assertEqual(N.service_centres[1].queueing_capacity, 'Inf')
         self.assertEqual(N.service_centres[2].queueing_capacity, 30)
