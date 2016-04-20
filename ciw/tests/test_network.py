@@ -80,7 +80,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.number_of_classes, 2)
 
 
-    def test_network_from_dictionary(self):
+    def test_create_network_from_dictionary(self):
         params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]]},
                   'Service_distributions': {'Class 0': [['Exponential', 7.0]]},
                   'Number_of_servers': [9],
@@ -88,7 +88,7 @@ class TestNetwork(unittest.TestCase):
                   'Transition_matrices': {'Class 0': [[0.5]]},
                   'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf']}
-        N = ciw.Network_From_Dictionary(params)
+        N = ciw.create_network_from_dictionary(params)
         
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 1)
@@ -111,7 +111,7 @@ class TestNetwork(unittest.TestCase):
                   'Queue_capacities': [10, 'Inf'],
                   'my_amazing_schedule': [[20, 1],
                                           [50, 4]]}
-        N = ciw.Network_From_Dictionary(params)
+        N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 2)
         self.assertEqual(N.number_of_classes, 1)
         self.assertEqual(N.service_centres[0].queueing_capacity, 10)
@@ -138,7 +138,7 @@ class TestNetwork(unittest.TestCase):
                   'Queue_capacities': ['Inf'],
                   'Class_change_matrices': {'Node 1': [[0.0, 1.0],
                                                        [0.2, 0.8]]}}
-        N = ciw.Network_From_Dictionary(params)
+        N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 2)
         self.assertEqual(N.service_centres[0].queueing_capacity, 'Inf')
@@ -153,8 +153,8 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[1].transition_matrix, [[0.0]])
 
 
-    def test_network_from_file(self):
-        N = ciw.Network_From_File(
+    def test_create_network_from_yml(self):
+        N = ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml')
         self.assertEqual(N.number_of_nodes, 4)
         self.assertEqual(N.number_of_classes, 3)
@@ -196,55 +196,55 @@ class TestNetwork(unittest.TestCase):
         params_list = [copy.deepcopy(params) for i in range(23)]
 
         params_list[0]['Number_of_classes'] = -2
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[0])
+        self.assertRaises(ValueError, ciw.create_network, params_list[0])
         params_list[1]['Number_of_nodes'] = -2
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[1])
+        self.assertRaises(ValueError, ciw.create_network, params_list[1])
         params_list[2]['Number_of_servers'] = [5, 6, 7]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[2])
+        self.assertRaises(ValueError, ciw.create_network, params_list[2])
         params_list[3]['Number_of_servers'] = [-3]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[3])
+        self.assertRaises(ValueError, ciw.create_network, params_list[3])
         params_list[4]['Number_of_servers'] = ['my_missing_schedule']
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[4])
+        self.assertRaises(ValueError, ciw.create_network, params_list[4])
         params_list[5]['Queue_capacities'] = ['Inf', 1, 2]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[5])
+        self.assertRaises(ValueError, ciw.create_network, params_list[5])
         params_list[6]['Queue_capacities'] = [-2]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[6])
+        self.assertRaises(ValueError, ciw.create_network, params_list[6])
         params_list[7]['Arrival_distributions'] = {'Class 0':[['Exponential', 3.2]],
                                                    'Class 1':[['Exponential', 2.1]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[7])
+        self.assertRaises(ValueError, ciw.create_network, params_list[7])
         params_list[8]['Arrival_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[8])
+        self.assertRaises(ValueError, ciw.create_network, params_list[8])
         params_list[9]['Arrival_distributions']['Class 0'] = [['Exponential', 3.1],
                                                                ['Exponential', 2.4]]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[9])
+        self.assertRaises(ValueError, ciw.create_network, params_list[9])
         params_list[10]['Service_distributions'] = {'Class 0':[['Exponential', 3.2]],
                                                     'Class 1':[['Exponential', 2.1]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[10])
+        self.assertRaises(ValueError, ciw.create_network, params_list[10])
         params_list[11]['Service_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[11])
+        self.assertRaises(ValueError, ciw.create_network, params_list[11])
         params_list[12]['Service_distributions']['Class 0'] = [['Exponential', 3.1],
                                                                ['Exponential', 2.4]]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[12])
+        self.assertRaises(ValueError, ciw.create_network, params_list[12])
         params_list[13]['Transition_matrices'] = {'Class 0':[[0.2]],
                                                   'Class 1':[[0.3]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[13])
+        self.assertRaises(ValueError, ciw.create_network, params_list[13])
         params_list[14]['Transition_matrices'] = {'Patient 0':[[0.5]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[14])
+        self.assertRaises(ValueError, ciw.create_network, params_list[14])
         params_list[15]['Transition_matrices']['Class 0'] = [[0.2], [0.1]]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[15])
+        self.assertRaises(ValueError, ciw.create_network, params_list[15])
         params_list[16]['Transition_matrices']['Class 0'] = [[0.2, 0.1]]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[16])
+        self.assertRaises(ValueError, ciw.create_network, params_list[16])
         params_list[17]['Transition_matrices']['Class 0'] = [[-0.6]]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[17])
+        self.assertRaises(ValueError, ciw.create_network, params_list[17])
         params_list[18]['Transition_matrices']['Class 0'] = [[1.4]]
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[18])
+        self.assertRaises(ValueError, ciw.create_network, params_list[18])
         params_list[19]['Class_change_matrices'] = {'Node 1':[[0.0]],
                                                     'Node 2':[[0.0]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[19])
+        self.assertRaises(ValueError, ciw.create_network, params_list[19])
         params_list[20]['Class_change_matrices'] = {'Patient 0':[[0.0]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[20])
+        self.assertRaises(ValueError, ciw.create_network, params_list[20])
         params_list[21]['Class_change_matrices'] = {'Node 1':[[-0.4]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[21])
+        self.assertRaises(ValueError, ciw.create_network, params_list[21])
         params_list[22]['Class_change_matrices'] = {'Node 1':[[1.5]]}
-        self.assertRaises(ValueError, ciw.Network_From_Dictionary, params_list[22])
+        self.assertRaises(ValueError, ciw.create_network, params_list[22])
 

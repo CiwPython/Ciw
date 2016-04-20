@@ -15,18 +15,18 @@ def set_seed(x):
 class TestSimulation(unittest.TestCase):
 
     def test_repr_method(self):
-        N1 = ciw.Network_From_File(
+        N1 = ciw.create_network(
           'ciw/tests/testing_parameters/params.yml')
         Q1 = ciw.Simulation(N1)
         self.assertEqual(str(Q1), 'Simulation')
 
-        N2 = ciw.Network_From_File(
+        N2 = ciw.create_network(
           'ciw/tests/testing_parameters/params.yml')
         Q = ciw.Simulation(N2, name='My special simulation instance!')
         self.assertEqual(str(Q), 'My special simulation instance!')
 
     def test_init_method(self):
-        N = ciw.Network_From_File(
+        N = ciw.create_network(
             'ciw/tests/testing_parameters/params.yml')
         Q = ciw.Simulation(N)
 
@@ -56,7 +56,7 @@ class TestSimulation(unittest.TestCase):
                   'Number_of_servers': [number_of_servers],
                   'Transition_matrices': [[0.0]]}
 
-        Q = ciw.Simulation(ciw.Network_From_Dictionary(params))
+        Q = ciw.Simulation(ciw.create_network(params))
         
         self.assertEqual(len(Q.transitive_nodes), 1)
         self.assertEqual(len(Q.nodes), 3)
@@ -72,7 +72,7 @@ class TestSimulation(unittest.TestCase):
           ['Arrival Node', 'Node 1', 'Exit Node'])
 
     def test_find_next_active_node_method(self):
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         i = 0
         for node in Q.nodes[:-1]:
@@ -80,7 +80,7 @@ class TestSimulation(unittest.TestCase):
             i += 1
         self.assertEqual(str(Q.find_next_active_node()), 'Arrival Node')
 
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         i = 10
         for node in Q.nodes[:-1]:
@@ -90,7 +90,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulate_until_max_time_method(self):
         set_seed(2)
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(150)
         L = Q.get_all_individuals()
@@ -98,7 +98,7 @@ class TestSimulation(unittest.TestCase):
             L[300].data_records.values()[0][0].service_start_date, 8), 8.89002862)
 
         set_seed(60)
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_change_class.yml'))
         Q.simulate_until_max_time(50)
         L = Q.get_all_individuals()
@@ -109,14 +109,14 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulate_until_deadlock_method(self):
         set_seed(3)
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
              deadlock_detector='StateDigraph')
         Q.simulate_until_deadlock()
         self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 31.26985409)
 
     def test_detect_deadlock_method(self):
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
              deadlock_detector='StateDigraph')
         nodes = ['A', 'B', 'C', 'D', 'E']
@@ -128,7 +128,7 @@ class TestSimulation(unittest.TestCase):
             Q.deadlock_detector.statedigraph.add_edge(cnctn[0], cnctn[1])
         self.assertEqual(Q.deadlock_detector.detect_deadlock(), True)
 
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
              deadlock_detector='StateDigraph')
         nodes = ['A', 'B', 'C', 'D']
@@ -140,7 +140,7 @@ class TestSimulation(unittest.TestCase):
             Q.deadlock_detector.statedigraph.add_edge(cnctn[0], cnctn[1])
         self.assertEqual(Q.deadlock_detector.detect_deadlock(), False)
 
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
              deadlock_detector='StateDigraph')
         nodes = ['A', 'B']
@@ -154,7 +154,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.deadlock_detector.detect_deadlock(), True)
 
     def test_mm1_from_file(self):
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_mm1.yml'))
         self.assertEqual(Q.nodes[1].transition_row, [[0.0]])
 
@@ -167,14 +167,14 @@ class TestSimulation(unittest.TestCase):
                   'Number_of_servers': ['Inf'],
                   'Transition_matrices': [[0.0]]}
 
-        Q = ciw.Simulation(ciw.Network_From_Dictionary(params))
+        Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(5)
         inds = Q.get_all_individuals()
         waits = [ind.data_records[1][0].wait for ind in inds]
         self.assertEqual(sum(waits), 0.0)
 
     def test_writing_data_files(self):
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(50)
         files = [x for x in os.walk(
@@ -187,7 +187,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual('data.csv' in files, True)
         os.remove('ciw/tests/testing_parameters/data.csv')
 
-        Q = ciw.Simulation(ciw.Network_From_File(
+        Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_mm1.yml'))
         Q.simulate_until_max_time(50)
         files = [x for x in os.walk(
@@ -210,7 +210,7 @@ class TestSimulation(unittest.TestCase):
                   'Service_distributions': [['Deterministic', 5.0], ['Deterministic', 5.0]],
                   'Transition_matrices': [[1.0, 0.0], [0.0, 0.0]],
                   'Number_of_servers': [2, 1]}
-        Q = ciw.Simulation(ciw.Network_From_Dictionary(params))
+        Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
@@ -223,7 +223,7 @@ class TestSimulation(unittest.TestCase):
                   'Service_distributions': [['Deterministic', 5.0], ['Deterministic', 5.0]],
                   'Transition_matrices': [[1.0, 0.0], [0.0, 0.0]],
                   'Number_of_servers': [2, 1]}
-        Q = ciw.Simulation(ciw.Network_From_Dictionary(params))
+        Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
@@ -237,7 +237,7 @@ class TestSimulation(unittest.TestCase):
                   'Transition_matrices': [[0.0]],
                   'Number_of_servers': ['server_schedule'],
                   'server_schedule': [[0.5, 0], [0.55, 1], [3.0, 0]]}
-        Q = ciw.Simulation(ciw.Network_From_Dictionary(params))
+        Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers=False)
         mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
@@ -249,7 +249,7 @@ class TestSimulation(unittest.TestCase):
                   'Transition_matrices': [[0.0]],
                   'Number_of_servers': ['server_schedule'],
                   'server_schedule': [[0.5, 0], [0.55, 1], [3.0, 0]]}
-        Q = ciw.Simulation(ciw.Network_From_Dictionary(params), exact=14)
+        Q = ciw.Simulation(ciw.create_network(params), exact=14)
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers=False)
         mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]

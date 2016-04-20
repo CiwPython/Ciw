@@ -3,6 +3,18 @@ import yaml
 from network import *
 
 
+def create_network(params):
+    """
+    Identifies the type of parameters that is input and calls the correct function
+    """
+    if isinstance(params, dict):
+        return create_network_from_dictionary(params)
+    if isinstance(params, str):
+        if params[-4:] == '.yml':
+            return create_network_from_yml(params)
+    return None
+
+
 def load_parameters(directory_name):
     """
     Loads the parameters into the model
@@ -16,7 +28,17 @@ def load_parameters(directory_name):
     return parameters
 
 
-def Network_From_Dictionary(params):
+def create_network_from_yml(directory_name):
+    """
+    Creates a Network object form a yaml file
+    """
+    params = load_parameters(directory_name)
+    fill_out_dictionary(params)
+    validify_dictionary(params)
+    return create_network_from_dictionary(params)
+
+
+def create_network_from_dictionary(params):
     """
     Creates a Network object from a parameters dictionary
     """
@@ -54,16 +76,6 @@ def Network_From_Dictionary(params):
             services[cls],
             transitions[cls]))
     return Network(nodes, classes)
-
-
-def Network_From_File(directory_name):
-    """
-    Creates a Network object form a yaml file
-    """
-    params = load_parameters(directory_name)
-    fill_out_dictionary(params)
-    validify_dictionary(params)
-    return Network_From_Dictionary(params)
 
 
 def fill_out_dictionary(params):
