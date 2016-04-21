@@ -205,11 +205,13 @@ class TestSimulation(unittest.TestCase):
         # Due to randomly choosing the order of events, the seed has
         # a big affect on this.
 
-        set_seed(73)
         params = {'Arrival_distributions': [['Deterministic', 10.0], 'NoArrivals'],
                   'Service_distributions': [['Deterministic', 5.0], ['Deterministic', 5.0]],
                   'Transition_matrices': [[1.0, 0.0], [0.0, 0.0]],
                   'Number_of_servers': [2, 1]}
+
+
+        set_seed(73)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
@@ -217,12 +219,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(len(inds), 2)
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
-
         set_seed(74)
-        params = {'Arrival_distributions': [['Deterministic', 10.0], 'NoArrivals'],
-                  'Service_distributions': [['Deterministic', 5.0], ['Deterministic', 5.0]],
-                  'Transition_matrices': [[1.0, 0.0], [0.0, 0.0]],
-                  'Number_of_servers': [2, 1]}
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
@@ -230,13 +227,22 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(len(inds), 3)
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
+        completed_inds = []
+        for _ in xrange(1000):
+            Q = ciw.Simulation(ciw.create_network(params))
+            Q.simulate_until_max_time(36)
+            inds = Q.get_all_individuals()
+            completed_inds.append(len(inds))
+        self.assertAlmostEqual(completed_inds.count(2) / float(1000), 1 / 4.0, places=1)
+
     def test_exactness(self):
-        set_seed(777)
         params = {'Arrival_distributions': [['Exponential', 20]],
                   'Service_distributions': [['Deterministic', 0.01]],
                   'Transition_matrices': [[0.0]],
                   'Number_of_servers': ['server_schedule'],
                   'server_schedule': [[0.5, 0], [0.55, 1], [3.0, 0]]}
+
+        set_seed(777)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers=False)
@@ -244,14 +250,10 @@ class TestSimulation(unittest.TestCase):
         self.assertNotEqual(set(mod_service_starts), set([0.50, 0.51, 0.52, 0.53, 0.54]))
 
         set_seed(777)
-        params = {'Arrival_distributions': [['Exponential', 20]],
-                  'Service_distributions': [['Deterministic', 0.01]],
-                  'Transition_matrices': [[0.0]],
-                  'Number_of_servers': ['server_schedule'],
-                  'server_schedule': [[0.5, 0], [0.55, 1], [3.0, 0]]}
         Q = ciw.Simulation(ciw.create_network(params), exact=14)
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records(headers=False)
         mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
         expected_set = set([Decimal(k) for k in ['0.50', '0.51', '0.52', '0.53', '0.54']])
         self.assertEqual(set(mod_service_starts), expected_set)
+

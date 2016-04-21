@@ -1,5 +1,6 @@
 import os
 import yaml
+import copy
 from network import *
 
 
@@ -32,17 +33,17 @@ def create_network_from_yml(directory_name):
     """
     Creates a Network object form a yaml file
     """
-    params = load_parameters(directory_name)
-    fill_out_dictionary(params)
+    params_input = load_parameters(directory_name)
+    params = fill_out_dictionary(params_input)
     validify_dictionary(params)
     return create_network_from_dictionary(params)
 
 
-def create_network_from_dictionary(params):
+def create_network_from_dictionary(params_input):
     """
     Creates a Network object from a parameters dictionary
     """
-    fill_out_dictionary(params)
+    params = fill_out_dictionary(params_input)
     validify_dictionary(params)
     # Then make the Network object
     arrivals = [params['Arrival_distributions']['Class ' + str(cls)]
@@ -78,11 +79,12 @@ def create_network_from_dictionary(params):
     return Network(nodes, classes)
 
 
-def fill_out_dictionary(params):
+def fill_out_dictionary(params_input):
     """
     Fills out the parameters dictionary with the
     optional arguments
     """
+    params = copy.deepcopy(params_input)
     if isinstance(params['Arrival_distributions'], list):
         arr_dists = params['Arrival_distributions']
         params['Arrival_distributions'] = {'Class 0': arr_dists}
