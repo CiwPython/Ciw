@@ -33,12 +33,12 @@ In this example a customer of class 0 finishing service at node 1 will become cl
 
 This is input into the simulation model by including the following to the parameters dictionary::
     
-    'Class_change_matrices': {'Node 0': [[0.3, 0.4, 0.3], [0.1, 0.9, 0.0], [0.5, 0.1, 0.4]], 'Node 1': [[1.0, 0.0, 0.0], [0.4, 0.5, 0.1], [0.2, 0.2, 0.6]]}
+    'Class_change_matrices': {'Node 1': [[0.3, 0.4, 0.3], [0.1, 0.9, 0.0], [0.5, 0.1, 0.4]], 'Node 2': [[1.0, 0.0, 0.0], [0.4, 0.5, 0.1], [0.2, 0.2, 0.6]]}
 
 This is equivalent to adding the following code to the parameters file::
 
     Class_change_matrices:
-      Node 0:
+      Node 1:
       - - 0.3
         - 0.4
         - 0.3
@@ -48,7 +48,7 @@ This is equivalent to adding the following code to the parameters file::
       - - 0.5
         - 0.1
         - 0.4
-      Node 1:
+      Node 2:
       - - 1.0
         - 0.0
         - 0.0

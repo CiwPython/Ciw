@@ -6,16 +6,16 @@ Deadlock Detection Capability
 
 Ciw's has built in deadlock detection capability. With Ciw, a queueing network can be simulated until it reaches deadlock. Ciw then records the time until deadlock from each state.
 
-In order to take advantage of this feature, set deadlock detection option to True in the parameters file::
+In order to take advantage of this feature, set deadlock_detection argument to one of the deadlock detectio methods when creating the Simulation object::
 
-    Detect_deadlock: StateDigraph
+    >>> Q = ciw.Simulation(params, deadlock_detector='StateDigraph') # doctest:+SKIP
 
 Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state::
 
-   >>> import ciw
-   >>> Q = ciw.Simulation(deadlock_params) # doctest:+SKIP
-   >>> Q.simulate_until_deadlock() # doctest:+SKIP
-   >>> times = Q.times_to_deadlock # doctest:+SKIP
+    >>> import ciw
+    >>> Q = ciw.Simulation(params, deadlock_detector='StateDigraph') # doctest:+SKIP
+    >>> Q.simulate_until_deadlock() # doctest:+SKIP
+    >>> times = Q.times_to_deadlock # doctest:+SKIP
 
 where :code:`times` is a dictionary with states as keys and times to deadlock as values. Note that :code:`Simulation_time` is ingnored in this case.
 
@@ -31,7 +31,6 @@ Parameters::
 
     >>> params = {'Arrival_distributions': {'Class 0': [['Exponential', 6.0]]},
     ...           'Number_of_nodes': 1,
-    ...           'Detect_deadlock': 'StateDigraph',
     ...           'Number_of_servers': [1],
     ...           'Queue_capacities': [3],
     ...           'Number_of_classes': 1,
@@ -43,7 +42,8 @@ Running until deadlock::
     >>> import ciw
     >>> from random import seed
     >>> seed(99)
-    >>> Q = ciw.Simulation(params)
+    >>> N = ciw.create_network(params)
+    >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
     >>> Q.simulate_until_deadlock()
     >>> self.times_to_deadlock # doctest:+SKIP
     {((1, 0),): 1.0845416939916719, ((3, 0),): 0.5436399978272065, ((0, 0),): 1.1707879982560288, ((4, 0),): 0.15650986183172932, ((3, 1),): 0.0, ((2, 0),): 1.0517097907100657}

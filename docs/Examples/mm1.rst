@@ -13,7 +13,6 @@ We set up the parameters in Ciw::
 
     >>> params_dict = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]]},
     ...                'Service_distributions': {'Class 0': [['Exponential', 5.0]]},
-    ...                'Simulation_time': 250,
     ...                'Transition_matrices': {'Class 0': [[0.0]]},
     ...                'Number_of_servers': [1]
     ...                }
@@ -24,8 +23,9 @@ It then returns the average wait in the system::
     >>> import ciw
     >>> from random import seed
     >>> def iteration(warmup):
-    ...     Q = ciw.Simulation(params_dict)
-    ...     Q.simulate_until_max_time()
+    ...     N = ciw.create_network(params_dict)
+    ...     Q = ciw.Simulation(N)
+    ...     Q.simulate_until_max_time(250)
     ...     records = Q.get_all_records(headers=False)
     ...     waits = [row[4] for row in records if row[3] > warmup]
     ...     return sum(waits)/len(waits)

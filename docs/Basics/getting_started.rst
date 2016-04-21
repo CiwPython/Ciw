@@ -32,7 +32,6 @@ We wish to simulate this system for 1000 time units. This system is defined by t
     ... 'Arrival_distributions': {'Class 0': [['Exponential', 6.0], ['Exponential', 2.5]]},
     ... 'Number_of_nodes': 2,
     ... 'Detect_deadlock': False,
-    ... 'Simulation_time': 1000,
     ... 'Number_of_servers': [1, 1],
     ... 'Queue_capacities': ['Inf', 4],
     ... 'Number_of_classes': 1,
@@ -41,11 +40,12 @@ We wish to simulate this system for 1000 time units. This system is defined by t
     ... }
 
 Please see :ref:`sim-parameters` for a fuller explaination of this.
-Ciw can then use this parameters dictionary to run the simulation::
+Ciw can then create a Network obeject from this parameters dictionary, which is then used to run the simulation::
 
 	>>> import ciw
-	>>> Q = ciw.Simulation(params)
-	>>> Q.simulate_until_max_time()
+	>>> N = ciw.create_network(params)
+	>>> Q = ciw.Simulation(N)
+	>>> Q.simulate_until_max_time(1000)
 
 Once this simulation has been run, :ref:`output-file` can be written to file through::
 
