@@ -8,7 +8,6 @@ In order to fully define a queueing network simulation, the following need to be
 
 - Number of nodes (service stations)
 - Number of customer classes
-- Simulation run time
 
 Every node must have the following defined globally (independent of customer class):
 
@@ -25,7 +24,7 @@ And then each customer class requires:
 - Transition matrix
 
 
-A full list of the parameters that a Ciw Simulation object can take can be seen here: :ref:`parameters-list`.
+A full list of the parameters that a parameters dictionary needs can be seen here: :ref:`parameters-list`.
 Notice that:
 
 - :code:`Queue_capacities` can be set to :code:`"Inf"`.
@@ -43,32 +42,10 @@ In this transition matrix the `(i,j)` th element corresponds to the probability 
 
 There are numerous other features, please see :ref:`features` for more information.
 
-There are three ways to imput parameters into the Simulation object:
+There are two ways to imput parameters into the Simulation object:
 
-* :ref:`using_kwargs`
 * :ref:`params_dict`
 * :ref:`params_file`
-
-
-.. _using_kwargs:
-
-------------
-Using Kwargs
-------------
-
-The Simulation object can directly take in kwargs. An example is shown::
-	
-    >>> import ciw
-    >>> Q = ciw.Simulation(
-    ... Arrival_distributions = {'Class 0': [['Exponential', 6.0], ['Exponential', 2.5]]},
-    ... Number_of_nodes = 2,
-    ... Simulation_time = 1000,
-    ... Number_of_servers = [1, 1],
-    ... Queue_capacities = ['Inf', 4],
-    ... Number_of_classes = 1,
-    ... Service_distributions = {'Class 0': [['Exponential', 8.5], ['Exponential', 5.5]]},
-    ... Transition_matrices = {'Class 0': [[0.0, 0.2], [0.1, 0.0]]}
-    ... )
 
 
 .. _params_dict:
@@ -83,14 +60,14 @@ The Simulation object can take a dictionary containing all the kwars as keys. An
     >>> params = {
     ... 'Arrival_distributions': {'Class 0': [['Exponential', 6.0], ['Exponential', 2.5]]},
     ... 'Number_of_nodes': 2,
-    ... 'Simulation_time': 1000,
     ... 'Number_of_servers': [1, 1],
     ... 'Queue_capacities': ['Inf', 4],
     ... 'Number_of_classes': 1,
     ... 'Service_distributions': {'Class 0': [['Exponential', 8.5], ['Exponential', 5.5]]},
     ... 'Transition_matrices': {'Class 0': [[0.0, 0.2], [0.1, 0.0]]}
     ... }
-    >>> Q = ciw.Simulation(params)
+    >>> N = ciw.create_network(params)
+    >>> Q = ciw.Simulation(N)
 
 
 .. _params_file:
@@ -123,7 +100,6 @@ Ciw features a :code:`load_parameters` function that imports a parameters file a
         - 8.5
       - - Exponential
         - 5.5
-    Simulation_time: 1000
     Transition_matrices:
       Class 0:
       - - 0.0
@@ -134,7 +110,7 @@ Ciw features a :code:`load_parameters` function that imports a parameters file a
 And then to load them in::
 
     >>> import ciw
-    >>> params = ciw.load_parameters('parameters.yml') # doctest:+SKIP
-    >>> Q = ciw.Simulation(params) # doctest:+SKIP
+    >>> N = ciw.create_network('parameters.yml') # doctest:+SKIP
+    >>> Q = ciw.Simulation(N) # doctest:+SKIP
 
 The variable names are identical to the keys of the parameters dictionary.

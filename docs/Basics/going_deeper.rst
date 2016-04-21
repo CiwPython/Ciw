@@ -11,22 +11,15 @@ Now importing Ciw and the parameters file as a dictionary is simple::
     >>> params["Number_of_servers"] # doctest:+SKIP
     [2, 1, 1] # doctest:+SKIP
 
-Set up a Simulation object, from which all parameters can also be accessed::
+Set up a Network and Simulation objects, from which all parameters can also be accessed::
 
-    >>> Q = ciw.Simulation(params) # doctest:+SKIP
-    >>> Q.number_of_nodes # doctest:+SKIP
-    3 # doctest:+SKIP
-    >>> Q.queue_capacities # doctest:+SKIP
-    ['Inf', 'Inf', 10] # doctest:+SKIP
-    >>> Q.lmbda    # The arrival distributions of the system # doctest:+SKIP
-    [[['Exponential', 1.0], ['Exponential', 1.8], ['Exponential', 7.25]], [['Exponential', 6.0], ['Exponential', 4.5], ['Exponential', 2.0]]] # doctest:+SKIP
-    >>> Q.lmbda[0]    # Arrival distributions of the 0th class # doctest:+SKIP
-    [['Exponential', 1.0], ['Exponential', 1.8], ['Exponential', 7.2]] # doctest:+SKIP
+    >>> N = ciw.create_network(params) # doctest:+SKIP
+    >>> Q = ciw.Simulation(N) # doctest:+SKIP
 
 A full list of Ciw's objects and attributes can be found here: :ref:`objects-attributes`
 Now to run a simulation simply run the following method::
 
-    >>> Q.simulate_until_max_time() # doctest:+SKIP
+    >>> Q.simulate_until_max_time(1000) # doctest:+SKIP
 
 Individuals' data records can be accessed directly using the following methods::
 

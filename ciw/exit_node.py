@@ -4,13 +4,13 @@ class ExitNode:
     """
     Class for the exit node on our network
     """
-    def __init__(self, max_simulation_time):
+    def __init__(self):
         """
         Initialise a node.
         """
         self.individuals = []
         self.id_number = -1
-        self.next_event_date = max_simulation_time
+        self.next_event_date = "Inf"
         self.node_capacity = "Inf"
 
     def __repr__(self):

@@ -19,45 +19,40 @@ class Node:
         Initialise a node.
         """
         self.simulation = simulation
-        self.mu = [self.simulation.mu[cls][id_ - 1]
-            for cls in xrange(len(self.simulation.mu))]
-        self.scheduled_servers = self.simulation.schedules[id_ - 1]
-        if self.scheduled_servers:
-            self.schedule = self.simulation.parameters[
-                self.simulation.c[id_ - 1]]
-            self.cyclelength = self.simulation.parameters[
-                'Cycle_length']
+        node = self.simulation.network.service_centres[id_ - 1]
+        if node.schedule:
+            raw_schedule = node.schedule
+            self.cyclelength = self.increment_time(0, raw_schedule[-1][0])
+            boundaries = [0] + [row[0] for row in raw_schedule[:-1]]
+            servers = [row[1] for row in raw_schedule]
+            self.schedule = [list(pair) for pair in zip(boundaries, servers)]
             self.c = self.schedule[0][1]
-            self.masterschedule = [self.increment_time(i*self.cyclelength,
-                obs) for i in xrange(int(
-                self.simulation.max_simulation_time//self.cyclelength
-                ) + 2) for obs in [t[0] for t in self.schedule]][1:]
+            raw_schedule_boundaries = [row[0] for row in raw_schedule]
+            self.date_generator = self.date_from_schedule_generator(raw_schedule_boundaries)
+            self.next_shift_change = self.date_generator.next()
         else:
-            self.c = self.simulation.c[id_ - 1]
-        if self.simulation.queue_capacities[id_ - 1] == "Inf":
+            self.c = node.number_of_servers
+            self.schedule = None
+        if node.queueing_capacity == "Inf":
             self.node_capacity = "Inf"
         else:
-            self.node_capacity = self.simulation.queue_capacities[
-            id_ - 1] + self.c
-        self.transition_row = [self.simulation.transition_matrix[j][
-            id_ - 1] for j in xrange(len(
-            self.simulation.transition_matrix))]
-        if self.simulation.class_change_matrix != 'NA':
-            self.class_change = self.simulation.class_change_matrix[
-            id_ - 1]
+            self.node_capacity = node.queueing_capacity + self.c
+        self.transition_row = [
+            self.simulation.network.customer_classes[
+            cls].transition_matrix[id_ - 1] for cls in xrange(
+            self.simulation.network.number_of_classes)]
+        self.class_change = node.class_change_matrix
         self.individuals = []
         self.id_number = id_
-        if self.scheduled_servers:
-            self.next_event_date = self.masterschedule[0]
+        if self.schedule:
+            self.next_event_date = self.next_shift_change
         else:
             self.next_event_date = "Inf"
         self.blocked_queue = []
         if self.c < 'Inf':
             self.servers = [Server(self, i + 1) for i in xrange(self.c)]
-            if simulation.detecting_deadlock:
-                self.simulation.digraph.add_nodes_from([str(s)
-                    for s in self.servers])
         self.highest_id = self.c
+        self.simulation.deadlock_detector.initialise_at_node(self)
 
     def __repr__(self):
         """
@@ -94,15 +89,8 @@ class Node:
         server.cust = individual
         server.busy = True
         individual.server = server
-
-        if self.simulation.detecting_deadlock:
-            for blq in self.blocked_queue:
-                inds = [ind for ind in self.simulation.nodes[
-                    blq[0]].individuals if ind.id_number==blq[1]]
-                ind = inds[0]
-                if ind != individual:
-                    self.simulation.digraph.add_edge(
-                        str(ind.server), str(server))
+        self.simulation.deadlock_detector.action_at_attach_server(
+            self, server, individual)
 
     def begin_service_if_possible_accept(self,
                                          next_individual,
@@ -160,17 +148,15 @@ class Node:
             individual.customer_class)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
-        if self.simulation.detecting_deadlock:
-            for svr in next_node.servers:
-                self.simulation.digraph.add_edge(
-                    str(individual.server), str(svr))
+        self.simulation.deadlock_detector.action_at_blockage(
+            individual, next_node)
 
     def change_customer_class(self,individual):
         """
         Takes individual and changes customer class
         according to a probability distribution.
         """
-        if self.simulation.class_change_matrix != 'NA':
+        if self.class_change:
             individual.previous_class = individual.customer_class
             individual.customer_class = nprandom.choice(
                 xrange(len(self.class_change)),
@@ -183,7 +169,7 @@ class Node:
         """
         shift = self.next_event_date%self.cyclelength
 
-        try: inx = self.schedule.index(shift)
+        try: indx = self.schedule.index(shift)
         except:
             tms = [obs[0] for obs in self.schedule]
             diffs = [abs(x-float(shift)) for x in tms]
@@ -193,7 +179,7 @@ class Node:
         self.add_new_servers(indx)
 
         self.c = self.schedule[indx][1]
-        self.masterschedule.pop(0)
+        self.next_shift_change = self.date_generator.next()
         self.begin_service_if_possible_change_shift(
             self.next_event_date)
 
@@ -201,8 +187,8 @@ class Node:
         """
         Check whether current time is a shift change.
         """
-        if self.scheduled_servers:
-            return self.next_event_date == self.masterschedule[0]
+        if self.schedule:
+            return self.next_event_date == self.next_shift_change
         return False
 
     def detatch_server(self, server, individual):
@@ -212,13 +198,8 @@ class Node:
         server.cust = False
         server.busy = False
         individual.server = False
-
-        if self.simulation.detecting_deadlock:
-            self.simulation.digraph.remove_edges_from(
-                self.simulation.digraph.in_edges(
-                str(server)) + self.simulation.digraph.out_edges(
-                str(server)))
-
+        self.simulation.deadlock_detector.action_at_detach_server(
+            server)
         if server.offduty:
             self.kill_server(server)
 
@@ -356,8 +337,8 @@ class Node:
             for ind in self.individuals
             if not ind.is_blocked
             if ind.service_end_date >= current_time] + ["Inf"])
-        if self.scheduled_servers:
-            next_shift_change = self.masterschedule[0]
+        if self.schedule:
+            next_shift_change = self.next_shift_change
             self.next_event_date = min(
                 next_end_service, next_shift_change)
         else:
@@ -401,3 +382,13 @@ class Node:
         individual.queue_size_at_arrival = False
         individual.queue_size_at_departure = False
         individual.destination = False
+
+    def date_from_schedule_generator(self, boundaries):
+        """A generator that yields the next time according to a given schedule"""
+        boundaries_len = len(boundaries)
+        index = 0
+        date = 0
+        while True:
+            date = self.increment_time(boundaries[index % boundaries_len], (index) // boundaries_len * boundaries[-1])
+            index += 1
+            yield date

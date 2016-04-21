@@ -13,8 +13,8 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_init_method(self):
         set_seed(5)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
         self.assertEqual(N.number_of_individuals, 0)
@@ -28,8 +28,8 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_initialise_event_dates_dict_method(self):
         set_seed(6)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         dates_dict_1 = {1: {0: 0.4362282541, 1: 0.2672232406, 2: 0.3864256273},
                         2: {0: 0.1636952311, 1: 0.0714709565, 2: 0.8065738414},
@@ -48,15 +48,15 @@ class TestArrivalNode(unittest.TestCase):
             dates_dict_2)
 
     def test_repr_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(str(N), 'Arrival Node')
 
     def test_find_next_event_date_method(self):
         set_seed(1)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00105)
         N.find_next_event_date()
@@ -71,8 +71,8 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_have_event_method(self):
         set_seed(1)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual([str(obj) for obj in Q.transitive_nodes[0].individuals], [])
         self.assertEqual([str(obj) for obj in Q.transitive_nodes[1].individuals], [])
@@ -90,8 +90,8 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_node, 3)
 
         set_seed(12)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual([str(obj) for obj in Q.transitive_nodes[0].individuals], [])
         self.assertEqual([str(obj) for obj in Q.transitive_nodes[1].individuals], [])
@@ -110,25 +110,24 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_no_arrivals_example(self):
         params = ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml')
+            'ciw/tests/testing_parameters/params.yml')
         params['Arrival_distributions']['Class 0'] = ['NoArrivals',
-                                                      ['Exponential', 1.0],
-                                                      ['Exponential', 4.0],
-                                                      ['Exponential', 3.5]]
-        Q = ciw.Simulation(params)
+                                                     ['Exponential', 1.0],
+                                                     ['Exponential', 4.0],
+                                                     ['Exponential', 3.5]]
+        Q = ciw.Simulation(ciw.create_network(params))
         AN = Q.nodes[0]
-        self.assertEqual(AN.simulation.lmbda[0][0], 'NoArrivals')
+        self.assertEqual(AN.simulation.network.customer_classes[0].arrival_distributions[0], 'NoArrivals')
         self.assertEqual(AN.inter_arrival(1, 0), 'Inf')
 
     def test_rejection_dict(self):
         params = {'Arrival_distributions':[['Deterministic', 3.0], ['Deterministic', 4.0]],
                   'Service_distributions':[['Deterministic', 10.0], ['Deterministic', 10.0]],
                   'Transition_matrices':[[0.0, 1.0], [0.0, 0.0]],
-                  'Simulation_time': 20,
                   'Number_of_servers':[1, 1],
                   'Queue_capacities':[1, 1]}
-        Q = ciw.Simulation(params)
+        Q = ciw.Simulation(ciw.create_network(params))
         self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
-        Q.simulate_until_max_time()
+        Q.simulate_until_max_time(20)
         self.assertEqual(Q.rejection_dict, {1: {0: [9.0, 12.0, 18.0]}, 2: {0:[12.0, 16.0]}})
 

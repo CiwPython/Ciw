@@ -18,19 +18,14 @@ This schedule is cyclic, therefore after the last shift (220-250), schedule begi
 In order to define this work schedule, it must be given a name.
 Let's call it :code:`my_special_schedule_01`.
 
-In the :code:`parameters.yml` file, under :code:`Number_of_servers`, for the given node enter the name of the schedule. The :code:`Cycle_length` must also be given.
+In the :code:`parameters.yml` file, under :code:`Number_of_servers`, for the given node enter the name of the schedule.
 An example is shown::
 
-    Cycle_length: 250
     Number_of_servers:
       - 'my_special_schedule_01'
       - 3
 
-The equivalent way to add this to the parameters dictionary is by first adding the cycle length::
-    
-    'Cycle_length':250
-
-And then under number of servers, add the schedule name::
+The equivalent way to add this to the parameters dictionary::
 
     'Number_of_servers':['my_special_schedule_01', 3]
 
@@ -39,26 +34,22 @@ This schedule hasn't been defined yet.
 To define the work schedule, add the following lines to the end of the :code:`parameters.yml` file::
 
     my_special_schedule_01:
-      - - 0
-        - 2
       - - 40
-        - 3
-      - - 100
-        - 1
-      - - 120
         - 2
+      - - 100
+        - 3
+      - - 120
+        - 1
       - - 180
-        - 4
+        - 2
       - - 220
+        - 4
+      - - 250
         - 0
 
 And equivalently, adding the following to the parameters dictionary::
 
-    'my_special_schedule_01':[[0, 2], [40, 3], [100, 1], [120, 2], [180, 4], [220, 0]]
+    'my_special_schedule_01':[[40, 2], [100, 3], [120, 1], [180, 2], [220, 4], [250, 0]]
 
-Here we are saying that there will be 2 servers scheduled between times 0 and 40, 3 between 40 and 100, etc. The final shift denotes 0 servers between times 220 and :code:`Cycle_length`, and then the schedule cycles to the beginning.
+Here we are saying that there will be 2 servers scheduled between times 0 and 40, 3 between 40 and 100, etc.
 This fully defines the cyclic work schedule.
-
-Note:
-
-- If more than one work schedule is defined, the same :code:`Cycle_length` must be used for the entire system.

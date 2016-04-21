@@ -43,53 +43,6 @@ An example for a two node network with two classes of customer::
                                          [0.4, 0.5, 0.1],
                                          [0.2, 0.2, 0.6]]}
 
-Cycle_length
-~~~~~~~~~~~~
-
-*Optional, required if server schedules are used*
-
-The length of a cycle of a server schedule. For more details see :ref:`server-schedules`.
-
-An example is shown::
-
-    'Cycle_length': 7
-
-
-Detect_deadlock
-~~~~~~~~~~~~~~~
-
-*Optional, required if using simulate_until_deadlock()*
-
-Indicates which deadlock detection mechanism is to be used, if any. For more details see :ref:`deadlock-detection`.
-
-An example of no deadlock detection is shown (although omitting this argument will yield the same results)::
-
-    'Detect_deadlock': False
-
-
-Exact
-~~~~~
-
-*Optional*
-
-The exact option allows for exactness, and indicates the level of exactness required. It should only be used when absolutely necessary. For more details see :ref:`exact-simulations`.
-
-Example::
-
-    'Exact': 26
-
-
-Name
-~~~~
-
-*Optional*
-
-A string to represent the simulation class. A default value of 'Simulation' is given.
-
-Example::
-
-    'Name': 'My Awsome Simulation!'
-
 
 Number_of_classes
 ~~~~~~~~~~~~~~~~~
@@ -156,30 +109,6 @@ An example where only one class of customer is required::
 
     'Service_distributions': [['Exponential', 4.8],
                             ['Exponential', 5.2]]
-
-
-Simulation_time
-~~~~~~~~~~~~~~~
-
-*Optional, required if using simulate_until_max_time()*
-
-The amount of time units to run the simulation for.
-
-Example::
-
-    'Simulation_time': 2500
-
-
-Tracker
-~~~~~~~
-
-*Optional*
-
-Indicates which state tracking mechanism is to be used. For more details see :ref:`state-tracker`. If omitted no state tracker is used, unless there is a deadlock detection mechanism in place, in which case the Naïve Tracker is used.
-
-Example::
-
-    'Tracker': 'Naive'
 
 
 

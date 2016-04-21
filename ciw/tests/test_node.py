@@ -12,12 +12,9 @@ def set_seed(x):
 class TestNode(unittest.TestCase):
 
     def test_init_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = ciw.Node(1, Q)
-        self.assertEqual(N.mu, [['Exponential', 7.0],
-                                ['Exponential', 7.0],
-                                ['Deterministic', 0.3]])
         self.assertEqual(N.c, 9)
         self.assertEqual(N.transition_row, [[0.1, 0.2, 0.1, 0.4],
                                             [0.6, 0.0, 0.0, 0.2],
@@ -26,35 +23,33 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.individuals, [])
         self.assertEqual(N.id_number, 1)
 
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_change_class.yml'))
         N1 = Q.transitive_nodes[0]
         self.assertEqual(N1.class_change, [[0.5, 0.5],
                                            [0.5, 0.5]])
         N2 = Q.transitive_nodes[1]
         self.assertEqual(N2.class_change, [[1.0, 0.0],
                                            [0.0, 1.0]])
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
-        self.assertEqual(N.scheduled_servers, True)
         self.assertEqual(N.cyclelength, 100)
         self.assertEqual(N.c, 1)
-        self.assertEqual(N.masterschedule, [30, 60, 90, 100, 130,
-            160, 190, 200, 230, 260, 290, 300, 330, 360, 390])
+        self.assertEqual(N.schedule, [[0, 1], [30, 2], [60, 1], [90, 3]])
         self.assertEqual(N.next_event_date, 30)
 
     def test_repr_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N1 = ciw.Node(1, Q)
         N2 = ciw.Node(2, Q)
         self.assertEqual(str(N1), 'Node 1')
         self.assertEqual(str(N2), 'Node 2')
 
     def test_change_shift_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 30
         self.assertEqual([str(obs) for obs in N.servers],
@@ -84,8 +79,8 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 3)
 
     def test_take_servers_off_duty_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         N.add_new_servers(3)
         self.assertEqual([str(obs) for obs in N.servers],
@@ -106,16 +101,16 @@ class TestNode(unittest.TestCase):
         self.assertEqual([obs.offduty for obs in N.servers], [True, True])
 
     def test_check_if_shiftchange_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 12.0
         self.assertEqual(N.check_if_shiftchange(), False)
         N.next_event_date = 30.0
         self.assertEqual(N.check_if_shiftchange(), True)
 
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 12.0
         self.assertEqual(N.check_if_shiftchange(), False)
@@ -124,8 +119,8 @@ class TestNode(unittest.TestCase):
 
     def test_finish_service_method(self):
         set_seed(4)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         inds = [ciw.Individual(i + 1) for i in xrange(3)]
         for current_time in [0.01, 0.02, 0.03]:
@@ -140,8 +135,8 @@ class TestNode(unittest.TestCase):
 
     def test_change_customer_class_method(self):
         set_seed(14)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_dynamic_classes/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_change_class.yml'))
         N1 = Q.transitive_nodes[0]
         ind = ciw.Individual(254, 0)
         self.assertEqual(ind.customer_class, 0)
@@ -161,8 +156,9 @@ class TestNode(unittest.TestCase):
 
     def test_block_individual_method(self):
         set_seed(4)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_deadlock.yml'),
+            deadlock_detector='StateDigraph')
         inds = [ciw.Individual(i + 1) for i in xrange(7)]
         N1 = Q.transitive_nodes[0]
         N1.individuals = inds[:6]
@@ -170,11 +166,11 @@ class TestNode(unittest.TestCase):
         N2.accept(inds[6], 2)
         self.assertEqual(inds[6].is_blocked, False)
         self.assertEqual(N1.blocked_queue, [])
-        self.assertEqual(Q.digraph.edges(), [])
+        self.assertEqual(Q.deadlock_detector.statedigraph.edges(), [])
         N2.block_individual(inds[6], N1)
         self.assertEqual(inds[6].is_blocked, True)
         [(2, 7)]
-        self.assertEqual(Q.digraph.edges(),
+        self.assertEqual(Q.deadlock_detector.statedigraph.edges(),
             [('Server 1 at Node 2', 'Server 2 at Node 1'),
              ('Server 1 at Node 2', 'Server 5 at Node 1'),
              ('Server 1 at Node 2', 'Server 3 at Node 1'),
@@ -183,8 +179,8 @@ class TestNode(unittest.TestCase):
 
     def test_release_method(self):
         set_seed(4)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         inds = [ciw.Individual(i+1) for i in xrange(3)]
         for current_time in [0.01, 0.02, 0.03]:
@@ -204,14 +200,15 @@ class TestNode(unittest.TestCase):
 
     def test_begin_service_if_possible_release_method(self):
         set_seed(50)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_deadlock.yml'),
+            deadlock_detector='StateDigraph')
         inds = [ciw.Individual(i) for i in xrange(30)]
         Q.transitive_nodes[0].individuals = inds
         ind = Q.transitive_nodes[0].individuals[0]
         ind.service_time = 3.14
         ind.arrival_date = 100.0
-        self.assertEqual(Q.digraph.nodes(),
+        self.assertEqual(Q.deadlock_detector.statedigraph.nodes(),
             ['Server 5 at Node 2',
              'Server 5 at Node 1',
              'Server 3 at Node 2',
@@ -233,8 +230,9 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind.service_end_date, 5), 203.14)
 
     def test_release_blocked_individual_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_deadlock.yml'),
+            deadlock_detector='StateDigraph')
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         N1.individuals = [ciw.Individual(i) for i in xrange(N1.c + 3)]
@@ -310,8 +308,8 @@ class TestNode(unittest.TestCase):
 
     def test_accept_method(self):
         set_seed(6)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 0.0
         self.assertEqual(N.individuals, [])
@@ -370,10 +368,11 @@ class TestNode(unittest.TestCase):
 
     def test_begin_service_if_possible_accept_method(self):
         set_seed(50)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_deadlock_sim/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_deadlock.yml'),
+            deadlock_detector='StateDigraph')
         ind = ciw.Individual(1)
-        self.assertEqual(Q.digraph.nodes(),
+        self.assertEqual(Q.deadlock_detector.statedigraph.nodes(),
             ['Server 5 at Node 2', 
              'Server 5 at Node 1',
              'Server 3 at Node 2',
@@ -395,8 +394,8 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind.service_end_date, 5), 300.03382)
 
     def test_kill_server_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         s = N.servers[0]
         self.assertEqual([str(obs) for obs in N.servers],
@@ -419,8 +418,8 @@ class TestNode(unittest.TestCase):
             ['Server 3 at Node 1'])
 
     def test_add_new_servers_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1'])
@@ -433,8 +432,8 @@ class TestNode(unittest.TestCase):
              'Server 4 at Node 1'])
 
     def test_update_next_event_date_method(self):
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         self.assertEqual(N.next_event_date, 'Inf')
         self.assertEqual(N.individuals, [])
@@ -466,8 +465,8 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, 'Inf')
 
 
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_server_schedule/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         self.assertEqual(N.next_event_date, 30)
         self.assertEqual(N.individuals, [])
@@ -488,8 +487,8 @@ class TestNode(unittest.TestCase):
 
     def test_next_node_method(self):
         set_seed(6)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         node = Q.transitive_nodes[0]
         self.assertEqual(str(node.next_node(0)), 'Exit Node')
         self.assertEqual(str(node.next_node(0)), 'Node 3')
@@ -499,8 +498,8 @@ class TestNode(unittest.TestCase):
         self.assertEqual(str(node.next_node(0)), 'Node 4')
 
         set_seed(54)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         node = Q.transitive_nodes[2]
         self.assertEqual(str(node.next_node(0)), 'Node 2')
         self.assertEqual(str(node.next_node(0)), 'Node 2')
@@ -513,8 +512,8 @@ class TestNode(unittest.TestCase):
 
     def test_write_individual_record_method(self):
         set_seed(7)
-        Q = ciw.Simulation(ciw.load_parameters(
-            'ciw/tests/datafortesting/logs_test_for_simulation/parameters.yml'))
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         ind = ciw.Individual(6)
         N.accept(ind, 3)
@@ -529,3 +528,15 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind.data_records[1][0].blocked, 5), 5.42106)
         self.assertEqual(ind.data_records[1][0].exit_date, 9)
         self.assertEqual(ind.data_records[1][0].customer_class, 0)
+
+    def test_date_from_schedule_generator(self):
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
+
+        sg = Q.nodes[1].date_from_schedule_generator([30, 60, 90, 100])
+        self.assertEqual(sg.next(), 30)
+        self.assertEqual(sg.next(), 60)
+        self.assertEqual(sg.next(), 90)
+        self.assertEqual(sg.next(), 100)
+        self.assertEqual(sg.next(), 130)
+        self.assertEqual(sg.next(), 160)
