@@ -248,3 +248,10 @@ class TestNetwork(unittest.TestCase):
         params_list[22]['Class_change_matrices'] = {'Node 1':[[1.5]]}
         self.assertRaises(ValueError, ciw.create_network, params_list[22])
 
+    def test_create_network_returns_none(self):
+        params1 = ['A', 'list', 'of', 'things.']
+        params2 = "notayamlfile.csv"
+        params3 = 10
+        self.assertEqual(ciw.create_network(params1), None)
+        self.assertEqual(ciw.create_network(params2), None)
+        self.assertEqual(ciw.create_network(params3), None)
