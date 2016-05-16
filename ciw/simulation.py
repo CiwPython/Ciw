@@ -5,6 +5,7 @@ from random import (random, expovariate, uniform, triangular,
 from csv import writer, reader
 import copy
 from decimal import Decimal, getcontext
+from collections import namedtuple
 
 import yaml
 import numpy.random as nprandom
@@ -18,6 +19,9 @@ from individual import Individual
 from data_record import DataRecord
 from state_tracker import *
 from deadlock_detector import *
+
+
+Record = namedtuple('Record', 'id_number customer_class node arrival_date wait_time service_start_date service_time service_end_date time_blocked exit_date destination queue_size_at_arrival queue_size_at_departure')
 
 class Simulation:
     """
@@ -157,29 +161,15 @@ class Simulation:
             for individual in node.individuals
             if len(individual.data_records) > 0]
 
-    def get_all_records(self, headers=True):
+    def get_all_records(self):
         """
         Gets all records from all individuals
         """
         records = []
-        if headers:
-            records.append(['I.D. Number',
-                            'Customer Class',
-                            'Node',
-                            'Arrival Date',
-                            'Waiting Time',
-                            'Service Start Date',
-                            'Service Time',
-                            'Service End Date',
-                            'Time Blocked',
-                            'Exit Date',
-                            'Destination',
-                            'Queue Size at Arrival',
-                            'Queue Size at Departure'])
         for individual in self.get_all_individuals():
             for node in individual.data_records:
                 for record in individual.data_records[node]:
-                    records.append([individual.id_number,
+                    records.append(Record(individual.id_number,
                                     record.customer_class,
                                     node,
                                     record.arrival_date,
@@ -191,7 +181,7 @@ class Simulation:
                                     record.exit_date,
                                     record.destination,
                                     record.queue_size_at_arrival,
-                                    record.queue_size_at_departure])
+                                    record.queue_size_at_departure))
         self.all_records = records
         return records
 
@@ -277,7 +267,21 @@ class Simulation:
         directory = os.path.join(root, file_name)
         data_file = open('%s' % directory, 'w')
         csv_wrtr = writer(data_file)
-        records = self.get_all_records(headers=headers)
+        if headers:
+            csv_wrtr.writerow(['I.D. Number',
+                               'Customer Class',
+                               'Node',
+                               'Arrival Date',
+                               'Waiting Time',
+                               'Service Start Date',
+                               'Service Time',
+                               'Service End Date',
+                               'Time Blocked',
+                               'Exit Date',
+                               'Destination',
+                               'Queue Size at Arrival',
+                               'Queue Size at Departure'])
+        records = self.get_all_records()
         for row in records:
             csv_wrtr.writerow(row)
         data_file.close()

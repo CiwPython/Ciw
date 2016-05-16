@@ -7,6 +7,8 @@ import os
 from numpy import random as nprandom
 from decimal import Decimal
 import networkx as nx
+import csv
+from collections import namedtuple
 
 def set_seed(x):
     seed(x)
@@ -174,6 +176,19 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sum(waits), 0.0)
 
     def test_writing_data_files(self):
+        expected_headers = ['I.D. Number',
+                            'Customer Class',
+                            'Node',
+                            'Arrival Date',
+                            'Waiting Time',
+                            'Service Start Date',
+                            'Service Time',
+                            'Service End Date',
+                            'Time Blocked',
+                            'Exit Date',
+                            'Destination',
+                            'Queue Size at Arrival',
+                            'Queue Size at Departure']
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(50)
@@ -185,6 +200,14 @@ class TestSimulation(unittest.TestCase):
         files = [x for x in os.walk(
             'ciw/tests/testing_parameters/')][0][2]
         self.assertEqual('data.csv' in files, True)
+        data = []
+        data_file = open('ciw/tests/testing_parameters/data.csv', 'r')
+        rdr = csv.reader(data_file)
+        for row in rdr:
+            data.append(row)
+        data_file.close()
+        self.assertEqual(data[0], expected_headers)
+        self.assertEqual(len(data[0]), len(ciw.simulation.Record._fields))
         os.remove('ciw/tests/testing_parameters/data.csv')
 
         Q = ciw.Simulation(ciw.create_network(
@@ -198,7 +221,36 @@ class TestSimulation(unittest.TestCase):
         files = [x for x in os.walk(
             'ciw/tests/testing_parameters/')][0][2]
         self.assertEqual('data_1.csv' in files, True)
+        data = []
+        data_file = open('ciw/tests/testing_parameters/data_1.csv', 'r')
+        rdr = csv.reader(data_file)
+        for row in rdr:
+            data.append(row)
+        data_file.close()
+        self.assertNotEqual(data[0], expected_headers)
         os.remove('ciw/tests/testing_parameters/data_1.csv')
+
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_mm1.yml'))
+        Q.simulate_until_max_time(50)
+        files = [x for x in os.walk(
+            'ciw/tests/testing_parameters/')][0][2]
+        self.assertEqual('data_2.csv' in files, False)
+        Q.write_records_to_file(
+            'ciw/tests/testing_parameters/data_2.csv', True)
+        files = [x for x in os.walk(
+            'ciw/tests/testing_parameters/')][0][2]
+        self.assertEqual('data_2.csv' in files, True)
+        data = []
+        data_file = open('ciw/tests/testing_parameters/data_2.csv', 'r')
+        rdr = csv.reader(data_file)
+        for row in rdr:
+            data.append(row)
+        data_file.close()
+        self.assertEqual(data[0], expected_headers)
+        self.assertEqual(len(data[0]), len(ciw.simulation.Record._fields))
+        os.remove('ciw/tests/testing_parameters/data_2.csv')
+
 
     def test_simultaneous_events_example(self):
         # This should yield 3 or 2 customers finishing service.
@@ -245,14 +297,14 @@ class TestSimulation(unittest.TestCase):
         set_seed(777)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(10)
-        recs = Q.get_all_records(headers=False)
+        recs = Q.get_all_records()
         mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
         self.assertNotEqual(set(mod_service_starts), set([0.50, 0.51, 0.52, 0.53, 0.54]))
 
         set_seed(777)
         Q = ciw.Simulation(ciw.create_network(params), exact=14)
         Q.simulate_until_max_time(10)
-        recs = Q.get_all_records(headers=False)
+        recs = Q.get_all_records()
         mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
         expected_set = set([Decimal(k) for k in ['0.50', '0.51', '0.52', '0.53', '0.54']])
         self.assertEqual(set(mod_service_starts), expected_set)
@@ -329,3 +381,17 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
         self.assertIsInstance(Q.nodes[1], DummyNode)
         self.assertIsInstance(Q.nodes[0], DummyArrivalNode)
+
+    def test_get_all_records(self):
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params.yml'))
+        Q.simulate_until_max_time(50)
+        recs = Q.get_all_records()
+        for row in recs:
+            self.assertIsInstance(row, ciw.simulation.Record)
+            self.assertEqual(len(row), len(ciw.simulation.Record._fields))
+
+    def test_namedtuple_record(self):
+        expected_fields = ('id_number', 'customer_class', 'node', 'arrival_date', 'wait_time', 'service_start_date', 'service_time', 'service_end_date', 'time_blocked', 'exit_date', 'destination', 'queue_size_at_arrival', 'queue_size_at_departure')
+        self.assertEqual(ciw.simulation.Record._fields, expected_fields)
+        self.assertEqual(ciw.simulation.Record.__name__, 'Record')
