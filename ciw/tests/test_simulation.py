@@ -392,6 +392,6 @@ class TestSimulation(unittest.TestCase):
             self.assertEqual(len(row), len(ciw.simulation.Record._fields))
 
     def test_namedtuple_record(self):
-        expected_fields = ('id_number', 'customer_class', 'node', 'arrival_date', 'wait_time', 'service_start_date', 'service_time', 'service_end_date', 'time_blocked', 'exit_date', 'destination', 'queue_size_at_arrival', 'queue_size_at_departure')
+        expected_fields = ('id_number', 'customer_class', 'node', 'arrival_date', 'waiting_time', 'service_start_date', 'service_time', 'service_end_date', 'time_blocked', 'exit_date', 'destination', 'queue_size_at_arrival', 'queue_size_at_departure')
         self.assertEqual(ciw.simulation.Record._fields, expected_fields)
         self.assertEqual(ciw.simulation.Record.__name__, 'Record')

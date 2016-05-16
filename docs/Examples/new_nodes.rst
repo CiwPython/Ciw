@@ -49,7 +49,8 @@ point in time for a simulation using these nodes and one using the default ones:
     >>> default_Q = ciw.Simulation(network)
     >>> default_Q.simulate_until_max_time(1000)
     >>> default_recs = default_Q.get_all_records()
-    >>> default_max_length = max([row[11] for row in default_recs[1:]] + [row[12] for row in default_recs[1:]])
+    >>> default_max_length = max([row.queue_size_at_arrival for row in default_recs] +
+    ...                          [row.queue_size_at_departure for row in default_recs])
     >>> default_max_length  # doctest: +SKIP
     108
 
@@ -59,8 +60,8 @@ point in time for a simulation using these nodes and one using the default ones:
     ...                              arrival_node_class=ThresholdArrivalNode)
     >>> threshold_Q.simulate_until_max_time(1000)
     >>> threshold_recs = threshold_Q.get_all_records()
-    >>> threshold_max_length = max([row[11] for row in threshold_recs[1:]] +
-    ...                            [row[12] for row in threshold_recs[1:]])
+    >>> threshold_max_length = max([row.queue_size_at_arrival for row in threshold_recs] +
+    ...                            [row.queue_size_at_departure for row in threshold_recs])
     >>> threshold_max_length
     9
 

@@ -26,8 +26,8 @@ It then returns the average wait in the system::
     ...     N = ciw.create_network(params_dict)
     ...     Q = ciw.Simulation(N)
     ...     Q.simulate_until_max_time(250)
-    ...     records = Q.get_all_records(headers=False)
-    ...     waits = [row[4] for row in records if row[3] > warmup]
+    ...     records = Q.get_all_records()
+    ...     waits = [row.waiting_time for row in records if row.arrival_date > warmup]
     ...     return sum(waits)/len(waits)
     
     >>> seed(27)
