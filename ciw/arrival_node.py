@@ -50,11 +50,7 @@ class ArrivalNode:
         next_individual = Individual(self.number_of_individuals,
                                      self.next_class)
         next_node = self.simulation.transitive_nodes[self.next_node-1]
-        if len(next_node.individuals) < next_node.node_capacity:
-            next_node.accept(next_individual, self.next_event_date)
-        else:
-            self.rejection_dict[next_node.id_number][
-                self.next_class].append(self.next_event_date)
+        self.release_individual(next_node, next_individual)
         self.event_dates_dict[self.next_node][
             self.next_class] = self.increment_time(
             self.event_dates_dict[self.next_node][
@@ -83,6 +79,29 @@ class ArrivalNode:
         Samples the inter-arrival time for next class and node.
         """
         return self.simulation.inter_arrival_times[nd][cls]()
+
+    def record_rejection(self, next_node):
+        """
+        Adds an individual to the rejection dictionary
+        """
+        self.rejection_dict[next_node.id_number][
+            self.next_class].append(self.next_event_date)
+
+    def release_individual(self, next_node, next_individual):
+        """
+        Either sends next_individual to the next node, or rejects
+        that individual.
+        """
+        if len(next_node.individuals) < next_node.node_capacity:
+            self.send_individual(next_node, next_individual)
+        else:
+            self.record_rejection(next_node)
+
+    def send_individual(self, next_node, next_individual):
+        """
+        Sends the next_individual to the next_node
+        """
+        next_node.accept(next_individual, self.next_event_date)
 
     def update_next_event_date(self):
         """

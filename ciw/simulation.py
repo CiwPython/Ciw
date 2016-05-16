@@ -23,25 +23,25 @@ class Simulation:
     """
     Overall simulation class
     """
-    def __init__(self, network, exact=False, name='Simulation', tracker=False, deadlock_detector=False):
+    def __init__(self, network, exact=False, name='Simulation', tracker=False, deadlock_detector=False,
+        node_class=None, arrival_node_class=None):
         """
         Initialise a queue instance.
         """
         self.network = network
-        if not exact:
-            NodeType = Node
-            ArrivalNodeType = ArrivalNode
-        else:
-            NodeType = ExactNode
-            ArrivalNodeType = ExactArrivalNode
+        self.set_classes(node_class, arrival_node_class)
+        if exact:
+            self.NodeType = ExactNode
+            self.ArrivalNodeType = ExactArrivalNode
             getcontext().prec = exact
+
         self.name = name
         self.deadlock_detector = self.choose_deadlock_detection(deadlock_detector)
         self.inter_arrival_times = self.find_times_dict('Arr')
         self.service_times = self.find_times_dict('Ser')
-        self.transitive_nodes = [NodeType(i + 1, self)
+        self.transitive_nodes = [self.NodeType(i + 1, self)
             for i in xrange(network.number_of_nodes)]
-        self.nodes = ([ArrivalNodeType(self)] +
+        self.nodes = ([self.ArrivalNodeType(self)] +
                       self.transitive_nodes +
                       [ExitNode()])
         self.statetracker = self.choose_tracker(tracker, deadlock_detector)
@@ -206,6 +206,20 @@ class Simulation:
         empirical_dist = [[float(x) for x in row] for row in rdr][0]
         empirical_file.close()
         return empirical_dist
+
+    def set_classes(self, node_class, arrival_node_class):
+        """
+        Sets the type of classes being used in the Simulation model
+        """
+        if arrival_node_class is not None:
+            self.ArrivalNodeType = arrival_node_class
+        else:
+            self.ArrivalNodeType = ArrivalNode
+
+        if node_class is not None:
+            self.NodeType = node_class
+        else:
+            self.NodeType = Node
 
     def simulate_until_deadlock(self):
         """

@@ -131,3 +131,35 @@ class TestArrivalNode(unittest.TestCase):
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.rejection_dict, {1: {0: [9.0, 12.0, 18.0]}, 2: {0:[12.0, 16.0]}})
 
+    def test_send_individual(self):
+        params = {'Arrival_distributions':[['Exponential', 3.0]],
+                  'Service_distributions':[['Exponential', 10.0]],
+                  'Transition_matrices':[[0.5]],
+                  'Number_of_servers':[1]}
+        Q = ciw.Simulation(ciw.create_network(params))
+        AN = Q.nodes[0]
+        ind1 = ciw.Individual(555)
+        ind2 = ciw.Individual(666)
+        self.assertEqual(Q.nodes[1].individuals, [])
+        AN.send_individual(Q.nodes[1], ind1)
+        self.assertEqual(Q.nodes[1].individuals, [ind1])
+        AN.send_individual(Q.nodes[1], ind2)
+        self.assertEqual(Q.nodes[1].individuals, [ind1, ind2])
+
+    def test_report_rejection(self):
+        params = {'Arrival_distributions':[['Exponential', 3.0]],
+                  'Service_distributions':[['Exponential', 10.0]],
+                  'Transition_matrices':[[0.5]],
+                  'Number_of_servers':[1]}
+        Q = ciw.Simulation(ciw.create_network(params))
+        AN = Q.nodes[0]
+        AN.next_event_date = 3.33
+        self.assertEqual(AN.rejection_dict, {1: {0: []}})
+        AN.record_rejection(Q.nodes[1])
+        self.assertEqual(AN.rejection_dict, {1: {0: [3.33]}})
+        AN.next_event_date = 4.44
+        AN.record_rejection(Q.nodes[1])
+        self.assertEqual(AN.rejection_dict, {1: {0: [3.33, 4.44]}})
+
+
+
