@@ -2,7 +2,7 @@ from __future__ import division
 from individual import Individual
 
 
-class ArrivalNode:
+class ArrivalNode(object):
     """
     Class for the arrival node on our network
     """

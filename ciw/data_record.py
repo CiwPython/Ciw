@@ -1,6 +1,6 @@
 from __future__ import division
 
-class DataRecord:
+class DataRecord(object):
     """
     A class for a data record
     """

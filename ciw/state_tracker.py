@@ -1,6 +1,6 @@
 from __future__ import division
 
-class StateTracker:
+class StateTracker(object):
     """
     A generic class to record system's state
     """

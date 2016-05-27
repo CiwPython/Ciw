@@ -1,6 +1,6 @@
 from __future__ import division
 
-class Individual:
+class Individual(object):
     """
     Class for an individual
     """

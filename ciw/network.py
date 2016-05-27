@@ -1,4 +1,4 @@
-class ServiceCentre:
+class ServiceCentre(object):
     """
     An information store for each service centre in the queueing network
     """
@@ -16,7 +16,7 @@ class ServiceCentre:
         self.schedule = schedule
 
 
-class CustomerClass:
+class CustomerClass(object):
     """
     An information store for each customer class in the queueing network
     """
@@ -31,7 +31,7 @@ class CustomerClass:
         self.service_distributions = service_distributions
         self.transition_matrix = transition_matrix
 
-class Network:
+class Network(object):
     """
     An information store the queueing network
     """

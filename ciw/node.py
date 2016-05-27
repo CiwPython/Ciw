@@ -10,7 +10,7 @@ from data_record import DataRecord
 from server import Server
 
 
-class Node:
+class Node(object):
     """
     Class for a node on our network
     """
@@ -219,9 +219,9 @@ class Node:
             if not svr.busy:
                 return svr
 
-    def finish_service(self):
+    def find_next_individual(self):
         """
-        The next individual finishes service
+        Finds the next individual that should now finish service
         """
         next_individual_indices = [i for i, x in enumerate(
             [ind.service_end_date for ind in self.individuals]
@@ -230,7 +230,13 @@ class Node:
             next_individual_index = choice(next_individual_indices)
         else:
             next_individual_index = next_individual_indices[0]
-        next_individual = self.individuals[next_individual_index]
+        return self.individuals[next_individual_index], next_individual_index
+
+    def finish_service(self):
+        """
+        The next individual finishes service
+        """
+        next_individual, next_individual_index = self.find_next_individual()
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual.customer_class)
         next_individual.destination = next_node.id_number

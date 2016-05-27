@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-class NoDeadlockDetection:
+class NoDeadlockDetection(object):
     """
     A generic class to detect deadlock in queueing networks.
     This overall class is equivalent to having no deadlock

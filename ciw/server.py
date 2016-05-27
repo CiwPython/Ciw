@@ -1,6 +1,6 @@
 from __future__ import division
 
-class Server:
+class Server(object):
     """
     A class to contain server information
     """
