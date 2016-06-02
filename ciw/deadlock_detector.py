@@ -58,7 +58,7 @@ class StateDigraphMethod(NoDeadlockDetection):
         Initialises the state digraph when the node is created.
         Adds the servers of that node if c < Inf.
         """
-        if node.c < 'Inf':
+        if node.c < float('Inf'):
             self.statedigraph.add_nodes_from([str(s)for s in node.servers])
 
     def detect_deadlock(self):

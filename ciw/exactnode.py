@@ -1,5 +1,5 @@
-from node import Node
-from arrival_node import ArrivalNode
+from .node import Node
+from .arrival_node import ArrivalNode
 from decimal import Decimal, getcontext
 
 class ExactNode(Node):

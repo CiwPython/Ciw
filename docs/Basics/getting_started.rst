@@ -33,7 +33,7 @@ We wish to simulate this system for 1000 time units. This system is defined by t
     ... 'Number_of_nodes': 2,
     ... 'Detect_deadlock': False,
     ... 'Number_of_servers': [1, 1],
-    ... 'Queue_capacities': ['Inf', 4],
+    ... 'Queue_capacities': [float('Inf'), 4],
     ... 'Number_of_classes': 1,
     ... 'Service_distributions': {'Class 0': [['Exponential', 8.5], ['Exponential', 5.5]]},
     ... 'Transition_matrices': {'Class 0': [[0.0, 0.2], [0.1, 0.0]]}

@@ -10,8 +10,8 @@ class ExitNode(object):
         """
         self.individuals = []
         self.id_number = -1
-        self.next_event_date = "Inf"
-        self.node_capacity = "Inf"
+        self.next_event_date = float("Inf")
+        self.node_capacity = float("Inf")
 
     def __repr__(self):
         """

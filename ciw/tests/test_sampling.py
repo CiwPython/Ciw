@@ -1,3 +1,5 @@
+from past.builtins import xrange
+
 import unittest
 import ciw
 from random import seed, random, choice
@@ -693,7 +695,7 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Nna = Q.transitive_nodes[0]
         set_seed(5)
-        self.assertEqual(Nna.simulation.inter_arrival_times[Nna.id_number][0](), 'Inf')
+        self.assertEqual(Nna.simulation.inter_arrival_times[Nna.id_number][0](), float('Inf'))
 
     def test_error_dist(self):
         params = {'Arrival_distributions': ['NoArrivals'],

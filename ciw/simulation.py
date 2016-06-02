@@ -1,4 +1,5 @@
 from __future__ import division
+from past.builtins import xrange
 import os
 from random import (random, expovariate, uniform, triangular,
     gammavariate, gauss, lognormvariate, weibullvariate, choice)
@@ -10,15 +11,15 @@ from collections import namedtuple
 import yaml
 import numpy.random as nprandom
 
-from node import Node
-from exactnode import ExactNode, ExactArrivalNode
-from arrival_node import ArrivalNode
-from exit_node import ExitNode
-from server import Server
-from individual import Individual
-from data_record import DataRecord
-from state_tracker import *
-from deadlock_detector import *
+from .node import Node
+from .exactnode import ExactNode, ExactArrivalNode
+from .arrival_node import ArrivalNode
+from .exit_node import ExitNode
+from .server import Server
+from .individual import Individual
+from .data_record import DataRecord
+from .state_tracker import *
+from .deadlock_detector import *
 
 
 Record = namedtuple('Record', 'id_number customer_class node arrival_date waiting_time service_start_date service_time service_end_date time_blocked exit_date destination queue_size_at_arrival queue_size_at_departure')
@@ -99,7 +100,7 @@ class Simulation(object):
         Finds distribution functions
         """
         if self.source(c, n, kind) == 'NoArrivals':
-            return lambda : 'Inf'
+            return lambda : float('Inf')
         if self.source(c, n, kind)[0] == 'Uniform':
             return lambda : uniform(self.source(c, n, kind)[1],
                                     self.source(c, n, kind)[2])

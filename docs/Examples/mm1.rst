@@ -20,6 +20,7 @@ We set up the parameters in Ciw::
 The following code repeats the experiment 100 times, only recording waits for those that arrived after a warm-up time of 50.
 It then returns the average wait in the system::
     
+    >>> from __future__ import print_function
     >>> import ciw
     >>> from random import seed
     >>> def iteration(warmup):
@@ -35,7 +36,7 @@ It then returns the average wait in the system::
     >>> for i in range(100):
     ...     ws.append(iteration(50))
     
-    >>> print sum(ws)/len(ws)
+    >>> print ("{0:.12f}".format(sum(ws)/len(ws)))
     0.303011702426
 
 We see that the results of the simulation are in agreement with those of standard queueing theory.

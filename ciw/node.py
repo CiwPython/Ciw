@@ -1,4 +1,5 @@
 from __future__ import division
+from past.builtins import xrange
 from random import random, choice
 import os
 from csv import writer
@@ -6,8 +7,8 @@ from csv import writer
 import networkx as nx
 import numpy.random as nprandom
 
-from data_record import DataRecord
-from server import Server
+from .data_record import DataRecord
+from .server import Server
 
 
 class Node(object):
@@ -29,12 +30,12 @@ class Node(object):
             self.c = self.schedule[0][1]
             raw_schedule_boundaries = [row[0] for row in raw_schedule]
             self.date_generator = self.date_from_schedule_generator(raw_schedule_boundaries)
-            self.next_shift_change = self.date_generator.next()
+            self.next_shift_change = next(self.date_generator)
         else:
             self.c = node.number_of_servers
             self.schedule = None
         if node.queueing_capacity == "Inf":
-            self.node_capacity = "Inf"
+            self.node_capacity = float("Inf")
         else:
             self.node_capacity = node.queueing_capacity + self.c
         self.transition_row = [
@@ -47,9 +48,9 @@ class Node(object):
         if self.schedule:
             self.next_event_date = self.next_shift_change
         else:
-            self.next_event_date = "Inf"
+            self.next_event_date = float("Inf")
         self.blocked_queue = []
-        if self.c < 'Inf':
+        if self.c < float('Inf'):
             self.servers = [Server(self, i + 1) for i in xrange(self.c)]
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
@@ -103,7 +104,7 @@ class Node(object):
         next_individual.service_time = self.get_service_time(
             next_individual.customer_class)
         if self.free_server():
-            if self.c < 'Inf':
+            if self.c < float('Inf'):
                 self.attach_server(self.find_free_server(),
                                    next_individual)
             next_individual.service_start_date = self.get_now(current_time)
@@ -179,7 +180,7 @@ class Node(object):
         self.add_new_servers(indx)
 
         self.c = self.schedule[indx][1]
-        self.next_shift_change = self.date_generator.next()
+        self.next_shift_change = next(self.date_generator)
         self.begin_service_if_possible_change_shift(
             self.next_event_date)
 
@@ -289,7 +290,7 @@ class Node(object):
         next_individual = self.individuals.pop(next_individual_index)
         next_individual.queue_size_at_departure = len(self.individuals)
         next_individual.exit_date = current_time
-        if self.c < 'Inf':
+        if self.c < float('Inf'):
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
         self.simulation.statetracker.change_state_release(self.id_number,
@@ -342,7 +343,7 @@ class Node(object):
         next_end_service = min([ind.service_end_date
             for ind in self.individuals
             if not ind.is_blocked
-            if ind.service_end_date >= current_time] + ["Inf"])
+            if ind.service_end_date >= current_time] + [float("Inf")])
         if self.schedule:
             next_shift_change = self.next_shift_change
             self.next_event_date = min(

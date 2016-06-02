@@ -1,7 +1,8 @@
 import os
 import yaml
 import copy
-from network import *
+from past.builtins import xrange
+from .network import *
 
 
 def create_network(params):
@@ -26,6 +27,9 @@ def load_parameters(directory_name):
     parameter_file = open(parameter_file_name, 'r')
     parameters = yaml.load(parameter_file)
     parameter_file.close()
+
+    # Convert any "Infs" to their float equivalent
+    parameters['Queue_capacities'] = list(map(lambda x: float("Inf") if x == "Inf" else x, parameters['Queue_capacities']))
     return parameters
 
 
@@ -99,7 +103,7 @@ def fill_out_dictionary(params_input):
         'Name': 'Simulation',
         'Number_of_nodes': len(params['Number_of_servers']),
         'Number_of_classes': len(params['Arrival_distributions']),
-        'Queue_capacities': ['Inf' for _ in xrange(len(
+        'Queue_capacities': [ float('Inf') for _ in xrange(len(
             params['Number_of_servers']))],
         }
 
@@ -132,7 +136,7 @@ def validify_dictionary(params):
         len(obs) for obs in params['Arrival_distributions'].values()] + [
         len(obs) for obs in params['Service_distributions'].values()] + [
         len(obs) for obs in params['Transition_matrices'].values()] + [
-        len(row) for row in obs for obs in params['Transition_matrices'].values()] + [
+        len(row) for row in [obs for obs in params['Transition_matrices'].values()][0]] + [
         len(params['Number_of_servers'])] + [
         len(params['Queue_capacities'])]
     if len(set(num_nodes_count)) != 1:
@@ -149,7 +153,7 @@ def validify_dictionary(params):
         'Weibull', 'Empirical', 'Custom', 'UserDefined'])):
         raise ValueError('Ensure that valid Arrival and Service Distributions are used.')
     neg_numservers = any([(isinstance(obs, int) and obs <= 0) for obs in params['Number_of_servers']])
-    valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])
+    valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs==float('Inf')) for obs in params['Queue_capacities']])
     if neg_numservers:
         raise ValueError('Number of servers must be positive integers.')
     if not valid_capacities:

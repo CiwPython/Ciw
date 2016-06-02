@@ -3,6 +3,7 @@ import ciw
 from random import seed
 from hypothesis import given
 from hypothesis.strategies import floats, integers, lists, random_module
+from past.builtins import xrange
 import os
 from numpy import random as nprandom
 from decimal import Decimal
@@ -166,7 +167,7 @@ class TestSimulation(unittest.TestCase):
     def test_mminf_node(self, arrival_rate, service_rate, rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
-                  'Number_of_servers': ['Inf'],
+                  'Number_of_servers': [float('Inf')],
                   'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(ciw.create_network(params))
