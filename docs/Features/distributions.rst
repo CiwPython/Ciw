@@ -4,7 +4,7 @@
 Service & Inter-Arrival Time Distributions
 ==========================================
 
-Ciw currently allows the following continuous service and inter-arrival time distributions, as well as empirical distributions and imputting your own functions:
+Ciw currently allows the following continuous service and inter-arrival time distributions, as well as empirical distributions and inputting your own functions:
 
 - :ref:`uniform_dist`
 - :ref:`deterministic_dist`
@@ -40,7 +40,7 @@ In the parameters dictionary, write a uniform distribution between `4` and `9` a
 The Deterministic Distribution
 ------------------------------
 
-The deterministic distribution is non-stachastic, and produces the same service time repeatedly.
+The deterministic distribution is non-stochastic, and produces the same service time repeatedly.
 In the parameters dictionary, write a deterministic distribution that repeatedly gives a value of `18.2` as follows::
 
     ['Deterministic', 18.2]
@@ -134,7 +134,7 @@ In the parameters dictionary, write a Weibull distribution with `alpha = 0.9` an
 Empirical Distributions
 -----------------------
 
-There are two methods of defining empirical distributions in Ciw, either through imputting a list of observations, or through giving a path to a :code:`.csv` file containing observations:
+There are two methods of defining empirical distributions in Ciw, either through inputting a list of observations, or through giving a path to a :code:`.csv` file containing observations:
 
 Input list of observations::
 

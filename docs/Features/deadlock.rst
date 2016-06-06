@@ -6,18 +6,18 @@ Deadlock Detection Capability
 
 Ciw's has built in deadlock detection capability. With Ciw, a queueing network can be simulated until it reaches deadlock. Ciw then records the time until deadlock from each state.
 
-In order to take advantage of this feature, set deadlock_detection argument to one of the deadlock detectio methods when creating the Simulation object::
+In order to take advantage of this feature, set the :code:`deadlock_detection` argument to one of the deadlock detection methods when creating the Simulation object::
 
     >>> Q = ciw.Simulation(params, deadlock_detector='StateDigraph') # doctest:+SKIP
 
-Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state::
+Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state (the state being recorded by :ref:`state-tracker`)::
 
     >>> import ciw
     >>> Q = ciw.Simulation(params, deadlock_detector='StateDigraph') # doctest:+SKIP
     >>> Q.simulate_until_deadlock() # doctest:+SKIP
     >>> times = Q.times_to_deadlock # doctest:+SKIP
 
-where :code:`times` is a dictionary with states as keys and times to deadlock as values. Note that :code:`Simulation_time` is ingnored in this case.
+where :code:`times` is a dictionary with states as keys and times to deadlock as values.
 
 
 

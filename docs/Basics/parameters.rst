@@ -42,7 +42,7 @@ In this transition matrix the `(i,j)` th element corresponds to the probability 
 
 There are numerous other features, please see :ref:`features` for more information.
 
-There are two ways to imput parameters into the Simulation object:
+There are two ways to input parameters into the Network object:
 
 * :ref:`params_dict`
 * :ref:`params_file`
@@ -54,7 +54,7 @@ There are two ways to imput parameters into the Simulation object:
 A Parameters Dictionary
 -----------------------
 
-The Simulation object can take a dictionary containing all the kwars as keys. An example is shown::
+A Network object can be created from a parameters dictionary, using the :code:`ciw.create_network` function. An example is shown::
 
     >>> import ciw
     >>> params = {
@@ -76,7 +76,7 @@ The Simulation object can take a dictionary containing all the kwars as keys. An
 A Parameters File
 -----------------
 
-Ciw features a :code:`load_parameters` function that imports a parameters file as a dictionary. This file take is in :code:`.yml` format. An example is shown::
+A Network object can be created from a parameters file, using the :code:`ciw.create_network` function. This is a :code:`yml` file containing containing the same information as a parameters dictionary. An example is shown::
 
     parameters.yml
     

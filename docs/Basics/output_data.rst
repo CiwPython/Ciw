@@ -30,6 +30,28 @@ The :code:`write_records_to_file` method writes a header as default. To disable 
 
     >>> Q.write_records_to_file(<path_to_file>, header=False) # doctest:+SKIP
 
+Records may be accessed in Python, using the :code:`Q.get_all_records()` method. This returns a list of named tuples with the following names:
+
+    - :code:`id_number`
+    - :code:`customer_class`
+    - :code:`node`
+    - :code:`arrival_date`
+    - :code:`waiting_time`
+    - :code:`service_start_date`
+    - :code:`service_time`
+    - :code:`service_end_date`
+    - :code:`time_blocked`
+    - :code:`exit_date`
+    - :code:`destination`
+    - :code:`queue_size_at_arrival`
+    - :code:`queue_size_at_departure`
+
+As an example, the 10th record's waiting time may be accessed as follows (Note however that the order of the records is meaningless)::
+
+    >>> recs = Q.get_all_records # doctest:+SKIP
+    >>> recs[10].waiting_time # doctest:+SKIP
+    0.0
+
 
 ------------------------
 The Rejection Dictionary

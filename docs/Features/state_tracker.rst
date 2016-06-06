@@ -25,9 +25,9 @@ An example for a four node queueing network is shown below::
 
 This denotes 3 customers at the first node, 0 of which are blocked; 5 customers at the second node, 4 of which are blocked; 10 customers at the third node, 0 of which are blocked; and 9 customers at the fourth node, 1 of which are blocked.
 
-The Simulation obeject takes in the optional argument :code:`tracker` used as follows::
+The Simulation object takes in the optional argument :code:`tracker` used as follows::
 
-    Q = ciw.Simulation(N,, tracker='Naive') # doctest: +SKIP
+    Q = ciw.Simulation(N, tracker='Naive') # doctest: +SKIP
 
 
 .. _matrix:
@@ -47,6 +47,6 @@ An example for a four node queueing network is shown below::
 
 This denotes 3 customers at the first node, 5 customers at the second node, 10 customers at the third node, and 9 customers at the fourth node. It also tells us the order and destination of the blockages. Of the customers blocked, the first to be blocked was at node 2 to node 2; the second was at node 2 to node 4; the third was at node 4 to node 1; the fourth was at node 2 to node 2.
 
-The Simulation obeject takes in the optional argument :code:`tracker` used as follows::
+The Simulation object takes in the optional argument :code:`tracker` used as follows::
 
     Q = ciw.Simulation(N, tracker='Matrix') # doctest: +SKIP

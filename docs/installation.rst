@@ -2,7 +2,7 @@
 Installing Ciw
 ==============
 
-The simplest way to install Ciw is from the PyPi::
+The simplest way to install Ciw is from PyPi::
 
     $ pip install ciw
 

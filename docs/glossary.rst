@@ -18,7 +18,7 @@ Glossary
       A queueing network is described as closed is customers cannot arrive from the outside nor completely leave the system.
 
    customer
-      The entities that are being simulated as they wait, spend time in service, and flow through the system. (Interchangable with `individual`.)
+      The entities that are being simulated as they wait, spend time in service, and flow through the system. (Interchangeable with `individual`.)
 
    cycle length
       The length of a cycle of a `work schedule`.

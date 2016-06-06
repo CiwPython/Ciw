@@ -4,7 +4,7 @@
 Full List of Parameters
 =======================
 
-Below is a full list of the :code:`**kwargs` that a :code:`Simulation` object takes. If using a parameters dictionary, here is the full list of required keys along with a description of the values required. If using a parameters file then here are the arguments and values of the required :code:`.yml` file.
+Below is a full list of the parameters that a parameter dictionary can take, along with a description of the values required. If using a parameters file then here are the arguments and values of the required :code:`.yml` file.
 
 Arrival_distributions
 ~~~~~~~~~~~~~~~~~~~~~
