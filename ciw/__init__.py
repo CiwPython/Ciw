@@ -10,4 +10,4 @@ from exactnode import *
 from import_params import *
 from network import *
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
