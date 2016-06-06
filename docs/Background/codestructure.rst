@@ -12,7 +12,9 @@ Ciw is structured in an object orientated manor.
    :alt: Code structure for Ciw.
    :align: center
 
-The classes that make up Ciw are:
+Ciw consists of 3 types of objects, Core, Input, and Optional.
+
+Core:
 
 - Simulation
 - Arrival Node
@@ -21,3 +23,14 @@ The classes that make up Ciw are:
 - Server
 - Individual
 - Data Record
+
+Input:
+
+- Network
+- Service Centre
+- Customer Classe
+
+Optional:
+
+- State Tracker
+- Deadlock Detector
