@@ -20,4 +20,4 @@ Ciw is a simulation framework for open queueing networks. :hatching_chick:
 
 Read the documentation `here`_.
 
-.. _here: http://ciw.readthedocs.org
+.. _here: http://ciw.readthedocs.io
