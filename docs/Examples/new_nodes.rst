@@ -1,8 +1,8 @@
 .. _new_nodes:
 
-=============================================
-Example - Incorporating behaviour using nodes
-=============================================
+=========================================
+Example - Modelling behaviour using nodes
+=========================================
 
 As an example of the flexibility of Ciw, you can modify the routing of
 individuals by creating new nodes:
