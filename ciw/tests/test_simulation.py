@@ -95,9 +95,9 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(150)
-        L = Q.get_all_individuals()
+        L = Q.get_all_records()
         self.assertEqual(round(
-            L[300].data_records.values()[0][0].service_start_date, 8), 8.89002862)
+            L[300].service_start_date, 8), 2.49842838)
 
         set_seed(60)
         Q = ciw.Simulation(ciw.create_network(
@@ -105,7 +105,7 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(50)
         L = Q.get_all_individuals()
         drl = []
-        for dr in L[0].data_records[1]:
+        for dr in L[0].data_records:
             drl.append((dr.customer_class, dr.service_time))
         self.assertEqual(drl, [(1, 10.0), (0, 5.0), (0, 5.0)])
 
@@ -171,8 +171,8 @@ class TestSimulation(unittest.TestCase):
 
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(5)
-        inds = Q.get_all_individuals()
-        waits = [ind.data_records[1][0].wait for ind in inds]
+        recs = Q.get_all_records()
+        waits = [rec.waiting_time for rec in recs]
         self.assertEqual(sum(waits), 0.0)
 
     def test_writing_data_files(self):

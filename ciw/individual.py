@@ -14,7 +14,7 @@ class Individual(object):
         self.service_end_date = False
         self.exit_date = False
         self.id_number = id_number
-        self.data_records = {}
+        self.data_records = []
         self.customer_class = customer_class
         self.previous_class = customer_class
         self.is_blocked = False

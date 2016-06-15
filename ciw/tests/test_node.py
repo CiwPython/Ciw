@@ -520,14 +520,14 @@ class TestNode(unittest.TestCase):
         ind.service_start_date = 3.5
         ind.exit_date = 9
         N.write_individual_record(ind)
-        self.assertEqual(ind.data_records[1][0].arrival_date, 3)
-        self.assertEqual(ind.data_records[1][0].wait, 0.5)
-        self.assertEqual(ind.data_records[1][0].service_start_date, 3.5)
-        self.assertEqual(round(ind.data_records[1][0].service_time, 5), 0.07894)
-        self.assertEqual(round(ind.data_records[1][0].service_end_date, 5), 3.57894)
-        self.assertEqual(round(ind.data_records[1][0].blocked, 5), 5.42106)
-        self.assertEqual(ind.data_records[1][0].exit_date, 9)
-        self.assertEqual(ind.data_records[1][0].customer_class, 0)
+        self.assertEqual(ind.data_records[0].arrival_date, 3)
+        self.assertEqual(ind.data_records[0].wait, 0.5)
+        self.assertEqual(ind.data_records[0].service_start_date, 3.5)
+        self.assertEqual(round(ind.data_records[0].service_time, 5), 0.07894)
+        self.assertEqual(round(ind.data_records[0].service_end_date, 5), 3.57894)
+        self.assertEqual(round(ind.data_records[0].blocked, 5), 5.42106)
+        self.assertEqual(ind.data_records[0].exit_date, 9)
+        self.assertEqual(ind.data_records[0].customer_class, 0)
 
     def test_date_from_schedule_generator(self):
         Q = ciw.Simulation(ciw.create_network(

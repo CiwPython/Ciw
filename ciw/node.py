@@ -375,10 +375,7 @@ class Node(object):
                             individual.previous_class,
                             individual.queue_size_at_arrival,
                             individual.queue_size_at_departure)
-        if self.id_number in individual.data_records:
-            individual.data_records[self.id_number].append(record)
-        else:
-            individual.data_records[self.id_number] = [record]
+        individual.data_records.append(record)
 
         individual.arrival_date = False
         individual.service_time = False

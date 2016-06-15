@@ -18,7 +18,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.destination, False)
         self.assertEqual(i.queue_size_at_arrival, False)
         self.assertEqual(i.queue_size_at_departure, False)
-        self.assertEqual(i.data_records, {})
+        self.assertEqual(i.data_records, [])
 
     def test_init_method_2(self):
         i = ciw.Individual(5)
@@ -32,7 +32,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.destination, False)
         self.assertEqual(i.queue_size_at_arrival, False)
         self.assertEqual(i.queue_size_at_departure, False)
-        self.assertEqual(i.data_records, {})
+        self.assertEqual(i.data_records, [])
 
     def test_repr_method(self):
         i = ciw.Individual(3, 6)
@@ -52,7 +52,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.destination, False)
         self.assertEqual(i.queue_size_at_arrival, False)
         self.assertEqual(i.queue_size_at_departure, False)
-        self.assertEqual(i.data_records, {})
+        self.assertEqual(i.data_records, [])
     
     @given(id_num = integers())
     def test_init_method_2h(self, id_num):
@@ -67,7 +67,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.destination, False)
         self.assertEqual(i.queue_size_at_arrival, False)
         self.assertEqual(i.queue_size_at_departure, False)
-        self.assertEqual(i.data_records, {})
+        self.assertEqual(i.data_records, [])
 
     @given(id_num = integers(),
            customer_class = integers())

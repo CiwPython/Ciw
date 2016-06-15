@@ -167,21 +167,20 @@ class Simulation(object):
         """
         records = []
         for individual in self.get_all_individuals():
-            for node in individual.data_records:
-                for record in individual.data_records[node]:
-                    records.append(Record(individual.id_number,
-                                    record.customer_class,
-                                    node,
-                                    record.arrival_date,
-                                    record.wait,
-                                    record.service_start_date,
-                                    record.service_time,
-                                    record.service_end_date,
-                                    record.blocked,
-                                    record.exit_date,
-                                    record.destination,
-                                    record.queue_size_at_arrival,
-                                    record.queue_size_at_departure))
+            for record in individual.data_records:
+                records.append(Record(individual.id_number,
+                                record.customer_class,
+                                record.node,
+                                record.arrival_date,
+                                record.wait,
+                                record.service_start_date,
+                                record.service_time,
+                                record.service_end_date,
+                                record.blocked,
+                                record.exit_date,
+                                record.destination,
+                                record.queue_size_at_arrival,
+                                record.queue_size_at_departure))
         self.all_records = records
         return records
 
