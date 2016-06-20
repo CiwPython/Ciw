@@ -455,23 +455,23 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
         self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 12.3)
         self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.3)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.0)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
             Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
         self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.3)
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
         self.assertEqual(round(
             Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
+        self.assertEqual(round(
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
+        self.assertEqual(round(
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
 
     @given(dist=lists(floats(min_value=0.001, max_value=10000),
                       min_size=1,

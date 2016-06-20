@@ -2,7 +2,7 @@ from __future__ import division
 from past.builtins import xrange
 import os
 from random import (random, expovariate, uniform, triangular,
-    gammavariate, gauss, lognormvariate, weibullvariate, choice)
+    gammavariate, gauss, lognormvariate, weibullvariate)
 from csv import writer, reader
 import copy
 from decimal import Decimal, getcontext
@@ -130,8 +130,8 @@ class Simulation(object):
         if self.source(c, n, kind)[0] == 'Empirical':
             if isinstance(self.source(c, n, kind)[1], str):
                 empirical_dist = self.import_empirical(self.source(c, n, kind)[1])
-                return lambda : choice(empirical_dist)
-            return lambda : choice(self.source(c, n, kind)[1])
+                return lambda : nprandom.choice(empirical_dist)
+            return lambda : nprandom.choice(self.source(c, n, kind)[1])
 
     def find_next_active_node(self):
         """
@@ -141,7 +141,7 @@ class Simulation(object):
             nd.next_event_date for nd in self.nodes]) if x == min([
             nd.next_event_date for nd in self.nodes])]
         if len(next_active_node_indices) > 1:
-            return self.nodes[choice(next_active_node_indices)]
+            return self.nodes[nprandom.choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
 
     def find_times_dict(self, kind):

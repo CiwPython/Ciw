@@ -264,7 +264,7 @@ class TestSimulation(unittest.TestCase):
                   'Number_of_servers': [2, 1]}
 
 
-        set_seed(73)
+        set_seed(36)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
@@ -272,7 +272,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(len(inds), 2)
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
-        set_seed(74)
+        set_seed(40)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()

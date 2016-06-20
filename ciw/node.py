@@ -1,6 +1,6 @@
 from __future__ import division
 from past.builtins import xrange
-from random import random, choice
+from random import random
 import os
 from csv import writer
 
@@ -225,7 +225,7 @@ class Node(object):
             [ind.service_end_date for ind in self.individuals]
             ) if x == self.next_event_date]
         if len(next_individual_indices) > 1:
-            next_individual_index = choice(next_individual_indices)
+            next_individual_index = nprandom.choice(next_individual_indices)
         else:
             next_individual_index = next_individual_indices[0]
         return self.individuals[next_individual_index], next_individual_index
