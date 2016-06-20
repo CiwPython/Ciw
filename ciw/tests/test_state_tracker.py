@@ -1,4 +1,3 @@
-from past.builtins import xrange
 import unittest
 import ciw
 
@@ -46,7 +45,7 @@ class TestStateTracker(unittest.TestCase):
             'ciw/tests/testing_parameters/params.yml')
         Q = ciw.Simulation(Net)
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in xrange(5)]
+        inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = inds
         for ind in N.individuals:
             srvr = N.find_free_server()
@@ -128,7 +127,7 @@ class TestNaiveTracker(unittest.TestCase):
             'ciw/tests/testing_parameters/params.yml')
         Q = ciw.Simulation(params, tracker='Naive')
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in xrange(5)]
+        inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = inds
         for ind in N.individuals:
             srvr = N.find_free_server()
@@ -264,7 +263,7 @@ class TestMatrixTracker(unittest.TestCase):
             'ciw/tests/testing_parameters/params.yml')
         Q = ciw.Simulation(params, tracker='Matrix')
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in xrange(5)]
+        inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = inds
         for ind in N.individuals:
             srvr = N.find_free_server()

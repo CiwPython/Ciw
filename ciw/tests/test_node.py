@@ -1,5 +1,3 @@
-from past.builtins import xrange
-
 import unittest
 import ciw
 from random import seed
@@ -124,7 +122,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
-        inds = [ciw.Individual(i + 1) for i in xrange(3)]
+        inds = [ciw.Individual(i + 1) for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             N.accept(inds[int(current_time*100 - 1)], current_time)
         self.assertEqual([str(obs) for obs in N.individuals],
@@ -161,7 +159,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
             deadlock_detector='StateDigraph')
-        inds = [ciw.Individual(i + 1) for i in xrange(7)]
+        inds = [ciw.Individual(i + 1) for i in range(7)]
         N1 = Q.transitive_nodes[0]
         N1.individuals = inds[:6]
         N2 = Q.transitive_nodes[1]
@@ -184,7 +182,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
-        inds = [ciw.Individual(i+1) for i in xrange(3)]
+        inds = [ciw.Individual(i+1) for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             N.accept(inds[int(current_time*100 - 1)], current_time)
         self.assertEqual([str(obs) for obs in N.individuals],
@@ -205,7 +203,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
             deadlock_detector='StateDigraph')
-        inds = [ciw.Individual(i) for i in xrange(30)]
+        inds = [ciw.Individual(i) for i in range(30)]
         Q.transitive_nodes[0].individuals = inds
         ind = Q.transitive_nodes[0].individuals[0]
         ind.service_time = 3.14
@@ -237,8 +235,8 @@ class TestNode(unittest.TestCase):
             deadlock_detector='StateDigraph')
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
-        N1.individuals = [ciw.Individual(i) for i in xrange(N1.c + 3)]
-        N2.individuals = [ciw.Individual(i + 100) for i in xrange(N2.c + 4)]
+        N1.individuals = [ciw.Individual(i) for i in range(N1.c + 3)]
+        N2.individuals = [ciw.Individual(i + 100) for i in range(N2.c + 4)]
         for ind in N1.individuals[:2]:
             N1.attach_server(N1.find_free_server(), ind)
         for ind in N2.individuals[:1]:

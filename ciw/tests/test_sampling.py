@@ -1,5 +1,3 @@
-from past.builtins import xrange
-
 import unittest
 import ciw
 from random import seed, random, choice
@@ -72,7 +70,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nu = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(ul <= Nu.simulation.service_times[Nu.id_number][0]() <= uh)
             self.assertTrue(ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
 
@@ -149,7 +147,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nd = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertEqual(Nd.simulation.service_times[Nd.id_number][0](), d)
             self.assertEqual(Nd.simulation.inter_arrival_times[Nd.id_number][0](), d)
 
@@ -218,7 +216,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nt = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number][0]() <= th)
             self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]() <= th)
 
@@ -295,7 +293,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ne = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Ne.simulation.service_times[Ne.id_number][0]() >= 0.0)
             self.assertTrue(Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
 
@@ -342,7 +340,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ng = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Ng.simulation.service_times[Ng.id_number][0]() >= 0.0)
             self.assertTrue(Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
 
@@ -389,7 +387,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nl = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Nl.simulation.service_times[Nl.id_number][0]() >= 0.0)
             self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
 
@@ -436,7 +434,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nw = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
 
@@ -488,7 +486,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nem = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Nem.simulation.service_times[
                 Nem.id_number][0]() in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8]))
             self.assertTrue(Nem.simulation.inter_arrival_times[
@@ -554,7 +552,7 @@ class TestSampling(unittest.TestCase):
     def test_sampling_custom_dist_hypothesis(self, custs, rm):
         cust_vals = [round(i, 10) for i in custs]
         numprobs = len(cust_vals)
-        probs = [1.0/numprobs for i in xrange(numprobs)]
+        probs = [1.0/numprobs for i in range(numprobs)]
         my_custom_dist = [list(i) for i in (zip(probs, cust_vals))]
         params = {
             'Arrival_distributions': [['Custom', my_custom_dist]],
@@ -564,7 +562,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nc = Q.transitive_nodes[0]
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Nc.simulation.service_times[
                 Nc.id_number][0]() in set(cust_vals))
             self.assertTrue(Nc.simulation.inter_arrival_times[
@@ -678,7 +676,7 @@ class TestSampling(unittest.TestCase):
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         set_seed(5)
-        for itr in xrange(10): # Because repition happens in the simulation
+        for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(N1.simulation.inter_arrival_times[N1.id_number][0]()
                 in set(my_empirical_dist))
             self.assertTrue(N2.simulation.inter_arrival_times[N2.id_number][0]() == const)

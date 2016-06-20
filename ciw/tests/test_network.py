@@ -1,5 +1,3 @@
-from past.builtins import xrange
-
 import unittest
 import ciw
 import copy
@@ -73,8 +71,8 @@ class TestNetwork(unittest.TestCase):
         transition_matrix = [[0.2, 0.6, 0.2],
                              [0.0, 0.0, 0.0],
                              [0.5, 0.0, 0.0]]
-        service_centres = [ciw.ServiceCentre(number_of_servers, queueing_capacity, class_change_matrix, schedule) for i in xrange(4)]
-        customer_classes = [ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix) for i in xrange(2)]
+        service_centres = [ciw.ServiceCentre(number_of_servers, queueing_capacity, class_change_matrix, schedule) for i in range(4)]
+        customer_classes = [ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix) for i in range(2)]
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)

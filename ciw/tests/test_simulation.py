@@ -3,7 +3,6 @@ import ciw
 from random import seed
 from hypothesis import given
 from hypothesis.strategies import floats, integers, lists, random_module
-from past.builtins import xrange
 import os
 from numpy import random as nprandom
 from decimal import Decimal
@@ -281,7 +280,7 @@ class TestSimulation(unittest.TestCase):
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
         completed_inds = []
-        for _ in xrange(1000):
+        for _ in range(1000):
             Q = ciw.Simulation(ciw.create_network(params))
             Q.simulate_until_max_time(36)
             inds = Q.get_all_individuals()
