@@ -2,4 +2,3 @@ PyYAML
 networkx
 hypothesis
 numpy
-future
