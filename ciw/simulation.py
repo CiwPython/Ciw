@@ -1,5 +1,4 @@
 from __future__ import division
-from past.builtins import xrange
 import os
 from random import (random, expovariate, uniform, triangular,
     gammavariate, gauss, lognormvariate, weibullvariate)
@@ -45,7 +44,7 @@ class Simulation(object):
         self.inter_arrival_times = self.find_times_dict('Arr')
         self.service_times = self.find_times_dict('Ser')
         self.transitive_nodes = [self.NodeType(i + 1, self)
-            for i in xrange(network.number_of_nodes)]
+            for i in range(network.number_of_nodes)]
         self.nodes = ([self.ArrivalNodeType(self)] +
                       self.transitive_nodes +
                       [ExitNode()])
@@ -151,8 +150,8 @@ class Simulation(object):
         """
         return {node+1: {
             cls: self.find_distributions(node, cls, kind)
-            for cls in xrange(self.network.number_of_classes)}
-            for node in xrange(self.network.number_of_nodes)}
+            for cls in range(self.network.number_of_classes)}
+            for node in range(self.network.number_of_nodes)}
 
     def get_all_individuals(self):
         """

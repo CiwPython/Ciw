@@ -1,5 +1,4 @@
 from __future__ import division
-from past.builtins import xrange
 from random import random
 import os
 from csv import writer
@@ -37,7 +36,7 @@ class Node(object):
         self.node_capacity = node.queueing_capacity + self.c
         self.transition_row = [
             self.simulation.network.customer_classes[
-            cls].transition_matrix[id_ - 1] for cls in xrange(
+            cls].transition_matrix[id_ - 1] for cls in range(
             self.simulation.network.number_of_classes)]
         self.class_change = node.class_change_matrix
         self.individuals = []
@@ -48,7 +47,7 @@ class Node(object):
             self.next_event_date = float("Inf")
         self.blocked_queue = []
         if self.c < float('Inf'):
-            self.servers = [Server(self, i + 1) for i in xrange(self.c)]
+            self.servers = [Server(self, i + 1) for i in range(self.c)]
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
 
@@ -76,7 +75,7 @@ class Node(object):
         Add appropriate amount of servers for the given shift.
         """
         num_servers = self.schedule[shift_indx][1]
-        for i in xrange(num_servers):
+        for i in range(num_servers):
             self.highest_id += 1
             self.servers.append(Server(self, self.highest_id))
 
@@ -157,7 +156,7 @@ class Node(object):
         if self.class_change:
             individual.previous_class = individual.customer_class
             individual.customer_class = nprandom.choice(
-                xrange(len(self.class_change)),
+                range(len(self.class_change)),
                 p = self.class_change[individual.previous_class])
 
     def change_shift(self):

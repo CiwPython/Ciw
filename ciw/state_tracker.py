@@ -1,5 +1,4 @@
 from __future__ import division
-from past.builtins import xrange
 
 class StateTracker(object):
     """
@@ -54,7 +53,7 @@ class NaiveTracker(StateTracker):
         Initialises the naive tracker class
         """
         self.simulation = simulation
-        self.state = [[0, 0] for i in xrange(
+        self.state = [[0, 0] for i in range(
             self.simulation.network.number_of_nodes)]
 
     def change_state_accept(self, node_id, cust_cls):
@@ -108,9 +107,9 @@ class MatrixTracker(StateTracker):
         Initialises the naive tracker class
         """
         self.simulation = simulation
-        self.state = [[[[] for i in xrange(
-            self.simulation.network.number_of_nodes)] for i in xrange(
-            self.simulation.network.number_of_nodes)], [0 for i in xrange(
+        self.state = [[[[] for i in range(
+            self.simulation.network.number_of_nodes)] for i in range(
+            self.simulation.network.number_of_nodes)], [0 for i in range(
             self.simulation.network.number_of_nodes)]]
         self.increment = 1
 
@@ -153,9 +152,9 @@ class MatrixTracker(StateTracker):
         Loops through whole matrix, reducing any
         positions > position by 1
         """
-        for r in xrange(len(self.state[0])):
-            for c in xrange(len(self.state[0][r])):
-                for o in xrange(len(self.state[0][r][c])):
+        for r in range(len(self.state[0])):
+            for c in range(len(self.state[0][r])):
+                for o in range(len(self.state[0][r][c])):
                     if self.state[0][r][c][o] > position:
                         self.state[0][r][c][o] -= 1
 
