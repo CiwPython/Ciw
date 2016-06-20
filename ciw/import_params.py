@@ -27,9 +27,6 @@ def load_parameters(directory_name):
     parameter_file = open(parameter_file_name, 'r')
     parameters = yaml.load(parameter_file)
     parameter_file.close()
-
-    # Convert any "Infs" to their float equivalent
-    parameters['Queue_capacities'] = list(map(lambda x: float("Inf") if x == "Inf" else x, parameters['Queue_capacities']))
     return parameters
 
 
@@ -58,7 +55,7 @@ def create_network_from_dictionary(params_input):
         for cls in xrange(len(params['Transition_matrices']))]
     number_of_classes = params['Number_of_classes']
     number_of_nodes = params['Number_of_nodes']
-    queueing_capacities = params['Queue_capacities']
+    queueing_capacities = [float(i) if i == "Inf" else i for i in params['Queue_capacities']]
     class_change_matrices = params.get('Class_change_matrices',
         {'Node ' + str(nd + 1): None for nd in xrange(number_of_nodes)})
     number_of_servers, schedules, nodes, classes = [], [], [], []
@@ -66,6 +63,9 @@ def create_network_from_dictionary(params_input):
         if isinstance(c, str) and c != 'Inf':
             number_of_servers.append('schedule')
             schedules.append(params[c])
+        elif c == 'Inf':
+            number_of_servers.append(float(c))
+            schedules.append(None)  
         else:
             number_of_servers.append(c)
             schedules.append(None)    
@@ -103,7 +103,7 @@ def fill_out_dictionary(params_input):
         'Name': 'Simulation',
         'Number_of_nodes': len(params['Number_of_servers']),
         'Number_of_classes': len(params['Arrival_distributions']),
-        'Queue_capacities': [ float('Inf') for _ in xrange(len(
+        'Queue_capacities': ['Inf' for _ in xrange(len(
             params['Number_of_servers']))],
         }
 
@@ -153,7 +153,7 @@ def validify_dictionary(params):
         'Weibull', 'Empirical', 'Custom', 'UserDefined'])):
         raise ValueError('Ensure that valid Arrival and Service Distributions are used.')
     neg_numservers = any([(isinstance(obs, int) and obs <= 0) for obs in params['Number_of_servers']])
-    valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs==float('Inf')) for obs in params['Queue_capacities']])
+    valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])
     if neg_numservers:
         raise ValueError('Number of servers must be positive integers.')
     if not valid_capacities:

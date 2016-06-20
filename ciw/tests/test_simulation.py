@@ -167,7 +167,7 @@ class TestSimulation(unittest.TestCase):
     def test_mminf_node(self, arrival_rate, service_rate, rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
-                  'Number_of_servers': [float('Inf')],
+                  'Number_of_servers': ['Inf'],
                   'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(ciw.create_network(params))

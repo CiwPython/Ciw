@@ -130,7 +130,7 @@ class Node(object):
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
         """
-        if self.free_server() and self.c != 'Inf':
+        if self.free_server() and self.c != float('Inf'):
             srvr = self.find_free_server()
             if len([i for i in self.individuals if not i.server]) > 0:
                 ind = [i for i in self.individuals if not i.server][0]
@@ -208,7 +208,7 @@ class Node(object):
         """
         Returns True if a server is available, False otherwise
         """
-        if self.c == 'Inf':
+        if self.c == float('Inf'):
             return True
         return len([svr for svr in self.servers if not svr.busy]) > 0
 

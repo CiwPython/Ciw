@@ -89,7 +89,7 @@ class TestNetwork(unittest.TestCase):
                   'Number_of_classes': 1,
                   'Transition_matrices': {'Class 0': [[0.5]]},
                   'Number_of_nodes': 1,
-                  'Queue_capacities': [float('Inf')]}
+                  'Queue_capacities': ['Inf']}
         N = ciw.create_network_from_dictionary(params)
         
         self.assertEqual(N.number_of_nodes, 1)
@@ -110,7 +110,7 @@ class TestNetwork(unittest.TestCase):
                   'Number_of_servers': ['my_amazing_schedule', 3],
                   'Transition_matrices': [[0.5, 0.2],
                                           [0.0, 0.0]],
-                  'Queue_capacities': [10, float('Inf')],
+                  'Queue_capacities': [10, 'Inf'],
                   'my_amazing_schedule': [[20, 1],
                                           [50, 4]]}
         N = ciw.create_network_from_dictionary(params)
@@ -137,7 +137,7 @@ class TestNetwork(unittest.TestCase):
                   'Transition_matrices': {'Class 0': [[0.5]],
                                           'Class 1': [[0.0]]},
                   'Number_of_nodes': 1,
-                  'Queue_capacities': [float('Inf')],
+                  'Queue_capacities': ['Inf'],
                   'Class_change_matrices': {'Node 1': [[0.0, 1.0],
                                                        [0.2, 0.8]]}}
         N = ciw.create_network_from_dictionary(params)
@@ -193,7 +193,7 @@ class TestNetwork(unittest.TestCase):
                   'Number_of_classes': 1,
                   'Transition_matrices': {'Class 0': [[0.5]]},
                   'Number_of_nodes': 1,
-                  'Queue_capacities': [float('Inf')],
+                  'Queue_capacities': ['Inf'],
                   'Detect_deadlock': False}
         params_list = [copy.deepcopy(params) for i in range(23)]
 
