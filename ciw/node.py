@@ -34,10 +34,7 @@ class Node(object):
         else:
             self.c = node.number_of_servers
             self.schedule = None
-        if node.queueing_capacity == "Inf":
-            self.node_capacity = float("Inf")
-        else:
-            self.node_capacity = node.queueing_capacity + self.c
+        self.node_capacity = node.queueing_capacity + self.c
         self.transition_row = [
             self.simulation.network.customer_classes[
             cls].transition_matrix[id_ - 1] for cls in xrange(
