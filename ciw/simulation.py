@@ -1,7 +1,7 @@
 from __future__ import division
 import os
 from random import (random, expovariate, uniform, triangular,
-    gammavariate, gauss, lognormvariate, weibullvariate, choice)
+    gammavariate, gauss, lognormvariate, weibullvariate)
 from csv import writer, reader
 import copy
 from decimal import Decimal, getcontext
@@ -10,15 +10,15 @@ from collections import namedtuple
 import yaml
 import numpy.random as nprandom
 
-from node import Node
-from exactnode import ExactNode, ExactArrivalNode
-from arrival_node import ArrivalNode
-from exit_node import ExitNode
-from server import Server
-from individual import Individual
-from data_record import DataRecord
-from state_tracker import *
-from deadlock_detector import *
+from .node import Node
+from .exactnode import ExactNode, ExactArrivalNode
+from .arrival_node import ArrivalNode
+from .exit_node import ExitNode
+from .server import Server
+from .individual import Individual
+from .data_record import DataRecord
+from .state_tracker import *
+from .deadlock_detector import *
 
 
 Record = namedtuple('Record', 'id_number customer_class node arrival_date waiting_time service_start_date service_time service_end_date time_blocked exit_date destination queue_size_at_arrival queue_size_at_departure')
@@ -44,7 +44,7 @@ class Simulation(object):
         self.inter_arrival_times = self.find_times_dict('Arr')
         self.service_times = self.find_times_dict('Ser')
         self.transitive_nodes = [self.NodeType(i + 1, self)
-            for i in xrange(network.number_of_nodes)]
+            for i in range(network.number_of_nodes)]
         self.nodes = ([self.ArrivalNodeType(self)] +
                       self.transitive_nodes +
                       [ExitNode()])
@@ -99,7 +99,7 @@ class Simulation(object):
         Finds distribution functions
         """
         if self.source(c, n, kind) == 'NoArrivals':
-            return lambda : 'Inf'
+            return lambda : float('Inf')
         if self.source(c, n, kind)[0] == 'Uniform':
             return lambda : uniform(self.source(c, n, kind)[1],
                                     self.source(c, n, kind)[2])
@@ -129,8 +129,8 @@ class Simulation(object):
         if self.source(c, n, kind)[0] == 'Empirical':
             if isinstance(self.source(c, n, kind)[1], str):
                 empirical_dist = self.import_empirical(self.source(c, n, kind)[1])
-                return lambda : choice(empirical_dist)
-            return lambda : choice(self.source(c, n, kind)[1])
+                return lambda : nprandom.choice(empirical_dist)
+            return lambda : nprandom.choice(self.source(c, n, kind)[1])
 
     def find_next_active_node(self):
         """
@@ -140,7 +140,7 @@ class Simulation(object):
             nd.next_event_date for nd in self.nodes]) if x == min([
             nd.next_event_date for nd in self.nodes])]
         if len(next_active_node_indices) > 1:
-            return self.nodes[choice(next_active_node_indices)]
+            return self.nodes[nprandom.choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
 
     def find_times_dict(self, kind):
@@ -150,8 +150,8 @@ class Simulation(object):
         """
         return {node+1: {
             cls: self.find_distributions(node, cls, kind)
-            for cls in xrange(self.network.number_of_classes)}
-            for node in xrange(self.network.number_of_nodes)}
+            for cls in range(self.network.number_of_classes)}
+            for node in range(self.network.number_of_nodes)}
 
     def get_all_individuals(self):
         """

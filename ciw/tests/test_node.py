@@ -1,3 +1,5 @@
+from past.builtins import xrange
+
 import unittest
 import ciw
 from random import seed
@@ -19,7 +21,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.transition_row, [[0.1, 0.2, 0.1, 0.4],
                                             [0.6, 0.0, 0.0, 0.2],
                                             [0.0, 0.0, 0.4, 0.3]])
-        self.assertEqual(N.next_event_date, 'Inf')
+        self.assertEqual(N.next_event_date, float('Inf'))
         self.assertEqual(N.individuals, [])
         self.assertEqual(N.id_number, 1)
 
@@ -170,12 +172,12 @@ class TestNode(unittest.TestCase):
         N2.block_individual(inds[6], N1)
         self.assertEqual(inds[6].is_blocked, True)
         [(2, 7)]
-        self.assertEqual(Q.deadlock_detector.statedigraph.edges(),
-            [('Server 1 at Node 2', 'Server 2 at Node 1'),
-             ('Server 1 at Node 2', 'Server 5 at Node 1'),
-             ('Server 1 at Node 2', 'Server 3 at Node 1'),
-             ('Server 1 at Node 2', 'Server 1 at Node 1'),
-             ('Server 1 at Node 2', 'Server 4 at Node 1')])
+        self.assertEqual(set(Q.deadlock_detector.statedigraph.edges()),
+            set([('Server 1 at Node 2', 'Server 2 at Node 1'),
+                 ('Server 1 at Node 2', 'Server 5 at Node 1'),
+                 ('Server 1 at Node 2', 'Server 3 at Node 1'),
+                 ('Server 1 at Node 2', 'Server 1 at Node 1'),
+                 ('Server 1 at Node 2', 'Server 4 at Node 1')]))
 
     def test_release_method(self):
         set_seed(4)
@@ -208,17 +210,17 @@ class TestNode(unittest.TestCase):
         ind = Q.transitive_nodes[0].individuals[0]
         ind.service_time = 3.14
         ind.arrival_date = 100.0
-        self.assertEqual(Q.deadlock_detector.statedigraph.nodes(),
-            ['Server 5 at Node 2',
-             'Server 5 at Node 1',
-             'Server 3 at Node 2',
-             'Server 1 at Node 2',
-             'Server 1 at Node 1',
-             'Server 2 at Node 1',
-             'Server 2 at Node 2',
-             'Server 3 at Node 1',
-             'Server 4 at Node 1',
-             'Server 4 at Node 2'])
+        self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
+            set(['Server 5 at Node 2',
+                 'Server 5 at Node 1',
+                 'Server 3 at Node 2',
+                 'Server 1 at Node 2',
+                 'Server 1 at Node 1',
+                 'Server 2 at Node 1',
+                 'Server 2 at Node 2',
+                 'Server 3 at Node 1',
+                 'Server 4 at Node 1',
+                 'Server 4 at Node 2']))
         self.assertEqual(ind.arrival_date, 100.0)
         self.assertEqual(ind.service_time, 3.14)
         self.assertEqual(ind.service_start_date, False)
@@ -372,17 +374,17 @@ class TestNode(unittest.TestCase):
             'ciw/tests/testing_parameters/params_deadlock.yml'),
             deadlock_detector='StateDigraph')
         ind = ciw.Individual(1)
-        self.assertEqual(Q.deadlock_detector.statedigraph.nodes(),
-            ['Server 5 at Node 2', 
-             'Server 5 at Node 1',
-             'Server 3 at Node 2',
-             'Server 1 at Node 2',
-             'Server 1 at Node 1',
-             'Server 2 at Node 1',
-             'Server 2 at Node 2',
-             'Server 3 at Node 1',
-             'Server 4 at Node 1',
-             'Server 4 at Node 2'])
+        self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
+            set(['Server 5 at Node 2', 
+                 'Server 5 at Node 1',
+                 'Server 3 at Node 2',
+                 'Server 1 at Node 2',
+                 'Server 1 at Node 1',
+                 'Server 2 at Node 1',
+                 'Server 2 at Node 2',
+                 'Server 3 at Node 1',
+                 'Server 4 at Node 1',
+                 'Server 4 at Node 2']))
         self.assertEqual(ind.arrival_date, False)
         self.assertEqual(ind.service_time, False)
         self.assertEqual(ind.service_start_date, False)
@@ -435,10 +437,10 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
-        self.assertEqual(N.next_event_date, 'Inf')
+        self.assertEqual(N.next_event_date, float('Inf'))
         self.assertEqual(N.individuals, [])
         N.update_next_event_date(0.0)
-        self.assertEqual(N.next_event_date, 'Inf')
+        self.assertEqual(N.next_event_date, float('Inf'))
 
         ind1 = ciw.Individual(1)
         ind1.arrival_date = 0.3
@@ -462,7 +464,7 @@ class TestNode(unittest.TestCase):
         ind2.exit_date = 0.9
 
         N.update_next_event_date(N.next_event_date + 0.000001)
-        self.assertEqual(N.next_event_date, 'Inf')
+        self.assertEqual(N.next_event_date, float('Inf'))
 
 
         Q = ciw.Simulation(ciw.create_network(
@@ -534,9 +536,9 @@ class TestNode(unittest.TestCase):
             'ciw/tests/testing_parameters/params.yml'))
 
         sg = Q.nodes[1].date_from_schedule_generator([30, 60, 90, 100])
-        self.assertEqual(sg.next(), 30)
-        self.assertEqual(sg.next(), 60)
-        self.assertEqual(sg.next(), 90)
-        self.assertEqual(sg.next(), 100)
-        self.assertEqual(sg.next(), 130)
-        self.assertEqual(sg.next(), 160)
+        self.assertEqual(next(sg), 30)
+        self.assertEqual(next(sg), 60)
+        self.assertEqual(next(sg), 90)
+        self.assertEqual(next(sg), 100)
+        self.assertEqual(next(sg), 130)
+        self.assertEqual(next(sg), 160)

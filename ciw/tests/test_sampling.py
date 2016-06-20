@@ -1,3 +1,5 @@
+from past.builtins import xrange
+
 import unittest
 import ciw
 from random import seed, random, choice
@@ -453,23 +455,23 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
         self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 12.3)
         self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.3)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.0)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
             Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
         self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.3)
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
         self.assertEqual(round(
             Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
+        self.assertEqual(round(
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
+        self.assertEqual(round(
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
 
     @given(dist=lists(floats(min_value=0.001, max_value=10000),
                       min_size=1,
@@ -693,7 +695,7 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Nna = Q.transitive_nodes[0]
         set_seed(5)
-        self.assertEqual(Nna.simulation.inter_arrival_times[Nna.id_number][0](), 'Inf')
+        self.assertEqual(Nna.simulation.inter_arrival_times[Nna.id_number][0](), float('Inf'))
 
     def test_error_dist(self):
         params = {'Arrival_distributions': ['NoArrivals'],

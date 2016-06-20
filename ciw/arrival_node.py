@@ -1,5 +1,5 @@
 from __future__ import division
-from individual import Individual
+from .individual import Individual
 
 
 class ArrivalNode(object):
@@ -34,6 +34,7 @@ class ArrivalNode(object):
         times = [[self.event_dates_dict[nd+1][cls]
             for cls in range(len(self.event_dates_dict[1]))]
             for nd in range(len(self.event_dates_dict))]
+
         mintimes = [min(obs) for obs in times]
         nd = mintimes.index(min(mintimes))
         cls = times[nd].index(min(times[nd]))

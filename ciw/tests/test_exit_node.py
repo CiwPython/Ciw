@@ -7,14 +7,14 @@ class TestExitNode(unittest.TestCase):
         n = ciw.ExitNode()
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.individuals, [])
-        self.assertEqual(n.next_event_date, 'Inf')
-        self.assertEqual(n.node_capacity, 'Inf')
+        self.assertEqual(n.next_event_date, float('Inf'))
+        self.assertEqual(n.node_capacity, float('Inf'))
 
         n = ciw.ExitNode()
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.individuals, [])
-        self.assertEqual(n.next_event_date, 'Inf')
-        self.assertEqual(n.node_capacity, 'Inf')
+        self.assertEqual(n.next_event_date, float('Inf'))
+        self.assertEqual(n.node_capacity, float('Inf'))
 
     def test_repr_method(self):
         n = ciw.ExitNode()
@@ -37,13 +37,13 @@ class TestExitNode(unittest.TestCase):
         n = ciw.ExitNode()
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.individuals, [])
-        self.assertEqual(n.next_event_date, 'Inf')
-        self.assertEqual(n.node_capacity, 'Inf')
+        self.assertEqual(n.next_event_date, float('Inf'))
+        self.assertEqual(n.node_capacity, float('Inf'))
 
         n.update_next_event_date()
 
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.individuals, [])
-        self.assertEqual(n.next_event_date, 'Inf')
-        self.assertEqual(n.node_capacity, 'Inf')
+        self.assertEqual(n.next_event_date, float('Inf'))
+        self.assertEqual(n.node_capacity, float('Inf'))
 
