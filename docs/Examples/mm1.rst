@@ -36,7 +36,8 @@ It then returns the average wait in the system::
     >>> for i in range(100):
     ...     ws.append(iteration(50))
     
-    >>> print ("{0:.12f}".format(sum(ws)/len(ws)))
-    0.303011702426
+    >>> average_waits = sum(ws)/len(ws)
+    >>> print(round(average_waits, 10))
+    0.3030117024
 
 We see that the results of the simulation are in agreement with those of standard queueing theory.
