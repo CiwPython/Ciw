@@ -96,7 +96,7 @@ exclude_patterns = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'trac'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -118,18 +118,20 @@ html_theme = 'classic'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    "footerbgcolor":"#c9611d",
+    "footerbgcolor":"white",
+    "footertextcolor":"black",
     "sidebarbgcolor":"#ffbe00",
     "sidebarwidth":"350",
     "sidebartextcolor":"#df6c20",
     "sidebarlinkcolor":"black",
-    "relbarbgcolor":"#df6c20",
-    "headbgcolor":"#ff9933",
+    "relbarbgcolor":"#16BAC5",
+    "headbgcolor":"#9DD6F9",
     "headtextcolor":"black",
     "linkcolor":"#cc5200",
     "visitedlinkcolor":"#cc5200",
     "bodyfont":"Optima",
-    "headfont":"Century Gothic"
+    "headfont":"Optima",
+    "codebgcolor":"#F7F7F7"
 }
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -298,3 +300,6 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+def setup(app):
+   app.add_stylesheet("style.css")
