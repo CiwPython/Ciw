@@ -27,7 +27,7 @@ This denotes 3 customers at the first node, 0 of which are blocked; 5 customers 
 
 The Simulation object takes in the optional argument :code:`tracker` used as follows::
 
-    Q = ciw.Simulation(N, tracker='Naive') # doctest: +SKIP
+    Q = ciw.Simulation(N, tracker='Naive') # doctest:+SKIP
 
 
 .. _matrix:
@@ -49,4 +49,4 @@ This denotes 3 customers at the first node, 5 customers at the second node, 10 c
 
 The Simulation object takes in the optional argument :code:`tracker` used as follows::
 
-    Q = ciw.Simulation(N, tracker='Matrix') # doctest: +SKIP
+    Q = ciw.Simulation(N, tracker='Matrix') # doctest:+SKIP

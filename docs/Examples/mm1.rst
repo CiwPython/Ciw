@@ -20,7 +20,6 @@ We set up the parameters in Ciw::
 The following code repeats the experiment 100 times, only recording waits for those that arrived after a warm-up time of 50.
 It then returns the average wait in the system::
     
-    >>> from __future__ import print_function
     >>> import ciw
     >>> from random import seed
     >>> def iteration(warmup):
