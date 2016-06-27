@@ -19,5 +19,7 @@ Ciw - The Queueing Network Simulation
 Ciw is a simulation framework for open queueing networks. :hatching_chick:
 
 Read the documentation `here`_.
+A repository of example iPython Notebooks is also `available`_.
 
 .. _here: http://ciw.readthedocs.io
+.. _available: https://github.com/geraintpalmer/Ciw-notebooks
