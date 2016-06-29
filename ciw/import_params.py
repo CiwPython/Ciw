@@ -52,6 +52,8 @@ def create_network_from_dictionary(params_input):
         for cls in range(len(params['Service_distributions']))]
     transitions = [params['Transition_matrices']['Class ' + str(cls)]
         for cls in range(len(params['Transition_matrices']))]
+    priorities = [params['Priority_classes']['Class ' + str(cls)]
+        for cls in range(len(params['Priority_classes']))]
     number_of_classes = params['Number_of_classes']
     number_of_nodes = params['Number_of_nodes']
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['Queue_capacities']]
@@ -78,7 +80,8 @@ def create_network_from_dictionary(params_input):
         classes.append(CustomerClass(
             arrivals[cls],
             services[cls],
-            transitions[cls]))
+            transitions[cls],
+            priorities[cls]))
     return Network(nodes, classes)
 
 
@@ -104,6 +107,8 @@ def fill_out_dictionary(params_input):
         'Number_of_classes': len(params['Arrival_distributions']),
         'Queue_capacities': ['Inf' for _ in range(len(
             params['Number_of_servers']))],
+        'Priority_classes': ['Class ' + str(i): 0
+            for i in range(len(params['Arrival_distributions']))]
         }
 
     for a in default_dict:

@@ -23,13 +23,15 @@ class CustomerClass(object):
     def __init__(self,
                  arrival_distributions,
                  service_distributions,
-                 transition_matrix):
+                 transition_matrix,
+                 priority_class):
         """
         Initialises the CutomerCass object
         """
         self.arrival_distributions = arrival_distributions
         self.service_distributions = service_distributions
         self.transition_matrix = transition_matrix
+        self.priority_class = priority_class
 
 class Network(object):
     """
