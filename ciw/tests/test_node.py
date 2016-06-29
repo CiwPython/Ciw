@@ -587,3 +587,64 @@ class TestNode(unittest.TestCase):
         self.assertEqual(next(sg), 100)
         self.assertEqual(next(sg), 130)
         self.assertEqual(next(sg), 160)
+
+    def test_all_individuals_property(self):
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_priorities.yml'))
+        N1 = Q.transitive_nodes[0]
+        self.assertEqual(N1.individuals, [[], []])
+        self.assertEqual(N1.all_individuals, [])
+
+        N1.individuals = [[3, 6, 1], [1, 9]]
+        self.assertEqual(N1.all_individuals, [3, 6, 1, 1, 9])
+
+        N1.individuals = [[3, 'help', 1], [], [1, 9]]
+        self.assertEqual(N1.all_individuals, [3, 'help', 1, 1, 9])
+
+    def test_if_putting_individuals_in_correct_priority_queue(self):
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_priorities.yml'))
+        N1 = Q.transitive_nodes[0]
+        N2 = Q.transitive_nodes[1]
+
+        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [[], []])
+        self.assertEqual([str(obs) for obs in N1.all_individuals], [])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
+
+        Q.nodes[0].next_node = 1
+        Q.nodes[0].next_class = 0
+        Q.nodes[0].have_event()
+
+        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], []])
+        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1'])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
+
+        Q.nodes[0].next_node = 1
+        Q.nodes[0].next_class = 1
+        Q.nodes[0].have_event()
+
+        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], ['Individual 2']])
+        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
+
+        Q.nodes[0].next_node = 2
+        Q.nodes[0].next_class = 0
+        Q.nodes[0].have_event()
+
+        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], ['Individual 2']])
+        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [['Individual 3'], []])
+        self.assertEqual([str(obs) for obs in N2.all_individuals], ['Individual 3'])
+
+        Q.nodes[0].next_node = 2
+        Q.nodes[0].next_class = 1
+        Q.nodes[0].have_event()
+
+        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], ['Individual 2']])
+        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [['Individual 3'], ['Individual 4']])
+        self.assertEqual([str(obs) for obs in N2.all_individuals], ['Individual 3', 'Individual 4'])
+
