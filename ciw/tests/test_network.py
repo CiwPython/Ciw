@@ -48,7 +48,7 @@ class TestCustomerClass(unittest.TestCase):
         transition_matrix = [[.2, .6, .2], [0, 0, 0], [.5, 0, 0]]
         priority_class = 2
 
-        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix)
+        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class)
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
         self.assertEqual(CC.service_distributions, service_distributions)
         self.assertEqual(CC.transition_matrix, transition_matrix)
@@ -72,8 +72,9 @@ class TestNetwork(unittest.TestCase):
         transition_matrix = [[0.2, 0.6, 0.2],
                              [0.0, 0.0, 0.0],
                              [0.5, 0.0, 0.0]]
+        priority_class = 0
         service_centres = [ciw.ServiceCentre(number_of_servers, queueing_capacity, class_change_matrix, schedule) for i in range(4)]
-        customer_classes = [ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix) for i in range(2)]
+        customer_classes = [ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class) for i in range(2)]
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)
@@ -177,7 +178,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[1].service_distributions, [['Uniform', 0.4, 1.2]])
         self.assertEqual(N.customer_classes[1].transition_matrix, [[0.0]])
         self.assertEqual(N.customer_classes[0].priority_class, 1)
-        self.assertEqual(N.customer_classes[1].priority_class, 2)
+        self.assertEqual(N.customer_classes[1].priority_class, 0)
 
 
     def test_create_network_from_yml(self):

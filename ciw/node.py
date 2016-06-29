@@ -40,7 +40,7 @@ class Node(object):
             self.simulation.network.number_of_classes)]
         self.class_change = node.class_change_matrix
         self.individuals = [[] for _ in
-                range(simulation.number_of_priority_classes]
+                range(simulation.number_of_priority_classes)]
         self.id_number = id_
         if self.schedule:
             self.next_event_date = self.next_shift_change

@@ -107,8 +107,8 @@ def fill_out_dictionary(params_input):
         'Number_of_classes': len(params['Arrival_distributions']),
         'Queue_capacities': ['Inf' for _ in range(len(
             params['Number_of_servers']))],
-        'Priority_classes': ['Class ' + str(i): 0
-            for i in range(len(params['Arrival_distributions']))]
+        'Priority_classes': {'Class ' + str(i): 0
+            for i in range(len(params['Arrival_distributions']))}
         }
 
     for a in default_dict:
