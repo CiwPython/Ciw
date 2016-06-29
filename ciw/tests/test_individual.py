@@ -36,7 +36,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.queue_size_at_departure, False)
         self.assertEqual(i.data_records, [])
 
-    def test_init_method_2(self):
+    def test_init_method_3(self):
         i = ciw.Individual(5, 0, 2)
         self.assertEqual(i.customer_class, 0)
         self.assertEqual(i.previous_class, 0)
