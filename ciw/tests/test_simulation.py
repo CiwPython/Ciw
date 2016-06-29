@@ -5,6 +5,7 @@ from hypothesis import given
 from hypothesis.strategies import floats, integers, random_module
 import os
 from numpy import random as nprandom
+from numpy import mean
 from decimal import Decimal
 import networkx as nx
 import csv
@@ -436,4 +437,32 @@ class TestSimulation(unittest.TestCase):
         # because more more individuals have gone through the system.
         self.assertEqual(sorted(waits), [264, 272])
 
-        # TODO: Add a test for MM1 priority queues (compare to literature)
+    def test_priority_system_compare_literature(self):
+        params_dict = {
+               'Arrival_distributions': {'Class 0': [['Exponential', 0.2]],
+                                         'Class 1': [['Exponential', 0.6]]},
+               'Service_distributions': {'Class 0': [['Exponential', 1.0]],
+                                         'Class 1': [['Exponential', 1.0]]},
+               'Transition_matrices': {'Class 0': [[0.0]],
+                                       'Class 1': [[0.0]]},
+               'Number_of_servers': [1],
+               'Priority_classes': {'Class 0': 0,
+                                    'Class 1': 1}
+
+               }
+        Q = ciw.Simulation(ciw.create_network(params_dict))
+        # Results expected from analytical queueing theory are:
+        # expected_throughput_class0 = 2.0, and expected_throughput_class1 = 6.0
+        throughput_class0 = []
+        throughput_class1 = []
+
+        set_seed(3231)
+        for iteration in range(60):
+            Q.simulate_until_max_time(200)
+            recs = Q.get_all_records()
+            throughput_class0.append(mean([r.waiting_time + r.service_time for r in recs if r.customer_class==0 if r.arrival_date > 70]))
+            throughput_class1.append(mean([r.waiting_time + r.service_time for r in recs if r.customer_class==1 if r.arrival_date > 70]))
+
+        self.assertEqual(round(mean(throughput_class0), 5), 2.12461)
+        self.assertEqual(round(mean(throughput_class1), 5), 5.34970)
+
