@@ -46,14 +46,14 @@ class TestStateTracker(unittest.TestCase):
         Q = ciw.Simulation(Net)
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
-        N.individuals = inds
-        for ind in N.individuals:
+        N.individuals = [inds]
+        for ind in N.all_individuals:
             srvr = N.find_free_server()
             N.attach_server(srvr, ind)
         self.assertEqual(Q.statetracker.state, None)
         N.release(0, Q.nodes[1], 43.11)
         self.assertEqual(Q.statetracker.state, None)
-        N.individuals[1].is_blocked = True
+        N.all_individuals[1].is_blocked = True
         N.release(1, Q.nodes[1], 46.72)
         self.assertEqual(Q.statetracker.state, None)
         N.release(1, Q.nodes[-1], 46.72)
@@ -128,15 +128,15 @@ class TestNaiveTracker(unittest.TestCase):
         Q = ciw.Simulation(params, tracker='Naive')
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
-        N.individuals = inds
-        for ind in N.individuals:
+        N.individuals = [inds]
+        for ind in N.individuals[0]:
             srvr = N.find_free_server()
             N.attach_server(srvr, ind)
         Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
         self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
         N.release(0, Q.nodes[1], 43.11)
         self.assertEqual(Q.statetracker.state, [[5, 1], [3, 0], [4, 1], [0, 0]])
-        N.individuals[1].is_blocked = True
+        N.all_individuals[1].is_blocked = True
         N.release(1, Q.nodes[1], 46.72)
         self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [4, 0], [0, 0]])
         N.release(1, Q.nodes[-1], 46.72)
@@ -264,8 +264,8 @@ class TestMatrixTracker(unittest.TestCase):
         Q = ciw.Simulation(params, tracker='Matrix')
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
-        N.individuals = inds
-        for ind in N.individuals:
+        N.individuals = [inds]
+        for ind in N.individuals[0]:
             srvr = N.find_free_server()
             N.attach_server(srvr, ind)
         Q.statetracker.state = [[[[],  [2], [], []],
@@ -285,7 +285,7 @@ class TestMatrixTracker(unittest.TestCase):
                                                  [[1], [],  [], []],
                                                  [[],  [],  [], []]],
                                                  [6, 3, 5, 0]])
-        N.individuals[1].is_blocked = True
+        N.all_individuals[1].is_blocked = True
         N.release(1, Q.nodes[1], 46.72)
         self.assertEqual(Q.statetracker.state, [[[[], [1], [], []],
                                                  [[], [],  [], []],

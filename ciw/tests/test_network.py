@@ -46,12 +46,13 @@ class TestCustomerClass(unittest.TestCase):
                                  ["Uniform", 0.6, 1.2],
                                  ["Exponential", 5]]
         transition_matrix = [[.2, .6, .2], [0, 0, 0], [.5, 0, 0]]
+        priority_class = 2
 
-        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix)
+        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class)
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
         self.assertEqual(CC.service_distributions, service_distributions)
         self.assertEqual(CC.transition_matrix, transition_matrix)
-
+        self.assertEqual(CC.priority_class, priority_class)
 
 
 class TestNetwork(unittest.TestCase):
@@ -71,13 +72,22 @@ class TestNetwork(unittest.TestCase):
         transition_matrix = [[0.2, 0.6, 0.2],
                              [0.0, 0.0, 0.0],
                              [0.5, 0.0, 0.0]]
-        service_centres = [ciw.ServiceCentre(number_of_servers, queueing_capacity, class_change_matrix, schedule) for i in range(4)]
-        customer_classes = [ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix) for i in range(2)]
+        priority_class = 0
+        service_centres = [ciw.ServiceCentre(number_of_servers,
+                                             queueing_capacity,
+                                             class_change_matrix,
+                                             schedule) for i in range(4)]
+        customer_classes = [ciw.CustomerClass(arrival_distributions,
+                                              service_distributions,
+                                              transition_matrix,
+                                              priority_class) for i in range(2)]
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)
         self.assertEqual(N.number_of_nodes, 4)
         self.assertEqual(N.number_of_classes, 2)
+        self.assertEqual(N.number_of_priority_classes, 1)
+        self.assertEqual(N.priority_class_mapping, {0:0, 1:0})
 
 
     def test_create_network_from_dictionary(self):
@@ -99,6 +109,8 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0]])
         self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0]])
         self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5]])
+        self.assertEqual(N.number_of_priority_classes, 1)
+        self.assertEqual(N.priority_class_mapping, {0:0})
 
 
         params = {'Arrival_distributions': [['Exponential', 3.0],
@@ -125,6 +137,8 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0], ['Uniform', 0.2, 0.6]])
         self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0], ['Deterministic', 0.7]])
         self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5, 0.2], [0.0, 0.0]])
+        self.assertEqual(N.number_of_priority_classes, 1)
+        self.assertEqual(N.priority_class_mapping, {0:0})
 
 
         params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]],
@@ -151,6 +165,39 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[1].arrival_distributions, [['Exponential', 4.0]])
         self.assertEqual(N.customer_classes[1].service_distributions, [['Uniform', 0.4, 1.2]])
         self.assertEqual(N.customer_classes[1].transition_matrix, [[0.0]])
+        self.assertEqual(N.number_of_priority_classes, 1)
+        self.assertEqual(N.priority_class_mapping, {0:0, 1:0})
+
+
+
+
+        params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]],
+                                            'Class 1': [['Exponential', 4.0]]},
+                  'Service_distributions': {'Class 0': [['Exponential', 7.0]],
+                                            'Class 1': [['Uniform', 0.4, 1.2]]},
+                  'Number_of_servers': [9],
+                  'Transition_matrices': {'Class 0': [[0.5]],
+                                          'Class 1': [[0.0]]},
+                  'Number_of_nodes': 1,
+                  'Queue_capacities': ['Inf'],
+                  'Priority_classes': {'Class 0': 1,
+                                       'Class 1': 0}}
+        N = ciw.create_network_from_dictionary(params)
+        self.assertEqual(N.number_of_nodes, 1)
+        self.assertEqual(N.number_of_classes, 2)
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].number_of_servers, 9)
+        self.assertEqual(N.service_centres[0].schedule, None)
+        self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0]])
+        self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0]])
+        self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5]])
+        self.assertEqual(N.customer_classes[1].arrival_distributions, [['Exponential', 4.0]])
+        self.assertEqual(N.customer_classes[1].service_distributions, [['Uniform', 0.4, 1.2]])
+        self.assertEqual(N.customer_classes[1].transition_matrix, [[0.0]])
+        self.assertEqual(N.customer_classes[0].priority_class, 1)
+        self.assertEqual(N.customer_classes[1].priority_class, 0)
+        self.assertEqual(N.number_of_priority_classes, 2)
+        self.assertEqual(N.priority_class_mapping, {0:1, 1:0})
 
 
     def test_create_network_from_yml(self):

@@ -23,13 +23,15 @@ class CustomerClass(object):
     def __init__(self,
                  arrival_distributions,
                  service_distributions,
-                 transition_matrix):
+                 transition_matrix,
+                 priority_class):
         """
         Initialises the CutomerCass object
         """
         self.arrival_distributions = arrival_distributions
         self.service_distributions = service_distributions
         self.transition_matrix = transition_matrix
+        self.priority_class = priority_class
 
 class Network(object):
     """
@@ -43,3 +45,5 @@ class Network(object):
         self.customer_classes = customer_classes
         self.number_of_nodes = len(service_centres)
         self.number_of_classes = len(customer_classes)
+        self.number_of_priority_classes = len(set([cls.priority_class for cls in customer_classes]))
+        self.priority_class_mapping = {i:cls.priority_class for i,cls in enumerate(customer_classes)}

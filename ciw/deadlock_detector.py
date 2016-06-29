@@ -92,7 +92,7 @@ class StateDigraphMethod(NoDeadlockDetection):
         """
         for blq in node.blocked_queue:
             inds = [ind for ind in node.simulation.nodes[
-                blq[0]].individuals if ind.id_number == blq[1]]
+                blq[0]].all_individuals if ind.id_number == blq[1]]
             ind = inds[0]
             if ind != individual:
                 self.statedigraph.add_edge(

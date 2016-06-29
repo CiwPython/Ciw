@@ -43,6 +43,7 @@ class Simulation(object):
         self.deadlock_detector = self.choose_deadlock_detection(deadlock_detector)
         self.inter_arrival_times = self.find_times_dict('Arr')
         self.service_times = self.find_times_dict('Ser')
+        self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [self.NodeType(i + 1, self)
             for i in range(network.number_of_nodes)]
         self.nodes = ([self.ArrivalNodeType(self)] +
@@ -158,7 +159,7 @@ class Simulation(object):
         Returns list of all individuals with at least one record
         """
         return [individual for node in self.nodes[1:]
-            for individual in node.individuals
+            for individual in node.all_individuals
             if len(individual.data_records) > 0]
 
     def get_all_records(self):
