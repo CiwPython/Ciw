@@ -31,6 +31,7 @@ class TestNode(unittest.TestCase):
         N2 = Q.transitive_nodes[1]
         self.assertEqual(N2.class_change, [[1.0, 0.0],
                                            [0.0, 1.0]])
+
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
@@ -38,6 +39,13 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 1)
         self.assertEqual(N.schedule, [[0, 1], [30, 2], [60, 1], [90, 3]])
         self.assertEqual(N.next_event_date, 30)
+
+        Q = ciw.Simulation(ciw.create_network(
+            'ciw/tests/testing_parameters/params_priorities.yml'))
+        N = Q.transitive_nodes[0]
+        self.assertEqual(N.c, 4)
+        self.assertEqual(Q.network.priority_class_mapping, {0: 0, 1: 1})
+        self.assertEqual(Q.number_of_priority_classes, 2)
 
     def test_repr_method(self):
         Q = ciw.Simulation(ciw.create_network(
@@ -137,7 +145,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
             [['Individual 1', 'Individual 3']])
 
-
     def test_change_customer_class_method(self):
         set_seed(14)
         Q = ciw.Simulation(ciw.create_network(
@@ -158,6 +165,37 @@ class TestNode(unittest.TestCase):
         N1.change_customer_class(ind)
         self.assertEqual(ind.customer_class, 0)
         self.assertEqual(ind.previous_class, 1)
+
+        # Test for case of having priorities
+        set_seed(14)
+        parameters_dictionary = ciw.load_parameters(
+            'ciw/tests/testing_parameters/params_priorities.yml')
+        class_change_matrix = {'Node 1': [[.5, .5], [.25, .75]],
+                               'Node 2': [[1, 0], [0, 1]]}
+        parameters_dictionary['Class_change_matrices'] = class_change_matrix
+        Q = ciw.Simulation(ciw.create_network(parameters_dictionary))
+        N1 = Q.transitive_nodes[0]
+        ind = ciw.Individual(254, 0)
+        self.assertEqual(ind.customer_class, 0)
+        self.assertEqual(ind.priority_class, 0)
+        self.assertEqual(ind.previous_class, 0)
+        N1.change_customer_class(ind)
+        self.assertEqual(ind.customer_class, 1)
+        self.assertEqual(ind.priority_class, 1)
+        self.assertEqual(ind.previous_class, 0)
+        N1.change_customer_class(ind)
+        self.assertEqual(ind.customer_class, 1)
+        self.assertEqual(ind.priority_class, 1)
+        self.assertEqual(ind.previous_class, 1)
+        N1.change_customer_class(ind)
+        self.assertEqual(ind.customer_class, 1)
+        self.assertEqual(ind.priority_class, 1)
+        self.assertEqual(ind.previous_class, 1)
+        N1.change_customer_class(ind)
+        self.assertEqual(ind.customer_class, 0)
+        self.assertEqual(ind.priority_class, 0)
+        self.assertEqual(ind.previous_class, 1)
+
 
     def test_block_individual_method(self):
         set_seed(4)
@@ -382,7 +420,7 @@ class TestNode(unittest.TestCase):
             deadlock_detector='StateDigraph')
         ind = ciw.Individual(1)
         self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
-            set(['Server 5 at Node 2', 
+            set(['Server 5 at Node 2',
                  'Server 5 at Node 1',
                  'Server 3 at Node 2',
                  'Server 1 at Node 2',

@@ -169,6 +169,7 @@ class Node(object):
             individual.customer_class = nprandom.choice(
                 range(len(self.class_change)),
                 p = self.class_change[individual.previous_class])
+            individual.priority_class = self.simulation.network.priority_class_mapping[individual.customer_class]
 
     def change_shift(self):
         """
