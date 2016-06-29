@@ -2,13 +2,13 @@ import unittest
 import ciw
 from random import seed
 from hypothesis import given
-from hypothesis.strategies import floats, integers, lists, random_module
+from hypothesis.strategies import floats, integers, random_module
 import os
 from numpy import random as nprandom
 from decimal import Decimal
 import networkx as nx
 import csv
-from collections import namedtuple
+
 
 def set_seed(x):
     seed(x)
@@ -59,7 +59,7 @@ class TestSimulation(unittest.TestCase):
                   'Transition_matrices': [[0.0]]}
 
         Q = ciw.Simulation(ciw.create_network(params))
-        
+
         self.assertEqual(len(Q.transitive_nodes), 1)
         self.assertEqual(len(Q.nodes), 3)
         self.assertEqual(str(Q.nodes[0]), 'Arrival Node')
@@ -395,3 +395,45 @@ class TestSimulation(unittest.TestCase):
         expected_fields = ('id_number', 'customer_class', 'node', 'arrival_date', 'waiting_time', 'service_start_date', 'service_time', 'service_end_date', 'time_blocked', 'exit_date', 'destination', 'queue_size_at_arrival', 'queue_size_at_departure')
         self.assertEqual(ciw.simulation.Record._fields, expected_fields)
         self.assertEqual(ciw.simulation.Record.__name__, 'Record')
+
+    def test_priority_output(self):
+
+        params_dict = {'Arrival_distributions': {'Class 0': [['Deterministic', 1.0]],
+                                                 'Class 1': [['Deterministic', 1.0]]},
+                       'Service_distributions': {'Class 0': [['Deterministic', 0.75]],
+                                                 'Class 1': [['Deterministic', 0.75]]},
+                       'Transition_matrices': {'Class 0': [[0.0]],
+                                               'Class 1': [[0.0]]},
+                       'Number_of_servers': [1],
+                       'Priority_classes': {'Class 0': 0,
+                                            'Class 1': 1}
+                       }
+
+        set_seed(36)
+        Q = ciw.Simulation(ciw.create_network(params_dict))
+        Q.simulate_until_max_time(50)
+        recs = Q.get_all_records()
+        waits = [sum([r.waiting_time for r in recs if r.customer_class == cls]) for cls in range(2)]
+        # Because of high traffic intensity: the low
+        # priority individuals have a large wait
+        self.assertEqual(sorted(waits), [15, 249])
+
+        params_dict = {'Arrival_distributions': {'Class 0': [['Deterministic', 1.0]],
+                                                 'Class 1': [['Deterministic', 1.0]]},
+                       'Service_distributions': {'Class 0': [['Deterministic', 0.75]],
+                                                 'Class 1': [['Deterministic', 0.75]]},
+                       'Transition_matrices': {'Class 0': [[0.0]],
+                                               'Class 1': [[0.0]]},
+                       'Number_of_servers': [1]
+                       }
+
+        set_seed(36)
+        Q = ciw.Simulation(ciw.create_network(params_dict))
+        Q.simulate_until_max_time(50)
+        recs = Q.get_all_records()
+        waits = [sum([r.waiting_time for r in recs if r.customer_class == cls]) for cls in range(2)]
+        # Both total waits are now comparable. Total wait is higher
+        # because more more individuals have gone through the system.
+        self.assertEqual(sorted(waits), [264, 272])
+
+        # TODO: Add a test for MM1 priority queues (compare to literature)
