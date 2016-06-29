@@ -48,8 +48,10 @@ class ArrivalNode(object):
         Send new arrival to relevent node.
         """
         self.number_of_individuals += 1
+        priority_class = self.simulation.network.priority_class_mapping[self.next_class]
         next_individual = Individual(self.number_of_individuals,
-                                     self.next_class)
+                                     self.next_class,
+                                     priority_class)
         next_node = self.simulation.transitive_nodes[self.next_node-1]
         self.release_individual(next_node, next_individual)
         self.event_dates_dict[self.next_node][
