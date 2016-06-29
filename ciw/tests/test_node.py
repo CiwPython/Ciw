@@ -20,7 +20,7 @@ class TestNode(unittest.TestCase):
                                             [0.6, 0.0, 0.0, 0.2],
                                             [0.0, 0.0, 0.4, 0.3]])
         self.assertEqual(N.next_event_date, float('Inf'))
-        self.assertEqual(N.individuals, [])
+        self.assertEqual(N.all_individuals, [])
         self.assertEqual(N.id_number, 1)
 
         Q = ciw.Simulation(ciw.create_network(
@@ -125,13 +125,18 @@ class TestNode(unittest.TestCase):
         inds = [ciw.Individual(i + 1) for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             N.accept(inds[int(current_time*100 - 1)], current_time)
-        self.assertEqual([str(obs) for obs in N.individuals],
+        self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 2', 'Individual 3'])
+        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+            [['Individual 1', 'Individual 2', 'Individual 3']])
         N.update_next_event_date(0.03)
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
         N.finish_service()
-        self.assertEqual([str(obs) for obs in N.individuals],
+        self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 3'])
+        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+            [['Individual 1', 'Individual 3']])
+
 
     def test_change_customer_class_method(self):
         set_seed(14)
@@ -161,7 +166,7 @@ class TestNode(unittest.TestCase):
             deadlock_detector='StateDigraph')
         inds = [ciw.Individual(i + 1) for i in range(7)]
         N1 = Q.transitive_nodes[0]
-        N1.individuals = inds[:6]
+        N1.individuals = [inds[:6]]
         N2 = Q.transitive_nodes[1]
         N2.accept(inds[6], 2)
         self.assertEqual(inds[6].is_blocked, False)
@@ -185,16 +190,20 @@ class TestNode(unittest.TestCase):
         inds = [ciw.Individual(i+1) for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             N.accept(inds[int(current_time*100 - 1)], current_time)
-        self.assertEqual([str(obs) for obs in N.individuals],
+        self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 2', 'Individual 3'])
+        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+            [['Individual 1', 'Individual 2', 'Individual 3']])
         N.update_next_event_date(0.03)
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
-        N.individuals[1].exit_date = 0.04
+        N.all_individuals[1].exit_date = 0.04
         N.update_next_event_date(N.next_event_date + 0.00001)
         self.assertEqual(round(N.next_event_date, 5), 0.03708)
         N.release(1, Q.transitive_nodes[1], N.next_event_date)
-        self.assertEqual([str(obs) for obs in N.individuals],
+        self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 3'])
+        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+            [['Individual 1', 'Individual 3']])
         N.update_next_event_date(N.next_event_date + 0.00001)
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
 
@@ -203,9 +212,9 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
             deadlock_detector='StateDigraph')
-        inds = [ciw.Individual(i) for i in range(30)]
+        inds = [[ciw.Individual(i) for i in range(30)]]
         Q.transitive_nodes[0].individuals = inds
-        ind = Q.transitive_nodes[0].individuals[0]
+        ind = Q.transitive_nodes[0].individuals[0][0]
         ind.service_time = 3.14
         ind.arrival_date = 100.0
         self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
@@ -235,14 +244,14 @@ class TestNode(unittest.TestCase):
             deadlock_detector='StateDigraph')
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
-        N1.individuals = [ciw.Individual(i) for i in range(N1.c + 3)]
-        N2.individuals = [ciw.Individual(i + 100) for i in range(N2.c + 4)]
-        for ind in N1.individuals[:2]:
+        N1.individuals = [[ciw.Individual(i) for i in range(N1.c + 3)]]
+        N2.individuals = [[ciw.Individual(i + 100) for i in range(N2.c + 4)]]
+        for ind in N1.all_individuals[:2]:
             N1.attach_server(N1.find_free_server(), ind)
-        for ind in N2.individuals[:1]:
+        for ind in N2.all_individuals[:1]:
             N2.attach_server(N2.find_free_server(), ind)
 
-        self.assertEqual([str(obs) for obs in N1.individuals],
+        self.assertEqual([str(obs) for obs in N1.all_individuals],
             ['Individual 0',
              'Individual 1',
              'Individual 2',
@@ -251,7 +260,7 @@ class TestNode(unittest.TestCase):
              'Individual 5',
              'Individual 6',
              'Individual 7'])
-        self.assertEqual([str(obs) for obs in N2.individuals],
+        self.assertEqual([str(obs) for obs in N2.all_individuals],
             ['Individual 100',
              'Individual 101',
              'Individual 102',
@@ -262,7 +271,7 @@ class TestNode(unittest.TestCase):
              'Individual 107',
              'Individual 108'])
         N1.release_blocked_individual(100)
-        self.assertEqual([str(obs) for obs in N1.individuals],
+        self.assertEqual([str(obs) for obs in N1.all_individuals],
             ['Individual 0',
              'Individual 1',
              'Individual 2',
@@ -271,7 +280,7 @@ class TestNode(unittest.TestCase):
              'Individual 5',
              'Individual 6',
              'Individual 7'])
-        self.assertEqual([str(obs) for obs in N2.individuals],
+        self.assertEqual([str(obs) for obs in N2.all_individuals],
             ['Individual 100',
              'Individual 101',
              'Individual 102',
@@ -283,11 +292,11 @@ class TestNode(unittest.TestCase):
              'Individual 108'])
 
         N1.blocked_queue = [(1, 1), (2, 100)]
-        rel_ind = N1.individuals.pop(0)
+        rel_ind = N1.individuals[0].pop(0)
         N1.detatch_server(rel_ind.server, rel_ind)
 
         N1.release_blocked_individual(110)
-        self.assertEqual([str(obs) for obs in N1.individuals],
+        self.assertEqual([str(obs) for obs in N1.all_individuals],
             ['Individual 2',
              'Individual 3',
              'Individual 4',
@@ -296,7 +305,7 @@ class TestNode(unittest.TestCase):
              'Individual 7',
              'Individual 100',
              'Individual 1'])
-        self.assertEqual([str(obs) for obs in N2.individuals],
+        self.assertEqual([str(obs) for obs in N2.all_individuals],
             ['Individual 101',
              'Individual 102',
              'Individual 103',
@@ -312,7 +321,7 @@ class TestNode(unittest.TestCase):
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 0.0
-        self.assertEqual(N.individuals, [])
+        self.assertEqual(N.all_individuals, [])
         ind1 = ciw.Individual(1)
         ind2 = ciw.Individual(2)
         ind3 = ciw.Individual(3)
@@ -325,7 +334,7 @@ class TestNode(unittest.TestCase):
         ind10 = ciw.Individual(10)
 
         N.accept(ind1, 0.01)
-        self.assertEqual([str(obs) for obs in N.individuals],
+        self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1'])
         self.assertEqual(ind1.arrival_date, 0.01)
         self.assertEqual(ind1.service_start_date, 0.01)
@@ -335,7 +344,7 @@ class TestNode(unittest.TestCase):
         N.accept(ind2, 0.02)
         N.accept(ind3, 0.03)
         N.accept(ind4, 0.04)
-        self.assertEqual([str(obs) for obs in N.individuals],
+        self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1',
              'Individual 2',
              'Individual 3',
@@ -351,7 +360,7 @@ class TestNode(unittest.TestCase):
         N.accept(ind8, 0.08)
         N.accept(ind9, 0.09)
         N.accept(ind10, 0.1)
-        self.assertEqual([str(obs) for obs in N.individuals],
+        self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1',
              'Individual 2',
              'Individual 3',
@@ -436,7 +445,7 @@ class TestNode(unittest.TestCase):
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         self.assertEqual(N.next_event_date, float('Inf'))
-        self.assertEqual(N.individuals, [])
+        self.assertEqual(N.all_individuals, [])
         N.update_next_event_date(0.0)
         self.assertEqual(N.next_event_date, float('Inf'))
 
@@ -445,7 +454,7 @@ class TestNode(unittest.TestCase):
         ind1.service_time = 0.2
         ind1.service_end_date = 0.5
         N.next_event_date = 0.3
-        N.individuals = [ind1]
+        N.individuals = [[ind1]]
         N.update_next_event_date(N.next_event_date + 0.000001)
         self.assertEqual(N.next_event_date, 0.5)
 
@@ -455,7 +464,7 @@ class TestNode(unittest.TestCase):
         ind2.service_end_date = 0.6
         ind2.exit_date = False
 
-        N.individuals = [ind1, ind2]
+        N.individuals = [[ind1, ind2]]
         N.update_next_event_date(N.next_event_date + 0.000001)
         self.assertEqual(N.next_event_date, 0.6)
 
@@ -469,7 +478,7 @@ class TestNode(unittest.TestCase):
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         self.assertEqual(N.next_event_date, 30)
-        self.assertEqual(N.individuals, [])
+        self.assertEqual(N.individuals, [[]])
         N.update_next_event_date(0.0)
         self.assertEqual(N.next_event_date, 30)
 
@@ -478,7 +487,7 @@ class TestNode(unittest.TestCase):
         ind1.service_time = 0.2
         ind1.service_end_date = 0.5
         N.next_event_date = 0.3
-        N.individuals = [ind1]
+        N.individuals = [[ind1]]
         N.update_next_event_date(N.next_event_date + 0.000001)
         self.assertEqual(N.next_event_date, 0.5)
 

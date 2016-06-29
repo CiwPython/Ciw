@@ -159,7 +159,7 @@ class Simulation(object):
         Returns list of all individuals with at least one record
         """
         return [individual for node in self.nodes[1:]
-            for individual in node.individuals
+            for individual in node.all_individuals
             if len(individual.data_records) > 0]
 
     def get_all_records(self):

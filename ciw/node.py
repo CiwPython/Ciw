@@ -125,8 +125,8 @@ class Node(object):
         """
         free_servers = [s for s in self.servers if not s.busy]
         for srvr in free_servers:
-            if len([i for i in self.individuals if not i.server]) > 0:
-                ind = [i for i in self.individuals if not i.server][0]
+            if len([i for i in self.all_individuals if not i.server]) > 0:
+                ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
                 ind.service_end_date = self.increment_time(
@@ -139,8 +139,8 @@ class Node(object):
         """
         if self.free_server() and self.c != float('Inf'):
             srvr = self.find_free_server()
-            if len([i for i in self.individuals if not i.server]) > 0:
-                ind = [i for i in self.individuals if not i.server][0]
+            if len([i for i in self.all_individuals if not i.server]) > 0:
+                ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
                 ind.service_end_date = self.increment_time(
@@ -232,13 +232,13 @@ class Node(object):
         Finds the next individual that should now finish service
         """
         next_individual_indices = [i for i, x in enumerate(
-            [ind.service_end_date for ind in self.individuals]
+            [ind.service_end_date for ind in self.all_individuals]
             ) if x == self.next_event_date]
         if len(next_individual_indices) > 1:
             next_individual_index = nprandom.choice(next_individual_indices)
         else:
             next_individual_index = next_individual_indices[0]
-        return self.individuals[next_individual_index], next_individual_index
+        return self.all_individuals[next_individual_index], next_individual_index
 
     def finish_service(self):
         """
@@ -248,7 +248,7 @@ class Node(object):
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual.customer_class)
         next_individual.destination = next_node.id_number
-        if len(next_node.individuals) < next_node.node_capacity:
+        if len(next_node.all_individuals) < next_node.node_capacity:
             self.release(next_individual_index, next_node,
                 self.next_event_date)
         else:
@@ -294,8 +294,9 @@ class Node(object):
         """
         Update node when an individual is released.
         """
-        next_individual = self.individuals.pop(next_individual_index)
-        next_individual.queue_size_at_departure = len(self.individuals)
+        next_individual =  self.all_individuals[next_individual_index]
+        self.individuals[next_individual.priority_class].remove(next_individual)
+        next_individual.queue_size_at_departure = len(self.all_individuals)
         next_individual.exit_date = current_time
         if self.c < float('Inf'):
             self.detatch_server(next_individual.server, next_individual)
@@ -316,9 +317,9 @@ class Node(object):
             node_to_receive_from = self.simulation.nodes[
                 self.blocked_queue[0][0]]
             individual_to_receive_index = [ind.id_number
-                for ind in node_to_receive_from.individuals].index(
+                for ind in node_to_receive_from.all_individuals].index(
                 self.blocked_queue[0][1])
-            individual_to_receive = node_to_receive_from.individuals[
+            individual_to_receive = node_to_receive_from.all_individuals[
                 individual_to_receive_index]
             self.blocked_queue.pop(0)
             node_to_receive_from.release(individual_to_receive_index,
@@ -348,7 +349,7 @@ class Node(object):
         Finds the time of the next event at this node
         """
         next_end_service = min([ind.service_end_date
-            for ind in self.individuals
+            for ind in self.all_individuals
             if not ind.is_blocked
             if ind.service_end_date >= current_time] + [float("Inf")])
         if self.schedule:

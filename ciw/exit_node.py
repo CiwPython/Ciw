@@ -8,7 +8,7 @@ class ExitNode(object):
         """
         Initialise a node.
         """
-        self.individuals = []
+        self.all_individuals = []
         self.id_number = -1
         self.next_event_date = float("Inf")
         self.node_capacity = float("Inf")
@@ -23,7 +23,7 @@ class ExitNode(object):
         """
         Adds customer to the list of completed customers
         """
-        self.individuals.append(next_individual)
+        self.all_individuals.append(next_individual)
 
     def update_next_event_date(self):
         """

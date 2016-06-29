@@ -95,7 +95,7 @@ class ArrivalNode(object):
         Either sends next_individual to the next node, or rejects
         that individual.
         """
-        if len(next_node.individuals) < next_node.node_capacity:
+        if next_node.number_of_individuals < next_node.node_capacity:
             self.send_individual(next_node, next_individual)
         else:
             self.record_rejection(next_node)
