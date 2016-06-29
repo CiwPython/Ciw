@@ -8,3 +8,4 @@ v0.0.6 2016-04-04 -- Exactness implemented, restructure some features e.g. times
 v0.1.0 2016-04-25 -- Refactor inputs. Simulation tkes in a Network object, helper functions to import yml and dictionay to a Network object. Simulation object takes optional arguments: deadlock_detector, exact, tracker. simulate_until_max_time() takes argument max_simulation_time.
 v0.1.1 2016-06-06 -- Ability to incorporate behaviour nodes, data records are now named tuples.
 v0.2.0 2016-06-20 -- Python 3.4 and 3.5 compatible along with 2.7. Data records now kept in list.
+v0.2.1 2016-06-29 -- Priority classes implemented.
