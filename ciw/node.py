@@ -39,7 +39,8 @@ class Node(object):
             cls].transition_matrix[id_ - 1] for cls in range(
             self.simulation.network.number_of_classes)]
         self.class_change = node.class_change_matrix
-        self.individuals = []
+        self.individuals = [[] for _ in
+                range(simulation.number_of_priority_classes]
         self.id_number = id_
         if self.schedule:
             self.next_event_date = self.next_shift_change
@@ -50,6 +51,16 @@ class Node(object):
             self.servers = [Server(self, i + 1) for i in range(self.c)]
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
+
+    @property
+    def all_individuals(self):
+        return [i for priority_class in self.individuals
+                for i in priority_class]
+
+    @property
+    def number_of_individuals(self):
+        return len(self.all_individuals)
+
 
     def __repr__(self):
         """
