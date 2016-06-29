@@ -8,13 +8,13 @@ Ciw has the capability to assign priorities to the customer classes. This is don
 
     >>> params = {
     ...     'Arrival_distributions': {'Class 0': [['Exponential', 2.0]],
-    ...                               'Class 1': [['Exponential', 2.0]]},
+    ...                               'Class 1': [['Exponential', 2.0]],
     ...                               'Class 2': [['Exponential', 1.0]]},
     ...     'Service_distributions': {'Class 0': [['Exponential', 5.0]],
-    ...                               'Class 1': [['Exponential', 5.0]]},
+    ...                               'Class 1': [['Exponential', 5.0]],
     ...                               'Class 2': [['Exponential', 4.0]]},
     ...     'Transition_matrices': {'Class 0': [[0.0]],
-    ...                             'Class 1': [[0.0]]},
+    ...                             'Class 1': [[0.0]],
     ...                             'Class 2': [[0.0]]},
     ...     'Number_of_servers': [1],
     ...     'Priority_classes': {'Class 0': 0,
