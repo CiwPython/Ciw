@@ -80,6 +80,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes, customer_classes)
         self.assertEqual(N.number_of_nodes, 4)
         self.assertEqual(N.number_of_classes, 2)
+        self.assertEqual(N.number_of_priority_classes, 1)
 
 
     def test_create_network_from_dictionary(self):
@@ -101,6 +102,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0]])
         self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0]])
         self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5]])
+        self.assertEqual(N.number_of_priority_classes, 1)
 
 
         params = {'Arrival_distributions': [['Exponential', 3.0],
@@ -127,6 +129,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0], ['Uniform', 0.2, 0.6]])
         self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0], ['Deterministic', 0.7]])
         self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5, 0.2], [0.0, 0.0]])
+        self.assertEqual(N.number_of_priority_classes, 1)
 
 
         params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]],
@@ -153,6 +156,10 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[1].arrival_distributions, [['Exponential', 4.0]])
         self.assertEqual(N.customer_classes[1].service_distributions, [['Uniform', 0.4, 1.2]])
         self.assertEqual(N.customer_classes[1].transition_matrix, [[0.0]])
+        self.assertEqual(N.number_of_priority_classes, 1)
+
+
+
 
         params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]],
                                             'Class 1': [['Exponential', 4.0]]},
@@ -179,6 +186,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[1].transition_matrix, [[0.0]])
         self.assertEqual(N.customer_classes[0].priority_class, 1)
         self.assertEqual(N.customer_classes[1].priority_class, 0)
+        self.assertEqual(N.number_of_priority_classes, 2)
 
 
     def test_create_network_from_yml(self):
