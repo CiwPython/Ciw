@@ -20,14 +20,14 @@ individuals already there::
     >>> class ThresholdNode(ciw.Node):
     ...    def next_node(self, customer_class):
     ...        """Overwriting the next node method"""
-    ...        if len(self.simulation.nodes[1].individuals) < threshold:
+    ...        if self.simulation.nodes[1].number_of_individuals < threshold:
     ...            return self.simulation.nodes[1]
     ...        return self.simulation.nodes[-1]
 
     >>> class ThresholdArrivalNode(ciw.ArrivalNode):
     ...     def release_individual(self, next_node, next_individual):
     ...         """Overwriting the release individual method"""
-    ...         if len(next_node.individuals) < threshold:
+    ...         if self.simulation.nodes[1].number_of_individuals < threshold:
     ...             self.send_individual(next_node, next_individual)
     ...         else:
     ...             self.record_rejection(next_node)
