@@ -341,8 +341,8 @@ class TestNode(unittest.TestCase):
              'Individual 5',
              'Individual 6',
              'Individual 7',
-             'Individual 100',
-             'Individual 1'])
+             'Individual 1',
+             'Individual 100'])
         self.assertEqual([str(obs) for obs in N2.all_individuals],
             ['Individual 101',
              'Individual 102',

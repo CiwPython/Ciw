@@ -306,15 +306,16 @@ class Node(object):
             next_node.id_number, next_individual.customer_class,
             next_individual.is_blocked)
         self.begin_service_if_possible_release(current_time)
-        self.release_blocked_individual(current_time)
+        # self.release_blocked_individual(current_time)
         next_node.accept(next_individual, current_time)
+        self.release_blocked_individual(current_time)
 
     def release_blocked_individual(self, current_time):
         """
         Releases an individual who becomes unblocked
         when another individual is released.
         """
-        if len(self.blocked_queue) > 0:
+        if len(self.blocked_queue) > 0 and self.number_of_individuals < self.node_capacity:
             node_to_receive_from = self.simulation.nodes[
                 self.blocked_queue[0][0]]
             individual_to_receive_index = [ind.id_number

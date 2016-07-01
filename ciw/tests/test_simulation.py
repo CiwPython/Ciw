@@ -98,7 +98,7 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(150)
         L = Q.get_all_records()
         self.assertEqual(round(
-            L[300].service_start_date, 8), 2.49842838)
+            L[300].service_start_date, 8), 2.43854666)
 
         set_seed(60)
         Q = ciw.Simulation(ciw.create_network(
@@ -116,7 +116,7 @@ class TestSimulation(unittest.TestCase):
             'ciw/tests/testing_parameters/params_deadlock.yml'),
              deadlock_detector='StateDigraph')
         Q.simulate_until_deadlock()
-        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 31.26985409)
+        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 23.92401469)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.create_network(
