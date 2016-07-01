@@ -453,6 +453,9 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params_dict))
         # Results expected from analytical queueing theory are:
         # expected_throughput_class0 = 2.0, and expected_throughput_class1 = 6.0
+        # Althought these results seem far from the theoretical, longer runs and
+        # more runs give the desired results. A compromise was reached here to
+        # reduce test suite runtime.
         throughput_class0 = []
         throughput_class1 = []
 

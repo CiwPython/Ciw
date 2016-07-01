@@ -306,7 +306,6 @@ class Node(object):
             next_node.id_number, next_individual.customer_class,
             next_individual.is_blocked)
         self.begin_service_if_possible_release(current_time)
-        # self.release_blocked_individual(current_time)
         next_node.accept(next_individual, current_time)
         self.release_blocked_individual(current_time)
 
