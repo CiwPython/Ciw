@@ -1,9 +1,14 @@
 import unittest
 import ciw
 import copy
+import random
 from hypothesis import given
 from hypothesis.strategies import floats, integers, lists, random_module
 
+def example_balking_function(n):
+    if n < 5:
+        return 0.0
+    return 1.0
 
 class TestServiceCentre(unittest.TestCase):
 
@@ -47,12 +52,24 @@ class TestCustomerClass(unittest.TestCase):
                                  ["Exponential", 5]]
         transition_matrix = [[.2, .6, .2], [0, 0, 0], [.5, 0, 0]]
         priority_class = 2
+        balking_functions = [None, None, example_balking_function]
 
-        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class)
+        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class, balking_functions)
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
         self.assertEqual(CC.service_distributions, service_distributions)
         self.assertEqual(CC.transition_matrix, transition_matrix)
         self.assertEqual(CC.priority_class, priority_class)
+
+        # check balking function works
+        self.assertEqual(CC.balking_functions[2](0), 0.0)
+        self.assertEqual(CC.balking_functions[2](1), 0.0)
+        self.assertEqual(CC.balking_functions[2](2), 0.0)
+        self.assertEqual(CC.balking_functions[2](3), 0.0)
+        self.assertEqual(CC.balking_functions[2](4), 0.0)
+        self.assertEqual(CC.balking_functions[2](5), 1.0)
+        self.assertEqual(CC.balking_functions[2](6), 1.0)
+        self.assertEqual(CC.balking_functions[2](7), 1.0)
+        self.assertEqual(CC.balking_functions[2](8), 1.0)
 
 
 class TestNetwork(unittest.TestCase):
@@ -73,6 +90,7 @@ class TestNetwork(unittest.TestCase):
                              [0.0, 0.0, 0.0],
                              [0.5, 0.0, 0.0]]
         priority_class = 0
+        balking_functions = [None, None, example_balking_function]
         service_centres = [ciw.ServiceCentre(number_of_servers,
                                              queueing_capacity,
                                              class_change_matrix,
@@ -80,7 +98,8 @@ class TestNetwork(unittest.TestCase):
         customer_classes = [ciw.CustomerClass(arrival_distributions,
                                               service_distributions,
                                               transition_matrix,
-                                              priority_class) for i in range(2)]
+                                              priority_class,
+                                              balking_functions) for i in range(2)]
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)
@@ -169,8 +188,6 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.priority_class_mapping, {0:0, 1:0})
 
 
-
-
         params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]],
                                             'Class 1': [['Exponential', 4.0]]},
                   'Service_distributions': {'Class 0': [['Exponential', 7.0]],
@@ -199,6 +216,36 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.number_of_priority_classes, 2)
         self.assertEqual(N.priority_class_mapping, {0:1, 1:0})
 
+
+        params = {'Arrival_distributions': [['Exponential', 3.0], ['Exponential', 4.0], ['Exponential', 2.0]],
+                  'Service_distributions': [['Exponential', 7.0], ['Uniform', 0.4, 1.2], ['Deterministic', 5.33]],
+                  'Number_of_servers': [9, 2, 4],
+                  'Transition_matrices': [[0.5, 0.0, 0.1],
+                                          [0.2, 0.1, 0.0],
+                                          [0.0, 0.0, 0.0]],
+                  'Number_of_nodes': 3,
+                  'Queue_capacities': ['Inf', 'Inf', 'Inf'],
+                  'Balking_functions': [None, None, example_balking_function]}
+        N = ciw.create_network_from_dictionary(params)
+        self.assertEqual(N.number_of_nodes, 3)
+        self.assertEqual(N.number_of_classes, 1)
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].number_of_servers, 9)
+        self.assertEqual(N.service_centres[0].schedule, None)
+        self.assertEqual(N.service_centres[1].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[1].number_of_servers, 2)
+        self.assertEqual(N.service_centres[1].schedule, None)
+        self.assertEqual(N.service_centres[2].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[2].number_of_servers, 4)
+        self.assertEqual(N.service_centres[2].schedule, None)
+
+        self.assertEqual(N.customer_classes[0].arrival_distributions, [['Exponential', 3.0], ['Exponential', 4.0], ['Exponential', 2.0]])
+        self.assertEqual(N.customer_classes[0].service_distributions, [['Exponential', 7.0], ['Uniform', 0.4, 1.2], ['Deterministic', 5.33]])
+        self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5, 0.0, 0.1],
+                                                                   [0.2, 0.1, 0.0],
+                                                                   [0.0, 0.0, 0.0]])
+        self.assertEqual(N.customer_classes[0].balking_functions, [None, None, example_balking_function])
+        self.assertEqual(N.number_of_priority_classes, 1)
 
     def test_create_network_from_yml(self):
         N = ciw.create_network_from_yml(
