@@ -11,6 +11,7 @@ Contents:
 
    distributions.rst
    custom_dists.rst
+   baulking.rst
    server_schedules.rst
    dynamic_classes.rst
    priority.rst

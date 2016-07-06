@@ -54,6 +54,8 @@ def create_network_from_dictionary(params_input):
         for cls in range(len(params['Transition_matrices']))]
     priorities = [params['Priority_classes']['Class ' + str(cls)]
         for cls in range(len(params['Priority_classes']))]
+    baulking_functions = [params['Baulking_functions']['Class ' + str(cls)]
+        for cls in range(len(params['Baulking_functions']))]
     number_of_classes = params['Number_of_classes']
     number_of_nodes = params['Number_of_nodes']
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['Queue_capacities']]
@@ -81,7 +83,8 @@ def create_network_from_dictionary(params_input):
             arrivals[cls],
             services[cls],
             transitions[cls],
-            priorities[cls]))
+            priorities[cls],
+            baulking_functions[cls]))
     return Network(nodes, classes)
 
 
@@ -100,7 +103,11 @@ def fill_out_dictionary(params_input):
     if isinstance(params['Transition_matrices'], list):
         trns_mat = params['Transition_matrices']
         params['Transition_matrices'] = {'Class 0': trns_mat}
-    
+    if 'Baulking_functions' in params:
+        if isinstance(params['Baulking_functions'], list):
+            blk_fncs = params['Baulking_functions']
+            params['Baulking_functions'] = {'Class 0': blk_fncs}
+
     default_dict = {
         'Name': 'Simulation',
         'Number_of_nodes': len(params['Number_of_servers']),
@@ -108,6 +115,9 @@ def fill_out_dictionary(params_input):
         'Queue_capacities': ['Inf' for _ in range(len(
             params['Number_of_servers']))],
         'Priority_classes': {'Class ' + str(i): 0
+            for i in range(len(params['Arrival_distributions']))},
+        'Baulking_functions': {'Class ' + str(i): [
+            None for _ in range(len(params['Number_of_servers']))]
             for i in range(len(params['Arrival_distributions']))}
         }
 

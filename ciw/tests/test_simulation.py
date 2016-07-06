@@ -469,3 +469,45 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(round(mean(throughput_class0), 5), 2.12461)
         self.assertEqual(round(mean(throughput_class1), 5), 5.34970)
 
+    def test_baulking(self):
+        def my_baulking_function(n):
+            if n < 3:
+                return 0.0
+            return 1.0
+
+        params_dict = {
+            'Arrival_distributions': [['Deterministic', 5.0]],
+            'Service_distributions': [['Deterministic', 21.0]],
+            'Transition_matrices': [[0.0]],
+            'Number_of_servers': [1],
+            'Baulking_functions': [my_baulking_function]
+        }
+
+        Q = ciw.Simulation(ciw.create_network(params_dict))
+        Q.simulate_until_max_time(51)
+        recs = Q.get_all_records()
+        self.assertEqual(Q.baulked_dict, {1:{0:[20.0, 25.0, 35.0, 40.0, 45.0]}})
+        self.assertEqual([r.id_number for r in recs], [1, 2])
+        self.assertEqual([r.arrival_date for r in recs], [5.0, 10.0])
+        self.assertEqual([r.waiting_time for r in recs], [0.0, 16.0])
+        self.assertEqual([r.service_start_date for r in recs], [5.0, 26.0])
+        self.assertEqual([r.service_end_date for r in recs], [26.0, 47.0])
+
+
+        params_dict = {
+            'Arrival_distributions': [['Deterministic', 5.0], ['Deterministic', 23.0]],
+            'Service_distributions': [['Deterministic', 21.0], ['Deterministic', 1.5]],
+            'Transition_matrices': [[0.0, 0.0], [1.0, 0.0]],
+            'Number_of_servers': [1, 1],
+            'Baulking_functions': [my_baulking_function, None]
+        }
+
+        Q = ciw.Simulation(ciw.create_network(params_dict))
+        Q.simulate_until_max_time(51)
+        recs = Q.get_all_records()
+        self.assertEqual(Q.baulked_dict, {1:{0:[20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]}, 2:{0:[]}})
+        self.assertEqual(sorted([r.id_number for r in recs]), [1, 2, 5, 11])
+        self.assertEqual(sorted([r.arrival_date for r in recs]), [5.0, 10.0, 23.0, 46.0])
+        self.assertEqual(sorted([r.waiting_time for r in recs]), [0.0, 0.0, 0.0, 16.0])
+        self.assertEqual(sorted([r.service_start_date for r in recs]), [5.0, 23.0, 26.0, 46.0])
+        self.assertEqual(sorted([r.service_end_date for r in recs]), [24.5, 26.0, 47.0, 47.5])
