@@ -54,8 +54,8 @@ def create_network_from_dictionary(params_input):
         for cls in range(len(params['Transition_matrices']))]
     priorities = [params['Priority_classes']['Class ' + str(cls)]
         for cls in range(len(params['Priority_classes']))]
-    balking_functions = [params['Balking_functions']['Class ' + str(cls)]
-        for cls in range(len(params['Balking_functions']))]
+    baulking_functions = [params['Baulking_functions']['Class ' + str(cls)]
+        for cls in range(len(params['Baulking_functions']))]
     number_of_classes = params['Number_of_classes']
     number_of_nodes = params['Number_of_nodes']
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['Queue_capacities']]
@@ -84,7 +84,7 @@ def create_network_from_dictionary(params_input):
             services[cls],
             transitions[cls],
             priorities[cls],
-            balking_functions[cls]))
+            baulking_functions[cls]))
     return Network(nodes, classes)
 
 
@@ -103,10 +103,10 @@ def fill_out_dictionary(params_input):
     if isinstance(params['Transition_matrices'], list):
         trns_mat = params['Transition_matrices']
         params['Transition_matrices'] = {'Class 0': trns_mat}
-    if 'Balking_functions' in params:
-        if isinstance(params['Balking_functions'], list):
-            blk_fncs = params['Balking_functions']
-            params['Balking_functions'] = {'Class 0': blk_fncs}
+    if 'Baulking_functions' in params:
+        if isinstance(params['Baulking_functions'], list):
+            blk_fncs = params['Baulking_functions']
+            params['Baulking_functions'] = {'Class 0': blk_fncs}
 
     default_dict = {
         'Name': 'Simulation',
@@ -116,7 +116,7 @@ def fill_out_dictionary(params_input):
             params['Number_of_servers']))],
         'Priority_classes': {'Class ' + str(i): 0
             for i in range(len(params['Arrival_distributions']))},
-        'Balking_functions': {'Class ' + str(i): [
+        'Baulking_functions': {'Class ' + str(i): [
             None for _ in range(len(params['Number_of_servers']))]
             for i in range(len(params['Arrival_distributions']))}
         }

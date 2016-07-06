@@ -25,7 +25,7 @@ class CustomerClass(object):
                  service_distributions,
                  transition_matrix,
                  priority_class,
-                 balking_functions):
+                 baulking_functions):
         """
         Initialises the CutomerCass object
         """
@@ -33,7 +33,7 @@ class CustomerClass(object):
         self.service_distributions = service_distributions
         self.transition_matrix = transition_matrix
         self.priority_class = priority_class
-        self.balking_functions = balking_functions
+        self.baulking_functions = baulking_functions
 
 class Network(object):
     """

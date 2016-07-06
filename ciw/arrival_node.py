@@ -19,7 +19,7 @@ class ArrivalNode(object):
         self.rejection_dict = {nd + 1: {cls:[] for cls in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
-        self.balked_dict = {nd + 1: {cls:[] for cls in range(
+        self.baulked_dict = {nd + 1: {cls:[] for cls in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
         self.initialise_event_dates_dict()
@@ -31,16 +31,16 @@ class ArrivalNode(object):
         """
         return 'Arrival Node'
 
-    def decide_balk(self, next_node, next_individual):
+    def decide_baulk(self, next_node, next_individual):
         """
-        Either makes an individual balk, or sends the individual to the next node
+        Either makes an individual baulk, or sends the individual to the next node
         """
-        if next_node.balking_functions[self.next_class] == None:
+        if next_node.baulking_functions[self.next_class] == None:
             self.send_individual(next_node, next_individual)
         else:
             rnd_num = random()
-            if rnd_num < next_node.balking_functions[self.next_class](next_node.number_of_individuals):
-                self.record_balk(next_node)
+            if rnd_num < next_node.baulking_functions[self.next_class](next_node.number_of_individuals):
+                self.record_baulk(next_node)
             else:
                 self.send_individual(next_node, next_individual)
 
@@ -100,11 +100,11 @@ class ArrivalNode(object):
         """
         return self.simulation.inter_arrival_times[nd][cls]()
 
-    def record_balk(self, next_node):
+    def record_baulk(self, next_node):
         """
-        Adds an individual to the balked dictionary
+        Adds an individual to the baulked dictionary
         """
-        self.balked_dict[next_node.id_number][
+        self.baulked_dict[next_node.id_number][
             self.next_class].append(self.next_event_date)
 
     def record_rejection(self, next_node):
@@ -122,7 +122,7 @@ class ArrivalNode(object):
         if next_node.number_of_individuals >= next_node.node_capacity:
             self.record_rejection(next_node)
         else:
-            self.decide_balk(next_node, next_individual)
+            self.decide_baulk(next_node, next_individual)
 
     def send_individual(self, next_node, next_individual):
         """

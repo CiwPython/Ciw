@@ -5,7 +5,7 @@ import random
 from hypothesis import given
 from hypothesis.strategies import floats, integers, lists, random_module
 
-def example_balking_function(n):
+def example_baulking_function(n):
     if n < 5:
         return 0.0
     return 1.0
@@ -52,24 +52,24 @@ class TestCustomerClass(unittest.TestCase):
                                  ["Exponential", 5]]
         transition_matrix = [[.2, .6, .2], [0, 0, 0], [.5, 0, 0]]
         priority_class = 2
-        balking_functions = [None, None, example_balking_function]
+        baulking_functions = [None, None, example_baulking_function]
 
-        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class, balking_functions)
+        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class, baulking_functions)
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
         self.assertEqual(CC.service_distributions, service_distributions)
         self.assertEqual(CC.transition_matrix, transition_matrix)
         self.assertEqual(CC.priority_class, priority_class)
 
-        # check balking function works
-        self.assertEqual(CC.balking_functions[2](0), 0.0)
-        self.assertEqual(CC.balking_functions[2](1), 0.0)
-        self.assertEqual(CC.balking_functions[2](2), 0.0)
-        self.assertEqual(CC.balking_functions[2](3), 0.0)
-        self.assertEqual(CC.balking_functions[2](4), 0.0)
-        self.assertEqual(CC.balking_functions[2](5), 1.0)
-        self.assertEqual(CC.balking_functions[2](6), 1.0)
-        self.assertEqual(CC.balking_functions[2](7), 1.0)
-        self.assertEqual(CC.balking_functions[2](8), 1.0)
+        # check baulking function works
+        self.assertEqual(CC.baulking_functions[2](0), 0.0)
+        self.assertEqual(CC.baulking_functions[2](1), 0.0)
+        self.assertEqual(CC.baulking_functions[2](2), 0.0)
+        self.assertEqual(CC.baulking_functions[2](3), 0.0)
+        self.assertEqual(CC.baulking_functions[2](4), 0.0)
+        self.assertEqual(CC.baulking_functions[2](5), 1.0)
+        self.assertEqual(CC.baulking_functions[2](6), 1.0)
+        self.assertEqual(CC.baulking_functions[2](7), 1.0)
+        self.assertEqual(CC.baulking_functions[2](8), 1.0)
 
 
 class TestNetwork(unittest.TestCase):
@@ -90,7 +90,7 @@ class TestNetwork(unittest.TestCase):
                              [0.0, 0.0, 0.0],
                              [0.5, 0.0, 0.0]]
         priority_class = 0
-        balking_functions = [None, None, example_balking_function]
+        baulking_functions = [None, None, example_baulking_function]
         service_centres = [ciw.ServiceCentre(number_of_servers,
                                              queueing_capacity,
                                              class_change_matrix,
@@ -99,7 +99,7 @@ class TestNetwork(unittest.TestCase):
                                               service_distributions,
                                               transition_matrix,
                                               priority_class,
-                                              balking_functions) for i in range(2)]
+                                              baulking_functions) for i in range(2)]
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)
@@ -225,7 +225,7 @@ class TestNetwork(unittest.TestCase):
                                           [0.0, 0.0, 0.0]],
                   'Number_of_nodes': 3,
                   'Queue_capacities': ['Inf', 'Inf', 'Inf'],
-                  'Balking_functions': [None, None, example_balking_function]}
+                  'Baulking_functions': [None, None, example_baulking_function]}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 3)
         self.assertEqual(N.number_of_classes, 1)
@@ -244,7 +244,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[0].transition_matrix, [[0.5, 0.0, 0.1],
                                                                    [0.2, 0.1, 0.0],
                                                                    [0.0, 0.0, 0.0]])
-        self.assertEqual(N.customer_classes[0].balking_functions, [None, None, example_balking_function])
+        self.assertEqual(N.customer_classes[0].baulking_functions, [None, None, example_baulking_function])
         self.assertEqual(N.number_of_priority_classes, 1)
 
     def test_create_network_from_yml(self):

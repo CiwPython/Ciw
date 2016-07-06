@@ -42,8 +42,8 @@ class Node(object):
         self.individuals = [[] for _ in
                 range(simulation.number_of_priority_classes)]
         self.id_number = id_
-        self.balking_functions = [self.simulation.network.customer_classes[
-            cls].balking_functions[id_-1] for cls in range(
+        self.baulking_functions = [self.simulation.network.customer_classes[
+            cls].baulking_functions[id_-1] for cls in range(
             self.simulation.network.number_of_classes)]
         if self.schedule:
             self.next_event_date = self.next_shift_change
