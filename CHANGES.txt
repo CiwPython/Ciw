@@ -9,3 +9,4 @@ v0.1.0 2016-04-25 -- Refactor inputs. Simulation tkes in a Network object, helpe
 v0.1.1 2016-06-06 -- Ability to incorporate behaviour nodes, data records are now named tuples.
 v0.2.0 2016-06-20 -- Python 3.4 and 3.5 compatible along with 2.7. Data records now kept in list.
 v0.2.1 2016-06-29 -- Priority classes implemented.
+v0.2.2 2016-07-06 -- Baulking implemented, and minor fixes to order of unblocking.
