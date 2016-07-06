@@ -285,7 +285,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   (master_doc, 'Ciw', u'Ciw Documentation',
-   author, 'Ciw', 'A discrete event simulation framework for open queueing networks',
+   author, 'Ciw', 'A discrete event simulation library for open queueing networks',
    'Miscellaneous'),
 ]
 

@@ -16,7 +16,7 @@ Ciw - The Queueing Network Simulation
 
 .. image:: https://github.com/geraintpalmer/Ciw/blob/master/docs/_static/logo.png
 
-Ciw is a simulation framework for open queueing networks. :hatching_chick:
+Ciw is a simulation library for open queueing networks. :hatching_chick:
 
 Read the documentation `here`_.
 A repository of example iPython Notebooks is also `available`_.
