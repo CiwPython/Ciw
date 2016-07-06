@@ -53,6 +53,7 @@ class Simulation(object):
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
         self.rejection_dict = self.nodes[0].rejection_dict
+        self.balked_dict = self.nodes[0].balked_dict
 
     def __repr__(self):
         """
