@@ -18,3 +18,4 @@ Contents:
    deadlock.rst
    state_tracker.rst
    exact.rst
+   seed.rst

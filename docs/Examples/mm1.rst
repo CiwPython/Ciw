@@ -21,7 +21,6 @@ The following code repeats the experiment 100 times, only recording waits for th
 It then returns the average wait in the system::
     
     >>> import ciw
-    >>> from random import seed
     >>> def iteration(warmup):
     ...     N = ciw.create_network(params_dict)
     ...     Q = ciw.Simulation(N)
@@ -30,7 +29,7 @@ It then returns the average wait in the system::
     ...     waits = [row.waiting_time for row in records if row.arrival_date > warmup]
     ...     return sum(waits)/len(waits)
     
-    >>> seed(27)
+    >>> ciw.seed(27)
     >>> ws = []
     >>> for i in range(100):
     ...     ws.append(iteration(50))
