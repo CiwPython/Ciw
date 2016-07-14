@@ -450,7 +450,6 @@ class TestSimulation(unittest.TestCase):
                                     'Class 1': 1}
 
                }
-        Q = ciw.Simulation(ciw.create_network(params_dict))
         # Results expected from analytical queueing theory are:
         # expected_throughput_class0 = 2.0, and expected_throughput_class1 = 6.0
         # Althought these results seem far from the theoretical, longer runs and
@@ -460,14 +459,15 @@ class TestSimulation(unittest.TestCase):
         throughput_class1 = []
 
         set_seed(3231)
-        for iteration in range(60):
-            Q.simulate_until_max_time(200)
+        for iteration in range(80):
+            Q = ciw.Simulation(ciw.create_network(params_dict))
+            Q.simulate_until_max_time(400)
             recs = Q.get_all_records()
-            throughput_class0.append(mean([r.waiting_time + r.service_time for r in recs if r.customer_class==0 if r.arrival_date > 70]))
-            throughput_class1.append(mean([r.waiting_time + r.service_time for r in recs if r.customer_class==1 if r.arrival_date > 70]))
+            throughput_class0.append(mean([r.waiting_time + r.service_time for r in recs if r.customer_class==0 if r.arrival_date > 100]))
+            throughput_class1.append(mean([r.waiting_time + r.service_time for r in recs if r.customer_class==1 if r.arrival_date > 100]))
 
-        self.assertEqual(round(mean(throughput_class0), 5), 2.12461)
-        self.assertEqual(round(mean(throughput_class1), 5), 5.34970)
+        self.assertEqual(round(mean(throughput_class0), 5), 1.94852)
+        self.assertEqual(round(mean(throughput_class1), 5), 5.92823)
 
     def test_baulking(self):
         def my_baulking_function(n):
