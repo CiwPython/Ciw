@@ -1,18 +1,10 @@
 import unittest
 import ciw
-from random import seed
-from numpy import random as nprandom
-
-
-def set_seed(x):
-    seed(x)
-    nprandom.seed(x)
-
 
 class TestArrivalNode(unittest.TestCase):
 
     def test_init_method(self):
-        set_seed(5)
+        ciw.seed(5)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
@@ -27,7 +19,7 @@ class TestArrivalNode(unittest.TestCase):
             dates_dict)
 
     def test_initialise_event_dates_dict_method(self):
-        set_seed(6)
+        ciw.seed(6)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
@@ -54,7 +46,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(str(N), 'Arrival Node')
 
     def test_find_next_event_date_method(self):
-        set_seed(1)
+        ciw.seed(1)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
@@ -70,7 +62,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_class, 1)
 
     def test_have_event_method(self):
-        set_seed(1)
+        ciw.seed(1)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
@@ -97,7 +89,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(round(N.next_event_date, 5), 0.00518)
         self.assertEqual(N.next_node, 3)
 
-        set_seed(12)
+        ciw.seed(12)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)

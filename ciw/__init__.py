@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from .auxiliary import *
 from .simulation import Simulation
 from .data_record import DataRecord
 from .server import Server

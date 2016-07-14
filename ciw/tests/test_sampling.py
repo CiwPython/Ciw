@@ -1,17 +1,12 @@
 import unittest
 import ciw
-from random import seed, random, choice
+from random import random, choice
 from hypothesis import given
 from hypothesis.strategies import (floats, integers, lists,
     random_module, assume, text)
 import os
 import copy
-from numpy import random as nprandom
 
-
-def set_seed(x):
-    seed(x)
-    nprandom.seed(x)
 
 def custom_function():
     """
@@ -33,7 +28,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nu = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Nu.simulation.service_times[Nu.id_number][0](), 2), 2.89)
         self.assertEqual(round(
@@ -114,7 +109,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nd = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
         self.assertEqual(round(
@@ -179,7 +174,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nt = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Nt.simulation.service_times[Nt.id_number][0](), 2), 3.35)
         self.assertEqual(round(
@@ -260,7 +255,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ne = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Ne.simulation.service_times[Ne.id_number][0](), 2), 0.22)
         self.assertEqual(round(
@@ -306,7 +301,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ng = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Ng.simulation.service_times[Ng.id_number][0](), 2), 0.00)
         self.assertEqual(round(
@@ -353,7 +348,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nl = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Nl.simulation.service_times[Nl.id_number][0](), 2), 2.62)
         self.assertEqual(round(
@@ -400,7 +395,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nw = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Nw.simulation.service_times[Nw.id_number][0](), 2), 0.87)
         self.assertEqual(round(
@@ -449,7 +444,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nem = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
         self.assertEqual(round(
@@ -523,7 +518,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nc = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             Nc.simulation.service_times[Nc.id_number][0](), 2), 3.8)
         self.assertEqual(round(
@@ -615,7 +610,7 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(round(
             N1.simulation.service_times[N1.id_number][0](), 2), 0.62)
         self.assertEqual(round(
@@ -675,7 +670,7 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
-        set_seed(5)
+        ciw.seed(5)
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(N1.simulation.inter_arrival_times[N1.id_number][0]()
                 in set(my_empirical_dist))
@@ -692,7 +687,7 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nna = Q.transitive_nodes[0]
-        set_seed(5)
+        ciw.seed(5)
         self.assertEqual(Nna.simulation.inter_arrival_times[Nna.id_number][0](), float('Inf'))
 
     def test_error_dist(self):

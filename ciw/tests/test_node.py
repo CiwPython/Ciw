@@ -1,13 +1,5 @@
 import unittest
 import ciw
-from random import seed
-from numpy import random as nprandom
-
-
-def set_seed(x):
-    seed(x)
-    nprandom.seed(x)
-
 
 class TestNode(unittest.TestCase):
 
@@ -126,7 +118,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.check_if_shiftchange(), False)
 
     def test_finish_service_method(self):
-        set_seed(4)
+        ciw.seed(4)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
@@ -146,7 +138,7 @@ class TestNode(unittest.TestCase):
             [['Individual 1', 'Individual 3']])
 
     def test_change_customer_class_method(self):
-        set_seed(14)
+        ciw.seed(14)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_change_class.yml'))
         N1 = Q.transitive_nodes[0]
@@ -167,7 +159,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.previous_class, 1)
 
         # Test for case of having priorities
-        set_seed(14)
+        ciw.seed(14)
         parameters_dictionary = ciw.load_parameters(
             'ciw/tests/testing_parameters/params_priorities.yml')
         class_change_matrix = {'Node 1': [[.5, .5], [.25, .75]],
@@ -198,7 +190,7 @@ class TestNode(unittest.TestCase):
 
 
     def test_block_individual_method(self):
-        set_seed(4)
+        ciw.seed(4)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
             deadlock_detector='StateDigraph')
@@ -221,7 +213,7 @@ class TestNode(unittest.TestCase):
                  ('Server 1 at Node 2', 'Server 4 at Node 1')]))
 
     def test_release_method(self):
-        set_seed(4)
+        ciw.seed(4)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
@@ -246,7 +238,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
 
     def test_begin_service_if_possible_release_method(self):
-        set_seed(50)
+        ciw.seed(50)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
             deadlock_detector='StateDigraph')
@@ -354,7 +346,7 @@ class TestNode(unittest.TestCase):
              'Individual 108'])
 
     def test_accept_method(self):
-        set_seed(6)
+        ciw.seed(6)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
@@ -414,7 +406,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind10.service_time, 5), 0.16534)
 
     def test_begin_service_if_possible_accept_method(self):
-        set_seed(50)
+        ciw.seed(50)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
             deadlock_detector='StateDigraph')
@@ -533,7 +525,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, 30)
 
     def test_next_node_method(self):
-        set_seed(6)
+        ciw.seed(6)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         node = Q.transitive_nodes[0]
@@ -544,7 +536,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(str(node.next_node(0)), 'Node 2')
         self.assertEqual(str(node.next_node(0)), 'Node 4')
 
-        set_seed(54)
+        ciw.seed(54)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         node = Q.transitive_nodes[2]
@@ -558,7 +550,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(str(node.next_node(0)), 'Node 2')
 
     def test_write_individual_record_method(self):
-        set_seed(7)
+        ciw.seed(7)
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
