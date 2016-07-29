@@ -8,12 +8,13 @@ Ciw's has built in deadlock detection capability. With Ciw, a queueing network c
 
 In order to take advantage of this feature, set the :code:`deadlock_detection` argument to one of the deadlock detection methods when creating the Simulation object::
 
-    >>> Q = ciw.Simulation(params, deadlock_detector='StateDigraph') # doctest:+SKIP
+    >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph') # doctest:+SKIP
 
 Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state (the state being recorded by :ref:`state-tracker`)::
 
     >>> import ciw
-    >>> Q = ciw.Simulation(params, deadlock_detector='StateDigraph') # doctest:+SKIP
+    >>> N = ciw.create_network(params) # doctest:+SKIP
+    >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph') # doctest:+SKIP
     >>> Q.simulate_until_deadlock() # doctest:+SKIP
     >>> times = Q.times_to_deadlock # doctest:+SKIP
 
