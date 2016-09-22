@@ -172,6 +172,7 @@ class Node(object):
             individual.customer_class = nprandom.choice(
                 range(len(self.class_change)),
                 p = self.class_change[individual.previous_class])
+            individual.prev_priority_class = individual.priority_class
             individual.priority_class = self.simulation.network.priority_class_mapping[individual.customer_class]
 
     def change_shift(self):
@@ -299,7 +300,7 @@ class Node(object):
         Update node when an individual is released.
         """
         next_individual =  self.all_individuals[next_individual_index]
-        self.individuals[next_individual.priority_class].remove(next_individual)
+        self.individuals[next_individual.prev_priority_class].remove(next_individual)
         next_individual.queue_size_at_departure = len(self.all_individuals)
         next_individual.exit_date = current_time
         if self.c < float('Inf'):

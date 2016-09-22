@@ -505,3 +505,48 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(sorted([r.waiting_time for r in recs]), [0.0, 0.0, 0.0, 16.0])
         self.assertEqual(sorted([r.service_start_date for r in recs]), [5.0, 23.0, 26.0, 46.0])
         self.assertEqual(sorted([r.service_end_date for r in recs]), [24.5, 26.0, 47.0, 47.5])
+
+    def test_prioritys_with_classchanges(self):
+        params = {
+            'Arrival_distributions': {'Class 0': [['Exponential', 0.5],
+                                                  ['Exponential', 0.5]],
+                                      'Class 1': [['Exponential', 0.5],
+                                                  ['Exponential', 0.5]]},
+            'Service_distributions': {'Class 0': [['Uniform', 0.9, 1.1],
+                                                  ['Uniform', 0.9, 1.1]],
+                                      'Class 1': [['Uniform', 0.9, 1.1],
+                                                  ['Uniform', 0.9, 1.1]]},
+            'Number_of_servers': [1, 1],
+            'Transition_matrices': {'Class 0': [[0.0, 1.0],
+                                                [1.0, 0.0]],
+                                    'Class 1': [[0.0, 1.0],
+                                                [1.0, 0.0]]},
+            'Priority_classes': {'Class 1': 0,
+                                 'Class 0': 1},
+            'Class_change_matrices': {'Node 1': [[0.0, 1.0],
+                                                 [1.0, 0.0]],
+                                      'Node 2': [[0.0, 1.0],
+                                                 [1.0, 0.0]]}
+        }
+
+        ciw.seed(1)
+        N = ciw.create_network(params)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs_cust1 = sorted([r for r in recs if r.id_number==1], key=lambda r: r.arrival_date)
+        recs_cust2 = sorted([r for r in recs if r.id_number==2], key=lambda r: r.arrival_date)
+        recs_cust3 = sorted([r for r in recs if r.id_number==3], key=lambda r: r.arrival_date)
+
+        self.assertEqual([0, 1, 0, 1, 0], [r.customer_class for r in recs_cust1])
+        self.assertEqual([1, 0, 1, 0, 1], [r.customer_class for r in recs_cust2])
+        self.assertEqual([0, 1, 0, 1], [r.customer_class for r in recs_cust3])
+
+        self.assertEqual([1, 2, 1, 2, 1], [r.node for r in recs_cust1])
+        self.assertEqual([2, 1, 2, 1, 2], [r.node for r in recs_cust2])
+        self.assertEqual([1, 2, 1, 2], [r.node for r in recs_cust3])
+
+        self.assertEqual(set([r.customer_class for r in Q.nodes[1].individuals[0]]), set([1]))
+        self.assertEqual(set([r.customer_class for r in Q.nodes[1].individuals[1]]), set([0]))
+        self.assertEqual(set([r.customer_class for r in Q.nodes[2].individuals[0]]), set([1]))
+        self.assertEqual(set([r.customer_class for r in Q.nodes[2].individuals[1]]), set([0]))

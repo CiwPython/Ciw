@@ -18,6 +18,7 @@ class Individual(object):
         self.customer_class = customer_class
         self.previous_class = customer_class
         self.priority_class = priority_class
+        self.prev_priority_class = priority_class
         self.is_blocked = False
         self.server = False
         self.queue_size_at_arrival = False
