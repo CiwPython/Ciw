@@ -14,7 +14,7 @@ Ciw - The Queueing Network Simulation
     :target: https://gitter.im/geraintpalmer/Ciw?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
-.. figure:: https://github.com/geraintpalmer/Ciw/blob/master/docs/_static/logo.png?raw=true
+.. figure:: https://github.com/geraintpalmer/Ciw/blob/master/docs/_static/logo_small.png?raw=true
     :width: 150px
     :height: 150px
     :scale: 100%
