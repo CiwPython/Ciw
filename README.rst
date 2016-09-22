@@ -15,7 +15,8 @@ Ciw - The Queueing Network Simulation
 
 
 .. figure:: https://github.com/geraintpalmer/Ciw/blob/master/docs/_static/logo.png?raw=true
-    :figwidth: 2in
+    :figwidth: 20%
+    :scale: 20%
 
 Ciw is a simulation library for open queueing networks. :hatching_chick:
 
