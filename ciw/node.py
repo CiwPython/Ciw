@@ -196,6 +196,7 @@ class Node(object):
         self.begin_service_if_possible_change_shift(
             self.next_event_date)
 
+
     def check_if_shiftchange(self):
         """
         Check whether current time is a shift change.
