@@ -14,6 +14,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, float('Inf'))
         self.assertEqual(N.all_individuals, [])
         self.assertEqual(N.id_number, 1)
+        self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_change_class.yml'))
@@ -23,6 +24,7 @@ class TestNode(unittest.TestCase):
         N2 = Q.transitive_nodes[1]
         self.assertEqual(N2.class_change, [[1.0, 0.0],
                                            [0.0, 1.0]])
+        self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_schedule.yml'))
@@ -31,6 +33,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 1)
         self.assertEqual(N.schedule, [[0, 1], [30, 2], [60, 1], [90, 3]])
         self.assertEqual(N.next_event_date, 30)
+        self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_priorities.yml'))
@@ -38,6 +41,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 4)
         self.assertEqual(Q.network.priority_class_mapping, {0: 0, 1: 1})
         self.assertEqual(Q.number_of_priority_classes, 2)
+        self.assertEqual(N.interrupted_individuals, [])
 
     def test_repr_method(self):
         Q = ciw.Simulation(ciw.create_network(

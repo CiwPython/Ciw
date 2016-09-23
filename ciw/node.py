@@ -55,6 +55,7 @@ class Node(object):
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
         self.preempt = node.preempt
+        self.interrupted_individuals = []
 
     @property
     def all_individuals(self):
@@ -351,13 +352,13 @@ class Node(object):
                     to_delete.append(srvr)
         else:
             to_delete = self.servers[::1]  # copy
-            inds_to_wipe = (s.cust for s in self.servers)
-            for ind in inds_to_wipe:
-                try:
-                    ind.service_end_date = None
-                    ind.service_time = None
-                except AttributeError:
-                    pass
+            for s in self.servers:
+                if s.cust is not False:
+                    self.interrupted_individuals.append(s.cust)
+                    self.interrupted_individuals[-1].service_end_date = None
+                    self.interrupted_individuals[-1].service_time = None
+            self.interrupted_individuals.sort(key=lambda x: (x.priority_class,
+                                                             x.arrival_date))
         for obs in to_delete:
             self.kill_server(obs)
 
