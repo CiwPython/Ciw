@@ -44,17 +44,33 @@ class TestScheduling(unittest.TestCase):
              'Server 2 at Node 1',
              'Server 3 at Node 1',
              'Server 4 at Node 1'])
-        N.servers[1].busy = True
-        N.servers[2].busy = True
+        ind1 = ciw.Individual(5)
+        ind1.service_time = 5.5
+        ind1.service_end_date = 7895.876
+        ind2 = ciw.Individual(2)
+        ind2.service_time = 7.2
+        ind2.service_end_date = 0.4321
+        N.attach_server(N.servers[1], ind1)
+        N.attach_server(N.servers[2], ind2)
+
         self.assertEqual([obs.busy for obs in N.servers],
             [False, True, True, False])
         self.assertEqual([obs.offduty for obs in N.servers],
             [False, False, False, False])
+        self.assertEqual(ind1.service_time, 5.5)
+        self.assertEqual(ind1.service_end_date, 7895.876)
+        self.assertEqual(ind2.service_time, 7.2)
+        self.assertEqual(ind2.service_end_date, 0.4321)
+
         N.take_servers_off_duty()
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 2 at Node 1', 'Server 3 at Node 1'])
         self.assertEqual([obs.busy for obs in N.servers], [True, True])
         self.assertEqual([obs.offduty for obs in N.servers], [True, True])
+        self.assertEqual(ind1.service_time, 5.5)
+        self.assertEqual(ind1.service_end_date, 7895.876)
+        self.assertEqual(ind2.service_time, 7.2)
+        self.assertEqual(ind2.service_end_date, 0.4321)
 
     def test_check_if_shiftchange_method(self):
         Q = ciw.Simulation(ciw.create_network(
@@ -124,13 +140,29 @@ class TestScheduling(unittest.TestCase):
              'Server 2 at Node 1',
              'Server 3 at Node 1',
              'Server 4 at Node 1'])
-        N.servers[1].busy = True
-        N.servers[2].busy = True
+        ind1 = ciw.Individual(5)
+        ind1.service_time = 5.5
+        ind1.service_end_date = 7895.876
+        ind2 = ciw.Individual(2)
+        ind2.service_time = 7.2
+        ind2.service_end_date = 0.4321
+        N.attach_server(N.servers[1], ind1)
+        N.attach_server(N.servers[2], ind2)
+
         self.assertEqual([obs.busy for obs in N.servers],
             [False, True, True, False])
         self.assertEqual([obs.offduty for obs in N.servers],
             [False, False, False, False])
+        self.assertEqual(ind1.service_time, 5.5)
+        self.assertEqual(ind1.service_end_date, 7895.876)
+        self.assertEqual(ind2.service_time, 7.2)
+        self.assertEqual(ind2.service_end_date, 0.4321)
         N.take_servers_off_duty()
         self.assertEqual([str(obs) for obs in N.servers],[])
         self.assertEqual([obs.busy for obs in N.servers], [])
         self.assertEqual([obs.offduty for obs in N.servers], [])
+        self.assertEqual(ind1.service_time, None)
+        self.assertEqual(ind1.service_end_date, None)
+        self.assertEqual(ind2.service_time, None)
+        self.assertEqual(ind2.service_end_date, None)
+

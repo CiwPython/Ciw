@@ -351,6 +351,13 @@ class Node(object):
                     to_delete.append(srvr)
         else:
             to_delete = self.servers[::1]  # copy
+            inds_to_wipe = (s.cust for s in self.servers)
+            for ind in inds_to_wipe:
+                try:
+                    ind.service_end_date = None
+                    ind.service_time = None
+                except AttributeError:
+                    pass
         for obs in to_delete:
             self.kill_server(obs)
 
