@@ -337,16 +337,19 @@ class Node(object):
         """
         return self.simulation.service_times[self.id_number][cls]()
 
-    def take_servers_off_duty(self):
+    def take_servers_off_duty(self, preempt=False):
         """
         Gathers servers that should be deleted.
         """
-        to_delete = []
-        for srvr in self.servers:
-            if srvr.busy:
-                srvr.offduty = True
-            else:
-                to_delete.append(srvr)
+        if not preempt:
+            to_delete = []
+            for srvr in self.servers:
+                if srvr.busy:
+                    srvr.offduty = True
+                else:
+                    to_delete.append(srvr)
+        else:
+            to_delete = self.servers[::1]  # copy
         for obs in to_delete:
             self.kill_server(obs)
 
