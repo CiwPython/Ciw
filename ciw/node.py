@@ -381,7 +381,7 @@ class Node(object):
             - Queue size at departure
         """
         record = DataRecord(individual.arrival_date,
-                            individual.service_time,
+                            individual.service_end_date,
                             individual.service_start_date,
                             individual.exit_date,
                             self.id_number,

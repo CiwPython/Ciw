@@ -6,7 +6,7 @@ from hypothesis.strategies import floats, integers
 class TestDataRecord(unittest.TestCase):
 
     def test_init_method(self):
-        r = ciw.DataRecord(2, 3, 2, 8, 1, 1, 2, 0, 3)
+        r = ciw.DataRecord(2, 5, 2, 8, 1, 1, 2, 0, 3)
         self.assertEqual(r.arrival_date, 2)
         self.assertEqual(r.wait, 0)
         self.assertEqual(r.service_start_date, 2)
@@ -21,11 +21,11 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.queue_size_at_departure, 3)
         self.assertEqual(str(r), 'Data Record')
 
-        r = ciw.DataRecord(5.7, 2.1, 8.2, 10.3, 1, -1, 3, 32, 21)
+        r = ciw.DataRecord(5.7, 10.3, 8.2, 10.3, 1, -1, 3, 32, 21)
         self.assertEqual(r.arrival_date, 5.7)
         self.assertEqual(round(r.wait, 1), 2.5)
         self.assertEqual(r.service_start_date, 8.2)
-        self.assertEqual(r.service_time, 2.1)
+        self.assertEqual(round(r.service_time, 1), 2.1)
         self.assertEqual(round(r.service_end_date, 1), 10.3)
         self.assertEqual(round(r.blocked, 1), 0.0)
         self.assertEqual(r.exit_date, 10.3)
@@ -57,9 +57,10 @@ class TestDataRecord(unittest.TestCase):
                           queue_size_at_departure):
         # Define parameters
         service_start_date = arrival_date + inter_service_start_date
+        service_end_date = service_time + service_start_date
         exit_date = service_start_date + inter_exit_date + service_time
         r = ciw.DataRecord(arrival_date,
-                           service_time,
+                           service_end_date,
                            service_start_date,
                            exit_date,
                            node,
@@ -72,8 +73,8 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.arrival_date, arrival_date)
         self.assertEqual(r.wait, service_start_date - arrival_date)
         self.assertEqual(r.service_start_date, service_start_date)
-        self.assertEqual(r.service_time, service_time)
-        self.assertEqual(r.service_end_date, service_start_date + service_time)
+        self.assertEqual(r.service_time, service_end_date - service_start_date)
+        self.assertEqual(r.service_end_date, service_end_date)
         self.assertEqual(r.blocked, exit_date - (service_time + service_start_date))
         self.assertEqual(r.exit_date, exit_date)
         self.assertEqual(r.node, node)
