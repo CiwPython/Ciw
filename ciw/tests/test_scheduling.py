@@ -117,6 +117,7 @@ class TestScheduling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
+        N.preempt = True
         N.add_new_servers(3)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
@@ -129,7 +130,7 @@ class TestScheduling(unittest.TestCase):
             [False, True, True, False])
         self.assertEqual([obs.offduty for obs in N.servers],
             [False, False, False, False])
-        N.take_servers_off_duty(preempt=True)
+        N.take_servers_off_duty()
         self.assertEqual([str(obs) for obs in N.servers],[])
         self.assertEqual([obs.busy for obs in N.servers], [])
         self.assertEqual([obs.offduty for obs in N.servers], [])

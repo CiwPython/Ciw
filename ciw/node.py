@@ -54,6 +54,7 @@ class Node(object):
             self.servers = [Server(self, i + 1) for i in range(self.c)]
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
+        self.preempt = node.preempt
 
     @property
     def all_individuals(self):
@@ -337,11 +338,11 @@ class Node(object):
         """
         return self.simulation.service_times[self.id_number][cls]()
 
-    def take_servers_off_duty(self, preempt=False):
+    def take_servers_off_duty(self):
         """
         Gathers servers that should be deleted.
         """
-        if not preempt:
+        if not self.preempt:
             to_delete = []
             for srvr in self.servers:
                 if srvr.busy:

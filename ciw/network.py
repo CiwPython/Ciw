@@ -6,7 +6,8 @@ class ServiceCentre(object):
                  number_of_servers,
                  queueing_capacity,
                  class_change_matrix=None,
-                 schedule=None):
+                 schedule=None,
+                 preempt=False):
         """
         Initialises the ServiceCentre object
         """
@@ -14,6 +15,7 @@ class ServiceCentre(object):
         self.queueing_capacity = queueing_capacity
         self.class_change_matrix = class_change_matrix
         self.schedule = schedule
+        self.preempt = preempt
 
 
 class CustomerClass(object):
