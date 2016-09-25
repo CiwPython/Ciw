@@ -59,7 +59,7 @@ class Node(object):
 
     @property
     def all_individuals(self):
-        return [i for priority_class in self.individuals
+        return self.interrupted_individuals + [i for priority_class in self.individuals
                 for i in priority_class]
 
     @property

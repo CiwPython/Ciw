@@ -168,7 +168,7 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(ind2.service_time, 7.2)
         self.assertEqual(ind2.service_end_date, 0.4321)
         N.take_servers_off_duty()
-        self.assertEqual([str(obs) for obs in N.servers],[])
+        self.assertEqual([str(obs) for obs in N.servers], [])
         self.assertEqual([obs.busy for obs in N.servers], [])
         self.assertEqual([obs.offduty for obs in N.servers], [])
         self.assertEqual(ind1.service_time, None)
@@ -179,3 +179,20 @@ class TestScheduling(unittest.TestCase):
         self.assertTrue(ind1 in N.individuals[1])
         self.assertTrue(ind3 in N.individuals[1])
         self.assertTrue(ind2 in N.individuals[0])
+
+
+
+    def test_full_preemptive_simulation(self):
+        params = {
+            'Arrival_distributions': [['Deterministic', 7.0]],
+            'Service_distributions': [['Deterministic', 5.0]],
+            'Transition_matrices': [[0.0]],
+            'ourschedule': ([[13, 1], [14, 0], [100, 2]], True),
+            'Number_of_servers': ['ourschedule']
+        }
+        N = ciw.create_network(params)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(14.5)
+
+        self.assertEqual(len(Q.nodes[1].interrupted_individuals), 1)
+        self.assertEqual(len(Q.nodes[1].all_individuals), 1)
