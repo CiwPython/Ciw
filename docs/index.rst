@@ -17,6 +17,7 @@ Contents:
    kwargs.rst
    attributes.rst
    glossary.rst
+   changelog.rst
 
 Indices and tables
 ==================
