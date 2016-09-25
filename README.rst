@@ -26,4 +26,4 @@ Read the documentation `here`_.
 A repository of example iPython Notebooks is also `available`_.
 
 .. _here: https://ciw.readthedocs.io
-.. _available: https://github.com/geraintpalmer/Ciw-notebooks
+.. _available: https://github.com/CiwPython/Ciw-notebooks
