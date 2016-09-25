@@ -1,7 +1,7 @@
 Welcome to Ciw's documentation!
 ===============================
 
-Ciw (Welsh for queue), is a simulation framework package for open queueing networks.
+Ciw (Welsh for queue), is a discrete event simulation library for open queueing networks.
 
 Contents:
 

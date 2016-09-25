@@ -13,7 +13,7 @@ setup(
     author='Geraint Palmer, Vincent Knight',
     author_email='palmer.geraint@googlemail.com',
     packages=['ciw'],
-    description='A discrete event simulation framework for open queueing networks',
+    description='A discrete event simulation library for open queueing networks',
     long_description=readme + '\n\n' + changes,
     install_requires=["PyYAML", "networkx", "hypothesis", "numpy"],
 )
