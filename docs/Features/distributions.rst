@@ -15,6 +15,7 @@ Ciw currently allows the following continuous service and inter-arrival time dis
 - :ref:`weibull_dist`
 - :ref:`empirical_dist`
 - :ref:`own_functions`
+- :ref:`no_arrivals`
 
 
 See :ref:`custom-distributions` for how to define custom discrete service time distributions.
@@ -157,3 +158,17 @@ Inputting Functions
 Ciw allows users to input their own function to generate service and inter-arrival times. This is done by feeding in a function in the following way::
 
 	['UserDefined', lambda : random.random()]
+
+
+
+.. _no_arrivals:
+
+-----------
+No Arrivals
+-----------
+
+If a node does not have any arrivals of a certain class, then the following may be input into the parameters dictionary::
+
+    'NoArrivals'
+
+Note the lack of square brackets here. Also note that this is only valid for arrivals, and shouldn't be input into the :code:`Service_distributions` option.
