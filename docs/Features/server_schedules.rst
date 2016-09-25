@@ -1,8 +1,8 @@
 .. _server-schedules:
 
-=================================
-Assign Work Schedules for Servers
-=================================
+================
+Server Schedules
+================
 
 Ciw allows users to assign cyclic work schedules to servers at each service centre.
 An example cyclic work schedule may look like this:
@@ -53,3 +53,5 @@ And equivalently, adding the following to the parameters dictionary::
 
 Here we are saying that there will be 2 servers scheduled between times 0 and 40, 3 between 40 and 100, etc.
 This fully defines the cyclic work schedule.
+
+Note that currently server schedules are incompatible with infinite servers, and so a schedule cannot include infinite servers.
