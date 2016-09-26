@@ -61,23 +61,33 @@ def create_network_from_dictionary(params_input):
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['Queue_capacities']]
     class_change_matrices = params.get('Class_change_matrices',
         {'Node ' + str(nd + 1): None for nd in range(number_of_nodes)})
-    number_of_servers, schedules, nodes, classes = [], [], [], []
+    number_of_servers, schedules, nodes, classes, preempts = [], [], [], [], []
     for c in params['Number_of_servers']:
         if isinstance(c, str) and c != 'Inf':
             number_of_servers.append('schedule')
-            schedules.append(params[c])
+            if isinstance(params[c], tuple):
+                s = params[c][0]
+                p = params[c][1]
+            else:
+                s = params[c]
+                p = False
+            schedules.append(s)
+            preempts.append(p)
         elif c == 'Inf':
             number_of_servers.append(float(c))
             schedules.append(None)  
+            preempts.append(False)
         else:
             number_of_servers.append(c)
-            schedules.append(None)    
+            schedules.append(None) 
+            preempts.append(False)   
     for nd in range(number_of_nodes):
         nodes.append(ServiceCentre(
             number_of_servers[nd],
             queueing_capacities[nd],
             class_change_matrices['Node ' + str(nd + 1)],
-            schedules[nd]))
+            schedules[nd],
+            preempts[nd]))
     for cls in range(number_of_classes):
         classes.append(CustomerClass(
             arrivals[cls],

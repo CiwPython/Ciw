@@ -183,16 +183,74 @@ class TestScheduling(unittest.TestCase):
 
 
     def test_full_preemptive_simulation(self):
+        # Run until an individal gets interrupted
         params = {
             'Arrival_distributions': [['Deterministic', 7.0]],
             'Service_distributions': [['Deterministic', 5.0]],
             'Transition_matrices': [[0.0]],
-            'ourschedule': ([[13, 1], [14, 0], [100, 2]], True),
+            'ourschedule': ([[15, 1], [17, 0], [100, 2]], True),
             'Number_of_servers': ['ourschedule']
         }
         N = ciw.create_network(params)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_time(14.5)
+
+        self.assertTrue(Q.nodes[1].preempt)
+
+        Q.simulate_until_max_time(15.5)
 
         self.assertEqual(len(Q.nodes[1].interrupted_individuals), 1)
         self.assertEqual(len(Q.nodes[1].all_individuals), 1)
+        self.assertEqual(Q.nodes[1].all_individuals, Q.nodes[1].interrupted_individuals)
+        interrupted_ind = Q.nodes[1].interrupted_individuals[0]
+        self.assertEqual(interrupted_ind.arrival_date, 14.0)
+        self.assertEqual(interrupted_ind.service_start_date, 14.0)
+        self.assertEqual(interrupted_ind.service_time, None)
+        self.assertEqual(interrupted_ind.service_end_date, None)
+
+
+        # Run until interrupted individual finishes service
+        params = {
+            'Arrival_distributions': [['Deterministic', 7.0]],
+            'Service_distributions': [['Deterministic', 5.0]],
+            'Transition_matrices': [[0.0]],
+            'ourschedule': ([[15, 1], [17, 0], [100, 2]], True),
+            'Number_of_servers': ['ourschedule']
+        }
+        N = ciw.create_network(params)
+        Q = ciw.Simulation(N)
+
+        self.assertTrue(Q.nodes[1].preempt)
+
+        Q.simulate_until_max_time(22.5)
+        recs = Q.get_all_records()
+
+        self.assertEqual(len(Q.nodes[1].interrupted_individuals), 0)
+        self.assertEqual(len(Q.nodes[1].all_individuals), 1)
+        self.assertEqual(set([r.service_time for r in recs]), set([5.0, 8.0]))
+        # 5 due to the one individual who has finished service without interruption.
+        # 8 die to the 1 time unit in service before interruption, then 2 time units of
+        # interruption, and then resampling 5 time units for rest of service.
+
+
+
+        # Example where more customers are interrupted than can restart service
+        params = {
+            'Arrival_distributions': [['Deterministic', 3.0]],
+            'Service_distributions': [['Deterministic', 10.0]],
+            'Transition_matrices': [[0.0]],
+            'ourschedule': ([[12.5, 4], [17, 0], [100, 1]], True),
+            'Number_of_servers': ['ourschedule']
+        }
+        N = ciw.create_network(params)
+        Q = ciw.Simulation(N)
+        self.assertTrue(Q.nodes[1].preempt)
+
+        Q.simulate_until_max_time(27.5)
+        recs = Q.get_all_records()
+        self.assertEqual(len(Q.nodes[1].interrupted_individuals), 2)
+        self.assertEqual(len(Q.nodes[1].all_individuals), 8)
+        self.assertEqual(set([r.service_time for r in recs]), set([24.0]))
+        # 24 due to the individual beginning service at time 3, and first service
+        # finishing at time 12.5 (total: 9.5 time units). Then server goes off duty
+        # for 4.5 time units (total: 14 time units). Then resample service time and
+        # get serviced for another 10 time units (total: 24 time units).

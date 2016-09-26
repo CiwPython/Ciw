@@ -59,7 +59,7 @@ class Node(object):
 
     @property
     def all_individuals(self):
-        return self.interrupted_individuals + [i for priority_class in self.individuals
+        return [i for priority_class in self.individuals
                 for i in priority_class]
 
     @property
@@ -130,7 +130,13 @@ class Node(object):
         """
         free_servers = [s for s in self.servers if not s.busy]
         for srvr in free_servers:
-            if len([i for i in self.all_individuals if not i.server]) > 0:
+            if len(self.interrupted_individuals) > 0:
+                ind = [i for i in self.interrupted_individuals][0]
+                self.attach_server(srvr, ind)
+                ind.service_time = self.get_service_time(ind.customer_class)
+                ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
+                self.interrupted_individuals.remove(ind)
+            elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
@@ -144,7 +150,13 @@ class Node(object):
         """
         if self.free_server() and self.c != float('Inf'):
             srvr = self.find_free_server()
-            if len([i for i in self.all_individuals if not i.server]) > 0:
+            if len(self.interrupted_individuals) > 0:
+                ind = [i for i in self.interrupted_individuals][0]
+                self.attach_server(srvr, ind)
+                ind.service_time = self.get_service_time(ind.customer_class)
+                ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
+                self.interrupted_individuals.remove(ind)
+            elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
