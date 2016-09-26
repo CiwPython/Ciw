@@ -367,8 +367,8 @@ class Node(object):
             for s in self.servers:
                 if s.cust is not False:
                     self.interrupted_individuals.append(s.cust)
-                    self.interrupted_individuals[-1].service_end_date = None
-                    self.interrupted_individuals[-1].service_time = None
+                    self.interrupted_individuals[-1].service_end_date = False
+                    self.interrupted_individuals[-1].service_time = False
             self.interrupted_individuals.sort(key=lambda x: (x.priority_class,
                                                              x.arrival_date))
         for obs in to_delete:

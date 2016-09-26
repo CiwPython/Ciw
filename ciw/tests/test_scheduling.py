@@ -171,10 +171,10 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N.servers], [])
         self.assertEqual([obs.busy for obs in N.servers], [])
         self.assertEqual([obs.offduty for obs in N.servers], [])
-        self.assertEqual(ind1.service_time, None)
-        self.assertEqual(ind1.service_end_date, None)
-        self.assertEqual(ind2.service_time, None)
-        self.assertEqual(ind2.service_end_date, None)
+        self.assertEqual(ind1.service_time, False)
+        self.assertEqual(ind1.service_end_date, False)
+        self.assertEqual(ind2.service_time, False)
+        self.assertEqual(ind2.service_end_date, False)
         self.assertEqual(N.interrupted_individuals, [ind2, ind3, ind1])
         self.assertTrue(ind1 in N.individuals[1])
         self.assertTrue(ind3 in N.individuals[1])
@@ -204,8 +204,8 @@ class TestScheduling(unittest.TestCase):
         interrupted_ind = Q.nodes[1].interrupted_individuals[0]
         self.assertEqual(interrupted_ind.arrival_date, 14.0)
         self.assertEqual(interrupted_ind.service_start_date, 14.0)
-        self.assertEqual(interrupted_ind.service_time, None)
-        self.assertEqual(interrupted_ind.service_end_date, None)
+        self.assertEqual(interrupted_ind.service_time, False)
+        self.assertEqual(interrupted_ind.service_end_date, False)
 
 
         # Run until interrupted individual finishes service
