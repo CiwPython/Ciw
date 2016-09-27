@@ -54,6 +54,8 @@ class Node(object):
             self.servers = [Server(self, i + 1) for i in range(self.c)]
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
+        self.preempt = node.preempt
+        self.interrupted_individuals = []
 
     @property
     def all_individuals(self):
@@ -121,6 +123,17 @@ class Node(object):
             next_individual.service_end_date = self.increment_time(
                 current_time, next_individual.service_time)
 
+    def begin_interrupted_individuals_service(self, current_time, srvr):
+        """
+        Restarts the next interrupted individual's service (by
+        resampking service time)
+        """
+        ind = [i for i in self.interrupted_individuals][0]
+        self.attach_server(srvr, ind)
+        ind.service_time = self.get_service_time(ind.customer_class)
+        ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
+        self.interrupted_individuals.remove(ind)
+
     def begin_service_if_possible_change_shift(self, current_time):
         """
         Attempts to begin service if change_shift
@@ -128,7 +141,9 @@ class Node(object):
         """
         free_servers = [s for s in self.servers if not s.busy]
         for srvr in free_servers:
-            if len([i for i in self.all_individuals if not i.server]) > 0:
+            if len(self.interrupted_individuals) > 0:
+                self.begin_interrupted_individuals_service(current_time, srvr)
+            elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
@@ -142,7 +157,9 @@ class Node(object):
         """
         if self.free_server() and self.c != float('Inf'):
             srvr = self.find_free_server()
-            if len([i for i in self.all_individuals if not i.server]) > 0:
+            if len(self.interrupted_individuals) > 0:
+                self.begin_interrupted_individuals_service(current_time, srvr)
+            elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
@@ -195,6 +212,7 @@ class Node(object):
         self.next_shift_change = next(self.date_generator)
         self.begin_service_if_possible_change_shift(
             self.next_event_date)
+
 
     def check_if_shiftchange(self):
         """
@@ -340,12 +358,22 @@ class Node(object):
         """
         Gathers servers that should be deleted.
         """
-        to_delete = []
-        for srvr in self.servers:
-            if srvr.busy:
-                srvr.offduty = True
-            else:
-                to_delete.append(srvr)
+        if not self.preempt:
+            to_delete = []
+            for srvr in self.servers:
+                if srvr.busy:
+                    srvr.offduty = True
+                else:
+                    to_delete.append(srvr)
+        else:
+            to_delete = self.servers[::1]  # copy
+            for s in self.servers:
+                if s.cust is not False:
+                    self.interrupted_individuals.append(s.cust)
+                    self.interrupted_individuals[-1].service_end_date = False
+                    self.interrupted_individuals[-1].service_time = False
+            self.interrupted_individuals.sort(key=lambda x: (x.priority_class,
+                                                             x.arrival_date))
         for obs in to_delete:
             self.kill_server(obs)
 
@@ -381,7 +409,7 @@ class Node(object):
             - Queue size at departure
         """
         record = DataRecord(individual.arrival_date,
-                            individual.service_time,
+                            individual.service_end_date,
                             individual.service_start_date,
                             individual.exit_date,
                             self.id_number,

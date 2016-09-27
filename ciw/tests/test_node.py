@@ -14,6 +14,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, float('Inf'))
         self.assertEqual(N.all_individuals, [])
         self.assertEqual(N.id_number, 1)
+        self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_change_class.yml'))
@@ -23,6 +24,7 @@ class TestNode(unittest.TestCase):
         N2 = Q.transitive_nodes[1]
         self.assertEqual(N2.class_change, [[1.0, 0.0],
                                            [0.0, 1.0]])
+        self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_schedule.yml'))
@@ -31,6 +33,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 1)
         self.assertEqual(N.schedule, [[0, 1], [30, 2], [60, 1], [90, 3]])
         self.assertEqual(N.next_event_date, 30)
+        self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params_priorities.yml'))
@@ -38,6 +41,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 4)
         self.assertEqual(Q.network.priority_class_mapping, {0: 0, 1: 1})
         self.assertEqual(Q.number_of_priority_classes, 2)
+        self.assertEqual(N.interrupted_individuals, [])
 
     def test_repr_method(self):
         Q = ciw.Simulation(ciw.create_network(
@@ -46,76 +50,6 @@ class TestNode(unittest.TestCase):
         N2 = ciw.Node(2, Q)
         self.assertEqual(str(N1), 'Node 1')
         self.assertEqual(str(N2), 'Node 2')
-
-    def test_change_shift_method(self):
-        Q = ciw.Simulation(ciw.create_network(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
-        N = Q.transitive_nodes[0]
-        N.next_event_date = 30
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 1 at Node 1'])
-        self.assertEqual([obs.busy for obs in N.servers], [False])
-        self.assertEqual([obs.offduty for obs in N.servers], [False])
-        self.assertEqual(N.c, 1)
-        N.change_shift()
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 2 at Node 1', 'Server 3 at Node 1'])
-        self.assertEqual([obs.busy for obs in N.servers], [False, False])
-        self.assertEqual([obs.offduty for obs in N.servers], [False, False])
-        self.assertEqual(N.c, 2)
-
-        N.servers[0].busy = True
-        N.next_event_date = 90
-        N.change_shift()
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 2 at Node 1',
-             'Server 4 at Node 1',
-             'Server 5 at Node 1',
-             'Server 6 at Node 1'])
-        self.assertEqual([obs.busy for obs in N.servers],
-            [True, False, False, False])
-        self.assertEqual([obs.offduty for obs in N.servers],
-            [True, False, False, False])
-        self.assertEqual(N.c, 3)
-
-    def test_take_servers_off_duty_method(self):
-        Q = ciw.Simulation(ciw.create_network(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
-        N = Q.transitive_nodes[0]
-        N.add_new_servers(3)
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 1 at Node 1',
-             'Server 2 at Node 1',
-             'Server 3 at Node 1',
-             'Server 4 at Node 1'])
-        N.servers[1].busy = True
-        N.servers[2].busy = True
-        self.assertEqual([obs.busy for obs in N.servers],
-            [False, True, True, False])
-        self.assertEqual([obs.offduty for obs in N.servers],
-            [False, False, False, False])
-        N.take_servers_off_duty()
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 2 at Node 1', 'Server 3 at Node 1'])
-        self.assertEqual([obs.busy for obs in N.servers], [True, True])
-        self.assertEqual([obs.offduty for obs in N.servers], [True, True])
-
-    def test_check_if_shiftchange_method(self):
-        Q = ciw.Simulation(ciw.create_network(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
-        N = Q.transitive_nodes[0]
-        N.next_event_date = 12.0
-        self.assertEqual(N.check_if_shiftchange(), False)
-        N.next_event_date = 30.0
-        self.assertEqual(N.check_if_shiftchange(), True)
-
-        Q = ciw.Simulation(ciw.create_network(
-            'ciw/tests/testing_parameters/params.yml'))
-        N = Q.transitive_nodes[0]
-        N.next_event_date = 12.0
-        self.assertEqual(N.check_if_shiftchange(), False)
-        N.next_event_date = 30.0
-        self.assertEqual(N.check_if_shiftchange(), False)
 
     def test_finish_service_method(self):
         ciw.seed(4)
@@ -432,44 +366,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.service_start_date, 300)
         self.assertEqual(round(ind.service_end_date, 5), 300.03382)
 
-    def test_kill_server_method(self):
-        Q = ciw.Simulation(ciw.create_network(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
-        N = Q.transitive_nodes[0]
-        s = N.servers[0]
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 1 at Node 1'])
-        N.kill_server(s)
-        self.assertEqual(N.servers, [])
-        N.next_event_date = 30
-        N.have_event()
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 2 at Node 1', 'Server 3 at Node 1'])
-        ind = ciw.Individual(666)
-        N.attach_server(N.servers[0], ind)
-        N.servers[0].offduty = True
-        self.assertEqual([obs.busy for obs in N.servers],
-            [True, False])
-        self.assertEqual([obs.offduty for obs in N.servers],
-            [True, False])
-        N.detatch_server(N.servers[0], ind)
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 3 at Node 1'])
-
-    def test_add_new_servers_method(self):
-        Q = ciw.Simulation(ciw.create_network(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
-        N = Q.transitive_nodes[0]
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 1 at Node 1'])
-        s_indx = 3
-        N.add_new_servers(s_indx)
-        self.assertEqual([str(obs) for obs in N.servers],
-            ['Server 1 at Node 1',
-             'Server 2 at Node 1',
-             'Server 3 at Node 1',
-             'Server 4 at Node 1'])
-
     def test_update_next_event_date_method(self):
         Q = ciw.Simulation(ciw.create_network(
             'ciw/tests/testing_parameters/params.yml'))
@@ -557,14 +453,15 @@ class TestNode(unittest.TestCase):
         ind = ciw.Individual(6)
         N.accept(ind, 3)
         ind.service_start_date = 3.5
+        ind.service_end_date = 5.5
         ind.exit_date = 9
         N.write_individual_record(ind)
         self.assertEqual(ind.data_records[0].arrival_date, 3)
         self.assertEqual(ind.data_records[0].wait, 0.5)
         self.assertEqual(ind.data_records[0].service_start_date, 3.5)
-        self.assertEqual(round(ind.data_records[0].service_time, 5), 0.07894)
-        self.assertEqual(round(ind.data_records[0].service_end_date, 5), 3.57894)
-        self.assertEqual(round(ind.data_records[0].blocked, 5), 5.42106)
+        self.assertEqual(ind.data_records[0].service_time, 2)
+        self.assertEqual(ind.data_records[0].service_end_date, 5.5)
+        self.assertEqual(ind.data_records[0].blocked, 3.5)
         self.assertEqual(ind.data_records[0].exit_date, 9)
         self.assertEqual(ind.data_records[0].customer_class, 0)
 
@@ -639,4 +536,3 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
         self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [['Individual 3'], ['Individual 4']])
         self.assertEqual([str(obs) for obs in N2.all_individuals], ['Individual 3', 'Individual 4'])
-
