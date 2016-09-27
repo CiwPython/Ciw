@@ -1,6 +1,11 @@
 History
 -------
 
+v0.2.4 (2016-09-27)
+-------------------
+Fixed bug in which priority classes and dynamic classes didn't work together.
+New feature: preemptive interruptions for server schedules.
+
 v0.2.3 (2016-07-27)
 -------------------
 Ability to set seed. More docs. Fixes to tests.

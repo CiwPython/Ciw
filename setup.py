@@ -8,7 +8,7 @@ with open('CHANGES.rst') as changes_file:
 
 setup(
     name='Ciw',
-    version='0.2.3',
+    version='0.2.4',
     url='https://github.com/geraintpalmer/Ciw',
     author='Geraint Palmer, Vincent Knight',
     author_email='palmer.geraint@googlemail.com',
