@@ -123,6 +123,17 @@ class Node(object):
             next_individual.service_end_date = self.increment_time(
                 current_time, next_individual.service_time)
 
+    def begin_interrupted_individuals_service(self, current_time, srvr):
+        """
+        Restarts the next interrupted individual's service (by
+        resampking service time)
+        """
+        ind = [i for i in self.interrupted_individuals][0]
+        self.attach_server(srvr, ind)
+        ind.service_time = self.get_service_time(ind.customer_class)
+        ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
+        self.interrupted_individuals.remove(ind)
+
     def begin_service_if_possible_change_shift(self, current_time):
         """
         Attempts to begin service if change_shift
@@ -131,11 +142,7 @@ class Node(object):
         free_servers = [s for s in self.servers if not s.busy]
         for srvr in free_servers:
             if len(self.interrupted_individuals) > 0:
-                ind = [i for i in self.interrupted_individuals][0]
-                self.attach_server(srvr, ind)
-                ind.service_time = self.get_service_time(ind.customer_class)
-                ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
-                self.interrupted_individuals.remove(ind)
+                self.begin_interrupted_individuals_service(current_time, srvr)
             elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
@@ -151,11 +158,7 @@ class Node(object):
         if self.free_server() and self.c != float('Inf'):
             srvr = self.find_free_server()
             if len(self.interrupted_individuals) > 0:
-                ind = [i for i in self.interrupted_individuals][0]
-                self.attach_server(srvr, ind)
-                ind.service_time = self.get_service_time(ind.customer_class)
-                ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
-                self.interrupted_individuals.remove(ind)
+                self.begin_interrupted_individuals_service(current_time, srvr)
             elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
                 self.attach_server(srvr, ind)
