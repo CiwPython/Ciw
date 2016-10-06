@@ -1,6 +1,9 @@
 History
 -------
 
+v0.2.5 (2016-10-06)
+-------------------
+
 v0.2.4 (2016-09-27)
 -------------------
 Fixed bug in which priority classes and dynamic classes didn't work together.
