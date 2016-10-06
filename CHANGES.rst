@@ -3,6 +3,7 @@ History
 
 v0.2.5 (2016-10-06)
 -------------------
+Fix bug that didn't include .rst files in MANIFEST.in.
 
 v0.2.4 (2016-09-27)
 -------------------
