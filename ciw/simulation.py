@@ -1,23 +1,18 @@
 from __future__ import division
 import os
-from random import (random, expovariate, uniform, triangular,
-    gammavariate, gauss, lognormvariate, weibullvariate)
+import tqdm
+from random import (expovariate, uniform, triangular, gammavariate,
+                    lognormvariate, weibullvariate)
 from csv import writer, reader
-import copy
-from decimal import Decimal, getcontext
+from decimal import getcontext
 from collections import namedtuple
 
-import tqdm
-import yaml
 import numpy.random as nprandom
 
 from .node import Node
 from .exactnode import ExactNode, ExactArrivalNode
 from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
-from .server import Server
-from .individual import Individual
-from .data_record import DataRecord
 from .state_tracker import *
 from .deadlock_detector import *
 
@@ -85,31 +80,6 @@ class Simulation(object):
         elif deadlock_detector:
             return NaiveTracker(self)
         return StateTracker(self)
-
-    def detect_deadlock(self):
-        """
-        Detects whether the system is in a deadlocked state,
-        that is, is there a knot. Note that this code is taken
-        and adapted from the NetworkX Developer Zone Ticket
-        #663 knot.py (09/06/2015)
-        """
-        knots = []
-        for subgraph in nx.strongly_connected_component_subgraphs(self.digraph):
-            nodes = set(subgraph.nodes())
-            if len(nodes) == 1:
-                n = nodes.pop()
-                nodes.add(n)
-                if set(self.digraph.successors(n)) == nodes:
-                    knots.append(subgraph)
-            else:
-                for n in nodes:
-                    successors = nx.descendants(self.digraph, n)
-                    if successors <= nodes:
-                        knots.append(subgraph)
-                        break
-        if len(knots) > 0:
-            return True
-        return False
 
     def choose_deadlock_detection(self, deadlock_detector):
         """
