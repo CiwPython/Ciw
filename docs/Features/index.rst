@@ -9,6 +9,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   seed.rst
+   progress_bar.rst
    distributions.rst
    custom_dists.rst
    baulking.rst
@@ -18,4 +20,3 @@ Contents:
    deadlock.rst
    state_tracker.rst
    exact.rst
-   seed.rst
