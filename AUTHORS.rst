@@ -1,3 +1,6 @@
+Contributors
+------------
+
 Ciw has been developed by the following contributors:
 
 + `Geraint Palmer <https://github.com/geraintpalmer/>`_
