@@ -1,5 +1,9 @@
-Ciw - The Queueing Network Simulation
-=====================================
+Ciw
+===
+
+A discrete event simulation library for queueing networks
+---------------------------------------------------------
+
 
 .. image:: https://travis-ci.org/CiwPython/Ciw.svg?branch=master
     :target: https://travis-ci.org/CiwPython/Ciw
@@ -14,13 +18,14 @@ Ciw - The Queueing Network Simulation
     :target: https://gitter.im/geraintpalmer/Ciw?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 
+
 .. figure:: https://github.com/CiwPython/Ciw/blob/master/docs/_static/logo_small.png?raw=true
     :width: 150px
     :height: 150px
     :scale: 100%
     :align: center
 
-Ciw is a simulation library for open queueing networks. :hatching_chick:
+Ciw is a discrete event simulation library for open queueing networks. :hatching_chick:
 
 Read the documentation `here`_.
 A repository of example Jupyter Notebooks is also `available`_.
