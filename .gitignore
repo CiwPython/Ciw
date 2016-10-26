@@ -6,5 +6,5 @@
 *egg-info*
 .coverage
 dist/
-.hypothesis/eval_source/
+.hypothesis/
 env/

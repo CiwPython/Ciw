@@ -3,6 +3,11 @@ python:
   - 2.7
   - 3.4
   - 3.5
+
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/.hypothesis
+
 install:
   - pip install -r requirements.txt
   - python setup.py develop
