@@ -1,6 +1,12 @@
 History
 -------
 
+v0.2.7 (2016-10-26)
+-------------------
+Run tests on Appveyor.
+Check docs build and pip installable on Travis.
+Remove hypothesis cache.
+
 v0.2.6 (2016-10-17)
 -------------------
 Add AUTHORS.rst.

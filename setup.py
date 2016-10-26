@@ -11,7 +11,7 @@ with open('AUTHORS.rst') as authors_file:
 
 setup(
     name='Ciw',
-    version='0.2.6',
+    version='0.2.7',
     url='https://github.com/geraintpalmer/Ciw',
     author='Geraint Palmer, Vincent Knight',
     author_email='palmer.geraint@googlemail.com',
