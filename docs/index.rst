@@ -18,6 +18,7 @@ Contents:
    attributes.rst
    glossary.rst
    changelog.rst
+   citation.rst
 
 Indices and tables
 ==================
