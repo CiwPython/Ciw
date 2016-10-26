@@ -10,4 +10,6 @@ install:
 script:
   - python doctests.py
   - coverage run --source=ciw -m unittest discover ciw
+  - pip uninstall -y ciw
+  - pip install ciw
 after_success: coveralls
