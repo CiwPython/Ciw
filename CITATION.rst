@@ -11,5 +11,5 @@ Please use the following to cite the latest version of the Ciw library::
 To check the details (RELEASE TITLE, YEAR, DOI INFORMATION and DOI NUMBER)
 please view the Zenodo page for the project. Click on the badge/link below:
 
-.. image:: https://zenodo.org/badge/19509/Axelrod-Python/Axelrod.svg
-    :target: https://zenodo.org/badge/latestdoi/19509/Axelrod-Python/Axelrod
+.. image:: https://zenodo.org/badge/47995577.svg
+	:target: https://zenodo.org/badge/latestdoi/47995577
