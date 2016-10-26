@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from .version import __version__
 from .auxiliary import *
 from .simulation import Simulation
 from .data_record import DataRecord
@@ -12,5 +13,3 @@ from .state_tracker import *
 from .exactnode import *
 from .import_params import *
 from .network import *
-
-__version__ = '0.2.7'
