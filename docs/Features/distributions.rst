@@ -15,6 +15,7 @@ Ciw currently allows the following continuous service and inter-arrival time dis
 - :ref:`weibull_dist`
 - :ref:`empirical_dist`
 - :ref:`own_functions`
+- :ref:`time_dependent`
 - :ref:`no_arrivals`
 
 
@@ -158,6 +159,18 @@ Inputting Functions
 Ciw allows users to input their own function to generate service and inter-arrival times. This is done by feeding in a function in the following way::
 
 	['UserDefined', lambda : random.random()]
+
+
+
+.. _time_dependent:
+
+------------------------
+Time Dependent Functions
+------------------------
+
+Similar to adding :code:`UserDefined` functions, Ciw allows for time dependent functions. These are lambda functions that take in a time parameter. Ciw uses the simulation's current time to sample a new service or inter-arrival time::
+
+    ['TimeDependent', lambda t : my_time_dependent_func(t)]
 
 
 
