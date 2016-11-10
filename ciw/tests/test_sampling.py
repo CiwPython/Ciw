@@ -853,7 +853,7 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params), exact=True)
+        Q = ciw.Simulation(ciw.create_network(params), exact=26)
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
