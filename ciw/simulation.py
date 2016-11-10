@@ -22,7 +22,11 @@ class Simulation(object):
     """
     Overall simulation class
     """
-    def __init__(self, network, exact=False, name='Simulation', tracker=False, deadlock_detector=False,
+    def __init__(self, network,
+                 exact=False,
+                 name='Simulation',
+                 tracker=False,
+                 deadlock_detector=False,
         node_class=None, arrival_node_class=None):
         """
         Initialise a queue instance.
@@ -62,13 +66,13 @@ class Simulation(object):
         """
         sample = func()
         if not isinstance(sample, float) or sample < 0:
-            raise ValueError("UserDefined function must return positive float.")
+            raise ValueError("UserDefined func must return positive float.")
         return sample
 
     def check_timedependent_dist(self, func, current_time):
         sample = func(current_time)
         if not isinstance(sample, float) or sample < 0:
-            raise ValueError("TimeDependent function must return positive float.")
+            raise ValueError("TimeDependent func must return positive float.")
         return sample
 
 

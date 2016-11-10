@@ -6,7 +6,8 @@ from .network import *
 
 def create_network(params):
     """
-    Identifies the type of parameters that is input and calls the correct function
+    Identifies the type of parameters that is input and
+    calls the correct function
     """
     if isinstance(params, dict):
         return create_network_from_dictionary(params)

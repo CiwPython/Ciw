@@ -79,8 +79,10 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Nu = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
-            self.assertTrue(ul <= Nu.simulation.service_times[Nu.id_number][0]() <= uh)
-            self.assertTrue(ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
+            self.assertTrue(
+                ul <= Nu.simulation.service_times[Nu.id_number][0]() <= uh)
+            self.assertTrue(
+                ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]() <= uh)
 
     def test_error_uniform_dist(self):
         Arrival_distributions = [['Uniform', 2.2, 3.3]]
@@ -156,8 +158,10 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Nd = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
-            self.assertEqual(Nd.simulation.service_times[Nd.id_number][0](), d)
-            self.assertEqual(Nd.simulation.inter_arrival_times[Nd.id_number][0](), d)
+            self.assertEqual(
+                Nd.simulation.service_times[Nd.id_number][0](), d)
+            self.assertEqual(
+                Nd.simulation.inter_arrival_times[Nd.id_number][0](), d)
 
     def test_error_deterministic_dist(self):
         Arrival_distributions = [['Deterministic', 2.2]]
@@ -225,8 +229,10 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Nt = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
-            self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number][0]() <= th)
-            self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]() <= th)
+            self.assertTrue(
+                tl <= Nt.simulation.service_times[Nt.id_number][0]() <= th)
+            self.assertTrue(
+                tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]() <= th)
 
     def test_error_triangular_dist(self):
         Arrival_distributions = [['Triangular', 2.2, 3.3, 2.8]]
@@ -620,10 +626,12 @@ class TestSampling(unittest.TestCase):
 
     def test_userdefined_function_dist(self):
         params = {
-            'Arrival_distributions': [['UserDefined', lambda : random()],
-                                      ['UserDefined', lambda : custom_function()]],
-            'Service_distributions': [['UserDefined', lambda : random()],
-                                      ['UserDefined', lambda : custom_function()]],
+            'Arrival_distributions': [
+                ['UserDefined', lambda : random()],
+                ['UserDefined', lambda : custom_function()]],
+            'Service_distributions': [
+                ['UserDefined', lambda : random()],
+                ['UserDefined', lambda : custom_function()]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
@@ -681,10 +689,12 @@ class TestSampling(unittest.TestCase):
     def test_userdefined_function_dist_hypothesis(self, const, dist, rm):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
         params = {
-            'Arrival_distributions': [['UserDefined', lambda : choice(my_empirical_dist)],
-                                      ['UserDefined', lambda : const]],
-            'Service_distributions': [['UserDefined', lambda : random()],
-                                      ['UserDefined', lambda : custom_function()]],
+            'Arrival_distributions': [
+                ['UserDefined', lambda : choice(my_empirical_dist)],
+                ['UserDefined', lambda : const]],
+            'Service_distributions': [
+                ['UserDefined', lambda : random()],
+                ['UserDefined', lambda : custom_function()]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
@@ -694,11 +704,15 @@ class TestSampling(unittest.TestCase):
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
         for itr in range(10): # Because repition happens in the simulation
-            self.assertTrue(N1.simulation.inter_arrival_times[N1.id_number][0]()
+            self.assertTrue(
+                N1.simulation.inter_arrival_times[N1.id_number][0]()
                 in set(my_empirical_dist))
-            self.assertTrue(N2.simulation.inter_arrival_times[N2.id_number][0]() == const)
-            self.assertTrue(0.0 <= N1.simulation.service_times[N1.id_number][0]() <= 1.0)
-            self.assertTrue(0.0 <= N2.simulation.service_times[N2.id_number][0]() <= 2.0)
+            self.assertTrue(
+                N2.simulation.inter_arrival_times[N2.id_number][0]() == const)
+            self.assertTrue(
+                0.0 <= N1.simulation.service_times[N1.id_number][0]() <= 1.0)
+            self.assertTrue(
+                0.0 <= N2.simulation.service_times[N2.id_number][0]() <= 2.0)
 
     def test_no_arrivals_dist(self):
         params = {
@@ -708,9 +722,10 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(params))
-        Nna = Q.transitive_nodes[0]
+        Na = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(Nna.simulation.inter_arrival_times[Nna.id_number][0](), float('Inf'))
+        self.assertEqual(
+            Na.simulation.inter_arrival_times[Na.id_number][0](), float('Inf'))
 
     def test_error_dist(self):
         params = {'Arrival_distributions': ['NoArrivals'],
@@ -732,18 +747,24 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_check_userdef_dist(self, positive_float, negative_float, word, rm):
         assume(negative_float < 0)
-        Q = ciw.Simulation(ciw.create_network('ciw/tests/testing_parameters/params.yml'))
-        self.assertEqual(Q.check_userdef_dist(lambda : positive_float), positive_float)
-        self.assertRaises(ValueError, Q.check_userdef_dist, lambda : negative_float)
-        self.assertRaises(ValueError, Q.check_userdef_dist, lambda : word)
+        Q = ciw.Simulation(
+            ciw.create_network('ciw/tests/testing_parameters/params.yml'))
+        self.assertEqual(
+            Q.check_userdef_dist(lambda : positive_float), positive_float)
+        self.assertRaises(
+            ValueError, Q.check_userdef_dist, lambda : negative_float)
+        self.assertRaises(
+            ValueError, Q.check_userdef_dist, lambda : word)
 
 
     def test_timedependent_function_dist(self):
         params = {
-            'Arrival_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
-                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
-            'Service_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
-                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Arrival_distributions': [
+                ['TimeDependent', lambda t : time_dependent_function_1(t)],
+                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Service_distributions': [
+                ['TimeDependent', lambda t : time_dependent_function_1(t)],
+                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
@@ -752,16 +773,26 @@ class TestSampling(unittest.TestCase):
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
-        self.assertEqual(N1.simulation.service_times[N1.id_number][0](3.0), 3.0)
-        self.assertEqual(N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(N2.simulation.service_times[N2.id_number][0](17.0), 8.5)
-        self.assertEqual(N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
-        self.assertEqual(N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
+        self.assertEqual(
+            N1.simulation.service_times[N1.id_number][0](3.0), 3.0)
+        self.assertEqual(
+            N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(
+            N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(
+            N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(
+            N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(
+            N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(
+            N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(
+            N2.simulation.service_times[N2.id_number][0](17.0), 8.5)
+        self.assertEqual(
+            N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
+        self.assertEqual(
+            N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
 
         self.assertEqual(N1.get_service_time(0, 3.0), 3.0)
         self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
@@ -774,21 +805,33 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
         self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
 
-        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](3.0), 3.0)
-        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](17.0), 8.5)
-        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
-        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
+        self.assertEqual(
+            N1.simulation.inter_arrival_times[N1.id_number][0](3.0), 3.0)
+        self.assertEqual(
+            N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(
+            N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(
+            N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(
+            N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(
+            N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(
+            N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(
+            N2.simulation.inter_arrival_times[N2.id_number][0](17.0), 8.5)
+        self.assertEqual(
+            N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
+        self.assertEqual(
+            N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
 
     def test_broken_timedependent_function_dist(self):
         params = {
-            'Arrival_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)]],
-            'Service_distributions': [['TimeDependent', lambda t : broken_td_func(t)]],
+            'Arrival_distributions': [
+                ['TimeDependent', lambda t : time_dependent_function_1(t)]],
+            'Service_distributions': [
+                ['TimeDependent', lambda t : broken_td_func(t)]],
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
@@ -800,10 +843,12 @@ class TestSampling(unittest.TestCase):
 
     def test_timedependent_exact(self):
         params = {
-            'Arrival_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
-                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
-            'Service_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
-                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Arrival_distributions': [
+                ['TimeDependent', lambda t : time_dependent_function_1(t)],
+                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Service_distributions': [
+                ['TimeDependent', lambda t : time_dependent_function_1(t)],
+                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
