@@ -14,11 +14,14 @@ class ExactNode(Node):
         """
         return Decimal(str(original)) + Decimal(str(increment))
 
-    def get_service_time(self, cls):
+    def get_service_time(self, cls, current_time):
         """
         Returns a service time for the given customer class
         """
+        if self.simulation.network.customer_classes[cls].service_distributions[self.id_number-1][0] == "TimeDependent":
+            return Decimal(str(self.simulation.service_times[self.id_number][cls](current_time)))
         return Decimal(str(self.simulation.service_times[self.id_number][cls]()))
+
 
     def get_now(self, current_time):
         """
@@ -39,8 +42,11 @@ class ExactArrivalNode(ArrivalNode):
         """
         return Decimal(str(original)) + Decimal(str(increment))
 
-    def inter_arrival(self, nd, cls):
+    def inter_arrival(self, nd, cls, current_time):
         """
         Samples the inter-arrival time for next class and node.
         """
+        if self.simulation.network.customer_classes[cls].arrival_distributions[nd-1][0] == "TimeDependent":
+            return Decimal(str(self.simulation.inter_arrival_times[nd][cls](current_time)))
         return Decimal(str(self.simulation.inter_arrival_times[nd][cls]()))
+

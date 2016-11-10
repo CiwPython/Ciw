@@ -65,6 +65,13 @@ class Simulation(object):
             raise ValueError("UserDefined function must return positive float.")
         return sample
 
+    def check_timedependent_dist(self, func, current_time):
+        sample = func(current_time)
+        if not isinstance(sample, float) or sample < 0:
+            raise ValueError("TimeDependent function must return positive float.")
+        return sample
+
+
     def choose_tracker(self, tracker, deadlock_detector):
         """
         Chooses the state tracker to use for the simulation.
@@ -128,6 +135,8 @@ class Simulation(object):
                 empirical_dist = self.import_empirical(self.source(c, n, kind)[1])
                 return lambda : nprandom.choice(empirical_dist)
             return lambda : nprandom.choice(self.source(c, n, kind)[1])
+        if self.source(c, n, kind)[0] == 'TimeDependent':
+            return lambda t : self.check_timedependent_dist(self.source(c, n, kind)[1], t)
 
     def find_next_active_node(self):
         """

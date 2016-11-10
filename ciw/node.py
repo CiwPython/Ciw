@@ -114,7 +114,7 @@ class Node(object):
         """
         next_individual.arrival_date = self.get_now(current_time)
         next_individual.service_time = self.get_service_time(
-            next_individual.customer_class)
+            next_individual.customer_class, current_time)
         if self.free_server():
             if self.c < float('Inf'):
                 self.attach_server(self.find_free_server(),
@@ -130,7 +130,7 @@ class Node(object):
         """
         ind = [i for i in self.interrupted_individuals][0]
         self.attach_server(srvr, ind)
-        ind.service_time = self.get_service_time(ind.customer_class)
+        ind.service_time = self.get_service_time(ind.customer_class, current_time)
         ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
         self.interrupted_individuals.remove(ind)
 
@@ -348,10 +348,12 @@ class Node(object):
             node_to_receive_from.release(individual_to_receive_index,
                 self, current_time)
 
-    def get_service_time(self, cls):
+    def get_service_time(self, cls, current_time):
         """
         Returns a service time for the given customer class
         """
+        if self.simulation.network.customer_classes[cls].service_distributions[self.id_number-1][0] == 'TimeDependent':
+            return self.simulation.service_times[self.id_number][cls](current_time)
         return self.simulation.service_times[self.id_number][cls]()
 
     def take_servers_off_duty(self):

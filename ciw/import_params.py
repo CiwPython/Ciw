@@ -174,7 +174,8 @@ def validify_dictionary(params):
     if not set(dists).issubset(set([
         'Uniform', 'Triangular', 'Deterministic',
         'Exponential', 'Gamma', 'Lognormal',
-        'Weibull', 'Empirical', 'Custom', 'UserDefined'])):
+        'Weibull', 'Empirical', 'Custom', 'UserDefined',
+        'TimeDependent'])):
         raise ValueError('Ensure that valid Arrival and Service Distributions are used.')
     neg_numservers = any([(isinstance(obs, int) and obs <= 0) for obs in params['Number_of_servers']])
     valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])

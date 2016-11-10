@@ -75,7 +75,8 @@ class ArrivalNode(object):
             self.next_class] = self.increment_time(
             self.event_dates_dict[self.next_node][
             self.next_class], self.inter_arrival(
-            self.next_node, self.next_class))
+            self.next_node, self.next_class,
+            self.next_event_date))
         self.find_next_event_date()
 
     def increment_time(self, original, increment):
@@ -92,12 +93,14 @@ class ArrivalNode(object):
         for nd in self.event_dates_dict:
             for cls in self.event_dates_dict[nd]:
                 self.event_dates_dict[nd][
-                cls] = self.simulation.inter_arrival_times[nd][cls]()
+                cls] = self.inter_arrival(nd, cls, 0.0)
 
-    def inter_arrival(self, nd, cls):
+    def inter_arrival(self, nd, cls, current_time):
         """
         Samples the inter-arrival time for next class and node.
         """
+        if self.simulation.network.customer_classes[cls].arrival_distributions[nd-1][0] == "TimeDependent":
+            return self.simulation.inter_arrival_times[nd][cls](current_time)
         return self.simulation.inter_arrival_times[nd][cls]()
 
     def record_baulk(self, next_node):

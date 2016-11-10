@@ -17,6 +17,19 @@ def custom_function():
         return 2 * val
     return val / 2.0
 
+def time_dependent_function_1(current_time):
+    if current_time < 10.0:
+        return 3.0
+    return 5.0
+
+def time_dependent_function_2(current_time):
+    if current_time < 20.0:
+        return current_time / 2.0
+    return 8.0
+
+def broken_td_func(current_time):
+    return -4.0
+
 class TestSampling(unittest.TestCase):
 
     def test_sampling_uniform_dist(self):
@@ -289,8 +302,10 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Ne = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
-            self.assertTrue(Ne.simulation.service_times[Ne.id_number][0]() >= 0.0)
-            self.assertTrue(Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Ne.simulation.service_times[Ne.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
 
     def test_sampling_gamma_dist(self):
         params = {
@@ -336,8 +351,10 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Ng = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
-            self.assertTrue(Ng.simulation.service_times[Ng.id_number][0]() >= 0.0)
-            self.assertTrue(Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Ng.simulation.service_times[Ng.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
 
     def test_sampling_lognormal_dist(self):
         params = {
@@ -383,8 +400,10 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Nl = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
-            self.assertTrue(Nl.simulation.service_times[Nl.id_number][0]() >= 0.0)
-            self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Nl.simulation.service_times[Nl.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
 
     def test_sampling_weibull_dist(self):
         params = {
@@ -430,8 +449,10 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         Nw = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
-            self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
-            self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
 
     def test_sampling_empirical_dist(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
@@ -597,7 +618,7 @@ class TestSampling(unittest.TestCase):
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
 
-    def test_sampling_function_dist(self):
+    def test_userdefined_function_dist(self):
         params = {
             'Arrival_distributions': [['UserDefined', lambda : random()],
                                       ['UserDefined', lambda : custom_function()]],
@@ -653,10 +674,11 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(round(
             N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.46)
 
+
     @given(const=floats(min_value = 0.02, max_value=200),
            dist=lists(floats(min_value=0.001, max_value=10000), min_size=1, max_size=20),
            rm=random_module())
-    def test_sampling_function_dist_hypothesis(self, const, dist, rm):
+    def test_userdefined_function_dist_hypothesis(self, const, dist, rm):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
         params = {
             'Arrival_distributions': [['UserDefined', lambda : choice(my_empirical_dist)],
@@ -715,3 +737,88 @@ class TestSampling(unittest.TestCase):
         self.assertRaises(ValueError, Q.check_userdef_dist, lambda : negative_float)
         self.assertRaises(ValueError, Q.check_userdef_dist, lambda : word)
 
+
+    def test_timedependent_function_dist(self):
+        params = {
+            'Arrival_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
+                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Service_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
+                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Number_of_servers': [1, 1],
+            'Transition_matrices': [[0.1, 0.1],
+                                    [0.1, 0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        N1 = Q.transitive_nodes[0]
+        N2 = Q.transitive_nodes[1]
+        ciw.seed(5)
+        self.assertEqual(N1.simulation.service_times[N1.id_number][0](3.0), 3.0)
+        self.assertEqual(N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(N2.simulation.service_times[N2.id_number][0](17.0), 8.5)
+        self.assertEqual(N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
+        self.assertEqual(N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
+
+        self.assertEqual(N1.get_service_time(0, 3.0), 3.0)
+        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
+        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
+        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
+        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
+        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
+        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
+        self.assertEqual(N2.get_service_time(0, 17.0), 8.5)
+        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
+        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
+
+        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](3.0), 3.0)
+        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
+        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
+        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
+        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](17.0), 8.5)
+        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
+        self.assertEqual(N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
+
+    def test_broken_timedependent_function_dist(self):
+        params = {
+            'Arrival_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)]],
+            'Service_distributions': [['TimeDependent', lambda t : broken_td_func(t)]],
+            'Number_of_servers': [1],
+            'Transition_matrices': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        N = Q.transitive_nodes[0]
+        ciw.seed(5)
+        self.assertRaises(ValueError, N.simulation.service_times[N.id_number][0], 3.0)
+        self.assertRaises(ValueError, N.get_service_time, 0, 3.0)
+
+    def test_timedependent_exact(self):
+        params = {
+            'Arrival_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
+                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Service_distributions': [['TimeDependent', lambda t : time_dependent_function_1(t)],
+                                      ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+            'Number_of_servers': [1, 1],
+            'Transition_matrices': [[0.1, 0.1],
+                                    [0.1, 0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params), exact=True)
+        N1 = Q.transitive_nodes[0]
+        N2 = Q.transitive_nodes[1]
+        ciw.seed(5)
+        self.assertEqual(N1.get_service_time(0, 3.0), 3.0)
+        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
+        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
+        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
+        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
+        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
+        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
+        self.assertEqual(N2.get_service_time(0, 17.0), 8.5)
+        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
+        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
