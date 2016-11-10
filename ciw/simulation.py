@@ -22,7 +22,11 @@ class Simulation(object):
     """
     Overall simulation class
     """
-    def __init__(self, network, exact=False, name='Simulation', tracker=False, deadlock_detector=False,
+    def __init__(self, network,
+                 exact=False,
+                 name='Simulation',
+                 tracker=False,
+                 deadlock_detector=False,
         node_class=None, arrival_node_class=None):
         """
         Initialise a queue instance.
@@ -62,8 +66,15 @@ class Simulation(object):
         """
         sample = func()
         if not isinstance(sample, float) or sample < 0:
-            raise ValueError("UserDefined function must return positive float.")
+            raise ValueError("UserDefined func must return positive float.")
         return sample
+
+    def check_timedependent_dist(self, func, current_time):
+        sample = func(current_time)
+        if not isinstance(sample, float) or sample < 0:
+            raise ValueError("TimeDependent func must return positive float.")
+        return sample
+
 
     def choose_tracker(self, tracker, deadlock_detector):
         """
@@ -128,6 +139,8 @@ class Simulation(object):
                 empirical_dist = self.import_empirical(self.source(c, n, kind)[1])
                 return lambda : nprandom.choice(empirical_dist)
             return lambda : nprandom.choice(self.source(c, n, kind)[1])
+        if self.source(c, n, kind)[0] == 'TimeDependent':
+            return lambda t : self.check_timedependent_dist(self.source(c, n, kind)[1], t)
 
     def find_next_active_node(self):
         """

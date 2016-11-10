@@ -33,13 +33,15 @@ class ArrivalNode(object):
 
     def decide_baulk(self, next_node, next_individual):
         """
-        Either makes an individual baulk, or sends the individual to the next node
+        Either makes an individual baulk, or sends the individual
+        to the next node
         """
         if next_node.baulking_functions[self.next_class] == None:
             self.send_individual(next_node, next_individual)
         else:
             rnd_num = random()
-            if rnd_num < next_node.baulking_functions[self.next_class](next_node.number_of_individuals):
+            if rnd_num < next_node.baulking_functions[self.next_class](
+                next_node.number_of_individuals):
                 self.record_baulk(next_node)
             else:
                 self.send_individual(next_node, next_individual)
@@ -65,7 +67,8 @@ class ArrivalNode(object):
         Send new arrival to relevent node.
         """
         self.number_of_individuals += 1
-        priority_class = self.simulation.network.priority_class_mapping[self.next_class]
+        priority_class = self.simulation.network.priority_class_mapping[
+            self.next_class]
         next_individual = Individual(self.number_of_individuals,
                                      self.next_class,
                                      priority_class)
@@ -75,7 +78,8 @@ class ArrivalNode(object):
             self.next_class] = self.increment_time(
             self.event_dates_dict[self.next_node][
             self.next_class], self.inter_arrival(
-            self.next_node, self.next_class))
+            self.next_node, self.next_class,
+            self.next_event_date))
         self.find_next_event_date()
 
     def increment_time(self, original, increment):
@@ -92,12 +96,15 @@ class ArrivalNode(object):
         for nd in self.event_dates_dict:
             for cls in self.event_dates_dict[nd]:
                 self.event_dates_dict[nd][
-                cls] = self.simulation.inter_arrival_times[nd][cls]()
+                cls] = self.inter_arrival(nd, cls, 0.0)
 
-    def inter_arrival(self, nd, cls):
+    def inter_arrival(self, nd, cls, current_time):
         """
         Samples the inter-arrival time for next class and node.
         """
+        if self.simulation.network.customer_classes[
+            cls].arrival_distributions[nd-1][0] == "TimeDependent":
+            return self.simulation.inter_arrival_times[nd][cls](current_time)
         return self.simulation.inter_arrival_times[nd][cls]()
 
     def record_baulk(self, next_node):

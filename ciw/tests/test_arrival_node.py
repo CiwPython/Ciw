@@ -126,7 +126,7 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         AN = Q.nodes[0]
         self.assertEqual(AN.simulation.network.customer_classes[0].arrival_distributions[0], 'NoArrivals')
-        self.assertEqual(AN.inter_arrival(1, 0), float('Inf'))
+        self.assertEqual(AN.inter_arrival(1, 0, 0.0), float('Inf'))
 
     def test_rejection_dict(self):
         params = {'Arrival_distributions':[['Deterministic', 3.0], ['Deterministic', 4.0]],
@@ -137,7 +137,7 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(params))
         self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
         Q.simulate_until_max_time(20)
-        self.assertEqual(Q.rejection_dict, {1: {0: [9.0, 12.0, 18.0]}, 2: {0:[12.0, 16.0]}})
+        self.assertEqual(Q.rejection_dict, {1: {0: [9.0, 12.0, 18.0]}, 2: {0: [12.0, 16.0]}})
 
     def test_send_individual(self):
         params = {'Arrival_distributions':[['Exponential', 3.0]],

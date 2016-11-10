@@ -28,7 +28,8 @@ class Node(object):
             self.schedule = [list(pair) for pair in zip(boundaries, servers)]
             self.c = self.schedule[0][1]
             raw_schedule_boundaries = [row[0] for row in raw_schedule]
-            self.date_generator = self.date_from_schedule_generator(raw_schedule_boundaries)
+            self.date_generator = self.date_from_schedule_generator(
+                raw_schedule_boundaries)
             self.next_shift_change = next(self.date_generator)
         else:
             self.c = node.number_of_servers
@@ -114,7 +115,7 @@ class Node(object):
         """
         next_individual.arrival_date = self.get_now(current_time)
         next_individual.service_time = self.get_service_time(
-            next_individual.customer_class)
+            next_individual.customer_class, current_time)
         if self.free_server():
             if self.c < float('Inf'):
                 self.attach_server(self.find_free_server(),
@@ -130,8 +131,10 @@ class Node(object):
         """
         ind = [i for i in self.interrupted_individuals][0]
         self.attach_server(srvr, ind)
-        ind.service_time = self.get_service_time(ind.customer_class)
-        ind.service_end_date = self.increment_time(self.get_now(current_time), ind.service_time)
+        ind.service_time = self.get_service_time(ind.customer_class,
+                                                 current_time)
+        ind.service_end_date = self.increment_time(self.get_now(current_time),
+                                                   ind.service_time)
         self.interrupted_individuals.remove(ind)
 
     def begin_service_if_possible_change_shift(self, current_time):
@@ -348,10 +351,13 @@ class Node(object):
             node_to_receive_from.release(individual_to_receive_index,
                 self, current_time)
 
-    def get_service_time(self, cls):
+    def get_service_time(self, cls, current_time):
         """
         Returns a service time for the given customer class
         """
+        if self.simulation.network.customer_classes[cls].service_distributions[
+            self.id_number-1][0] == 'TimeDependent':
+            return self.simulation.service_times[self.id_number][cls](current_time)
         return self.simulation.service_times[self.id_number][cls]()
 
     def take_servers_off_duty(self):
@@ -429,11 +435,15 @@ class Node(object):
         individual.destination = False
 
     def date_from_schedule_generator(self, boundaries):
-        """A generator that yields the next time according to a given schedule"""
+        """
+        A generator that yields the next time according to a given schedule.
+        """
         boundaries_len = len(boundaries)
         index = 0
         date = 0
         while True:
-            date = self.increment_time(boundaries[index % boundaries_len], (index) // boundaries_len * boundaries[-1])
+            date = self.increment_time(
+                boundaries[index % boundaries_len],
+                (index) // boundaries_len * boundaries[-1])
             index += 1
             yield date
