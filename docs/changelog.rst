@@ -3,6 +3,10 @@
 Change Log
 ==========
 
+v0.2.8 (2016-11-10)
+-------------------
+Add option for time dependent distributions.
+
 v0.2.7 (2016-10-26)
 -------------------
 Run tests on Appveyor.
