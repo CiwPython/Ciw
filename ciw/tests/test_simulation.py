@@ -560,3 +560,34 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(set([r.customer_class for r in Q.nodes[1].individuals[1]]), set([0]))
         self.assertEqual(set([r.customer_class for r in Q.nodes[2].individuals[0]]), set([1]))
         self.assertEqual(set([r.customer_class for r in Q.nodes[2].individuals[1]]), set([0]))
+
+    def test_allow_zero_servers(self):
+        params_c1 = {
+            'Arrival_distributions': [['Exponential', 5]],
+            'Service_distributions': [['Exponential', 10]],
+            'Transition_matrices': [[0.0]],
+            'Number_of_servers': [1]
+        }
+
+        params_c0 = {
+            'Arrival_distributions': [['Exponential', 5]],
+            'Service_distributions': [['Exponential', 10]],
+            'Transition_matrices': [[0.0]],
+            'Number_of_servers': [0]
+        }
+
+        ciw.seed(1)
+        N = ciw.create_network(params_c1)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(100)
+        total_inds_1 = len(Q.nodes[-1].all_individuals) + len(Q.nodes[1].all_individuals)
+
+        ciw.seed(1)
+        N = ciw.create_network(params_c0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(100)
+        recs = Q.get_all_records()
+        total_inds_0 = len(Q.nodes[1].all_individuals)
+
+        self.assertEqual(recs, [])
+        self.assertEqual(total_inds_0, total_inds_1)

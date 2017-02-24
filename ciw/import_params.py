@@ -178,7 +178,7 @@ def validify_dictionary(params):
         'Weibull', 'Empirical', 'Custom', 'UserDefined',
         'TimeDependent'])):
         raise ValueError('Ensure that valid Arrival and Service Distributions are used.')
-    neg_numservers = any([(isinstance(obs, int) and obs <= 0) for obs in params['Number_of_servers']])
+    neg_numservers = any([(isinstance(obs, int) and obs < 0) for obs in params['Number_of_servers']])
     valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])
     if neg_numservers:
         raise ValueError('Number of servers must be positive integers.')
