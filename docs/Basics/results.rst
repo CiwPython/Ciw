@@ -74,7 +74,7 @@ From here, we can use list comprehension to access certain performance measures.
 
     >>> waits2 = [r.waiting_time for r in recs if r.node == 2]
     >>> waits2
-    [0.0, 0.17402672703197736, 0.25654165281155494, 0.2455447998629401]
+    [0.0, 0.17402..., 0.25654..., 0.245544...]
     >>> sum(waits2) / len(waits2)
     0.16902829492661808
 
@@ -82,7 +82,7 @@ We may wish to see the service times of all customers passing through Node 1:
 
     >>> service1 = [r.service_time for r in recs if r.node == 1]
     >>> service1
-    [0.05654464252280805, 0.13221434586351577, 0.12755938969775005, 0.10152545197095494, 0.1974548307228372]
+    [0.05654..., 0.13221..., 0.127559..., 0.10152..., 0.19745...]
 
 
 .. _count_losses:
@@ -94,7 +94,7 @@ Counting Losses
 Nodes with finite queueing capacity will turn away newly arriving customers if they arrive when the node is full. These losses are recorded in a :code:`rejection_dict`. This is a dictionary of dictionaries, with nodes and customer classes as keys, and a list of arrival dates as values.
 
     >>> Q.rejection_dict
-    {1: {0: []}, 2: {0: [0.7969419611746251, 1.1770121372858258, 1.1951201499338755, 1.2526556087183383]}}
+    {1: {0: []}, 2: {0: [0.79694..., 1.17701..., 1.19512..., 1.25265...]}}
 
 Here we see that there was a loss of a customer from Class 0 at Node 2 at dates 0.796, 1.770, 1.195, and 1.252.
 If we want the number of losses of Class 0 customers at Node 2:
