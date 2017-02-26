@@ -44,8 +44,8 @@ Ciw can then create a Network obeject from this parameters dictionary, which is 
 	>>> import ciw
 	>>> N = ciw.create_network(params)
 	>>> Q = ciw.Simulation(N)
-	>>> Q.simulate_until_max_time(1000)
+	>>> Q.simulate_until_max_time(100)
 
-Once this simulation has been run, :ref:`output-file` can be written to file through::
+Once this simulation has been run, all :ref:`results-data` can be obtained with::
 
-	>>> Q.write_records_to_file(<path_to_file>)  # doctest:+SKIP
+	>>> recs = Q.get_all_records()
