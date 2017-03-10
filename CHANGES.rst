@@ -1,6 +1,11 @@
 History
 -------
 
+v0.2.10 (2017-03-10)
+--------------------
+Performance improvements.
+Drop dependency on numpy.
+
 v0.2.9 (2017-02-24)
 -------------------
 Allow zero servers.
