@@ -92,7 +92,7 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(150)
         L = Q.get_all_records()
         self.assertEqual(round(
-            L[300].service_start_date, 8), 2.43854666)
+            L[300].service_start_date, 8), 2.35688581)
 
         ciw.seed(60)
         Q = ciw.Simulation(ciw.create_network(
@@ -120,7 +120,7 @@ class TestSimulation(unittest.TestCase):
             'ciw/tests/testing_parameters/params_deadlock.yml'),
              deadlock_detector='StateDigraph')
         Q.simulate_until_deadlock()
-        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 23.92401469)
+        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 7.09795845)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.create_network(
@@ -268,20 +268,20 @@ class TestSimulation(unittest.TestCase):
                   'Number_of_servers': [2, 1]}
 
 
+        ciw.seed(36)
+        Q = ciw.Simulation(ciw.create_network(params))
+        Q.simulate_until_max_time(36)
+        inds = Q.get_all_individuals()
+        recs = Q.get_all_records()
+        self.assertEqual(len(inds), 3)
+        self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
+
         ciw.seed(35)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
         self.assertEqual(len(inds), 2)
-        self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
-
-        ciw.seed(41)
-        Q = ciw.Simulation(ciw.create_network(params))
-        Q.simulate_until_max_time(36)
-        inds = Q.get_all_individuals()
-        recs = Q.get_all_records()
-        self.assertEqual(len(inds), 3)
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
         completed_inds = []
@@ -421,7 +421,7 @@ class TestSimulation(unittest.TestCase):
         waits = [sum([r.waiting_time for r in recs if r.customer_class == cls]) for cls in range(2)]
         # Because of high traffic intensity: the low
         # priority individuals have a large wait
-        self.assertEqual(sorted(waits), [15.75, 248.25])
+        self.assertEqual(sorted(waits), [18.75, 245.25])
 
         params_dict = {'Arrival_distributions': {'Class 0': [['Deterministic', 1.0]],
                                                  'Class 1': [['Deterministic', 1.0]]},
@@ -456,9 +456,6 @@ class TestSimulation(unittest.TestCase):
                }
         # Results expected from analytical queueing theory are:
         # expected_throughput_class0 = 2.0, and expected_throughput_class1 = 6.0
-        # Althought these results seem far from the theoretical, longer runs and
-        # more runs give the desired results. A compromise was reached here to
-        # reduce test suite runtime.
         throughput_class0 = []
         throughput_class1 = []
 
@@ -542,7 +539,7 @@ class TestSimulation(unittest.TestCase):
         ciw.seed(1)
         N = ciw.create_network(params)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_time(20)
+        Q.simulate_until_max_time(25)
         recs = Q.get_all_records()
         recs_cust1 = sorted([r for r in recs if r.id_number==1], key=lambda r: r.arrival_date)
         recs_cust2 = sorted([r for r in recs if r.id_number==2], key=lambda r: r.arrival_date)
@@ -550,11 +547,11 @@ class TestSimulation(unittest.TestCase):
 
         self.assertEqual([0, 1, 0, 1, 0], [r.customer_class for r in recs_cust1])
         self.assertEqual([1, 0, 1, 0, 1], [r.customer_class for r in recs_cust2])
-        self.assertEqual([0, 1, 0, 1], [r.customer_class for r in recs_cust3])
+        self.assertEqual([0, 1, 0, 1, 0], [r.customer_class for r in recs_cust3])
 
         self.assertEqual([1, 2, 1, 2, 1], [r.node for r in recs_cust1])
         self.assertEqual([2, 1, 2, 1, 2], [r.node for r in recs_cust2])
-        self.assertEqual([1, 2, 1, 2], [r.node for r in recs_cust3])
+        self.assertEqual([1, 2, 1, 2, 1], [r.node for r in recs_cust3])
 
         self.assertEqual(set([r.customer_class for r in Q.nodes[1].individuals[0]]), set([1]))
         self.assertEqual(set([r.customer_class for r in Q.nodes[1].individuals[1]]), set([0]))
@@ -564,14 +561,14 @@ class TestSimulation(unittest.TestCase):
     def test_allow_zero_servers(self):
         params_c1 = {
             'Arrival_distributions': [['Exponential', 5]],
-            'Service_distributions': [['Exponential', 10]],
+            'Service_distributions': [['Deterministic', 0.2]],
             'Transition_matrices': [[0.0]],
             'Number_of_servers': [1]
         }
 
         params_c0 = {
             'Arrival_distributions': [['Exponential', 5]],
-            'Service_distributions': [['Exponential', 10]],
+            'Service_distributions': [['Deterministic', 0.2]],
             'Transition_matrices': [[0.0]],
             'Number_of_servers': [0]
         }

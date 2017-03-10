@@ -1,5 +1,4 @@
 PyYAML
 networkx
 hypothesis
-numpy
 tqdm
