@@ -473,23 +473,23 @@ class TestSampling(unittest.TestCase):
         Nem = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 12.3)
         self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
         self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
+            Nem.simulation.service_times[Nem.id_number][0](), 2), 12.3)
         self.assertEqual(round(
             Nem.simulation.service_times[Nem.id_number][0](), 2), 8.0)
-        self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
-        self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
         self.assertEqual(round(
             Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
         self.assertEqual(round(
             Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
+        self.assertEqual(round(
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
+        self.assertEqual(round(
+            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
         self.assertEqual(round(
             Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
 

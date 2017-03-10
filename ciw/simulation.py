@@ -7,8 +7,7 @@ from csv import writer, reader
 from decimal import getcontext
 from collections import namedtuple
 
-import numpy.random as nprandom
-
+from .auxiliary import random_choice
 from .node import Node
 from .exactnode import ExactNode, ExactArrivalNode
 from .arrival_node import ArrivalNode
@@ -131,14 +130,14 @@ class Simulation(object):
         if self.source(c, n, kind)[0] == 'Custom':
             P, V = zip(*self.source(c, n, kind)[1])
             probs, values = list(P), list(V)
-            return lambda : nprandom.choice(values, p=probs)
+            return lambda : random_choice(values, probs)
         if self.source(c, n, kind)[0] == 'UserDefined':
             return lambda : self.check_userdef_dist(self.source(c, n, kind)[1])
         if self.source(c, n, kind)[0] == 'Empirical':
             if isinstance(self.source(c, n, kind)[1], str):
                 empirical_dist = self.import_empirical(self.source(c, n, kind)[1])
-                return lambda : nprandom.choice(empirical_dist)
-            return lambda : nprandom.choice(self.source(c, n, kind)[1])
+                return lambda : random_choice(empirical_dist)
+            return lambda : random_choice(self.source(c, n, kind)[1])
         if self.source(c, n, kind)[0] == 'TimeDependent':
             return lambda t : self.check_timedependent_dist(self.source(c, n, kind)[1], t)
 
@@ -150,7 +149,7 @@ class Simulation(object):
             nd.next_event_date for nd in self.nodes]) if x == min([
             nd.next_event_date for nd in self.nodes])]
         if len(next_active_node_indices) > 1:
-            return self.nodes[nprandom.choice(next_active_node_indices)]
+            return self.nodes[random_choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
 
     def find_times_dict(self, kind):

@@ -268,7 +268,7 @@ class TestSimulation(unittest.TestCase):
                   'Number_of_servers': [2, 1]}
 
 
-        ciw.seed(36)
+        ciw.seed(35)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
@@ -276,7 +276,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(len(inds), 2)
         self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
 
-        ciw.seed(40)
+        ciw.seed(41)
         Q = ciw.Simulation(ciw.create_network(params))
         Q.simulate_until_max_time(36)
         inds = Q.get_all_individuals()
@@ -421,7 +421,7 @@ class TestSimulation(unittest.TestCase):
         waits = [sum([r.waiting_time for r in recs if r.customer_class == cls]) for cls in range(2)]
         # Because of high traffic intensity: the low
         # priority individuals have a large wait
-        self.assertEqual(sorted(waits), [15, 249])
+        self.assertEqual(sorted(waits), [15.75, 248.25])
 
         params_dict = {'Arrival_distributions': {'Class 0': [['Deterministic', 1.0]],
                                                  'Class 1': [['Deterministic', 1.0]]},

@@ -4,8 +4,8 @@ import os
 from csv import writer
 
 import networkx as nx
-import numpy.random as nprandom
 
+from .auxiliary import random_choice
 from .data_record import DataRecord
 from .server import Server
 
@@ -189,9 +189,9 @@ class Node(object):
         """
         if self.class_change:
             individual.previous_class = individual.customer_class
-            individual.customer_class = nprandom.choice(
+            individual.customer_class = random_choice(
                 range(len(self.class_change)),
-                p = self.class_change[individual.previous_class])
+                self.class_change[individual.previous_class])
             individual.prev_priority_class = individual.priority_class
             individual.priority_class = self.simulation.network.priority_class_mapping[individual.customer_class]
 
@@ -261,7 +261,7 @@ class Node(object):
             [ind.service_end_date for ind in self.all_individuals]
             ) if x == self.next_event_date]
         if len(next_individual_indices) > 1:
-            next_individual_index = nprandom.choice(next_individual_indices)
+            next_individual_index = random_choice(next_individual_indices)
         else:
             next_individual_index = next_individual_indices[0]
         return self.all_individuals[next_individual_index], next_individual_index
@@ -312,8 +312,8 @@ class Node(object):
         """
         Finds the next node according the random distribution.
         """
-        return nprandom.choice(self.simulation.nodes[1:],
-            p = self.transition_row[customer_class] + [1.0 - sum(
+        return random_choice(self.simulation.nodes[1:],
+            self.transition_row[customer_class] + [1.0 - sum(
             self.transition_row[customer_class])])
 
     def release(self, next_individual_index, next_node, current_time):
