@@ -19,7 +19,7 @@ def random_choice(array, probs=None):
 	# If no pdf provided, assume uniform dist:
 	if probs == None:
 		lenarr = len(array)
-		probs = [1/lenarr for _ in range(lenarr)]
+		probs = [1.0/lenarr for _ in range(lenarr)]
 
 	# A common case, guaranteed to reach the Exit node;
 	# No need to sample for this:
