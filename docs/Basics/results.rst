@@ -25,7 +25,7 @@ First, say we have a two node blockage system, and run for 1.5 time units:
     ... 'Queue_capacities': [3, 4]
     ... }
 
-    >>> ciw.seed(10)
+    >>> ciw.seed(1)
     >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(1.5)
@@ -74,15 +74,15 @@ From here, we can use list comprehension to access certain performance measures.
 
     >>> waits2 = [r.waiting_time for r in recs if r.node == 2]
     >>> waits2
-    [0.0, 0.17402..., 0.25654..., 0.245544...]
+    [0.0, 0.252..., 0.242..., 0.366..., 0.278..., 0.064..., 0.540..., 0.455..., 0.474...]
     >>> sum(waits2) / len(waits2)
-    0.16902829492661808
+    0.29721841186163034
 
 We may wish to see the service times of all customers passing through Node 1:
 
     >>> service1 = [r.service_time for r in recs if r.node == 1]
     >>> service1
-    [0.05654..., 0.13221..., 0.127559..., 0.10152..., 0.19745...]
+    [0.040..., 0.213..., 0.080..., 0.011..., 0.169..., 0.0305..., 0.212..., 0.0287..., 0.067...]
 
 
 .. _count_losses:
@@ -94,14 +94,14 @@ Counting Losses
 Nodes with finite queueing capacity will turn away newly arriving customers if they arrive when the node is full. These losses are recorded in a :code:`rejection_dict`. This is a dictionary of dictionaries, with nodes and customer classes as keys, and a list of arrival dates as values.
 
     >>> Q.rejection_dict
-    {1: {0: []}, 2: {0: [0.79694..., 1.17701..., 1.19512..., 1.25265...]}}
+    {1: {0: []}, 2: {0: [1.1902..., 1.3520...]}}
 
 Here we see that there was a loss of a customer from Class 0 at Node 2 at dates 0.796, 1.770, 1.195, and 1.252.
 If we want the number of losses of Class 0 customers at Node 2:
 
     >>> number_of_losses_class0_node2 = len(Q.rejection_dict[2][0])
     >>> number_of_losses_class0_node2
-    4
+    2
 
 For overall number of losses, we can simply sum over all nodes and classes:
 
@@ -110,7 +110,7 @@ For overall number of losses, we can simply sum over all nodes and classes:
     ...     range(1, N.number_of_nodes + 1) for cls in
     ...     range(N.number_of_classes)])
     >>> number_of_losses
-    4
+    2
 
 
 .. _access_nodes:
@@ -129,19 +129,19 @@ First, let's look at the nodes themselves:
 The Exit Node contains all individuals who have left the system:
 
     >>> Q.nodes[-1].all_individuals
-    [Individual 3, Individual 1, Individual 4, Individual 2]
+    [Individual 2, Individual 3, Individual 1, Individual 5, Individual 4, Individual 6, Individual 7, Individual 8, Individual 9]
 
 This tells us that 4 individuals have completed all their services and have left the system. We can also look at the individuals who are still at the service nodes:
 
     >>> Q.nodes[1].all_individuals
-    [Individual 10, Individual 15, Individual 16, Individual 17]
+    [Individual 12, Individual 15]
     
     >>> Q.nodes[2].all_individuals
-    [Individual 5, Individual 6, Individual 7, Individual 8, Individual 9]
+    [Individual 10, Individual 11]
 
 Combine this with the information gained from the :code:`rejection_dict`, we now know all individuals who have entered the system:
 
-- Individuals 1 to 4 have completed all services.
-- Individuals 5 to 9 managed to get to Node 2, but got no further.
-- Individuals 10, and 15 to 17 entered Node 1, but got no further.
-- 4 Individuals were lost, thus Individuals 11 - 14 were rejected.
+- Individuals 1 to 9 have completed all services.
+- Individuals 10 to 11 managed to get to Node 2, but got no further.
+- Individuals 12 and 15 entered Node 1, but got no further.
+- 2 Individuals were lost, thus Individuals 13 and 14 were rejected.
