@@ -1,6 +1,10 @@
 History
 -------
 
+v0.2.11 (2017-03-13)
+--------------------
+Add ability to simulate until max number of customers have passed arrived/been accepted/passed through the system.
+
 v0.2.10 (2017-03-10)
 --------------------
 Performance improvements.

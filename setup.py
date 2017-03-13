@@ -15,7 +15,7 @@ exec(open('ciw/version.py', 'r').read())
 setup(
     name='Ciw',
     version=__version__,
-    url='https://github.com/geraintpalmer/Ciw',
+    url='https://github.com/CiwPython/Ciw',
     author='Geraint Palmer, Vincent Knight',
     author_email='palmer.geraint@googlemail.com',
     packages=['ciw'],
