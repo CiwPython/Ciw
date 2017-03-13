@@ -172,5 +172,16 @@ class TestArrivalNode(unittest.TestCase):
         AN.record_rejection(Q.nodes[1])
         self.assertEqual(AN.rejection_dict, {1: {0: [3.33, 4.44]}})
 
-
+    def test_update_next_event_date_passes(self):
+        params = {'Arrival_distributions':[['Exponential', 3.0]],
+                  'Service_distributions':[['Exponential', 10.0]],
+                  'Transition_matrices':[[0.5]],
+                  'Number_of_servers':[1]}
+        Q = ciw.Simulation(ciw.create_network(params))
+        AN = Q.nodes[0]
+        AN.next_event_date = 3.33
+        AN.update_next_event_date()
+        self.assertEqual(AN.next_event_date, 3.33)
+        AN.update_next_event_date()
+        self.assertEqual(AN.next_event_date, 3.33)
 

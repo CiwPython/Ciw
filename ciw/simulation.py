@@ -224,7 +224,6 @@ class Simulation(object):
         Runs the simulation until deadlock is reached.
         """
         deadlocked = False
-        self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
         while not deadlocked:
@@ -247,7 +246,6 @@ class Simulation(object):
         """
         Runs the simulation until max_simulation_time is reached.
         """
-        self.nodes[0].update_next_event_date()
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
 
