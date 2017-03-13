@@ -284,7 +284,7 @@ class Simulation(object):
                 Simulates until max_customers has reached the Exit Node
             - Method: Arrive
                 Simulates until max_customers have spawned at the Arrival Node
-            - Method Accept
+            - Method: Accept
                 Simulates until max_customers have been spawned and accepted
                 (not rejected) at the Arrival Node
         """
