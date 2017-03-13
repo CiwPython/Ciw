@@ -219,6 +219,16 @@ class Simulation(object):
         else:
             self.NodeType = Node
 
+    def event_and_return_nextnode(self, next_active_node, current_time):
+        """
+        Carries out the event of current next_active_node, and return the next
+        next_active_node
+        """
+        next_active_node.have_event()
+        for node in self.transitive_nodes:
+            node.update_next_event_date(current_time)
+        return self.find_next_active_node()
+
     def simulate_until_deadlock(self):
         """
         Runs the simulation until deadlock is reached.
@@ -227,16 +237,14 @@ class Simulation(object):
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
         while not deadlocked:
-            next_active_node.have_event()
+            next_active_node = self.event_and_return_nextnode(next_active_node, current_time)
+
             current_state = self.statetracker.hash_state()
             if current_state not in self.times_dictionary:
                 self.times_dictionary[current_state] = current_time
-            for node in self.transitive_nodes:
-                node.update_next_event_date(current_time)
             deadlocked = self.deadlock_detector.detect_deadlock()
             if deadlocked:
                 time_of_deadlock = current_time
-            next_active_node = self.find_next_active_node()
             current_time = next_active_node.next_event_date
         self.times_to_deadlock = {state:
             time_of_deadlock - self.times_dictionary[state]
@@ -253,10 +261,7 @@ class Simulation(object):
             self.progress_bar = tqdm.tqdm(total=max_simulation_time)
 
         while current_time < max_simulation_time:
-            next_active_node.have_event()
-            for node in self.transitive_nodes:
-                node.update_next_event_date(current_time)
-            next_active_node = self.find_next_active_node()
+            next_active_node = self.event_and_return_nextnode(next_active_node, current_time)
 
             if progress_bar:
                 remaining_time = max_simulation_time - self.progress_bar.n
@@ -300,10 +305,7 @@ class Simulation(object):
 
         while check() < max_customers:
             old_check = check()
-            next_active_node.have_event()
-            for node in self.transitive_nodes:
-                node.update_next_event_date(current_time)
-            next_active_node = self.find_next_active_node()
+            next_active_node = self.event_and_return_nextnode(next_active_node, current_time)
 
             if progress_bar:
                 remaining_time = max_customers - self.progress_bar.n
