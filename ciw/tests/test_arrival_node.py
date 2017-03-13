@@ -78,8 +78,12 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_node, 1)
 
         N.have_event()
-        self.assertEqual([str(obj) for obj in Q.transitive_nodes[0].all_individuals], ['Individual 1'])
-        self.assertEqual([str(obj) for pr_cls in Q.transitive_nodes[0].individuals  for obj in pr_cls], ['Individual 1'])
+        self.assertEqual([str(obj) for obj
+            in Q.transitive_nodes[0].all_individuals],
+            ['Individual 1'])
+        self.assertEqual([str(obj) for pr_cls in
+            Q.transitive_nodes[0].individuals  for obj in pr_cls],
+            ['Individual 1'])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[1].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[2].all_individuals, [])
@@ -109,8 +113,12 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(Q.transitive_nodes[0].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[1].individuals, [[]])
-        self.assertEqual([str(obj) for obj in Q.transitive_nodes[2].all_individuals], ['Individual 1'])
-        self.assertEqual([str(obj) for pr_cls in Q.transitive_nodes[2].individuals  for obj in pr_cls], ['Individual 1'])
+        self.assertEqual([str(obj) for obj
+            in Q.transitive_nodes[2].all_individuals],
+            ['Individual 1'])
+        self.assertEqual([str(obj) for pr_cls
+            in Q.transitive_nodes[2].individuals  for obj in pr_cls],
+            ['Individual 1'])
         self.assertEqual(Q.transitive_nodes[3].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[3].individuals, [[]])
         self.assertEqual(round(N.next_event_date, 5), 0.02021)
@@ -119,25 +127,31 @@ class TestArrivalNode(unittest.TestCase):
     def test_no_arrivals_example(self):
         params = ciw.load_parameters(
             'ciw/tests/testing_parameters/params.yml')
-        params['Arrival_distributions']['Class 0'] = ['NoArrivals',
-                                                     ['Exponential', 1.0],
-                                                     ['Exponential', 4.0],
-                                                     ['Exponential', 3.5]]
+        params['Arrival_distributions']['Class 0'] = [
+            'NoArrivals',
+           ['Exponential', 1.0],
+           ['Exponential', 4.0],
+           ['Exponential', 3.5]]
         Q = ciw.Simulation(ciw.create_network(params))
         AN = Q.nodes[0]
-        self.assertEqual(AN.simulation.network.customer_classes[0].arrival_distributions[0], 'NoArrivals')
+        self.assertEqual(
+            AN.simulation.network.customer_classes[0].arrival_distributions[0],
+            'NoArrivals')
         self.assertEqual(AN.inter_arrival(1, 0, 0.0), float('Inf'))
 
     def test_rejection_dict(self):
-        params = {'Arrival_distributions':[['Deterministic', 3.0], ['Deterministic', 4.0]],
-                  'Service_distributions':[['Deterministic', 10.0], ['Deterministic', 10.0]],
+        params = {'Arrival_distributions':[['Deterministic', 3.0],
+                                           ['Deterministic', 4.0]],
+                  'Service_distributions':[['Deterministic', 10.0],
+                                           ['Deterministic', 10.0]],
                   'Transition_matrices':[[0.0, 1.0], [0.0, 0.0]],
                   'Number_of_servers':[1, 1],
                   'Queue_capacities':[1, 1]}
         Q = ciw.Simulation(ciw.create_network(params))
         self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
         Q.simulate_until_max_time(20)
-        self.assertEqual(Q.rejection_dict, {1: {0: [9.0, 12.0, 18.0]}, 2: {0: [12.0, 16.0]}})
+        self.assertEqual(Q.rejection_dict,
+            {1: {0: [9.0, 12.0, 18.0]}, 2: {0: [12.0, 16.0]}})
 
     def test_send_individual(self):
         params = {'Arrival_distributions':[['Exponential', 3.0]],

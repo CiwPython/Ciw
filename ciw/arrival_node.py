@@ -13,6 +13,7 @@ class ArrivalNode(object):
         """
         self.simulation = simulation
         self.number_of_individuals = 0
+        self.number_accepted_individuals = 0
         self.event_dates_dict = {nd + 1: {cls:False for cls in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
@@ -135,6 +136,7 @@ class ArrivalNode(object):
         """
         Sends the next_individual to the next_node
         """
+        self.number_accepted_individuals += 1
         next_node.accept(next_individual, self.next_event_date)
 
     def update_next_event_date(self):

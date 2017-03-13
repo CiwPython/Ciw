@@ -270,6 +270,53 @@ class Simulation(object):
             self.progress_bar.update(remaining_time)
             self.progress_bar.close()
 
+    def simulate_until_max_customers(self, max_customers,
+                                     progress_bar=False, method='Finish'):
+        """
+        Runs the simulation until max_customers is reached:
+
+            - Method: Finish
+                Simulates until max_customers has reached the Exit Node
+            - Method: Arrive
+                Simulates until max_customers have spawned at the Arrival Node
+            - Method Accept
+                Simulates until max_customers have been spawned and accepted
+                (not rejected) at the Arrival Node
+        """
+        next_active_node = self.find_next_active_node()
+        current_time = next_active_node.next_event_date
+
+        if progress_bar is not False:
+            self.progress_bar = tqdm.tqdm(total=max_customers)
+
+        if method == 'Finish':
+            check = lambda : self.nodes[-1].number_completed
+        elif method == 'Arrive':
+            check = lambda : self.nodes[0].number_of_individuals
+        elif method == 'Accept':
+            check = lambda : self.nodes[0].number_accepted_individuals
+        else:
+            raise ValueError("Invalid 'method' for 'simulate_until_max_customers'.")
+
+        while check() < max_customers:
+            old_check = check()
+            next_active_node.have_event()
+            for node in self.transitive_nodes:
+                node.update_next_event_date(current_time)
+            next_active_node = self.find_next_active_node()
+
+            if progress_bar:
+                remaining_time = max_customers - self.progress_bar.n
+                time_increment = check() - old_check
+                self.progress_bar.update(min(time_increment, remaining_time))
+
+            current_time = next_active_node.next_event_date
+
+        if progress_bar:
+            remaining_time = max(max_customers - self.progress_bar.n, 0)
+            self.progress_bar.update(remaining_time)
+            self.progress_bar.close()
+
     def source(self, c, n, kind):
         """
         Returns the location of class c node n's arrival or
