@@ -45,7 +45,7 @@ The data records contained in this list are named tuples with the following vari
     - :code:`exit_date`
        - The date which the customer exited the node. This may be immediatly after service if no blocking occured, or after some period of being blocked.
     - :code:`destination`
-       - The number of the customer's destination, that is the next node the customer will join after leaving the current node.
+       - The number of the customer's destination, that is the next node the customer will join after leaving the current node. If the customer leaves the system, this will be -1.
     - :code:`previous_class`
        - The customer's class during service. Same as :code:`customer_class` unless dynamic customer classes are used.
     - :code:`queue_size_at_arrival`
