@@ -20,7 +20,7 @@ Each time an individual completes service at a service station, a data record of
 
 You may access these records as a list of named tuples, using the Simulation's :code:`get_all_records` method:
 
-    >>> recs = Q.get_all_records()
+    >>> recs = Q.get_all_records() # doctest:+SKIP
 
 The data records contained in this list are named tuples with the following variable names:
 

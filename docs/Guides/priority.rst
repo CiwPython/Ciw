@@ -21,6 +21,7 @@ Note:
 
 To implement this, define the parameters dictionary with the :code:`Priority_classes` option included with the mapping::
 
+    >>> import ciw
     >>> params = {
     ...     'Arrival_distributions': {'Class 0': [['Exponential', 5]],
     ...                               'Class 1': [['Exponential', 5]]},

@@ -16,7 +16,8 @@ For example, say we have an M/M/1 system where customers never baulk if there ar
     ...     return 1.0
 
 In the parameter's dictionary we tell Ciw which node and customer class this function applies to with the :code:`Baulking_functions` key::
-
+	
+	>>> import ciw
 	>>> params = {
 	...     'Arrival_distributions': {'Class 0': [['Exponential', 5]]},
 	...     'Service_distributions': {'Class 0': [['Exponential', 10]]},

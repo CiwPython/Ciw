@@ -21,7 +21,7 @@ Consider the M/M/2/1 queue with feedback loop. The following states are expected
     >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph', tracker='Naive')
     >>> Q.simulate_until_deadlock()
-    >>> Q.times_to_deadlock
+    >>> Q.times_to_deadlock # doctest:+SKIP
     {((0, 0),): 1.3354..., ((1, 0),): 1.3113..., ((1, 2),): 0.0, ((2, 0),): 1.0708..., ((2, 1),): 0.9353..., ((3, 0),): 0.9568...}
 
 The following states are expected if a Matrix Tracker is used: ((()), (0)), ((()), (1)), ((()), (2)), ((()), (3)), (((1)), (3)), (((1, 2)), (3)).
@@ -30,7 +30,7 @@ The following states are expected if a Matrix Tracker is used: ((()), (0)), ((()
     >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph', tracker='Matrix')
     >>> Q.simulate_until_deadlock()
-    >>> Q.times_to_deadlock
+    >>> Q.times_to_deadlock # doctest:+SKIP
     {((((),),), (0,)): 1.3354..., ((((),),), (1,)): 1.3113..., ((((),),), (2,)): 1.0708..., ((((),),), (3,)): 0.9568..., ((((1,),),), (3,)): 0.9353..., ((((1, 2),),), (3,)): 0.0}
 
 Notice that in this simple case, the Naïve and Matric trackers correspond to the same states. In other examples, where customers may get blocked in different orders and to different places, then the two trackers may track different system states.

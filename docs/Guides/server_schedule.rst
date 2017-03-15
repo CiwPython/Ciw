@@ -20,6 +20,7 @@ Here we are saying that there will be 2 servers scheduled between times 0 and 10
 
 To tell Ciw to use this schedule for a given node, in the :code:`Number_of_servers` part of the parameters dictionary replace an integer with the schedule name. Also to include in the parameters dictionary is the schedule itself::
 
+    >>> import ciw
     >>> params = {
     ...     'Arrival_distributions': [['Exponential', 5]],
     ...     'Service_distributions': [['Exponential', 10]],

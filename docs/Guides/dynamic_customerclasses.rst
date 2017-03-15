@@ -48,4 +48,4 @@ Notice in this parameters dictionary only arrivals from Class 0 customer occur. 
     >>> Q.simulate_until_max_time(50.0)
     >>> recs = Q.get_all_records()
     >>> Counter([r.customer_class for r in recs])
-    Counter({0: 255, 1: 105, 2: 125})
+    Counter({0: 255, 2: 125, 1: 105})

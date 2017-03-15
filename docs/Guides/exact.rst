@@ -13,7 +13,8 @@ In order to implement exact arithmetic, add this argument when creating the simu
 The argument :code:`exact` is used to indicate the precision level.
 
 Let's look at an example::
-
+    
+    >>> import ciw
     >>> params = {
     ...     'Arrival_distributions': [['Exponential', 5]],
     ...     'Service_distributions': [['Exponential', 10]],
@@ -31,7 +32,7 @@ Without envoking exact arithmetic, we see that floats are used throughout::
     >>> waits[-1]
     0.202518877171...
     >>> type(waits[-1])
-    float
+    <class 'float'>
 
 When envoking exact arithmetic, :code:`decimal.Decimal` types are used throughout::
 
@@ -42,4 +43,4 @@ When envoking exact arithmetic, :code:`decimal.Decimal` types are used throughou
     >>> waits[-1]
     Decimal('0.2025188771714382860')
     >>> type(waits[-1])
-    decimal.Decimal
+    <class 'decimal.Decimal'>

@@ -19,7 +19,7 @@ The image below shows an example of the output:
 
 An example when using the :code:`simulate_until_max_customers` method::
 
-    >>> Q.simulate_until_max_customers(20000, progress_bar=True)
+    >>> Q.simulate_until_max_customers(20000, progress_bar=True) # doctest:+SKIP
 
 And the image below shows the output:
 

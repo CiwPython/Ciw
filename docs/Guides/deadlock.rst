@@ -32,7 +32,7 @@ Running until deadlock::
     >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
     >>> Q.simulate_until_deadlock()
-    >>> Q.times_to_deadlock
+    >>> Q.times_to_deadlock # doctest:+SKIP
     {((0, 0),): 0.94539784..., ((1, 0),): 0.92134933..., ((2, 0),): 0.68085451..., ((3, 0),): 0.56684471..., ((3, 1),): 0.0, ((4, 0),): 0.25332344...}
 
 Here the keys correspond to states recorded by the state tracker.
