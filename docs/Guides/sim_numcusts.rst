@@ -3,3 +3,47 @@
 =================================================
 How to Simulate For a Certain Number of Customers
 =================================================
+
+A simulation run may be terminated once a certain number of customers have passed through. This can be done using the :code:`simulate_until_max_customers` method. The method takes in a variable :code:`max_customers`. There are three methods of counting customers:
+
+ - :code:`'Finish'`: Simulates until :code:`max_customers` has reached the Exit Node.
+ - :code:`'Arrive'`: Simulates until :code:`max_customers` have spawned at the Arrival Node.
+ - :code:`'Accept'`: Simulates until :code:`max_customers` have been spawned and accepted (not rejected) at the Arrival Node.
+
+The method of counting customers is specified with the optional keyword argument :code:`method`. The default value is is :code:`'Finish'`.
+
+Consider an M/M/1/3 queue::
+
+	>>> import ciw
+	>>> params = {
+	...     'Arrival_distributions': [['Exponential', 10]],
+	...     'Service_distributions': [['Exponential', 5]],
+	...     'Transition_matrices': [[0.0]],
+	...     'Number_of_servers': [1],
+	...     'Queue_capacities': [3]
+	... }
+	>>> N = ciw.create_network(params)
+
+To simulate until 30 customers have finished service::
+
+	>>> ciw.seed(1)
+	>>> Q = ciw.Simulation(N)
+	>>> Q.simulate_until_max_customers(30, method='Finish')
+	>>> len(Q.nodes[-1].all_individuals)
+	30
+
+To simulate until 30 customers have arrived::
+
+	>>> ciw.seed(1)
+	>>> Q = ciw.Simulation(N)
+	>>> Q.simulate_until_max_customers(30, method='Arrive')
+	>>> len(Q.nodes[-1].all_individuals), len(Q.nodes[1].all_individuals), len(Q.rejection_dict[1][0])
+	(13, 3, 14)
+
+To simulate until 30 customers have been accepted::
+
+	>>> ciw.seed(1)
+	>>> Q = ciw.Simulation(N)
+	>>> Q.simulate_until_max_customers(30, method='Accept')
+	>>> len(Q.nodes[-1].all_individuals), len(Q.nodes[1].all_individuals)
+	(26, 4)
