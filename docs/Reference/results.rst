@@ -6,17 +6,17 @@ List of Available Results
 
 Each time an individual completes service at a service station, a data record of that service is kept. The records should look something like the table below:
 
-    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-------------+-----------------------+-----------------------+
-    | I.D    | Class | Node | Arrival Date | Wait Time | Service Start Date | Service Time | Service End Date | Time Blocked | Exit Date | Dest. | Prev. Class | Queue Size at Arrival | Queue Size at Depart. |
-    +========+=======+======+==============+===========+====================+==============+==================+==============+===========+=======+=============+=======================+=======================+
-    | 22759  | 1     | 1    | 245.601      | 0.0       | 245.601            | 0.563        | 246.164          | 0.0          | 246.164   | -1    | 1           | 0                     | 2                     |
-    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-------------+-----------------------+-----------------------+
-    | 41129  | 0     | 1    | 245.633      | 0.531     | 246.164            | 0.608        | 246.772          | 0.0          | 246.772   | -1    | 0           | 1                     | 5                     |
-    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-------------+-----------------------+-----------------------+
-    | 00195  | 0     | 2    | 247.821      | 0.0       | 247.841            | 1.310        | 249.151          | 0.882        | 250.033   | 1     | 1           | 0                     | 0                     |
-    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-------------+-----------------------+-----------------------+
-    | ...    | ...   | ...  | ...          | ...       | ...                | ...          | ...              | ...          | ...       | ...   | ...         | ...                   | ...                   |
-    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-------------+-----------------------+-----------------------+
+    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-----------------------+-----------------------+
+    | I.D    | Class | Node | Arrival Date | Wait Time | Service Start Date | Service Time | Service End Date | Time Blocked | Exit Date | Dest. | Queue Size at Arrival | Queue Size at Depart. |
+    +========+=======+======+==============+===========+====================+==============+==================+==============+===========+=======+=======================+=======================+
+    | 22759  | 1     | 1    | 245.601      | 0.0       | 245.601            | 0.563        | 246.164          | 0.0          | 246.164   | -1    | 0                     | 2                     |
+    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-----------------------+-----------------------+
+    | 41129  | 0     | 1    | 245.633      | 0.531     | 246.164            | 0.608        | 246.772          | 0.0          | 246.772   | -1    | 1                     | 5                     |
+    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-----------------------+-----------------------+
+    | 00195  | 0     | 2    | 247.821      | 0.0       | 247.841            | 1.310        | 249.151          | 0.882        | 250.033   | 1     | 0                     | 0                     |
+    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-----------------------+-----------------------+
+    | ...    | ...   | ...  | ...          | ...       | ...                | ...          | ...              | ...          | ...       | ...   | ...                   | ...                   |
+    +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-----------------------+-----------------------+
 
 You may access these records as a list of named tuples, using the Simulation's :code:`get_all_records` method:
 
@@ -27,7 +27,7 @@ The data records contained in this list are named tuples with the following vari
     - :code:`id_number`
        - The unique identification number for that customer.
     - :code:`customer_class`
-       - That number of that customer's customer class. If dynamic customer classes are used, this is the customer's new class sampled after service.
+       - That number of that customer's customer class. If dynamic customer classes are used, this is the customer's previous class, before a new customer class is sampled after service.
     - :code:`node`
        - The number of the node at which the service took place.
     - :code:`arrival_date`
@@ -46,8 +46,6 @@ The data records contained in this list are named tuples with the following vari
        - The date which the customer exited the node. This may be immediatly after service if no blocking occured, or after some period of being blocked.
     - :code:`destination`
        - The number of the customer's destination, that is the next node the customer will join after leaving the current node. If the customer leaves the system, this will be -1.
-    - :code:`previous_class`
-       - The customer's class during service. Same as :code:`customer_class` unless dynamic customer classes are used.
     - :code:`queue_size_at_arrival`
        - The size of the queue at the customer's arrival date. Does not include the individual themselves.
     - :code:`queue_size_at_departure`
