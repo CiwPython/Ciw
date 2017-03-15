@@ -14,11 +14,11 @@ Contents:
    Tutorial-II/index.rst
    Guides/index.rst
    Reference/index.rst
-   Background/index.rsts
+   Background/index.rst
 
 .. toctree::
    :hidden:
-   
+
    citation.rst
    changelog.rst
    glossary.rst
