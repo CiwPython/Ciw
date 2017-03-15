@@ -15,10 +15,18 @@ Contents:
    Guides/index.rst
    Reference/index.rst
    Background/index.rsts
+
+.. toctree::
+   :hidden:
+   
    citation.rst
    changelog.rst
    glossary.rst
 
+
+- :ref:`citation`
+- :ref:`changes`
+- :ref:`glossary`
 - :ref:`genindex`
 - `Link to Example Jupyter Notebooks <https://github.com/CiwPython/Ciw-notebooks>`_
 - :ref:`search`
