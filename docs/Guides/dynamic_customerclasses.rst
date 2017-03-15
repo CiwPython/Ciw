@@ -4,7 +4,7 @@
 How to Set Dynamic Customer Classes
 ===================================
 
-Ciw allows customers to probabilistically change their class after service. That is after service at node `k` a customer of class `i` will become class `j` with probability :math:`P(J=j | I=i, K=k)`. These probabilities are input into the system through the :code:`Class_change_matrices` option.
+Ciw allows customers to probabilistically change their class after service. That is after service at node `k` a customer of class `i` will become class `j` with probability :math:`P(J=j \; | \; I=i, K=k)`. These probabilities are input into the system through the :code:`Class_change_matrices` option.
 
 Consider a one node system with three classes of customer. After service (at Node 1) customers always change customer class, equally likely between the two other customer classes. The :code:`Class_change_matrices` for this system are shown below:
     

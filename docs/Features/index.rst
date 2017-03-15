@@ -12,8 +12,6 @@ Contents:
    simulating.rst
    seed.rst
    custom_dists.rst
-   baulking.rst
    server_schedules.rst
-   dynamic_classes.rst
    deadlock.rst
    state_tracker.rst
