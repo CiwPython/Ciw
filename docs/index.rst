@@ -1,7 +1,7 @@
 Welcome to Ciw's documentation!
 ===============================
 
-Ciw (Welsh for queue), is a discrete event simulation library for open queueing networks.
+Ciw is a discrete event simulation library for open queueing networks. It's name is the Welsh word for 'queue'.
 
 Contents:
 
@@ -10,20 +10,16 @@ Contents:
    :titlesonly:
    
    installation.rst
-   Basics/index.rst
-   Features/index.rst
-   Examples/index.rst
-   Background/index.rst
-   kwargs.rst
-   attributes.rst
-   glossary.rst
-   changelog.rst
+   Tutorial-I/index.rst
+   Tutorial-II/index.rst
+   Guides/index.rst
+   Reference/index.rst
+   Background/index.rsts
    citation.rst
+   changelog.rst
+   glossary.rst
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`glossary`
-* :ref:`search`
+- :ref:`genindex`
+- `Link to Example Jupyter Notebooks <https://github.com/CiwPython/Ciw-notebooks>`_
+- :ref:`search`
 

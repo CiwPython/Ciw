@@ -1,5 +1,5 @@
-.. _objects-attributes:
+.. _dynamic-classes:
 
 ===================================
-Full List of Objects and Attributes
+How to Set Dynamic Customer Classes
 ===================================
