@@ -8,3 +8,4 @@ Contents:
    
    tutorial_v.rst
    tutorial_vi.rst
+   tutorial_vii.rst

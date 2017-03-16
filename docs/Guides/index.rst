@@ -18,3 +18,4 @@ Contents:
    deadlock.rst
    state_tracker.rst
    behaviour.rst
+   from_file.rst
