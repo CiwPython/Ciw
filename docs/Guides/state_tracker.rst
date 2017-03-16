@@ -12,7 +12,7 @@ Consider the M/M/2/1 queue with feedback loop. The following states are expected
 
     >>> import ciw
     >>> params = {'Arrival_distributions': [['Exponential', 6.0]],
-    ...           'Service_distributions':[['Exponential', 5.0]],
+    ...           'Service_distributions': [['Exponential', 5.0]],
     ...           'Transition_matrices': [[0.5]],
     ...           'Number_of_servers': [2],
     ...           'Queue_capacities': [1]}
