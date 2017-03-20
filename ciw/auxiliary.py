@@ -18,7 +18,8 @@ def random_choice(array, probs=None):
 	"""
 	# If no pdf provided, assume uniform dist:
 	if probs == None:
-		return array[int(random.random() * len(array))]
+		index = int(random.random() * len(array))
+		return array[index]
 
 	# A common case, guaranteed to reach the Exit node;
 	# No need to sample for this:
