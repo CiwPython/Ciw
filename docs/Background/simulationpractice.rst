@@ -31,18 +31,18 @@ The example below shows the simplest way to perform multiple replications, and u
     ...           'Number_of_servers': [1]}
     >>>
     >>> average_waits = []
-    >>> warmup = 50
+    >>> warmup = 10
     >>>
-    >>> for s in range(100):
+    >>> for s in range(25):
     ...     ciw.seed(s)
     ...     N = ciw.create_network(params)
     ...     Q = ciw.Simulation(N)
-    ...     Q.simulate_until_max_time(200)
+    ...     Q.simulate_until_max_time(50)
     ...     recs = Q.get_all_records()
     ...     waits = [r.waiting_time for r in recs if r.arrival_date > warmup]
     ...     average_waits.append(sum(waits)/len(waits))
     >>>
     >>> average_wait = sum(average_waits)/len(average_waits)
-    >>> print(round(average_wait, 5))
-    0.21071
+    >>> average_wait
+    0.201114...
 

@@ -3,3 +3,73 @@
 ================================
 Tutorial III: Collecting Results
 ================================
+
+In the previous tutorials, we defined and simulated out bank for a week, and saw how to ::
+
+    >>> import ciw
+    >>> params = {
+    ... 'Arrival_distributions': [['Exponential', 0.2]],
+    ... 'Service_distributions': [['Exponential', 0.1]],
+    ... 'Transition_matrices': [[0.0]],
+    ... 'Number_of_servers': [3]
+    ... }
+    >>> ciw.seed(1)
+    >>> N = ciw.create_network(params)
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(1440)
+
+We can quickly get a list of all data records collected by all customers have have finished at least one service, using the :code:`get_all_records` method of the Simulation object::
+
+    >>> recs = Q.get_all_records()
+
+This returns a list of named tuples. Each named tuple contains the following information:
+
+    - :code:`id_number`
+    - :code:`customer_class`
+    - :code:`node`
+    - :code:`arrival_date`
+    - :code:`waiting_time`
+    - :code:`service_start_date`
+    - :code:`service_time`
+    - :code:`service_end_date`
+    - :code:`time_blocked`
+    - :code:`exit_date`
+    - :code:`destination`
+    - :code:`queue_size_at_arrival`
+    - :code:`queue_size_at_departure`
+
+More information on each of these is given in :ref:`refs-results`.
+
+Using list comprehension, we can get lists on whichever statistic we like::
+
+    >>> # A list of waits
+    >>> waits = [r.waiting_time for r in recs]
+    >>> waits
+    [0.0, 0.0, 0.20439..., ..., 5.63781...]
+
+    >>> # A list of service times
+    >>> servicetimes = [r.service_time for r in recs]
+    >>> servicetimes
+    [2.94463..., 5.96912..., 0.28757..., ..., 10.46244...]
+
+Now we can get summary statistics simply by manipulating these lists::
+
+    >>> mean_waiting_time = sum(waits)/len(waits)
+    >>> mean_waiting_time
+    1.688541...
+
+    >>> mean_service_time = sum(servicetimes)/len(servicetimes)
+    >>> mean_service_time
+    9.543928...
+
+Further summary statistics can be obtained using external libraries. We reccommend `numpy <http://www.numpy.org/>`_, `pandas <http://pandas.pydata.org/>`_ and `matplotlib <http://matplotlib.org/>`_.  Using these further statistics and plots can be explored. The histogram of waits below was created using matplotlib, using the following code::
+
+    >>> import matplotlib.pyplot as plt # doctest:+SKIP
+    >>> plt.hist(waits); # doctest:+SKIP
+
+.. image:: ../_static/tutorial_iii_waitshist.svg
+   :scale: 100 %
+   :alt: Histogram of waits for Tutorial III.
+   :align: center
+
+The next tutorial will show how to use Ciw to get trustworthy results, and finally find out the average waiting time at the bank.
