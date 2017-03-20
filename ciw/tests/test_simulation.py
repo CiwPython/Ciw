@@ -3,7 +3,6 @@ import ciw
 from hypothesis import given
 from hypothesis.strategies import floats, integers, random_module
 import os
-from numpy import mean
 from decimal import Decimal
 import networkx as nx
 import csv
@@ -573,13 +572,15 @@ class TestSimulation(unittest.TestCase):
             Q = ciw.Simulation(ciw.create_network(params_dict))
             Q.simulate_until_max_time(400)
             recs = Q.get_all_records()
-            throughput_class0.append(mean([r.waiting_time + r.service_time for
-                r in recs if r.customer_class==0 if r.arrival_date > 100]))
-            throughput_class1.append(mean([r.waiting_time + r.service_time for
-                r in recs if r.customer_class==1 if r.arrival_date > 100]))
+            throughput_c0 = [r.waiting_time + r.service_time for
+                r in recs if r.customer_class==0 if r.arrival_date > 100]
+            throughput_c1 = [r.waiting_time + r.service_time for
+                r in recs if r.customer_class==1 if r.arrival_date > 100]
+            throughput_class0.append(sum(throughput_c0)/len(throughput_c0))
+            throughput_class1.append(sum(throughput_c1)/len(throughput_c1))
 
-        self.assertEqual(round(mean(throughput_class0), 5), 1.94852)
-        self.assertEqual(round(mean(throughput_class1), 5), 5.92823)
+        self.assertEqual(round(sum(throughput_class0)/80.0, 5), 1.94852)
+        self.assertEqual(round(sum(throughput_class1)/80.0, 5), 5.92823)
 
     def test_baulking(self):
         def my_baulking_function(n):
