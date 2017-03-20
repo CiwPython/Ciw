@@ -12,7 +12,7 @@ Arrival_distributions
 *Required*
 
 Describes the inter-arrival distributions for each node and customer class.
-This is a dictionary, with keys as customer classes, and values are lists describing the inter-arrival distributions for each node. If only one class of customer is required it is sufficient to simply enter a list of inter-arrival distributions. For more details on inputting distributions, see :ref:`service-distributions`.
+This is a dictionary, with keys as customer classes, and values are lists describing the inter-arrival distributions for each node. If only one class of customer is required it is sufficient to simply enter a list of inter-arrival distributions. For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
@@ -84,7 +84,7 @@ Number_of_servers
 
 *Required*
 
-A list of the number of parallel servers at each node. If a server schedule is used, the name of the schedule is given instead of a number. For more details on server schedules, see :ref:`server-schedules`. A value of 'Inf' may be given is infinite servers are required.
+A list of the number of parallel servers at each node. If a server schedule is used, the name of the schedule is given instead of a number. For more details on server schedules, see :ref:`server-schedule`. A value of 'Inf' may be given is infinite servers are required.
 
 Example::
 
@@ -96,7 +96,7 @@ Priority_classes
 
 *Optional*
 
-A dictionary mapping customer classes to priorities. For more information see :ref:`priority-queues`. If left out, no priorities are used, that is all customers have equal priorities.
+A dictionary mapping customer classes to priorities. For more information see :ref:`priority-custs`. If left out, no priorities are used, that is all customers have equal priorities.
 
 Example::
     'Priority_classes': {'Class 0': 0,
@@ -123,19 +123,19 @@ Service_distributions
 *Required*
 
 Describes the service distributions for each node and customer class.
-This is a dictionary, with keys as customer classes, and values are lists describing the service distributions for each node. If only one class of customer is required it is sufficient to simply enter a list of service distributions. For more details on inputting distributions, see :ref:`service-distributions`.
+This is a dictionary, with keys as customer classes, and values are lists describing the service distributions for each node. If only one class of customer is required it is sufficient to simply enter a list of service distributions. For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
     'Service_distributions': {'Class 0': [['Exponential', 4.4],
-                                        ['Uniform', 0.1, 0.9]],
-                            'Class 1': [['Exponential', 6.0],
-                                        ['Lognormal', 0.5, 0.6]]}
+                                          ['Uniform', 0.1, 0.9]],
+                              'Class 1': [['Exponential', 6.0],
+                                          ['Lognormal', 0.5, 0.6]]}
 
 An example where only one class of customer is required::
 
     'Service_distributions': [['Exponential', 4.8],
-                            ['Exponential', 5.2]]
+                              ['Exponential', 5.2]]
 
 
 

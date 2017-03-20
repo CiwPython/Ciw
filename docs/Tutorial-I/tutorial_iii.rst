@@ -1,4 +1,4 @@
-.. _tutorial-ii:
+.. _tutorial-iii:
 
 ================================
 Tutorial III: Collecting Results
