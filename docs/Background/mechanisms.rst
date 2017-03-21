@@ -7,7 +7,7 @@ Notes on Ciw's Mechanisms
 General
 ~~~~~~~
 
-Ciw uses the *event scheduling* approach [#f1]_ , similar to the three phase approach. In this approach, three types of event take place: **A Events* move the clock forward, **B Events** are pre scheduled events, and **C Events** are events that arise because a B Event has happened.
+Ciw uses the *event scheduling* approach [#f1]_ , similar to the three phase approach. In this approach, three types of event take place: **A Events** move the clock forward, **B Events** are pre scheduled events, and **C Events** are events that arise because a B Event has happened.
 
 Here A-events correspond to moving the clock forward to the next B-event. B-events correspond to either an external arrival, a customer finishing service, or a server shift change. C-events correspond to a customer starting service, customer being released from a node, and being blocked or unblocked.
 
