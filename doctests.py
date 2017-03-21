@@ -1,6 +1,7 @@
 import doctest
 import os
 import unittest
+import sys
 
 
 def load_tests(loader, tests, ignore):
@@ -8,10 +9,11 @@ def load_tests(loader, tests, ignore):
         for f in files:
             if f.endswith(".rst"):
                  tests.addTests(doctest.DocFileSuite(os.path.join(root, f),
-                 	optionflags=doctest.ELLIPSIS))
+                    optionflags=doctest.ELLIPSIS))
 
     return tests
 
 
 if __name__ == '__main__':
-    unittest.main()
+    if sys.version_info >= (3,0):
+        unittest.main()
