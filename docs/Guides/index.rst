@@ -1,6 +1,8 @@
 Guides
 ======
 
+This selection of How-to guides will give a tour of some of the features that Ciw has to offer.
+
 Contents:
 
 .. toctree::

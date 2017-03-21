@@ -1,7 +1,12 @@
 Welcome to Ciw's documentation!
 ===============================
 
-Ciw is a discrete event simulation library for open queueing networks. It's name is the Welsh word for 'queue'.
+Etymology: **Ciw**
+    *noun* Welsh word for a queue. *pl.* ciwiau.
+
+Ciw is a discrete event simulation library for open queueing networks. It's core features include the capability to simulate networks of queues, multiple customer classes, and implementation of Type I blocking for restricted networks. A number of other features are also implemented, including priorities, baulking, schedules, and deadlock detection.
+
+The documentation contains a two part tutortial that guides the user through some key concepts and core features of the library. A series of How-to guides instruct on the use and implementation of Ciw's numerous features, and reference pages and background information is available to ensure ease of use and understanding.
 
 Contents:
 
