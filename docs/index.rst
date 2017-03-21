@@ -8,6 +8,8 @@ Ciw is a discrete event simulation library for open queueing networks. It's core
 
 The documentation contains a two part tutortial that guides the user through some key concepts and core features of the library. A series of How-to guides instruct on the use and implementation of Ciw's numerous features, and reference pages and background information is available to ensure ease of use and understanding.
 
+Please note that Ciw is currently supported for and regularly tested on Python versions 2.7, 3.4 and 3.5. However, for the documentation we assume Python 3 is used.
+
 Contents:
 
 .. toctree::
