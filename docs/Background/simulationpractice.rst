@@ -22,6 +22,22 @@ Simulation models often begin in unrealistic circumstances, that is they have un
 
 In Ciw, the simplest way of implementing this is to filter out records that were created before the warm-up time.
 
+
+--------------
+Cool-down Time
+--------------
+
+If collecting records using the :code:`get_all_records` method, then this will only collect ompleted records. There may be a need to collect arrival or waiting information of those individuals still in service. In Ciw, we can do this by simulating past the end of the observation period, and then only collect those relevant records that are in the observation period.
+
+In Ciw, the simplest way of implementing this is to filter out recrods that were created after the cool-down time began.
+
+
+
+-------
+Example
+-------
+
+
 The example below shows the simplest way to perform multiple replications, and use a warm up time, in Ciw. It shows how to find the average waiting time in an M/M/1 queue::
 
     >>> import ciw
@@ -32,17 +48,19 @@ The example below shows the simplest way to perform multiple replications, and u
     >>>
     >>> average_waits = []
     >>> warmup = 10
+    >>> cooldown = 10
+    >>> maxsimtime = 40
     >>>
     >>> for s in range(25):
     ...     ciw.seed(s)
     ...     N = ciw.create_network(params)
     ...     Q = ciw.Simulation(N)
-    ...     Q.simulate_until_max_time(50)
+    ...     Q.simulate_until_max_time(warmup + maxsimtime + cooldown)
     ...     recs = Q.get_all_records()
-    ...     waits = [r.waiting_time for r in recs if r.arrival_date > warmup]
+    ...     waits = [r.waiting_time for r in recs if r.arrival_date > warmup and r.arrival_date < warmup + maxsimtime]
     ...     average_waits.append(sum(waits)/len(waits))
     >>>
     >>> average_wait = sum(average_waits)/len(average_waits)
     >>> average_wait
-    0.201114...
+    0.204764...
 

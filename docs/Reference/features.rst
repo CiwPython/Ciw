@@ -14,7 +14,7 @@ List of Features
  - :ref:`Empirical distributions <empirical_dist>`
  - :ref:`User defined distributions <own_functions>`
  - :ref:`Time dependent distributions <time_dependent>`
- - :ref:`Blocking <blocking-mechanism>`
+ - :ref:`Blocking <ciw-mechanisms>`
  - :ref:`Priority classes <priority-custs>`
  - :ref:`Dynamic customer classes <dynamic-classes>`
  - :ref:`Baulking <baulking-functions>`

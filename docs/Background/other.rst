@@ -9,3 +9,5 @@ Ciw is just one way in which simulations of queueing networks can be carried out
 - `SimPy <https://simpy.readthedocs.org/en/latest/>`_.
 - `SIMUL8 <http://www.simul8.com/>`_.
 - `AnyLogic <http://www.anylogic.com>`_.
+- `Khronos <http://khronos-des.sourceforge.net/>`_.
+- `NetSim <http://www.boson.com/netsim-cisco-network-simulator>`_.
