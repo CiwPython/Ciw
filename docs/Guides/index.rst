@@ -11,6 +11,7 @@ Contents:
    exact.rst
    sim_numcusts.rst
    set_distributions.rst
+   time_dependent.rst
    priority.rst
    baulking.rst
    server_schedule.rst

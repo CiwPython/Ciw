@@ -13,7 +13,7 @@ List of Features
  - :ref:`Custom discrete probability distributions <custom_pdf>`
  - :ref:`Empirical distributions <empirical_dist>`
  - :ref:`User defined distributions <own_functions>`
- - :ref:`Time dependent distributions <time_dependent>`
+ - :ref:`Time dependent distributions <timedependent-dists>`
  - :ref:`Blocking <ciw-mechanisms>`
  - :ref:`Priority classes <priority-custs>`
  - :ref:`Dynamic customer classes <dynamic-classes>`
