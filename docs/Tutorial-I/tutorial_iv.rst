@@ -1,8 +1,8 @@
 .. _tutorial-iv:
 
-======================================
-Tutorial IV: Trials, Warmup & Cooldown
-======================================
+========================================
+Tutorial IV: Trials, Warm-up & Cool-down
+========================================
 
 In Tutorials I-III we investigated one run of a simulation of a bank. Before we draw any conclusions about the behaviour of the bank, there are three things we should consider:
 
@@ -10,10 +10,10 @@ In Tutorials I-III we investigated one run of a simulation of a bank. Before we 
 2. Those customers left inside the system at the end of the run: their records were not collected, despite spending time in the system during the observation period.
 3. Does that single run of out simulation really reflect reality? Were our results simply a fluke? An extreme case?
 
-These three concerns can be addressed with warmup, cooldown, and trials respectively. A full explanation of these can be found :ref:`here <simulation-practice>`.
+These three concerns can be addressed with warm-up, cool-down, and trials respectively. A full explanation of these can be found :ref:`here <simulation-practice>`.
 
-+ **Warmup:** Simulate the system for some time before the beginning of the observation period, such that the system is non-empty and 'in the swing of it' by the time the observation period begins. Only collect results from the beginning of the observation period.
-+ **Cooldown:** Simulate the system for some time after the end of the observation period, such that no concerned customers are stuck in the simulation when results collection happens. Only collect results until the end of the observation period.
++ **Warm-up:** Simulate the system for some time before the beginning of the observation period, such that the system is non-empty and 'in the swing of it' by the time the observation period begins. Only collect results from the beginning of the observation period.
++ **Cool-down:** Simulate the system for some time after the end of the observation period, such that no concerned customers are stuck in the simulation when results collection happens. Only collect results until the end of the observation period.
 + **Trials:** Simulate the system many times with different random number streams (different :ref:`seeds <set-seed>`). Keep all interested results from all trials, so that we may take averages and confidence intervals.
 
 Let's define out bank, and create out Network object::
@@ -27,7 +27,7 @@ Let's define out bank, and create out Network object::
     ... }
     >>> N = ciw.create_network(params)
 
-For simplicity, we will be concerned with finding the mean waiting time only. We'll run 10 aimulations in a loop, and take a warmup time and a cooldown time of 100 time units. Therefore each trial we will run for 1 day + 200 minutes (1640 minutes)::
+For simplicity, we will be concerned with finding the mean waiting time only. We'll run 10 aimulations in a loop, and take a warm-up time and a cool-down time of 100 time units. Therefore each trial we will run for 1 day + 200 minutes (1640 minutes)::
 
     >>> average_waits = []
     >>> for trial in range(10):

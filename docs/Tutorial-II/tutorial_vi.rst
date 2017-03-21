@@ -51,7 +51,7 @@ In this run 3 stools were rejected (fell to the floor as there was no room on th
     >>> len(Q.rejection_dict[1][0])
     3
 
-Now we'll run 8 trials, and get the average number of rejections in an hour. We will take a warmup time of 10 minutes. A cooldown will be unnecessary as we are recording rejections, which happen at the time of arrival::
+Now we'll run 8 trials, and get the average number of rejections in an hour. We will take a war-mup time of 10 minutes. A cool-down will be unnecessary as we are recording rejections, which happen at the time of arrival::
 
 	>>> broken_stools = []
 	>>> for trial in range(8):

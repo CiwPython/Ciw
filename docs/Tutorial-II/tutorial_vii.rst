@@ -56,7 +56,7 @@ Now we should see that no customer of Class 0 ever reached Node 3; and no custom
     >>> set([r.node for r in recs if r.customer_class==1])
     {1, 3}
 
-Now say we'd like to find the average waiting time at the reception, baby specialist's clinic, and children's specialist's clinic. We'll simulate for 24 hours, using 3 hour warmup and 3 hour cooldown, for 16 trials. Let's collect the average waiting times at each node every time::
+Now say we'd like to find the average waiting time at the reception, baby specialist's clinic, and children's specialist's clinic. We'll simulate for 24 hours, using 3 hour war-mup and 3 hour cool-down, for 16 trials. Let's collect the average waiting times at each node every time::
 
 	>>> average_waits_1 = []
 	>>> average_waits_2 = []

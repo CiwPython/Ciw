@@ -48,7 +48,7 @@ Notice the Arrival distributions: 18 cold food arrivals per hour is equivalent t
 
 Notice the Service distributions: an average cold food service time of 1 minute is equivalent to a rate of 1/1 = 1 service per minute; an average hot food service time of 2.5 minutes is equivalent to 1/2.5 = 0.4 services per minute; and an average till service time of 2 minutes is equivalent to 0.5 services per minute.
 
-Let's simulate this for one shift of lunchtime of 3 hours (180 mins). At the beginning of lunchtime he café opens, and thus begins from an empty system. Therefore no warmup time is required. We'll use 20 minutes of cooldown time. We'll run 10 trials, to get a resume of the average number of customers that pass through the system. To find the average number of customers that pass through the system, we can count the number of data records that have passed through Node 3 (the Till)::
+Let's simulate this for one shift of lunchtime of 3 hours (180 mins). At the beginning of lunchtime he café opens, and thus begins from an empty system. Therefore no war-mup time is required. We'll use 20 minutes of cool-down time. We'll run 10 trials, to get a resume of the average number of customers that pass through the system. To find the average number of customers that pass through the system, we can count the number of data records that have passed through Node 3 (the Till)::
 
     >>> import ciw
     >>> completed_custs = []
