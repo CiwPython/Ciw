@@ -176,7 +176,7 @@ def validify_dictionary(params):
         'Uniform', 'Triangular', 'Deterministic',
         'Exponential', 'Gamma', 'Lognormal',
         'Weibull', 'Empirical', 'Custom', 'UserDefined',
-        'TimeDependent'])):
+        'TimeDependent', 'Sequential'])):
         raise ValueError('Ensure that valid Arrival and Service Distributions are used.')
     neg_numservers = any([(isinstance(obs, int) and obs < 0) for obs in params['Number_of_servers']])
     valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])
@@ -250,7 +250,7 @@ def validify_dictionary(params):
                     for el in V:
                         if el < 0.0:
                             raise ValueError('Custom distribution must sample positive values only.')
-            if nd[0] == 'Empirical':
+            if nd[0] == 'Empirical' or nd[0] == 'Sequential':
                 if isinstance(nd[1], list):
                     if any([el<0.0 for el in nd[1]]):
                         raise ValueError('Empirical distribution must sample positive floats.')

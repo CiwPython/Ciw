@@ -891,8 +891,9 @@ class TestSampling(unittest.TestCase):
             Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
         self.assertEqual(round(
             Nw.simulation.service_times[Nw.id_number][0](), 2), 0.7)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.2)
+
+        # First arrival will be offset by 1, as first customer's inter-arrival
+        # time has already been sampled by the arrival node
         self.assertEqual(round(
             Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.4)
         self.assertEqual(round(
@@ -926,7 +927,11 @@ class TestSampling(unittest.TestCase):
 
         len1 = len(my_sequential_dist_1)
         len2 = len(my_sequential_dist_2)
+
+        expected_inter_arrival_times = 3*my_sequential_dist_1 + my_sequential_dist_1[:1]
+        expected_service_times = 3*my_sequential_dist_2
+
         inter_arrivals = [Nw.simulation.inter_arrival_times[Nw.id_number][0]() for _ in range(3*len1)]
         services = [Nw.simulation.service_times[Nw.id_number][0]() for _ in range(3*len2)]
-        self.assertEqual(inter_arrivals, my_sequential_dist_1*3)
-        self.assertEqual(service_times, my_sequential_dist_2*3)
+        self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
+        self.assertEqual(services, expected_service_times)
