@@ -153,13 +153,13 @@ class Simulation(object):
         for nd in range(self.network.number_of_nodes):
             generators_dict['Arr'][nd] = {}
             generators_dict['Ser'][nd] = {}
-            for cls in range(self.network.number_of_classes):
-                arrival = self.network.customer_classes[cls].arrival_distributions[nd]
-                service = self.network.customer_classes[cls].service_distributions[nd]
+            for clss in range(self.network.number_of_classes):
+                arrival = self.network.customer_classes[clss].arrival_distributions[nd]
+                service = self.network.customer_classes[clss].service_distributions[nd]
                 if arrival[0] == 'Sequential':
-                    generators_dict['Arr'][nd][cls] = cycle(arrival[1])
+                    generators_dict['Arr'][nd][clss] = cycle(arrival[1])
                 if service[0] == 'Sequential':
-                    generators_dict['Ser'][nd][cls] = cycle(service[1])
+                    generators_dict['Ser'][nd][clss] = cycle(service[1])
         return generators_dict
 
     def find_next_active_node(self):
@@ -179,8 +179,8 @@ class Simulation(object):
         functions for each node for each class
         """
         return {node+1: {
-            cls: self.find_distributions(node, cls, kind)
-            for cls in range(self.network.number_of_classes)}
+            clss: self.find_distributions(node, clss, kind)
+            for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
 
     def get_all_individuals(self):

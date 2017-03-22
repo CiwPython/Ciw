@@ -47,16 +47,16 @@ def create_network_from_dictionary(params_input):
     params = fill_out_dictionary(params_input)
     validify_dictionary(params)
     # Then make the Network object
-    arrivals = [params['Arrival_distributions']['Class ' + str(cls)]
-        for cls in range(len(params['Arrival_distributions']))]
-    services = [params['Service_distributions']['Class ' + str(cls)]
-        for cls in range(len(params['Service_distributions']))]
-    transitions = [params['Transition_matrices']['Class ' + str(cls)]
-        for cls in range(len(params['Transition_matrices']))]
-    priorities = [params['Priority_classes']['Class ' + str(cls)]
-        for cls in range(len(params['Priority_classes']))]
-    baulking_functions = [params['Baulking_functions']['Class ' + str(cls)]
-        for cls in range(len(params['Baulking_functions']))]
+    arrivals = [params['Arrival_distributions']['Class ' + str(clss)]
+        for clss in range(len(params['Arrival_distributions']))]
+    services = [params['Service_distributions']['Class ' + str(clss)]
+        for clss in range(len(params['Service_distributions']))]
+    transitions = [params['Transition_matrices']['Class ' + str(clss)]
+        for clss in range(len(params['Transition_matrices']))]
+    priorities = [params['Priority_classes']['Class ' + str(clss)]
+        for clss in range(len(params['Priority_classes']))]
+    baulking_functions = [params['Baulking_functions']['Class ' + str(clss)]
+        for clss in range(len(params['Baulking_functions']))]
     number_of_classes = params['Number_of_classes']
     number_of_nodes = params['Number_of_nodes']
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['Queue_capacities']]
@@ -89,13 +89,13 @@ def create_network_from_dictionary(params_input):
             class_change_matrices['Node ' + str(nd + 1)],
             schedules[nd],
             preempts[nd]))
-    for cls in range(number_of_classes):
+    for clss in range(number_of_classes):
         classes.append(CustomerClass(
-            arrivals[cls],
-            services[cls],
-            transitions[cls],
-            priorities[cls],
-            baulking_functions[cls]))
+            arrivals[clss],
+            services[clss],
+            transitions[clss],
+            priorities[clss],
+            baulking_functions[clss]))
     return Network(nodes, classes)
 
 
@@ -166,8 +166,8 @@ def validify_dictionary(params):
         len(params['Queue_capacities'])]
     if len(set(num_nodes_count)) != 1:
         raise ValueError('Ensure consistant number of nodes is used throughout.')
-    for cls in params['Transition_matrices'].values():
-        for row in cls:
+    for clss in params['Transition_matrices'].values():
+        for row in clss:
             if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
                 raise ValueError('Ensure that transition matrix is valid.')
     dists = [params['Service_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes'])] + [
@@ -199,8 +199,8 @@ def validify_dictionary(params):
                 raise ValueError('No schedule ' + str(n) + ' defined.')
 
     # Distribution parameters:::
-    for cls in params['Arrival_distributions'].values():
-        for nd in cls:
+    for clss in params['Arrival_distributions'].values():
+        for nd in clss:
             if nd != 'NoArrivals':
                 if nd[0] == 'Uniform':
                     if nd[1] < 0.0 or nd[2] < 0.0:
@@ -227,8 +227,8 @@ def validify_dictionary(params):
                     if isinstance(nd[1], list):
                         if any([el<0.0 for el in nd[1]]):
                             raise ValueError('Empirical distribution must sample positive floats.')
-    for cls in params['Service_distributions'].values():
-        for nd in cls:
+    for clss in params['Service_distributions'].values():
+        for nd in clss:
             if nd[0] == 'Uniform':
                 if nd[1] < 0.0 or nd[2] < 0.0:
                     raise ValueError('Uniform distribution must sample positive numbers only.')
