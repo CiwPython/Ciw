@@ -536,10 +536,11 @@ class TestSampling(unittest.TestCase):
                  'Transition_matrices': Transition_matrices})
 
     def test_sampling_custom_dist(self):
-        my_custom_dist = [[0.2, 3.7], [0.5, 3.8], [0.3, 4.1]]
+        my_custom_dist_values =  [3.7, 3.8, 4.1]
+        my_custom_dist_probs = [0.2, 0.5, 0.3]
         params = {
-            'Arrival_distributions': [['Custom', my_custom_dist]],
-            'Service_distributions': [['Custom', my_custom_dist]],
+            'Arrival_distributions': [['Custom', my_custom_dist_values, my_custom_dist_probs]],
+            'Service_distributions': [['Custom', my_custom_dist_values, my_custom_dist_probs]],
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
@@ -575,10 +576,9 @@ class TestSampling(unittest.TestCase):
         cust_vals = [round(i, 10) for i in custs]
         numprobs = len(cust_vals)
         probs = [1.0/numprobs for i in range(numprobs)]
-        my_custom_dist = [list(i) for i in (zip(probs, cust_vals))]
         params = {
-            'Arrival_distributions': [['Custom', my_custom_dist]],
-            'Service_distributions': [['Custom', my_custom_dist]],
+            'Arrival_distributions': [['Custom', cust_vals, probs]],
+            'Service_distributions': [['Custom', cust_vals, probs]],
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
@@ -591,15 +591,18 @@ class TestSampling(unittest.TestCase):
                 Nc.id_number][0]() in set(cust_vals))
 
     def test_error_custom_dist(self):
-        my_custom_dist = [[0.2, 3.7], [0.5, 3.8], [0.3, 4.1]]
-        my_custom_dist_E = [[0.2, 3.7], [0.5, -3.8], [0.3, 4.1]]
-        my_custom_dist_EE = [[0.2, 3.7], [-0.5, 3.8], [0.3, 4.1]]
-        Arrival_distributions = [['Custom', my_custom_dist]]
-        Arrival_distributions_E = [['Custom', my_custom_dist_E]]
-        Arrival_distributions_EE = [['Custom', my_custom_dist_EE]]
-        Service_distributions = [['Custom', my_custom_dist]]
-        Service_distributions_E = [['Custom', my_custom_dist_E]]
-        Service_distributions_EE = [['Custom', my_custom_dist_EE]]
+        my_custom_dist_vals = [3.7, 3.8, 4.1]
+        my_custom_dist_vals_E = [3.7, -3.8, 4.1]
+
+        my_custom_dist_probs = [0.2, 0.5, 0.3]
+        my_custom_dist_probs_E = [0.2, -0.5, 0.3]
+
+        Arrival_distributions = [['Custom', my_custom_dist_vals, my_custom_dist_probs]]
+        Arrival_distributions_E = [['Custom', my_custom_dist_vals_E, my_custom_dist_probs]]
+        Arrival_distributions_EE = [['Custom', my_custom_dist_vals, my_custom_dist_probs_E]]
+        Service_distributions = [['Custom', my_custom_dist_vals, my_custom_dist_probs]]
+        Service_distributions_E = [['Custom', my_custom_dist_vals_E, my_custom_dist_probs]]
+        Service_distributions_EE = [['Custom', my_custom_dist_vals, my_custom_dist_probs_E]]
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
