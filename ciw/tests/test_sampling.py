@@ -460,6 +460,55 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
 
+    def test_sampling_normal_dist(self):
+        params = {
+            'Arrival_distributions': [['Normal', 0.5, 0.1]],
+            'Service_distributions': [['Normal', 0.5, 0.1]],
+            'Number_of_servers': [1],
+            'Transition_matrices': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        Nw = Q.transitive_nodes[0]
+        ciw.seed(5)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.58)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.35)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.49)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.52)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.55)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.56)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.52)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.44)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.52)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.60)
+
+    @given(nm=floats(min_value=0.01, max_value=20),
+           ns=floats(min_value=0.0001, max_value=5),
+           rm=random_module())
+    def test_sampling_normal_dist_hypothesis(self, nm, ns, rm):
+        params = {
+            'Arrival_distributions': [['Normal', nm, ns]],
+            'Service_distributions': [['Normal', nm, ns]],
+            'Number_of_servers': [1],
+            'Transition_matrices': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        Nw = Q.transitive_nodes[0]
+        for itr in range(10): # Because repition happens in the simulation
+            self.assertTrue(
+                Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
+            self.assertTrue(
+                Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
+
     def test_sampling_empirical_dist(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
         params = {

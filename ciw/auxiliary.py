@@ -33,3 +33,15 @@ def random_choice(array, probs=None):
 		i += 1
 		p += probs[i]
 	return array[i]
+
+def truncated_normal(mean, sd):
+	"""
+	Sample from a Normal distribution, with mean and standard
+	deviation (sd). This truncated the distribution at 0 (lower bound
+	of 0). If samples less than 0 are sampled, they are resampled
+    until a positive value is sampled.
+	"""
+	sample = random.normalvariate(mean, sd)
+	while sample <= 0.0:
+		sample = random.normalvariate(mean, sd)
+	return sample

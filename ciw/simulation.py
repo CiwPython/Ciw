@@ -7,7 +7,7 @@ from csv import writer, reader
 from decimal import getcontext
 from collections import namedtuple
 
-from .auxiliary import random_choice
+from .auxiliary import *
 from .node import Node
 from .exactnode import ExactNode, ExactArrivalNode
 from .arrival_node import ArrivalNode
@@ -127,6 +127,9 @@ class Simulation(object):
         if self.source(c, n, kind)[0] == 'Weibull':
             return lambda : weibullvariate(self.source(c, n, kind)[1],
                                            self.source(c, n, kind)[2])
+        if self.source(c, n, kind)[0] == 'Normal':
+            return lambda : truncated_normal(self.source(c, n, kind)[1],
+                                             self.source(c, n, kind)[2])
         if self.source(c, n, kind)[0] == 'Custom':
             P, V = zip(*self.source(c, n, kind)[1])
             probs, values = list(P), list(V)
