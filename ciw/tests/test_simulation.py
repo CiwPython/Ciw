@@ -386,7 +386,7 @@ class TestSimulation(unittest.TestCase):
                   'Service_distributions': [['Deterministic', 0.01]],
                   'Transition_matrices': [[0.0]],
                   'Number_of_servers': ['server_schedule'],
-                  'server_schedule': [[0, 0.5], [1, 55], [0, 3.0]]}
+                  'server_schedule': [[0, 0.5], [1, 0.55], [0, 3.0]]}
 
         ciw.seed(777)
         Q = ciw.Simulation(ciw.create_network(params))

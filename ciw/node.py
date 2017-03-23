@@ -22,12 +22,12 @@ class Node(object):
         node = self.simulation.network.service_centres[id_ - 1]
         if node.schedule:
             raw_schedule = node.schedule
-            self.cyclelength = self.increment_time(0, raw_schedule[-1][0])
-            boundaries = [0] + [row[0] for row in raw_schedule[:-1]]
-            servers = [row[1] for row in raw_schedule]
+            self.cyclelength = self.increment_time(0, raw_schedule[-1][1])
+            boundaries = [0] + [row[1] for row in raw_schedule[:-1]]
+            servers = [row[0] for row in raw_schedule]
             self.schedule = [list(pair) for pair in zip(boundaries, servers)]
             self.c = self.schedule[0][1]
-            raw_schedule_boundaries = [row[0] for row in raw_schedule]
+            raw_schedule_boundaries = [row[1] for row in raw_schedule]
             self.date_generator = self.date_from_schedule_generator(
                 raw_schedule_boundaries)
             self.next_shift_change = next(self.date_generator)
