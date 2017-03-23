@@ -36,8 +36,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Uniform', 2.2, 3.3]],
             'Service_distributions': [['Uniform', 2.2, 3.3]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nu = Q.transitive_nodes[0]
@@ -73,8 +72,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Uniform', ul, uh]],
             'Service_distributions': [['Uniform', ul, uh]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nu = Q.transitive_nodes[0]
@@ -119,8 +117,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Deterministic', 4.4]],
             'Service_distributions': [['Deterministic', 4.4]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nd = Q.transitive_nodes[0]
@@ -152,8 +149,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Deterministic', d]],
             'Service_distributions': [['Deterministic', d]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nd = Q.transitive_nodes[0]
@@ -186,8 +182,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Triangular', 1.1, 6.6, 1.5]],
             'Service_distributions': [['Triangular', 1.1, 6.6, 1.5]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nt = Q.transitive_nodes[0]
@@ -223,8 +218,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Triangular', tl, th, tm]],
             'Service_distributions': [['Triangular', tl, th, tm]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nt = Q.transitive_nodes[0]
@@ -269,8 +263,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Exponential', 4.4]],
             'Service_distributions': [['Exponential', 4.4]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ne = Q.transitive_nodes[0]
@@ -302,8 +295,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Exponential', e]],
             'Service_distributions': [['Exponential', e]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ne = Q.transitive_nodes[0]
@@ -317,8 +309,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Gamma', 0.6, 1.2]],
             'Service_distributions': [['Gamma', 0.6, 1.2]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ng = Q.transitive_nodes[0]
@@ -351,8 +342,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Gamma', ga, gb]],
             'Service_distributions': [['Gamma', ga, gb]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Ng = Q.transitive_nodes[0]
@@ -366,8 +356,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Lognormal', 0.8, 0.2]],
             'Service_distributions': [['Lognormal', 0.8, 0.2]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nl = Q.transitive_nodes[0]
@@ -400,8 +389,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Lognormal', lm, lsd]],
             'Service_distributions': [['Lognormal', lm, lsd]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nl = Q.transitive_nodes[0]
@@ -415,8 +403,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Weibull', 0.9, 0.8]],
             'Service_distributions': [['Weibull', 0.9, 0.8]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nw = Q.transitive_nodes[0]
@@ -449,8 +436,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Weibull', wa, wb]],
             'Service_distributions': [['Weibull', wa, wb]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nw = Q.transitive_nodes[0]
@@ -466,8 +452,7 @@ class TestSampling(unittest.TestCase):
             'Arrival_distributions': [['Empirical',
                 'ciw/tests/testing_parameters/sample_empirical_dist.csv']],
             'Service_distributions': [['Empirical', my_empirical_dist]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nem = Q.transitive_nodes[0]
@@ -503,8 +488,7 @@ class TestSampling(unittest.TestCase):
             'Arrival_distributions': [['Empirical', my_empirical_dist]],
             'Service_distributions': [['Empirical',
                 'ciw/tests/testing_parameters/sample_empirical_dist.csv']],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nem = Q.transitive_nodes[0]
@@ -540,8 +524,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Custom', my_custom_dist]],
             'Service_distributions': [['Custom', my_custom_dist]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nc = Q.transitive_nodes[0]
@@ -579,8 +562,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': [['Custom', my_custom_dist]],
             'Service_distributions': [['Custom', my_custom_dist]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Nc = Q.transitive_nodes[0]
@@ -718,8 +700,7 @@ class TestSampling(unittest.TestCase):
         params = {
             'Arrival_distributions': ['NoArrivals'],
             'Service_distributions': [['Deterministic', 6.6]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         Na = Q.transitive_nodes[0]
@@ -832,8 +813,7 @@ class TestSampling(unittest.TestCase):
                 ['TimeDependent', lambda t : time_dependent_function_1(t)]],
             'Service_distributions': [
                 ['TimeDependent', lambda t : broken_td_func(t)]],
-            'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(params))
         N = Q.transitive_nodes[0]
