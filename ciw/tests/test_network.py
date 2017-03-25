@@ -363,3 +363,27 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(ciw.create_network(params1), None)
         self.assertEqual(ciw.create_network(params2), None)
         self.assertEqual(ciw.create_network(params3), None)
+
+
+class TestImportNoMatrix(unittest.TestCase):
+
+    def test_optional_transition_matrix(self):
+        params = {'Arrival_distributions': [['Exponential', 1.0]],
+                  'Service_distributions': [['Exponential', 2.0]],
+                  'Number_of_servers': [1]}
+        N = ciw.create_network(params)
+        self.assertEqual([c.transition_matrix for c in N.customer_classes], [[[0.0]]])
+
+        params = {
+            'Arrival_distributions': {'Class 0': [['Exponential', 1.0]],
+                                      'Class 1': [['Exponential', 1.0]]},
+            'Service_distributions': {'Class 0': [['Exponential', 2.0]],
+                                      'Class 1': [['Exponential', 1.0]]},
+            'Number_of_servers': [1]}
+        N = ciw.create_network(params)
+        self.assertEqual([c.transition_matrix for c in N.customer_classes], [[[0.0]], [[0.0]]])
+
+        params = {'Arrival_distributions': [['Exponential', 1.0], ['Exponential', 1.0]],
+                  'Service_distributions': [['Exponential', 2.0], ['Exponential', 2.0]],
+                  'Number_of_servers': [1, 2]}
+        self.assertRaises(ValueError, ciw.create_network, params)
