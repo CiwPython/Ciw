@@ -4,7 +4,7 @@
 Tutorial III: Collecting Results
 ================================
 
-In the previous tutorials, we defined and simulated out bank for a week, and saw how to ::
+In the previous tutorials, we defined and simulated our bank for a week, and saw how to access parts of the simulation engine::
 
     >>> import ciw
     >>> params = {
@@ -42,27 +42,33 @@ More information on each of these is given in :ref:`refs-results`.
 
 Using list comprehension, we can get lists on whichever statistic we like::
 
-    >>> # A list of waits
-    >>> waits = [r.waiting_time for r in recs]
-    >>> waits
-    [0.0, 0.0, 0.20439..., ..., 5.63781...]
-
     >>> # A list of service times
     >>> servicetimes = [r.service_time for r in recs]
     >>> servicetimes
     [2.94463..., 5.96912..., 0.28757..., ..., 10.46244...]
 
+    >>> # A list of waits
+    >>> waits = [r.waiting_time for r in recs]
+    >>> waits
+    [0.0, 0.0, 0.20439..., ..., 5.63781...]
+
 Now we can get summary statistics simply by manipulating these lists::
 
-    >>> mean_waiting_time = sum(waits)/len(waits)
-    >>> mean_waiting_time
-    1.688541...
-
-    >>> mean_service_time = sum(servicetimes)/len(servicetimes)
+    >>> mean_service_time = sum(servicetimes) / len(servicetimes)
     >>> mean_service_time
     9.543928...
 
-Further summary statistics can be obtained using external libraries. We reccommend `numpy <http://www.numpy.org/>`_, `pandas <http://pandas.pydata.org/>`_ and `matplotlib <http://matplotlib.org/>`_.  Using these further statistics and plots can be explored. The histogram of waits below was created using matplotlib, using the following code::
+    >>> mean_waiting_time = sum(waits) / len(waits)
+    >>> mean_waiting_time
+    1.688541...
+
+We now know the mean waiting time of the customers!
+In next tutorial we will show how to get more representative results (as we have only simulated one given day here).
+
+Further summary statistics can be obtained using external libraries.
+We recommend `numpy <http://www.numpy.org/>`_, `pandas <http://pandas.pydata.org/>`_ and `matplotlib <http://matplotlib.org/>`_. 
+Using these further statistics and plots can be explored.
+The histogram of waits below was created using matplotlib, using the following code::
 
     >>> import matplotlib.pyplot as plt # doctest:+SKIP
     >>> plt.hist(waits); # doctest:+SKIP

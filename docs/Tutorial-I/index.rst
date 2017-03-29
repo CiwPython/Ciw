@@ -1,7 +1,7 @@
 Tutorials - Part 1
 ==================
 
-Part 1 of the Ciw tutorial will conver what is simulation and why we simulate. It covers key concepts such as the parameters dictionary, the network and simulation objects, and good simulation practice. Tutorial pages `i` - `iv` take you through the simulation of a bank.
+Part 1 of the Ciw tutorial will cover what is simulation and why we simulate.
 
 Contents:
 

@@ -65,6 +65,7 @@ Number_of_classes
 Denotes the number of customer classes in the simulation. If not included, Ciw works this out from the :code:`Arrival_distributions` argument.
 
 Example::
+
     'Number_of_classes': 3
 
 
@@ -76,6 +77,7 @@ Number_of_nodes
 Denotes the number of nodes in the queueing network. If not included, Ciw works this out from the :code:`Number_of_servers` argument.
 
 Example::
+
     'Number_of_nodes': 6
 
 
@@ -99,6 +101,7 @@ Priority_classes
 A dictionary mapping customer classes to priorities. For more information see :ref:`priority-custs`. If left out, no priorities are used, that is all customers have equal priorities.
 
 Example::
+
     'Priority_classes': {'Class 0': 0,
                          'CLass 1': 1,
                          'Class 2': 1}

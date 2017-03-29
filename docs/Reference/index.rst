@@ -8,6 +8,8 @@ Contents:
    
    parameters.rst
    results.rst
-   features.rst
    distributions.rst
    state_trackers.rst
+   citation.rst
+   glossary.rst
+   changelog.rst

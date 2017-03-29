@@ -4,7 +4,7 @@
 Tutorial II: Exploring the Simulation Object
 ============================================
 
-In the previous tutorial, we defined and simulated out bank for a week::
+In the previous tutorial, we defined and simulated our bank for a week::
 
     >>> import ciw
     >>> params = {
@@ -42,17 +42,21 @@ Although out queueing system consisted of one node (the bank), the object :code:
     >>> Q.nodes[-1]
     Exit Node
 
-Once the simulation is run, the simulation object remains in exactly the same state as it reached at the end of the simulation run. Therefore, the simulation object itself can give some information about what went on during the run. The :code:`Exit Node` contains all customers who had completed service in the bank, in order of when they finished left the system::
+Once the simulation is run, the simulation object remains in exactly the same state as it reached at the end of the simulation run.
+Therefore, the simulation object itself can give some information about what went on during the run.
+The :code:`Exit Node` contains all customers who had completed service in the bank, in order of when they left the system::
 
     >>> Q.nodes[-1].all_individuals
     [Individual 2, Individual 3, Individual 5, ..., Individual 272]
 
-The service node will also contain customers, those who were still waiting or still receiving service at the time the simulation run ended. During this run, there was one customer left in the bank at the end of the day::
+The service node will also contain customers, those who were still waiting or still receiving service at the time the simulation run ended.
+During this run, there was one customer left in the bank at the end of the day::
 
     >>> Q.nodes[1].all_individuals
     [Individual 274]
 
-Let's look at the first individual to finish service, :code:`Individual 2`. Individuals carry data records, that contain information such as arrival date, waiting time, and exit date::
+Let's look at the first individual to finish service, :code:`Individual 2`.
+Individuals carry data records, that contain information such as arrival date, waiting time, and exit date::
 
     >>> ind = Q.nodes[-1].all_individuals[0]
     >>> ind
@@ -73,4 +77,5 @@ Let's look at the first individual to finish service, :code:`Individual 2`. Indi
     >>> ind.data_records[0].exit_date
     10.88093...
 
-This isn't a very efficient way to look at results. In the next tutorial we will look at generating lists of records to gain some summary statistics.
+This isn't a very efficient way to look at results.
+In the next tutorial we will look at generating lists of records to gain some summary statistics.
