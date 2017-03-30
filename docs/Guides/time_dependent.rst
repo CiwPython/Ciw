@@ -10,7 +10,7 @@ This must take in a time variable `t`.
 
 For example, say we wish to have arrivals once every 30 minutes in the morning, every 15 minutes over lunch, every 45 minutes in the afternoon, and every 90 minutes throughout the night::
 
-    >>> def my_time_dependent_distribution(t):
+    >>> def time_dependent_function(t):
     ...     if t % 24 < 12.0:
     ...         return 0.5
     ...     if t % 24 < 14.0:
@@ -22,23 +22,23 @@ For example, say we wish to have arrivals once every 30 minutes in the morning, 
 This function returns inter-arrival times of 0.5 hrs between midnight (0) and 12, 0.25 hrs between 12 and 14, 0.75 hrs between 14 and 20, and 1.5 hrs between 20 and midnight (24).
 Then repeats. Testing this function we see::
 
-    >>> my_time_dependent_distribution(9.5)
+    >>> time_dependent_function(9.5)
     0.5
-    >>> my_time_dependent_distribution(11.0)
+    >>> time_dependent_function(11.0)
     0.5
-    >>> my_time_dependent_distribution(13.25)
+    >>> time_dependent_function(13.25)
     0.25
-    >>> my_time_dependent_distribution(17.0)
+    >>> time_dependent_function(17.0)
     0.75
-    >>> my_time_dependent_distribution(22.0)
+    >>> time_dependent_function(22.0)
     1.5
-    >>> my_time_dependent_distribution(33.2) # half 9 the next day
+    >>> time_dependent_function(33.2) # half 9 the next day
     0.5
 
 Let's implement this into a one node infinite server queue::
 
     >>> params = {
-    ...     'Arrival_distributions': [['TimeDependent', lambda t : my_time_dependent_distribution(t)]],
+    ...     'Arrival_distributions': [['TimeDependent', time_dependent_function]],
     ...     'Service_distributions': [['Deterministic', 0.0]],
     ...     'Transition_matrices': [[0.0]],
     ...     'Number_of_servers': ['Inf']

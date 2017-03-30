@@ -170,7 +170,7 @@ User Defined Distributions
 
 Ciw allows users to input their own function to generate service and inter-arrival times. This is done by feeding in a function in the following way::
 
-	['UserDefined', lambda : random.random()]
+	['UserDefined', random.random]
 
 
 
@@ -184,7 +184,7 @@ Time Dependent Distributions
 
 Similar to adding :code:`UserDefined` functions, Ciw allows for time dependent functions. These are lambda functions that take in a time parameter. Ciw uses the simulation's current time to sample a new service or inter-arrival time::
 
-    ['TimeDependent', lambda t : my_time_dependent_func(t)]
+    ['TimeDependent', time_dependent_function]
 
 
 
