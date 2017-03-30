@@ -15,9 +15,9 @@ An example cyclic work schedule is shown in the table below:
 
 This schedule is cyclic, therefore after the last shift (30-100), schedule begins again with the shift (0-10).
 The cycle length for this schedule is 100. Let's call this schedule :code:`schedule`.
-This is defines by a list of lists indicating the end date of that shift, and the number of servers that should be on duty during that shift::
+This is defines by a list of lists indicating the number of servers that should be on duty during that shift, and the end date of that shift::
 
-    [[10, 2], [30, 0], [100, 1]]
+    [[2, 10], [0, 30], [1, 100]]
 
 Here we are saying that there will be 2 servers scheduled between times 0 and 10, 0 between 10 and 30, etc.
 This fully defines the cyclic work schedule.
@@ -31,7 +31,7 @@ Also to include in the parameters dictionary is the schedule itself::
     ...     'Service_distributions': [['Exponential', 10]],
     ...     'Transition_matrices': [[0.0]],
     ...     'Number_of_servers': ['schedule'],
-    ...     'schedule': [[10, 2], [30, 0], [100, 1]]
+    ...     'schedule': [[2, 10], [0, 30], [1, 100]]
     ... }
 
 Simulating this system, we'll see that no services begin between dates 10 and 30, nor between dates 110 and 130::
@@ -62,13 +62,13 @@ When a server is due to go off duty during a customer's service, there are two o
 
 In order to implement pre-emptive or non-pre-emptive schedules, put the schedule in a tuple with a :code:`True` or a :code:`False` as the second term, indicating pre-emptive or non-pre-emptive interruptions. For example::
 
-    'preemptive_schedule': ([[10, 2], [30, 0], [100, 1]], True)
+    'preemptive_schedule': ([[2, 10], [0, 30], [1, 100]], True)
 
 And::
 
-    'nonpreemptive_schedule': ([[10, 2], [30, 0], [100, 1]], False)
+    'nonpreemptive_schedule': ([[2, 10], [0, 30], [1, 100]], False)
 
 Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
 
-    'schedule': [[10, 2], [30, 0], [100, 1]]
+    'schedule': [[2, 10], [0, 30], [1, 100]]
 
