@@ -13,27 +13,27 @@ They are defined in the parameters dictionary with the :code:`'Arrival_distribut
 
 The following example, with two nodes and two customer classes, uses eight different arrival and service rate distributions::
 
-	>>> params = {'Arrival_distributions': {'Class 0': [['Deterministic', 0.4],
-	...                                                 ['Empirical', [0.1, 0.1, 0.1, 0.2]]],
-	...                                     'Class 1': [['Deterministic', 0.2],
-	...                                                 ['Custom', [[0.5, 0.2], [0.5, 0.4]]]]},
-	...           'Service_distributions': {'Class 0': [['Exponential', 6.0],
-	...                                                 ['Lognormal', -1, 0.5]],
-	...                                     'Class 1': [['Uniform', 0.1, 0.7],
-	...                                                 ['Triangular', 0.2, 0.7, 0.3]]},
-	...           'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
-	...                                   'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
-	...           'Number_of_servers': [1, 1]
-	...          }
+    >>> params = {'Arrival_distributions': {'Class 0': [['Deterministic', 0.4],
+    ...                                                 ['Empirical', [0.1, 0.1, 0.1, 0.2]]],
+    ...                                     'Class 1': [['Deterministic', 0.2],
+    ...                                                 ['Custom', [[0.5, 0.2], [0.5, 0.4]]]]},
+    ...           'Service_distributions': {'Class 0': [['Exponential', 6.0],
+    ...                                                 ['Lognormal', -1, 0.5]],
+    ...                                     'Class 1': [['Uniform', 0.1, 0.7],
+    ...                                                 ['Triangular', 0.2, 0.7, 0.3]]},
+    ...           'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+    ...                                   'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
+    ...           'Number_of_servers': [1, 1]
+    ...          }
 
 We'll run this (in :ref:`exact <exact-arithmetic>` mode) for 25 time units::
 
-	>>> import ciw
-	>>> ciw.seed(10)
-	>>> N = ciw.create_network(params)
-	>>> Q = ciw.Simulation(N, exact=10)
-	>>> Q.simulate_until_max_time(50)
-	>>> recs = Q.get_all_records()
+    >>> import ciw
+    >>> ciw.seed(10)
+    >>> N = ciw.create_network(params)
+    >>> Q = ciw.Simulation(N, exact=10)
+    >>> Q.simulate_until_max_time(50)
+    >>> recs = Q.get_all_records()
 
 The system uses the following eight distributions:
 
@@ -67,29 +67,32 @@ From the records, collect the service times and arrival dates for each node and 
 
 Now let's see if the mean service time and inter-arrival times of the simulation matches the distributions::
 
+    >>> from decimal import Decimal
 
-	>>> sum(servicetimes_n1c0)/len(servicetimes_n1c0) # Expected 0.1666...
-	Decimal('0.1650563448')
+    >>> sum(servicetimes_n1c0)/len(servicetimes_n1c0) # Expected 0.1666...
+    Decimal('0.1650563448')
 
-	>>> sum(servicetimes_n2c0)/len(servicetimes_n2c0) # Expected 0.4724...
-	Decimal('0.4228601677')
+    >>> sum(servicetimes_n2c0)/len(servicetimes_n2c0) # Expected 0.4724...
+    Decimal('0.4228601677')
 
-	>>> sum(servicetimes_n1c1)/len(servicetimes_n1c1) # Expected 0.4
-	Decimal('0.4352210564')
+    >>> sum(servicetimes_n1c1)/len(servicetimes_n1c1) # Expected 0.4
+    Decimal('0.4352210564')
 
-	>>> sum(servicetimes_n2c1)/len(servicetimes_n2c1) # Expected 0.4
-	Decimal('0.4100529676')
+    >>> sum(servicetimes_n2c1)/len(servicetimes_n2c1) # Expected 0.4
+    Decimal('0.4100529676')
 
-	>>> set([r2-r1 for r1, r2 in zip(arrivals_n1c0, arrivals_n1c0[1:])]) # Should only sample 0.4
-	{Decimal('0.4')}
+    >>> set([r2-r1 for r1, r2 in zip(arrivals_n1c0, arrivals_n1c0[1:])]) # Should only sample 0.4
+    {Decimal('0.4')}
 
-	>>> set([r2-r1 for r1, r2 in zip(arrivals_n1c1, arrivals_n1c1[1:])]) # Should only sample 0.2
-	{Decimal('0.2')}
+    >>> set([r2-r1 for r1, r2 in zip(arrivals_n1c1, arrivals_n1c1[1:])]) # Should only sample 0.2
+    {Decimal('0.2')}
 
-	>>> set([r2-r1 for r1, r2 in zip(arrivals_n2c0, arrivals_n2c0[1:])]) # Should only sample 0.1 and 0.2
-	{Decimal('0.2'), Decimal('0.1')}
+    >>> expected_samples = {Decimal('0.2'), Decimal('0.1')} # Should only sample 0.1 and 0.2
+    >>> set([r2-r1 for r1, r2 in zip(arrivals_n2c0, arrivals_n2c0[1:])]) == expected_samples
+    True
 
-	>>> set([r2-r1 for r1, r2 in zip(arrivals_n2c1, arrivals_n2c1[1:])]) # Should only sample 0.2 and 0.4
-	{Decimal('0.2'), Decimal('0.4')}
+    >>> expected_samples = {Decimal('0.2'), Decimal('0.4')}#  Should only sample 0.2 and 0.4
+    >>> set([r2-r1 for r1, r2 in zip(arrivals_n2c1, arrivals_n2c1[1:])]) == expected_samples
+    True
 
 ​
