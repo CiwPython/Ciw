@@ -130,8 +130,8 @@ class Simulation(object):
             return lambda : weibullvariate(self.source(c, n, kind)[1],
                                            self.source(c, n, kind)[2])
         if self.source(c, n, kind)[0] == 'Custom':
-            P, V = zip(*self.source(c, n, kind)[1])
-            probs, values = list(P), list(V)
+            values = self.source(c, n, kind)[1]
+            probs = self.source(c, n, kind)[2]
             return lambda : random_choice(values, probs)
         if self.source(c, n, kind)[0] == 'UserDefined':
             return lambda : self.check_userdef_dist(self.source(c, n, kind)[1])

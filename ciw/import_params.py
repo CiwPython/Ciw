@@ -216,7 +216,7 @@ def validify_dictionary(params):
                     if nd[1] > nd[2] or nd[1] >= nd[3] or nd[3] >= nd[2]:
                         raise ValueError('Triangular distribution\'s median must lie between the lower and upper limits.')
                 if nd[0] == 'Custom':
-                        P, V = zip(*nd[1])
+                        V, P = nd[1], nd[2]
                         for el in P:
                             if not isinstance(el, float) or el < 0.0:
                                 raise ValueError('Probabilities for Custom distribution need to be floats between 0.0 and 1.0.')
@@ -243,7 +243,7 @@ def validify_dictionary(params):
                 if nd[1] > nd[2] or nd[1] >= nd[3] or nd[3] >= nd[2]:
                     raise ValueError('Triangular distribution\'s median must lie between the lower and upper limits.')
             if nd[0] == 'Custom':
-                    P, V = zip(*nd[1])
+                    V, P = nd[1], nd[2]
                     for el in P:
                         if not isinstance(el, float) or el < 0.0:
                             raise ValueError('Probabilities for Custom distribution need to be floats between 0.0 and 1.0.')
