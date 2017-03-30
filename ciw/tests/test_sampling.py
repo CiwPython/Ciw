@@ -585,10 +585,11 @@ class TestSampling(unittest.TestCase):
                  'Transition_matrices': Transition_matrices})
 
     def test_sampling_custom_dist(self):
-        my_custom_dist = [[0.2, 3.7], [0.5, 3.8], [0.3, 4.1]]
+        my_custom_dist_values =  [3.7, 3.8, 4.1]
+        my_custom_dist_probs = [0.2, 0.5, 0.3]
         params = {
-            'Arrival_distributions': [['Custom', my_custom_dist]],
-            'Service_distributions': [['Custom', my_custom_dist]],
+            'Arrival_distributions': [['Custom', my_custom_dist_values, my_custom_dist_probs]],
+            'Service_distributions': [['Custom', my_custom_dist_values, my_custom_dist_probs]],
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
@@ -624,10 +625,9 @@ class TestSampling(unittest.TestCase):
         cust_vals = [round(i, 10) for i in custs]
         numprobs = len(cust_vals)
         probs = [1.0/numprobs for i in range(numprobs)]
-        my_custom_dist = [list(i) for i in (zip(probs, cust_vals))]
         params = {
-            'Arrival_distributions': [['Custom', my_custom_dist]],
-            'Service_distributions': [['Custom', my_custom_dist]],
+            'Arrival_distributions': [['Custom', cust_vals, probs]],
+            'Service_distributions': [['Custom', cust_vals, probs]],
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
@@ -640,15 +640,18 @@ class TestSampling(unittest.TestCase):
                 Nc.id_number][0]() in set(cust_vals))
 
     def test_error_custom_dist(self):
-        my_custom_dist = [[0.2, 3.7], [0.5, 3.8], [0.3, 4.1]]
-        my_custom_dist_E = [[0.2, 3.7], [0.5, -3.8], [0.3, 4.1]]
-        my_custom_dist_EE = [[0.2, 3.7], [-0.5, 3.8], [0.3, 4.1]]
-        Arrival_distributions = [['Custom', my_custom_dist]]
-        Arrival_distributions_E = [['Custom', my_custom_dist_E]]
-        Arrival_distributions_EE = [['Custom', my_custom_dist_EE]]
-        Service_distributions = [['Custom', my_custom_dist]]
-        Service_distributions_E = [['Custom', my_custom_dist_E]]
-        Service_distributions_EE = [['Custom', my_custom_dist_EE]]
+        my_custom_dist_vals = [3.7, 3.8, 4.1]
+        my_custom_dist_vals_E = [3.7, -3.8, 4.1]
+
+        my_custom_dist_probs = [0.2, 0.5, 0.3]
+        my_custom_dist_probs_E = [0.2, -0.5, 0.3]
+
+        Arrival_distributions = [['Custom', my_custom_dist_vals, my_custom_dist_probs]]
+        Arrival_distributions_E = [['Custom', my_custom_dist_vals_E, my_custom_dist_probs]]
+        Arrival_distributions_EE = [['Custom', my_custom_dist_vals, my_custom_dist_probs_E]]
+        Service_distributions = [['Custom', my_custom_dist_vals, my_custom_dist_probs]]
+        Service_distributions_E = [['Custom', my_custom_dist_vals_E, my_custom_dist_probs]]
+        Service_distributions_EE = [['Custom', my_custom_dist_vals, my_custom_dist_probs_E]]
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
@@ -809,11 +812,11 @@ class TestSampling(unittest.TestCase):
     def test_timedependent_function_dist(self):
         params = {
             'Arrival_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Service_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
@@ -878,9 +881,9 @@ class TestSampling(unittest.TestCase):
     def test_broken_timedependent_function_dist(self):
         params = {
             'Arrival_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)]],
+                ['TimeDependent', time_dependent_function_1]],
             'Service_distributions': [
-                ['TimeDependent', lambda t : broken_td_func(t)]],
+                ['TimeDependent', broken_td_func]],
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
@@ -893,11 +896,11 @@ class TestSampling(unittest.TestCase):
     def test_timedependent_exact(self):
         params = {
             'Arrival_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Service_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
@@ -916,3 +919,71 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(N2.get_service_time(0, 17.0), 8.5)
         self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
         self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
+
+    def test_sampling_sequential_dist(self):
+        params = {
+            'Arrival_distributions': [['Sequential', [0.2, 0.4, 0.6, 0.8]]],
+            'Service_distributions': [['Sequential', [0.9, 0.7, 0.5, 0.3, 0.1]]],
+            'Number_of_servers': [1],
+            'Transition_matrices': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        Nw = Q.transitive_nodes[0]
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.7)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.5)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.3)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.1)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.7)
+
+        # First arrival will be offset by 1, as first customer's inter-arrival
+        # time has already been sampled by the arrival node
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.4)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.6)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.8)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.2)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.4)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.6)
+
+    @given(dist1=lists(floats(min_value=0.001, max_value=10000),
+                       min_size=1,
+                       max_size=20),
+           dist2=lists(floats(min_value=0.001, max_value=10000),
+                       min_size=1,
+                       max_size=20))
+    def test_sampling_sequential_dist_hypothesis(self, dist1, dist2):
+        my_sequential_dist_1 = dist1
+        my_sequential_dist_2 = dist2
+        params = {
+            'Arrival_distributions': [['Sequential', my_sequential_dist_1]],
+            'Service_distributions': [['Sequential', my_sequential_dist_2]],
+            'Number_of_servers': [1],
+            'Transition_matrices': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        Nw = Q.transitive_nodes[0]
+
+        len1 = len(my_sequential_dist_1)
+        len2 = len(my_sequential_dist_2)
+
+        expected_inter_arrival_times = 3*my_sequential_dist_1 + my_sequential_dist_1[:1]
+        expected_service_times = 3*my_sequential_dist_2
+
+        inter_arrivals = [Nw.simulation.inter_arrival_times[Nw.id_number][0]() for _ in range(3*len1)]
+        services = [Nw.simulation.service_times[Nw.id_number][0]() for _ in range(3*len2)]
+        self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
+        self.assertEqual(services, expected_service_times)

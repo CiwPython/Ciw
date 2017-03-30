@@ -143,15 +143,15 @@ class TestNetwork(unittest.TestCase):
                   'Transition_matrices': [[0.5, 0.2],
                                           [0.0, 0.0]],
                   'Queue_capacities': [10, 'Inf'],
-                  'my_amazing_schedule': [[20, 1],
-                                          [50, 4]]}
+                  'my_amazing_schedule': [[1, 20],
+                                          [4, 50]]}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 2)
         self.assertEqual(N.number_of_classes, 1)
         self.assertEqual(N.service_centres[0].queueing_capacity, 10)
         self.assertEqual(N.service_centres[0].number_of_servers, 'schedule')
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
-        self.assertEqual(N.service_centres[0].schedule, [[20, 1], [50, 4]])
+        self.assertEqual(N.service_centres[0].schedule, [[1, 20], [4, 50]])
         self.assertFalse(N.service_centres[0].preempt)
         self.assertEqual(N.service_centres[1].queueing_capacity, float('Inf'))
         self.assertEqual(N.service_centres[1].number_of_servers, 3)

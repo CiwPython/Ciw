@@ -11,20 +11,20 @@ class StateTracker(object):
         self.simulation = simulation
         self.state = None
 
-    def change_state_accept(self, node_id, cust_cls):
+    def change_state_accept(self, node_id, cust_clss):
         """
         Changes the state of the system when a customer is accepted.
         """
         pass
 
-    def change_state_block(self, node_id, destination, cust_cls):
+    def change_state_block(self, node_id, destination, cust_clss):
         """
         Changes the state of the system when a customer gets blocked.
         """
         pass
 
     def change_state_release(self, node_id, destination,
-        cust_cls, blocked):
+        cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -56,13 +56,13 @@ class NaiveTracker(StateTracker):
         self.state = [[0, 0] for i in range(
             self.simulation.network.number_of_nodes)]
 
-    def change_state_accept(self, node_id, cust_cls):
+    def change_state_accept(self, node_id, cust_clss):
         """
         Changes the state of the system when a customer is accepted.
         """
         self.state[node_id-1][0] += 1
 
-    def change_state_block(self, node_id, destination, cust_cls):
+    def change_state_block(self, node_id, destination, cust_clss):
         """
         Changes the state of the system when a customer gets blocked.
         """
@@ -70,7 +70,7 @@ class NaiveTracker(StateTracker):
         self.state[node_id-1][0] -= 1
 
     def change_state_release(self, node_id, destination,
-        cust_cls, blocked):
+        cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -113,13 +113,13 @@ class MatrixTracker(StateTracker):
             self.simulation.network.number_of_nodes)]]
         self.increment = 1
 
-    def change_state_accept(self, node_id, cust_cls):
+    def change_state_accept(self, node_id, cust_clss):
         """
         Changes the state of the system when a customer is accepted.
         """
         self.state[-1][node_id-1] += 1
 
-    def change_state_block(self, node_id, destination, cust_cls):
+    def change_state_block(self, node_id, destination, cust_clss):
         """
         Changes the state of the system when a customer gets blocked.
         """
@@ -127,7 +127,7 @@ class MatrixTracker(StateTracker):
         self.increment += 1
 
     def change_state_release(self, node_id, destination,
-        cust_cls, blocked):
+        cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
