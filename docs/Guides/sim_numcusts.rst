@@ -12,7 +12,7 @@ A simulation run may be terminated once a certain number of customers have passe
 
 The method of counting customers is specified with the optional keyword argument :code:`method`. The default value is is :code:`'Finish'`.
 
-Consider an M/M/1/3 queue::
+Consider an :ref:`M/M/1/3 <kendall-notation>` queue::
 
 	>>> import ciw
 	>>> params = {

@@ -8,5 +8,6 @@ Contents:
    
    simulationpractice.rst
    mechanisms.rst
+   kendall.rst
    codestructure.rst
    other.rst

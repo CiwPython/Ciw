@@ -22,7 +22,7 @@ In order to take advantage of this feature, set the :code:`deadlock_detection` a
 Currently only :code:`'StateDigraph'` is implemented.
 Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state.
 
-Consider the M/M/1/3 queue where customers have probability 0.5 of rejoining the queue after service.
+Consider the :ref:`M/M/1/3 <kendall-notation>` queue where customers have probability 0.5 of rejoining the queue after service.
 If the queue is full then that customer gets blocked, and hence the system deadlocks.
 
 Parameters::
