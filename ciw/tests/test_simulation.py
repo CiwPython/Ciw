@@ -6,6 +6,7 @@ import os
 from decimal import Decimal
 import networkx as nx
 import csv
+from itertools import cycle
 
 
 class TestSimulation(unittest.TestCase):
@@ -718,3 +719,62 @@ class TestSimulation(unittest.TestCase):
 
         self.assertEqual(recs, [])
         self.assertEqual(total_inds_0, total_inds_1)
+
+    def test_find_generators(self):
+        # No generators:
+        params_nogenerators = {
+            'Arrival_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
+                                      'Class 1': [['Exponential', 5], ['Exponential', 5]]},
+            'Service_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
+                                      'Class 1': [['Exponential', 5], ['Exponential', 5]]},
+            'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+                                    'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
+            'Number_of_servers': [1, 1]
+        }
+
+        params_somegenerators = {
+            'Arrival_distributions': {'Class 0': [['Exponential', 5], ['Sequential', [5, 6]]],
+                                      'Class 1': [['Exponential', 5], ['Exponential', 5]]},
+            'Service_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
+                                      'Class 1': [['Sequential', [5, 6]], ['Exponential', 5]]},
+            'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+                                    'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
+            'Number_of_servers': [1, 1]
+        }
+
+        params_allgenerators = {
+            'Arrival_distributions': {'Class 0': [['Sequential', [5, 6]], ['Sequential', [5, 6]]],
+                                      'Class 1': [['Sequential', [5, 6]], ['Sequential', [5, 6]]]},
+            'Service_distributions': {'Class 0': [['Sequential', [5, 6]], ['Sequential', [5, 6]]],
+                                      'Class 1': [['Sequential', [5, 6]], ['Sequential', [5, 6]]]},
+            'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+                                    'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
+            'Number_of_servers': [1, 1]
+        }
+
+        N_no = ciw.create_network(params_nogenerators)
+        N_some = ciw.create_network(params_somegenerators)
+        N_all = ciw.create_network(params_allgenerators)
+
+        Q_no = ciw.Simulation(N_no)
+        Q_some = ciw.Simulation(N_some)
+        Q_all = ciw.Simulation(N_all)
+
+        self.assertEqual(Q_no.generators['Arr'][0], {})
+        self.assertEqual(Q_no.generators['Arr'][1], {})
+        self.assertEqual(Q_no.generators['Ser'][0], {})
+        self.assertEqual(Q_no.generators['Ser'][1], {})
+
+        self.assertEqual(Q_some.generators['Arr'][0], {})
+        self.assertTrue(isinstance(Q_some.generators['Arr'][1][0], cycle))
+        self.assertTrue(isinstance(Q_some.generators['Ser'][0][1], cycle))
+        self.assertEqual(Q_some.generators['Ser'][1], {})
+
+        self.assertTrue(isinstance(Q_all.generators['Arr'][0][0], cycle))
+        self.assertTrue(isinstance(Q_all.generators['Arr'][0][1], cycle))
+        self.assertTrue(isinstance(Q_all.generators['Arr'][1][0], cycle))
+        self.assertTrue(isinstance(Q_all.generators['Arr'][1][1], cycle))
+        self.assertTrue(isinstance(Q_all.generators['Ser'][0][0], cycle))
+        self.assertTrue(isinstance(Q_all.generators['Ser'][0][1], cycle))
+        self.assertTrue(isinstance(Q_all.generators['Ser'][1][0], cycle))
+        self.assertTrue(isinstance(Q_all.generators['Ser'][1][1], cycle))

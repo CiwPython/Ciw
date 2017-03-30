@@ -14,13 +14,13 @@ class ArrivalNode(object):
         self.simulation = simulation
         self.number_of_individuals = 0
         self.number_accepted_individuals = 0
-        self.event_dates_dict = {nd + 1: {cls:False for cls in range(
+        self.event_dates_dict = {nd + 1: {clss:False for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
-        self.rejection_dict = {nd + 1: {cls:[] for cls in range(
+        self.rejection_dict = {nd + 1: {clss:[] for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
-        self.baulked_dict = {nd + 1: {cls:[] for cls in range(
+        self.baulked_dict = {nd + 1: {clss:[] for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
         self.initialise_event_dates_dict()
@@ -51,15 +51,15 @@ class ArrivalNode(object):
         """
         Finds the time of the next arrival.
         """
-        times = [[self.event_dates_dict[nd+1][cls]
-            for cls in range(len(self.event_dates_dict[1]))]
+        times = [[self.event_dates_dict[nd+1][clss]
+            for clss in range(len(self.event_dates_dict[1]))]
             for nd in range(len(self.event_dates_dict))]
 
         mintimes = [min(obs) for obs in times]
         nd = mintimes.index(min(mintimes))
-        cls = times[nd].index(min(times[nd]))
+        clss = times[nd].index(min(times[nd]))
         self.next_node = nd + 1
-        self.next_class = cls
+        self.next_class = clss
         self.next_event_date = self.event_dates_dict[
             self.next_node][self.next_class]
 
@@ -95,18 +95,18 @@ class ArrivalNode(object):
         with random times for each node and class.
         """
         for nd in self.event_dates_dict:
-            for cls in self.event_dates_dict[nd]:
+            for clss in self.event_dates_dict[nd]:
                 self.event_dates_dict[nd][
-                cls] = self.inter_arrival(nd, cls, 0.0)
+                clss] = self.inter_arrival(nd, clss, 0.0)
 
-    def inter_arrival(self, nd, cls, current_time):
+    def inter_arrival(self, nd, clss, current_time):
         """
         Samples the inter-arrival time for next class and node.
         """
         if self.simulation.network.customer_classes[
-            cls].arrival_distributions[nd-1][0] == "TimeDependent":
-            return self.simulation.inter_arrival_times[nd][cls](current_time)
-        return self.simulation.inter_arrival_times[nd][cls]()
+            clss].arrival_distributions[nd-1][0] == "TimeDependent":
+            return self.simulation.inter_arrival_times[nd][clss](current_time)
+        return self.simulation.inter_arrival_times[nd][clss]()
 
     def record_baulk(self, next_node):
         """

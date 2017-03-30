@@ -6,6 +6,7 @@ from random import (expovariate, uniform, triangular, gammavariate,
 from csv import writer, reader
 from decimal import getcontext
 from collections import namedtuple
+from itertools import cycle
 
 from .auxiliary import random_choice
 from .node import Node
@@ -39,6 +40,7 @@ class Simulation(object):
 
         self.name = name
         self.deadlock_detector = self.choose_deadlock_detection(deadlock_detector)
+        self.generators = self.find_generators()
         self.inter_arrival_times = self.find_times_dict('Arr')
         self.service_times = self.find_times_dict('Ser')
         self.number_of_priority_classes = self.network.number_of_priority_classes
@@ -140,6 +142,25 @@ class Simulation(object):
             return lambda : random_choice(self.source(c, n, kind)[1])
         if self.source(c, n, kind)[0] == 'TimeDependent':
             return lambda t : self.check_timedependent_dist(self.source(c, n, kind)[1], t)
+        if self.source(c, n, kind)[0] == 'Sequential':
+            return lambda : next(self.generators[kind][n][c])
+
+    def find_generators(self):
+        """
+        A dictionary containing all generators used for distributions.
+        """
+        generators_dict = {'Arr': {}, 'Ser': {}}
+        for nd in range(self.network.number_of_nodes):
+            generators_dict['Arr'][nd] = {}
+            generators_dict['Ser'][nd] = {}
+            for clss in range(self.network.number_of_classes):
+                arrival = self.network.customer_classes[clss].arrival_distributions[nd]
+                service = self.network.customer_classes[clss].service_distributions[nd]
+                if arrival[0] == 'Sequential':
+                    generators_dict['Arr'][nd][clss] = cycle(arrival[1])
+                if service[0] == 'Sequential':
+                    generators_dict['Ser'][nd][clss] = cycle(service[1])
+        return generators_dict
 
     def find_next_active_node(self):
         """
@@ -158,8 +179,8 @@ class Simulation(object):
         functions for each node for each class
         """
         return {node+1: {
-            cls: self.find_distributions(node, cls, kind)
-            for cls in range(self.network.number_of_classes)}
+            clss: self.find_distributions(node, clss, kind)
+            for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
 
     def get_all_individuals(self):

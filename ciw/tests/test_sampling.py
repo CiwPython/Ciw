@@ -867,3 +867,71 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(N2.get_service_time(0, 17.0), 8.5)
         self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
         self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
+
+    def test_sampling_sequential_dist(self):
+        params = {
+            'Arrival_distributions': [['Sequential', [0.2, 0.4, 0.6, 0.8]]],
+            'Service_distributions': [['Sequential', [0.9, 0.7, 0.5, 0.3, 0.1]]],
+            'Number_of_servers': [1],
+            'Transition_matrices': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        Nw = Q.transitive_nodes[0]
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.7)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.5)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.3)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.1)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
+        self.assertEqual(round(
+            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.7)
+
+        # First arrival will be offset by 1, as first customer's inter-arrival
+        # time has already been sampled by the arrival node
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.4)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.6)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.8)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.2)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.4)
+        self.assertEqual(round(
+            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.6)
+
+    @given(dist1=lists(floats(min_value=0.001, max_value=10000),
+                       min_size=1,
+                       max_size=20),
+           dist2=lists(floats(min_value=0.001, max_value=10000),
+                       min_size=1,
+                       max_size=20))
+    def test_sampling_sequential_dist_hypothesis(self, dist1, dist2):
+        my_sequential_dist_1 = dist1
+        my_sequential_dist_2 = dist2
+        params = {
+            'Arrival_distributions': [['Sequential', my_sequential_dist_1]],
+            'Service_distributions': [['Sequential', my_sequential_dist_2]],
+            'Number_of_servers': [1],
+            'Transition_matrices': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(params))
+        Nw = Q.transitive_nodes[0]
+
+        len1 = len(my_sequential_dist_1)
+        len2 = len(my_sequential_dist_2)
+
+        expected_inter_arrival_times = 3*my_sequential_dist_1 + my_sequential_dist_1[:1]
+        expected_service_times = 3*my_sequential_dist_2
+
+        inter_arrivals = [Nw.simulation.inter_arrival_times[Nw.id_number][0]() for _ in range(3*len1)]
+        services = [Nw.simulation.service_times[Nw.id_number][0]() for _ in range(3*len2)]
+        self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
+        self.assertEqual(services, expected_service_times)
