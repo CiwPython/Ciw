@@ -15,6 +15,7 @@ Ciw allows a number continuous service and inter-arrival time distributions, as 
 - :ref:`lognormal_dist`
 - :ref:`weibull_dist`
 - :ref:`empirical_dist`
+- :ref:`sequential_dist`
 - :ref:`custom_pdf`
 - :ref:`own_functions`
 - :ref:`time_dependent`
@@ -142,6 +143,21 @@ Input list of observations::
 Input path to :code:`.csv` file::
 
     ['Empirical', '<path_to_file>']
+
+
+
+
+
+.. _sequential_dist:
+
+------------------------
+Sequential Distributions
+------------------------
+
+The sequential distribution takes a list, and iteratively returns the next observation in that list over time.
+The distribution is cyclic, and so once all elements of the list have been sampled, the sequence of sampled values begins again from the beginning of the list::
+
+    ['Sequential', [0.1, 0.1, 0.2, 0.1, 0.3, 0.2]]
 
 
 
