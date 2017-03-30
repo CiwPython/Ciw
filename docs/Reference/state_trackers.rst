@@ -1,8 +1,8 @@
 .. _refs-statetrackers:
 
-==================================
-List of Implemented State Trackers
-==================================
+=========================================================
+List of Implemented State Trackers for Deadlock Detection
+=========================================================
 
 Currently Ciw has the following state trackers:
 
@@ -13,10 +13,10 @@ Currently Ciw has the following state trackers:
 .. _naive:
 
 -----------------
-The Naïve Tracker
+The Naive Tracker
 -----------------
 
-The Naïve Tracker records the number of customers at each node, and how many of those customers are currently blocked.
+The Naive Tracker records the number of customers at each node, and how many of those customers are currently blocked.
 An example for a four node queueing network is shown below::
 
     ((3, 0), (1, 4), (10, 0), (8, 1))
@@ -34,7 +34,10 @@ The Simulation object takes in the optional argument :code:`tracker` used as fol
 The Matrix Tracker
 ------------------
 
-The Matrix Tracker records the order and destination of blockages in the form of a matrix. Alongside this the number of customers at each node is tracked. The first component, a matrix, lists the blockages from row node to column node. The entries are lists of all blockages of this type, and the numbers within denote the order at which these become blocked.
+The Matrix Tracker records the order and destination of blockages in the form of a matrix.
+Alongside this the number of customers at each node is tracked.
+The first component, a matrix, lists the blockages from row node to column node.
+The entries are lists of all blockages of this type, and the numbers within denote the order at which these become blocked.
 An example for a four node queueing network is shown below::
 
     ( ( ( (),  (),     (), ()  ),
@@ -43,7 +46,19 @@ An example for a four node queueing network is shown below::
         ( (3), (),     (), ()  ) ),
       (3, 5, 10, 9) )
 
-This denotes 3 customers at the first node, 5 customers at the second node, 10 customers at the third node, and 9 customers at the fourth node. It also tells us the order and destination of the blockages. Of the customers blocked, the first to be blocked was at node 2 to node 2; the second was at node 2 to node 4; the third was at node 4 to node 1; the fourth was at node 2 to node 2.
+This denotes:
+
++ 3 customers at the first node
++ 5 customers at the second node
++ 10 customers at the third node
++ 9 customers at the fourth node
+
+It also tells us the order and destination of the blockages:
+
++ Of the customers blocked, the first to be blocked was at node 2 to node 2
++ The second was at node 2 to node 4
++ The third was at node 4 to node 1
++ The fourth was at node 2 to node 2.
 
 The Simulation object takes in the optional argument :code:`tracker` used as follows::
 

@@ -4,7 +4,8 @@
 List of Available Results
 =========================
 
-Each time an individual completes service at a service station, a data record of that service is kept. The records should look something like the table below:
+Each time an individual completes service at a service station, a data record of that service is kept.
+The records should look something like the table below:
 
     +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-----------------------+-----------------------+
     | I.D    | Class | Node | Arrival Date | Wait Time | Service Start Date | Service Time | Service End Date | Time Blocked | Exit Date | Dest. | Queue Size at Arrival | Queue Size at Depart. |
@@ -27,7 +28,7 @@ The data records contained in this list are named tuples with the following vari
     - :code:`id_number`
        - The unique identification number for that customer.
     - :code:`customer_class`
-       - That number of that customer's customer class. If dynamic customer classes are used, this is the customer's previous class, before a new customer class is sampled after service.
+       - The number of that customer's customer class. If dynamic customer classes are used, this is the customer's previous class, before a new customer class is sampled after service.
     - :code:`node`
        - The number of the node at which the service took place.
     - :code:`arrival_date`

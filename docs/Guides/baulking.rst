@@ -15,7 +15,7 @@ For example, say we have an M/M/1 system where customers:
 
 We can define the following baulking function::
 
-    >>> def my_baulking_function(n):
+    >>> def probability_of_baulking(n):
     ...     if n < 3:
     ...         return 0.0
     ...     if n < 7:
@@ -29,7 +29,7 @@ In the parameter's dictionary we tell Ciw which node and customer class this fun
 	...     'Arrival_distributions': {'Class 0': [['Exponential', 5]]},
 	...     'Service_distributions': {'Class 0': [['Exponential', 10]]},
 	...     'Transition_matrices': {'Class 0': [[0.0]]},
-	...     'Baulking_functions': {'Class 0': [my_baulking_function]},
+	...     'Baulking_functions': {'Class 0': [probability_of_baulking]},
 	...     'Number_of_servers': [1]
 	... }
 

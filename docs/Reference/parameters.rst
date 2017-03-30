@@ -4,7 +4,8 @@
 List of Parameter Dictionary Options
 ====================================
 
-Below is a full list of the parameters that a parameter dictionary can take, along with a description of the values required. If using a parameters file then here are the arguments and values of the required :code:`.yml` file.
+Below is a full list of the parameters that a parameter dictionary can take, along with a description of the values required.
+If using a parameters file then here are the arguments and values of the required :code:`.yml` file.
 
 Arrival_distributions
 ~~~~~~~~~~~~~~~~~~~~~
@@ -12,7 +13,9 @@ Arrival_distributions
 *Required*
 
 Describes the inter-arrival distributions for each node and customer class.
-This is a dictionary, with keys as customer classes, and values are lists describing the inter-arrival distributions for each node. If only one class of customer is required it is sufficient to simply enter a list of inter-arrival distributions. For more details on inputting distributions, see :ref:`set-dists`.
+This is a dictionary, with keys as customer classes, and values are lists describing the inter-arrival distributions for each node.
+If only one class of customer is required it is sufficient to simply enter a list of inter-arrival distributions.
+For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
@@ -32,11 +35,14 @@ Baulking_functions
 
 *Optional*
 
-A dictionary of baulking functions for each customer class and each node. It describes the baulking mechanism of the customers. For more details see :ref:`baulking-functions`. If left out, then bo baulking occurs.
+A dictionary of baulking functions for each customer class and each node.
+It describes the baulking mechanism of the customers.
+For more details see :ref:`baulking-functions`.
+If left out, then bo baulking occurs.
 
 Example::
 
-    'Baulking_functions': {'Class 0': [my_baulking_function]}
+    'Baulking_functions': {'Class 0': [probability_of_baulking]}
 
 
 
@@ -45,7 +51,8 @@ Class_change_matrices
 
 *Optional*
 
-A dictionary of class change matrices for each node. For more details see :ref:`dynamic-classes`.
+A dictionary of class change matrices for each node.
+For more details see :ref:`dynamic-classes`.
 
 An example for a two node network with two classes of customer::
 
@@ -62,7 +69,8 @@ Number_of_classes
 
 *Optional*
 
-Denotes the number of customer classes in the simulation. If not included, Ciw works this out from the :code:`Arrival_distributions` argument.
+Denotes the number of customer classes in the simulation.
+If not included, Ciw works this out from the :code:`Arrival_distributions` argument.
 
 Example::
 
@@ -74,7 +82,8 @@ Number_of_nodes
 
 *Optional*
 
-Denotes the number of nodes in the queueing network. If not included, Ciw works this out from the :code:`Number_of_servers` argument.
+Denotes the number of nodes in the queueing network.
+If not included, Ciw works this out from the :code:`Number_of_servers` argument.
 
 Example::
 
@@ -86,11 +95,14 @@ Number_of_servers
 
 *Required*
 
-A list of the number of parallel servers at each node. If a server schedule is used, the name of the schedule is given instead of a number. For more details on server schedules, see :ref:`server-schedule`. A value of 'Inf' may be given is infinite servers are required.
+A list of the number of parallel servers at each node.
+If a server schedule is used, the name of the schedule is given instead of a number.
+For more details on server schedules, see :ref:`server-schedule`.
+A value of 'Inf' may be given is infinite servers are required.
 
 Example::
 
-    'Number_of_servers': [1, 2, 'Inf', 1, 'my_server_schedule']
+    'Number_of_servers': [1, 2, 'Inf', 1, 'schedule']
 
 
 Priority_classes
@@ -98,7 +110,9 @@ Priority_classes
 
 *Optional*
 
-A dictionary mapping customer classes to priorities. For more information see :ref:`priority-custs`. If left out, no priorities are used, that is all customers have equal priorities.
+A dictionary mapping customer classes to priorities.
+For more information see :ref:`priority-custs`.
+If left out, no priorities are used, that is all customers have equal priorities.
 
 Example::
 
@@ -113,7 +127,8 @@ Queue_capacities
 
 *Optional*
 
-A list of maximum queue capacities at each node. If ommitted, default values of 'Inf' for every node are given.
+A list of maximum queue capacities at each node.
+If ommitted, default values of 'Inf' for every node are given.
 
 Example::
 
@@ -126,7 +141,9 @@ Service_distributions
 *Required*
 
 Describes the service distributions for each node and customer class.
-This is a dictionary, with keys as customer classes, and values are lists describing the service distributions for each node. If only one class of customer is required it is sufficient to simply enter a list of service distributions. For more details on inputting distributions, see :ref:`set-dists`.
+This is a dictionary, with keys as customer classes, and values are lists describing the service distributions for each node.
+If only one class of customer is required it is sufficient to simply enter a list of service distributions.
+For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
@@ -148,7 +165,8 @@ Transition_matrices
 *Required*
 
 Describes the transition matrix for each customer class.
-This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the transition probabilities. If only one class of customer is required it is sufficient to simply enter single transition matrix (a list of lists).
+This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the transition probabilities.
+If only one class of customer is required it is sufficient to simply enter single transition matrix (a list of lists).
 
 An example is shown::
 
