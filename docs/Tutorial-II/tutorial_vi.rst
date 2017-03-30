@@ -56,7 +56,8 @@ To illustrate, let's simulate for 20 minutes::
 Here we see that in 10 minutes the maximum time a stool was blocked at a workstation for was 1.5 seconds.
 
 We can get information about the stools that fell off the conveyor-belt using the Simulation's :code:`rejection_dict` attribute.
-This is a dictionary, that maps node numbers to dictionaries. These dictionaries map customer class numbers to a list of times at which customers where rejected::
+This is a dictionary, that maps node numbers to dictionaries.
+These dictionaries map customer class numbers to a list of dates at which customers where rejected::
 
     >>> Q.rejection_dict
     {1: {0: [740.0, 960.0, 1140.0]}, 2: {0: []}, 3: {0: []}}
@@ -115,7 +116,7 @@ First, under the new system how many broken stools per hour do we expect?::
 	...     num_broken = len([r for r in Q.rejection_dict[1][0] if r > 600])
 	...     broken_stools.append(num_broken)
 
-	>>> sum(broken_stools)/len(broken_stools)
+	>>> sum(broken_stools) / len(broken_stools)
 	0.875
 
 Thus the new system saves an average of 5.875 stools per hour, around 58.75p per hour.

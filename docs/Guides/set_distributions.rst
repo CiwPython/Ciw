@@ -4,7 +4,9 @@
 How to Set Arrival & Service Distributions
 ==========================================
 
-Ciw offeres a variety of inter-arrival and service time distributions. They are defined in the parameters dictionary with the :code:`'Arrival_distributions'` and :code:`'Service_distributions'` keys.
+Ciw offeres a variety of inter-arrival and service time distributions.
+A full list can be found :ref:`here <refs-dists>`.
+They are defined in the parameters dictionary with the :code:`'Arrival_distributions'` and :code:`'Service_distributions'` keys.
 
 + :code:`'Arrival_distributions'`: This is the distribution that inter-arrival times are drawn from. That is the time between two consecutive arrivals. It is particular to specific nodes and customer classes.
 + :code:`'Service_distributions'`: This is the distribution that service times are drawn from. That is the amount of time a customer spends with a server (independent of how many servers there are). It is particular for to specific node and customer classes.

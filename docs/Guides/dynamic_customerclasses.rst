@@ -4,19 +4,20 @@
 How to Set Dynamic Customer Classes
 ===================================
 
-Ciw allows customers to probabilistically change their class after service. That is after service at node `k` a customer of class `i` will become class `j` with probability :math:`P(J=j \; | \; I=i, K=k)`. These probabilities are input into the system through the :code:`Class_change_matrices` option.
+Ciw allows customers to probabilistically change their class after service.
+That is after service at node `k` a customer of class `i` will become class `j` with probability :math:`P(J=j \; | \; I=i, K=k)`. These probabilities are input into the system through the :code:`Class_change_matrices` option.
 
-Consider a one node system with three classes of customer. After service (at Node 1) customers always change customer class, equally likely between the two other customer classes. The :code:`Class_change_matrices` for this system are shown below:
-    
-    +-----------------+
-    | Node 1          |
-    +=====+=====+=====+
-    | 0.0 | 0.5 | 0.5 |
-    +-----+-----+-----+
-    | 0.5 | 0.0 | 0.5 |
-    +-----+-----+-----+
-    | 0.5 | 0.5 | 0.0 |
-    +-----+-----+-----+
+Consider a one node system with three classes of customer.
+After service (at Node 1) customers always change customer class, equally likely between the two other customer classes.
+The :code:`Class_change_matrices` for this system are shown below:
+
+.. math::
+
+    \begin{pmatrix}
+    0.0 & 0.5 & 0.5 \\
+    0.5 & 0.0 & 0.5 \\
+    0.5 & 0.5 & 0.0 \\
+    \end{pmatrix}
 
 
 This is input into the simulation model by including :code:`Class_change_matrices` in the parameters dictionary::
@@ -49,3 +50,7 @@ Notice in this parameters dictionary only arrivals from Class 0 customer occur. 
     >>> recs = Q.get_all_records()
     >>> Counter([r.customer_class for r in recs])
     Counter({0: 255, 2: 125, 1: 105})
+
+
+Note that when more than one node is used, each node requires a class change matrix.
+This means than difference class change matrices can be used for each node.

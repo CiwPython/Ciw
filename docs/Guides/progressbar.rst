@@ -1,10 +1,13 @@
 .. _progress-bar:
 
-============================
-How to Envoke a Progress Bar
-============================
+===============================
+How to Implement a Progress Bar
+===============================
 
-For an individual run of a simulation, Ciw can enable a progress bar to appear. This can help visualise how far through a simulation run currently is. A progress bar may be envoked when using the methods :code:`simulate_until_max_time` and :code:`simulate_until_max_customers`. In order to implement this, add the option :code:`progress_bar=True`.
+For an individual run of a simulation, Ciw can enable a progress bar to appear.
+This can help visualise how far through a simulation run currently is.
+A progress bar may be implemented when using the methods :code:`simulate_until_max_time` and :code:`simulate_until_max_customers`.
+In order to implement this, add the option :code:`progress_bar=True`.
 
 An example when using the :code:`simulate_until_max_time` method::
 

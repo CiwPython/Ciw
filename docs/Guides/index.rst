@@ -19,6 +19,5 @@ Contents:
    server_schedule.rst
    dynamic_customerclasses.rst
    deadlock.rst
-   state_tracker.rst
    behaviour.rst
    from_file.rst

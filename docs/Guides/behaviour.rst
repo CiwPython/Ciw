@@ -4,7 +4,8 @@
 How to Get More Custom Behaviour
 ================================
 
-Ciw is very flexible. Custom behaviour can be obtained by writing new :code:`Node` and :code:`ArrivalNode` classes, that inherit from the original :code:`ciw.Node` and :code:`ciw.ArrivalNode` classes, that introduce new beahviour into the system. The classes that can be overwitten are:
+Custom behaviour can be obtained by writing new :code:`Node` and :code:`ArrivalNode` classes, that inherit from the original :code:`ciw.Node` and :code:`ciw.ArrivalNode` classes, that introduce new beahviour into the system.
+The classes that can be overwitten are:
 
 - :code:`Node`: the main node class used to represent a service centre.
 - :code:`ArrivalNode`: the node class used to generate individuals and route them to a specific :code:`Node`.
@@ -34,7 +35,8 @@ Now we run the system for 100 time units, and see that we get 484 services at th
 	>>> Counter(service_nodes)
 	Counter({1: 484})
 
-I will now create a new :code:`CustomArrivalNode` such any customers who arrive when the first node has 10 or more customers present will be sent to the second node. First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.ArrivalNode`, and overwrites the :code:`send_individual` method::
+We will now create a new :code:`CustomArrivalNode` such that any customers who arrive when the first node has 10 or more customers present will be sent to the second node.
+First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.ArrivalNode`, and overwrites the :code:`send_individual` method::
 
 	>>> class CustomArrivalNode(ciw.ArrivalNode):
 	...     def send_individual(self, next_node, next_individual):
@@ -55,7 +57,8 @@ To run the same system, we need to remove the :code:`'Queue_capacities'` from th
 	...           'Number_of_servers': [1, 1]
 	...          }
 
-Now rerun the same system, telling Ciw to use the new :code:`arrival_node_class` to use. We'll see that the same amount of services take place at Node 1, however rejected customers now have services taking place at Node 2::
+Now rerun the same system, telling Ciw to use the new :code:`arrival_node_class` to use.
+We'll see that the same amount of services take place at Node 1, however rejected customers now have services taking place at Node 2::
 
 	>>> ciw.seed(1)
 	>>> N = ciw.create_network(params)

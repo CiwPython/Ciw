@@ -4,7 +4,8 @@
 How to Set a Seed
 =================
 
-Users may wish to ensure that exactly the same steam of random numbers is used everytime a simulation is run. This ensures reproducibility of results. This can be done by setting the seed for all random number streams that Ciw uses. This can be done using the Ciw functon :code:`ciw.seed`::
+To ensure reproducibility of results users can set a seed for all the random number streams that Ciw uses.
+This can be done using the Ciw functon :code:`ciw.seed`::
     
     >>> import ciw
     >>> ciw.seed(5)
