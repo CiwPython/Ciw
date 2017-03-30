@@ -7,7 +7,7 @@ Notes on Ciw's Mechanisms
 General
 ~~~~~~~
 
-Ciw uses the *event scheduling* approach [#f1]_ , similar to the three phase approach.
+Ciw uses the *event scheduling* approach [SW14]_ , similar to the three phase approach.
 In the event scheduling approach, three types of event take place: **A Events** move the clock forward, **B Events** are pre scheduled events, and **C Events** are events that arise because a **B Event** has happened.
 
 Here **A-events** correspond to moving the clock forward to the next **B-event**.
@@ -22,8 +22,6 @@ In event scheduling the following process occurs:
 4. Carry out all **C Events** that arose due to the event carried out in (3.)
 5. Repeat (3.) - (4.) until all **B Event** scheduled for that date have been carried out
 6. Repeat (2.) - (5.) until a terminating criteria has been satisfied
-
-.. [#f1] Stewart Robinson. *Simulation: the practice of model development and use.* Palgrave Macmillan, 2014.
 
 
 Blocking Mechanism

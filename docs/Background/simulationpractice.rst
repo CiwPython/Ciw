@@ -6,7 +6,7 @@ Simulation Practice
 
 Ensuring good practice when simulation modelling is important to get meaningful analyses from the models.
 This is shown in :ref:`Tutorial IV <tutorial-iv>`.
-A recommended book on the subject is 'Simulation: The practice of model development and use' by Stewart Robinson.
+A recommended resource on the subject is [SW14]_.
 This page will briefly summarise some important aspects of carrying out simulation model analysis.
 
 -------------------------------

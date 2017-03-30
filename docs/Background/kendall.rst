@@ -4,7 +4,7 @@
 Kendall's Notation
 ==================
 
-Kendall's notation is used as shorthand to denote single node queueing systems [#f2]_.
+Kendall's notation is used as shorthand to denote single node queueing systems [WS09]_.
 
 A queue is characterised by:
 
@@ -66,4 +66,3 @@ Some examples:
    + Infinite population
    + First in first out
 
-.. [#f2] W. Stewart. *Probability, markov chains, queues, and simulation.* Princeton university press, 2009.

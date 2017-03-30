@@ -11,3 +11,4 @@ Contents:
    kendall.rst
    codestructure.rst
    other.rst
+   references.rst
