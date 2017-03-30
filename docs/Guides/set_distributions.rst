@@ -16,7 +16,7 @@ The following example, with two nodes and two customer classes, uses eight diffe
     >>> params = {'Arrival_distributions': {'Class 0': [['Deterministic', 0.4],
     ...                                                 ['Empirical', [0.1, 0.1, 0.1, 0.2]]],
     ...                                     'Class 1': [['Deterministic', 0.2],
-    ...                                                 ['Custom', [[0.5, 0.2], [0.5, 0.4]]]]},
+    ...                                                 ['Custom', [0.2, 0.4], [0.5, 0.5]]]},
     ...           'Service_distributions': {'Class 0': [['Exponential', 6.0],
     ...                                                 ['Lognormal', -1, 0.5]],
     ...                                     'Class 1': [['Uniform', 0.1, 0.7],

@@ -169,9 +169,11 @@ The distribution is cyclic, and so once all elements of the list have been sampl
 Custom PDFs
 -----------
 
-Ciw allows users to define their own custom PDFs to sample from. This distribution samples from a set of values given a probability for each value, that is sampling the value :math:`x` with probability :math:`P(x)`. For example, if :math:`P(1.4) = 0.2`, :math:`P(1.7) = 0.5`, and :math:`P(1.9) = 0.3`, this is defined in the following way::
+Ciw allows users to define their own custom PDFs to sample from.
+This distribution samples from a set of values given a probability for each value, that is sampling the value :math:`x` with probability :math:`P(x)`.
+For example, if :math:`P(1.4) = 0.2`, :math:`P(1.7) = 0.5`, and :math:`P(1.9) = 0.3`, this is defined in the following way::
 
-    ['Custom', [[0.2, 1.4], [0.5, 1.7], [0.3, 1.9]]]
+    ['Custom', [1.4, 1.7, 1.9], [0.2, 0.5, 0.3]]
 
 
 
