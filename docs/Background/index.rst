@@ -7,6 +7,8 @@ Contents:
    :maxdepth: 2
    
    simulationpractice.rst
-   threephase.rst
+   mechanisms.rst
+   kendall.rst
    codestructure.rst
    other.rst
+   references.rst

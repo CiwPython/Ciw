@@ -760,11 +760,11 @@ class TestSampling(unittest.TestCase):
     def test_timedependent_function_dist(self):
         params = {
             'Arrival_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Service_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
@@ -829,9 +829,9 @@ class TestSampling(unittest.TestCase):
     def test_broken_timedependent_function_dist(self):
         params = {
             'Arrival_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)]],
+                ['TimeDependent', time_dependent_function_1]],
             'Service_distributions': [
-                ['TimeDependent', lambda t : broken_td_func(t)]],
+                ['TimeDependent', broken_td_func]],
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
@@ -844,11 +844,11 @@ class TestSampling(unittest.TestCase):
     def test_timedependent_exact(self):
         params = {
             'Arrival_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Service_distributions': [
-                ['TimeDependent', lambda t : time_dependent_function_1(t)],
-                ['TimeDependent', lambda t : time_dependent_function_2(t)]],
+                ['TimeDependent', time_dependent_function_1],
+                ['TimeDependent', time_dependent_function_2]],
             'Number_of_servers': [1, 1],
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]

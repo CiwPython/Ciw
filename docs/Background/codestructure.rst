@@ -4,7 +4,7 @@
 Code Structure
 ==============
 
-Ciw is structured in an object orientated manor.
+Ciw is structured in an object orientated way:
 
 
 .. image:: ../_static/codestructure.svg
@@ -12,7 +12,7 @@ Ciw is structured in an object orientated manor.
    :alt: Code structure for Ciw.
    :align: center
 
-Ciw consists of 3 types of objects, Core, Input, and Optional.
+Ciw consists of 3 types of objects, Core, Input, and Optional:
 
 Core:
 
