@@ -188,7 +188,7 @@ class TestScheduling(unittest.TestCase):
             'Arrival_distributions': [['Deterministic', 7.0]],
             'Service_distributions': [['Deterministic', 5.0]],
             'Transition_matrices': [[0.0]],
-            'ourschedule': ([[15, 1], [17, 0], [100, 2]], True),
+            'ourschedule': ([[1, 15], [0, 17], [2, 100]], True),
             'Number_of_servers': ['ourschedule']
         }
         N = ciw.create_network(params)
@@ -213,7 +213,7 @@ class TestScheduling(unittest.TestCase):
             'Arrival_distributions': [['Deterministic', 7.0]],
             'Service_distributions': [['Deterministic', 5.0]],
             'Transition_matrices': [[0.0]],
-            'ourschedule': ([[15, 1], [17, 0], [100, 2]], True),
+            'ourschedule': ([[1, 15], [0, 17], [2, 100]], True),
             'Number_of_servers': ['ourschedule']
         }
         N = ciw.create_network(params)
@@ -238,7 +238,7 @@ class TestScheduling(unittest.TestCase):
             'Arrival_distributions': [['Deterministic', 3.0]],
             'Service_distributions': [['Deterministic', 10.0]],
             'Transition_matrices': [[0.0]],
-            'ourschedule': ([[12.5, 4], [17, 0], [100, 1]], True),
+            'ourschedule': ([[4, 12.5], [0, 17], [1, 100]], True),
             'Number_of_servers': ['ourschedule']
         }
         N = ciw.create_network(params)
