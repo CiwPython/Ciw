@@ -22,12 +22,12 @@ class Node(object):
         node = self.simulation.network.service_centres[id_ - 1]
         if node.schedule:
             raw_schedule = node.schedule
-            self.cyclelength = self.increment_time(0, raw_schedule[-1][0])
-            boundaries = [0] + [row[0] for row in raw_schedule[:-1]]
-            servers = [row[1] for row in raw_schedule]
+            self.cyclelength = self.increment_time(0, raw_schedule[-1][1])
+            boundaries = [0] + [row[1] for row in raw_schedule[:-1]]
+            servers = [row[0] for row in raw_schedule]
             self.schedule = [list(pair) for pair in zip(boundaries, servers)]
             self.c = self.schedule[0][1]
-            raw_schedule_boundaries = [row[0] for row in raw_schedule]
+            raw_schedule_boundaries = [row[1] for row in raw_schedule]
             self.date_generator = self.date_from_schedule_generator(
                 raw_schedule_boundaries)
             self.next_shift_change = next(self.date_generator)
@@ -37,14 +37,14 @@ class Node(object):
         self.node_capacity = node.queueing_capacity + self.c
         self.transition_row = [
             self.simulation.network.customer_classes[
-            cls].transition_matrix[id_ - 1] for cls in range(
+            clss].transition_matrix[id_ - 1] for clss in range(
             self.simulation.network.number_of_classes)]
         self.class_change = node.class_change_matrix
         self.individuals = [[] for _ in
                 range(simulation.number_of_priority_classes)]
         self.id_number = id_
         self.baulking_functions = [self.simulation.network.customer_classes[
-            cls].baulking_functions[id_-1] for cls in range(
+            clss].baulking_functions[id_-1] for clss in range(
             self.simulation.network.number_of_classes)]
         if self.schedule:
             self.next_event_date = self.next_shift_change
@@ -351,14 +351,14 @@ class Node(object):
             node_to_receive_from.release(individual_to_receive_index,
                 self, current_time)
 
-    def get_service_time(self, cls, current_time):
+    def get_service_time(self, clss, current_time):
         """
         Returns a service time for the given customer class
         """
-        if self.simulation.network.customer_classes[cls].service_distributions[
+        if self.simulation.network.customer_classes[clss].service_distributions[
             self.id_number-1][0] == 'TimeDependent':
-            return self.simulation.service_times[self.id_number][cls](current_time)
-        return self.simulation.service_times[self.id_number][cls]()
+            return self.simulation.service_times[self.id_number][clss](current_time)
+        return self.simulation.service_times[self.id_number][clss]()
 
     def take_servers_off_duty(self):
         """
