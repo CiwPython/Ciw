@@ -8,7 +8,7 @@ from decimal import getcontext
 from collections import namedtuple
 from itertools import cycle
 
-from .auxiliary import random_choice
+from .auxiliary import *
 from .node import Node
 from .exactnode import ExactNode, ExactArrivalNode
 from .arrival_node import ArrivalNode
@@ -129,6 +129,9 @@ class Simulation(object):
         if self.source(c, n, kind)[0] == 'Weibull':
             return lambda : weibullvariate(self.source(c, n, kind)[1],
                                            self.source(c, n, kind)[2])
+        if self.source(c, n, kind)[0] == 'Normal':
+            return lambda : truncated_normal(self.source(c, n, kind)[1],
+                                             self.source(c, n, kind)[2])
         if self.source(c, n, kind)[0] == 'Custom':
             values = self.source(c, n, kind)[1]
             probs = self.source(c, n, kind)[2]
