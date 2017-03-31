@@ -50,8 +50,7 @@ class TestSimulation(unittest.TestCase):
                            rm):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
-                  'Number_of_servers': [number_of_servers],
-                  'Transition_matrices': [[0.0]]}
+                  'Number_of_servers': [number_of_servers]}
 
         Q = ciw.Simulation(ciw.create_network(params))
 
@@ -592,7 +591,6 @@ class TestSimulation(unittest.TestCase):
         params_dict = {
             'Arrival_distributions': [['Deterministic', 5.0]],
             'Service_distributions': [['Deterministic', 21.0]],
-            'Transition_matrices': [[0.0]],
             'Number_of_servers': [1],
             'Baulking_functions': [my_baulking_function]
         }
@@ -693,14 +691,12 @@ class TestSimulation(unittest.TestCase):
         params_c1 = {
             'Arrival_distributions': [['Exponential', 5]],
             'Service_distributions': [['Deterministic', 0.2]],
-            'Transition_matrices': [[0.0]],
             'Number_of_servers': [1]
         }
 
         params_c0 = {
             'Arrival_distributions': [['Exponential', 5]],
             'Service_distributions': [['Deterministic', 0.2]],
-            'Transition_matrices': [[0.0]],
             'Number_of_servers': [0]
         }
 

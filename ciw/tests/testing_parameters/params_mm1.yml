@@ -12,6 +12,3 @@ Service_distributions:
   - - Exponential
     - 14.0
 Simulation_time: 1000
-Transition_matrices:
-  Class 0:
-  - - 0.0

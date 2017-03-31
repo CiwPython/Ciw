@@ -111,9 +111,10 @@ def fill_out_dictionary(params_input):
     if isinstance(params['Service_distributions'], list):
         srv_dists = params['Service_distributions']
         params['Service_distributions'] = {'Class 0': srv_dists}
-    if isinstance(params['Transition_matrices'], list):
-        trns_mat = params['Transition_matrices']
-        params['Transition_matrices'] = {'Class 0': trns_mat}
+    if 'Transition_matrices' in params:
+        if isinstance(params['Transition_matrices'], list):
+            trns_mat = params['Transition_matrices']
+            params['Transition_matrices'] = {'Class 0': trns_mat}
     if 'Baulking_functions' in params:
         if isinstance(params['Baulking_functions'], list):
             blk_fncs = params['Baulking_functions']
@@ -121,6 +122,8 @@ def fill_out_dictionary(params_input):
 
     default_dict = {
         'Name': 'Simulation',
+        'Transition_matrices': {'Class ' + str(i): [[0.0]]
+            for i in range(len(params['Arrival_distributions']))},
         'Number_of_nodes': len(params['Number_of_servers']),
         'Number_of_classes': len(params['Arrival_distributions']),
         'Queue_capacities': ['Inf' for _ in range(len(
