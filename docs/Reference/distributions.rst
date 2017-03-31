@@ -12,6 +12,7 @@ Ciw allows a number continuous service and inter-arrival time distributions, as 
 - :ref:`triangular_dist`
 - :ref:`exponential_dist`
 - :ref:`gamma_dist`
+- :ref:`normal_dist`
 - :ref:`lognormal_dist`
 - :ref:`weibull_dist`
 - :ref:`empirical_dist`
@@ -93,6 +94,22 @@ The gamma distribution samples a random number from the gamma distribution with 
 In the parameters dictionary, write a gamma distribution with parameters :math:`\alpha = 0.6` and :math:`\beta = 1.2` as follows::
 
     ['Gamma', 0.6, 1.2]
+
+
+
+
+
+.. _normal_dist:
+
+---------------------------------
+The Truncated Normal Distribution
+---------------------------------
+
+The truncated normal distribution samples a random number from the normal distribution with mean parameter :math:`\mu` and sstandard deviation :math:`\sigma`.
+The distribution is truncated at 0, thus if negative numbers are sampled then that observation is resampled until a positive value is sampled.
+In the parameters dictionary, write a normal distribution with parameters :math:`\mu = 0.7` and :math:`\sigma = 0.4` as follows::
+
+    ['Normal', 0.7, 0.4]
 
 
 
