@@ -24,7 +24,6 @@ Let's define our bank, and create our Network object::
     >>> params = {
     ... 'Arrival_distributions': [['Exponential', 0.2]],
     ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Transition_matrices': [[0.0]],
     ... 'Number_of_servers': [3]
     ... }
     >>> N = ciw.create_network(params)
@@ -63,7 +62,6 @@ Let's repeat the analysis with 4 servers::
     >>> params = {
     ... 'Arrival_distributions': [['Exponential', 0.2]],
     ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Transition_matrices': [[0.0]],
     ... 'Number_of_servers': [4]
     ... }
     >>> N = ciw.create_network(params)

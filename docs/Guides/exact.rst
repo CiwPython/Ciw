@@ -20,7 +20,6 @@ Let's look at an example::
     >>> params = {
     ...     'Arrival_distributions': [['Exponential', 5]],
     ...     'Service_distributions': [['Exponential', 10]],
-    ...     'Transition_matrices': [[0.0]],
     ...     'Number_of_servers': [1]
     ... }
     >>> N = ciw.create_network(params)

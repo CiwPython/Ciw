@@ -35,17 +35,12 @@ A parameters dictionary must contain the following information about the system:
    + The distribution of times spent in service with a server.
    + In this case an average of 10 mins.
 
-+ A transition matrix (:code:`Transition_matrices`)
-   + This will be discussed more in :ref:`Tutorial V <tutorial-v>`.
-   + For now, we will input :code:`[[0.0]]`, implying one node with no customers rejoining the queue.
-
 The *parameters dictionary* is a Python dictionary containing this information.
 For our bank system, write out the dictionary below::
 
     >>> params = {
     ... 'Arrival_distributions': [['Exponential', 0.2]],
     ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Transition_matrices': [[0.0]],
     ... 'Number_of_servers': [3]
     ... }
 

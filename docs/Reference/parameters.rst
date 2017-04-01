@@ -162,7 +162,9 @@ An example where only one class of customer is required::
 Transition_matrices
 ~~~~~~~~~~~~~~~~~~~
 
-*Required*
+*Required for more than 1 node*
+
+*Optional for 1 node*
 
 Describes the transition matrix for each customer class.
 This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the transition probabilities.
@@ -180,6 +182,6 @@ An example where only one class of customer is required::
     'Transition_matrices': [[0.5, 0.3],
                             [0.2, 0.6]]
 
-An example of a single node network with only one class of customer::
+If using only one node, the default value is::
 
-    'Transition_matrices': [[0.0]]
+    'Transition_matrices': {'Class 0`: [[0.0]]}

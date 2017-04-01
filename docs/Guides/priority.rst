@@ -31,8 +31,6 @@ To implement this, define the parameters dictionary with the :code:`Priority_cla
     ...                               'Class 1': [['Exponential', 5]]},
     ...     'Service_distributions': {'Class 0': [['Exponential', 10]],
     ...                               'Class 1': [['Exponential', 10]]},
-    ...     'Transition_matrices': {'Class 0': [[0.0]],
-    ...                             'Class 1': [[0.0]]},
     ...     'Priority_classes': {'Class 0': 0, 'Class 1': 1},
     ...     'Number_of_servers': [1]
     ... }

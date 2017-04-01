@@ -48,6 +48,7 @@ The transition matrix for the café system looks like this:
 
 
 That is 30% of cold food customers then go to hot food, while the remaining 70% go to the till, and 100% of hot food customers go to the till.
+This is included in the parameters dictionary with the key :code:`Transition_matrices`.
 So, our parameters dictionary for the café looks like this::
 
     >>> params = {

@@ -29,7 +29,6 @@ Also to include in the parameters dictionary is the schedule itself::
     >>> params = {
     ...     'Arrival_distributions': [['Exponential', 5]],
     ...     'Service_distributions': [['Exponential', 10]],
-    ...     'Transition_matrices': [[0.0]],
     ...     'Number_of_servers': ['schedule'],
     ...     'schedule': [[2, 10], [0, 30], [1, 100]]
     ... }

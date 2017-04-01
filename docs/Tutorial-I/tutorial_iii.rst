@@ -10,7 +10,6 @@ In the previous tutorials, we defined and simulated our bank for a week, and saw
     >>> params = {
     ... 'Arrival_distributions': [['Exponential', 0.2]],
     ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Transition_matrices': [[0.0]],
     ... 'Number_of_servers': [3]
     ... }
     >>> ciw.seed(1)

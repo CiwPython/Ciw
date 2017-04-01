@@ -40,7 +40,6 @@ Let's implement this into a one node infinite server queue::
     >>> params = {
     ...     'Arrival_distributions': [['TimeDependent', time_dependent_function]],
     ...     'Service_distributions': [['Deterministic', 0.0]],
-    ...     'Transition_matrices': [[0.0]],
     ...     'Number_of_servers': ['Inf']
     ... }
 

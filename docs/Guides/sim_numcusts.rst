@@ -18,7 +18,6 @@ Consider an :ref:`M/M/1/3 <kendall-notation>` queue::
 	>>> params = {
 	...     'Arrival_distributions': [['Exponential', 10]],
 	...     'Service_distributions': [['Exponential', 5]],
-	...     'Transition_matrices': [[0.0]],
 	...     'Number_of_servers': [1],
 	...     'Queue_capacities': [3]
 	... }
