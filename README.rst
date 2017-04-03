@@ -46,7 +46,7 @@ Import Ciw::
 
     >>> import ciw
 
-To define an M/M/3 queue, with :math:`\lambda = 0.2` and :math:`\mu = 0.1`::
+To define an M/M/3 queue, with λ = 0.2 and  μ = 0.1::
 
     >>> params = {
     ... 'Arrival_distributions': [['Exponential', 0.2]],
