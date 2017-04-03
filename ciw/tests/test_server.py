@@ -6,7 +6,7 @@ from hypothesis.strategies import integers
 class TestServer(unittest.TestCase):
 
     def test_init_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[1]
         s = ciw.Server(N, 3)
@@ -18,7 +18,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(s.offduty, False)
 
     def test_repr_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         s = ciw.Server(N, 4)

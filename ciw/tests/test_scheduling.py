@@ -4,7 +4,7 @@ import ciw
 class TestScheduling(unittest.TestCase):
 
     def test_change_shift_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 30
@@ -35,7 +35,7 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(N.c, 3)
 
     def test_take_servers_off_duty_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         N.add_new_servers(3)
@@ -75,7 +75,7 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(N.interrupted_individuals, [])
 
     def test_check_if_shiftchange_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 12.0
@@ -83,7 +83,7 @@ class TestScheduling(unittest.TestCase):
         N.next_event_date = 30.0
         self.assertEqual(N.check_if_shiftchange(), True)
 
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = Q.transitive_nodes[0]
         N.next_event_date = 12.0
@@ -93,7 +93,7 @@ class TestScheduling(unittest.TestCase):
 
 
     def test_kill_server_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         s = N.servers[0]
@@ -117,7 +117,7 @@ class TestScheduling(unittest.TestCase):
             ['Server 3 at Node 1'])
 
     def test_add_new_servers_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         self.assertEqual([str(obs) for obs in N.servers],
@@ -132,7 +132,7 @@ class TestScheduling(unittest.TestCase):
 
 
     def test_take_servers_off_duty_preempt_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
         N.preempt = True
@@ -191,7 +191,7 @@ class TestScheduling(unittest.TestCase):
             'ourschedule': ([[1, 15], [0, 17], [2, 100]], True),
             'Number_of_servers': ['ourschedule']
         }
-        N = ciw.create_network(params)
+        N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
 
         self.assertTrue(Q.nodes[1].preempt)
@@ -216,7 +216,7 @@ class TestScheduling(unittest.TestCase):
             'ourschedule': ([[1, 15], [0, 17], [2, 100]], True),
             'Number_of_servers': ['ourschedule']
         }
-        N = ciw.create_network(params)
+        N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
 
         self.assertTrue(Q.nodes[1].preempt)
@@ -241,7 +241,7 @@ class TestScheduling(unittest.TestCase):
             'ourschedule': ([[4, 12.5], [0, 17], [1, 100]], True),
             'Number_of_servers': ['ourschedule']
         }
-        N = ciw.create_network(params)
+        N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
         self.assertTrue(Q.nodes[1].preempt)
 
