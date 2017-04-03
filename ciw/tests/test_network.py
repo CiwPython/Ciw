@@ -360,9 +360,9 @@ class TestNetwork(unittest.TestCase):
         params1 = ['A', 'list', 'of', 'things.']
         params2 = "notayamlfile.csv"
         params3 = 10
-        self.assertEqual(ciw.create_network(parameters_dictionary=params1), None)
-        self.assertEqual(ciw.create_network(parameters_dictionary=params2), None)
-        self.assertEqual(ciw.create_network(parameters_dictionary=params3), None)
+        self.assertEqual(ciw.create_network(**params1), None)
+        self.assertEqual(ciw.create_network(**params2), None)
+        self.assertEqual(ciw.create_network(**params3), None)
 
 
 class TestImportNoMatrix(unittest.TestCase):
@@ -371,7 +371,7 @@ class TestImportNoMatrix(unittest.TestCase):
         params = {'Arrival_distributions': [['Exponential', 1.0]],
                   'Service_distributions': [['Exponential', 2.0]],
                   'Number_of_servers': [1]}
-        N = ciw.create_network(parameters_dictionary=params)
+        N = ciw.create_network(**params)
         self.assertEqual([c.transition_matrix for c in N.customer_classes], [[[0.0]]])
 
         params = {
