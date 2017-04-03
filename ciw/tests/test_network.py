@@ -356,14 +356,6 @@ class TestNetwork(unittest.TestCase):
         params_list[22]['Class_change_matrices'] = {'Node 1':[[1.5]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[22])
 
-    def test_create_network_returns_none(self):
-        params1 = ['A', 'list', 'of', 'things.']
-        params2 = "notayamlfile.csv"
-        params3 = 10
-        self.assertEqual(ciw.create_network(**params1), None)
-        self.assertEqual(ciw.create_network(**params2), None)
-        self.assertEqual(ciw.create_network(**params3), None)
-
 
 class TestImportNoMatrix(unittest.TestCase):
 
@@ -374,13 +366,14 @@ class TestImportNoMatrix(unittest.TestCase):
         N = ciw.create_network(**params)
         self.assertEqual([c.transition_matrix for c in N.customer_classes], [[[0.0]]])
 
-        params = {
-            'Arrival_distributions': {'Class 0': [['Exponential', 1.0]],
-                                      'Class 1': [['Exponential', 1.0]]},
-            'Service_distributions': {'Class 0': [['Exponential', 2.0]],
-                                      'Class 1': [['Exponential', 1.0]]},
-            'Number_of_servers': [1]}
-        N = ciw.create_network(params)
+        N = ciw.create_network(
+                Arrival_distributions={'Class 0': [['Exponential', 1.0]],
+                                       'Class 1': [['Exponential', 1.0]]},
+                Service_distributions={'Class 0': [['Exponential', 2.0]],
+                                       'Class 1': [['Exponential', 1.0]]},
+                Number_of_servers=[1]
+            )
+
         self.assertEqual([c.transition_matrix for c in N.customer_classes], [[[0.0]], [[0.0]]])
 
         params = {'Arrival_distributions': [['Exponential', 1.0], ['Exponential', 1.0]],
