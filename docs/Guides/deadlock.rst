@@ -20,24 +20,27 @@ Ciw then records the time until deadlock from each state.
 
 In order to take advantage of this feature, set the :code:`deadlock_detection` argument to one of the deadlock detection methods when creating the Simulation object.
 Currently only :code:`'StateDigraph'` is implemented.
-Then use the :code:`simulate_until_deadlock` method. The attribute :code:`times_to_deadlock` contains the times to deadlock from each state.
+Then use the :code:`simulate_until_deadlock` method.
+The attribute :code:`times_to_deadlock` contains the times to deadlock from each state.
 
 Consider the :ref:`M/M/1/3 <kendall-notation>` queue where customers have probability 0.5 of rejoining the queue after service.
 If the queue is full then that customer gets blocked, and hence the system deadlocks.
 
 Parameters::
 
-    >>> params = {'Arrival_distributions': [['Exponential', 6.0]],
-    ...           'Service_distributions': [['Exponential', 5.0]],
-    ...           'Transition_matrices': [[0.5]],
-    ...           'Number_of_servers': [1],
-    ...           'Queue_capacities': [3]}
+    >>> import ciw
+    >>> N = ciw.create_network(
+    ...    Arrival_distributions=[['Exponential', 6.0]],
+    ...    Service_distributions=[['Exponential', 5.0]],
+    ...    Transition_matrices=[[0.5]],
+    ...    Number_of_servers=[1],
+    ...    Queue_capacities=[3]
+    ... )
 
 Running until deadlock::
 
     >>> import ciw
     >>> ciw.seed(1)
-    >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
     >>> Q.simulate_until_deadlock()
     >>> Q.times_to_deadlock # doctest:+SKIP
@@ -63,14 +66,15 @@ The following states are expected if a Naive Tracker is used: ((0, 0)), ((1, 0))
 Simulating until deadlock, the :code:`times_to_deadlock` dictionary will contain a subset of these states as keys::
 
     >>> import ciw
-    >>> params = {'Arrival_distributions': [['Exponential', 6.0]],
-    ...           'Service_distributions': [['Exponential', 5.0]],
-    ...           'Transition_matrices': [[0.5]],
-    ...           'Number_of_servers': [2],
-    ...           'Queue_capacities': [1]}
+    >>> N = ciw.create_network(
+    ...    Arrival_distributions=[['Exponential', 6.0]],
+    ...    Service_distributions=[['Exponential', 5.0]],
+    ...    Transition_matrices=[[0.5]],
+    ...    Number_of_servers=[2],
+    ...    Queue_capacities=[1]
+    ... )
 
     >>> ciw.seed(1)
-    >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph', tracker='Naive')
     >>> Q.simulate_until_deadlock()
     >>> Q.times_to_deadlock # doctest:+SKIP
@@ -79,7 +83,6 @@ Simulating until deadlock, the :code:`times_to_deadlock` dictionary will contain
 The following states are expected if a Matrix Tracker is used: ((()), (0)), ((()), (1)), ((()), (2)), ((()), (3)), (((1)), (3)), (((1, 2)), (3)).
 
     >>> ciw.seed(1)
-    >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph', tracker='Matrix')
     >>> Q.simulate_until_deadlock()
     >>> Q.times_to_deadlock # doctest:+SKIP

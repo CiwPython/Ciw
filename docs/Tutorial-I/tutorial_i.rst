@@ -15,13 +15,14 @@ We can use computer simulation to find out.
 Here we will simulate this system, that is make the computer pretend customers arrive and get served at the bank.
 We can then look at all the virtual customers that passed through the bank, and gain an understanding of how that system would behave if it existed in real life.
 
-This is where Ciw comes in. Let's import Ciw::
+This is where Ciw comes in.
+Let's import Ciw::
 
     >>> import ciw
 
 Now we need to tell Ciw what our system looks like and how it behaves.
-We do this using a *parameters dictionary*.
-A parameters dictionary must contain the following information about the system:
+We do this by creating a Network object.
+It takes in keywords containing the following information about the system:
 
 + Number of servers (:code:`Number_of_servers`)
    + How many servers are on duty at the bank.
@@ -35,30 +36,24 @@ A parameters dictionary must contain the following information about the system:
    + The distribution of times spent in service with a server.
    + In this case an average of 10 mins.
 
-The *parameters dictionary* is a Python dictionary containing this information.
-For our bank system, write out the dictionary below::
+For our bank system, create the Network::
 
-    >>> params = {
-    ... 'Arrival_distributions': [['Exponential', 0.2]],
-    ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Number_of_servers': [3]
-    ... }
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Exponential', 0.2]],
+    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Number_of_servers=[3]
+    ... )
 
-This dictionary fully defines our bank.
+This fully defines our bank.
 Notice the distributions; :code:`'Exponential'` here means the inter-arrival and service times are derived from an `exponential distribution <https://en.wikipedia.org/wiki/Exponential_distribution>`_.
 The parameters :code:`0.2` and :code:`0.1` imply an average of 5 and 10 time units respectively.
-Therefore this parameters dictionary defines our system in minutes.
+Therefore this Network object defines our system in minutes.
 
 First we will :ref:`set a seed <set-seed>`. This is :ref:`good practice <simulation-practice>`, and also ensures your results and our results are identical.
 
     >>> ciw.seed(1)
 
-Now we will create a :code:`Network` object.
-This is Ciw's way of organising the information contained in the parameters dictionary::
-
-    >>> N = ciw.create_network(params)
-
-Once we have a :code:`Network` object, we can create a :code:`Simulation` object.
+Now we can create a :code:`Simulation` object.
 This is the engine that will run the simulation:
 
     >>> Q = ciw.Simulation(N)

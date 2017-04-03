@@ -1,10 +1,10 @@
 .. _refs-params:
 
-====================================
-List of Parameter Dictionary Options
-====================================
+==================
+List of Parameters
+==================
 
-Below is a full list of the parameters that a parameter dictionary can take, along with a description of the values required.
+Below is a full list of the parameters that the :code:`create_network` function can take, along with a description of the values required.
 If using a parameters file then here are the arguments and values of the required :code:`.yml` file.
 
 Arrival_distributions
@@ -19,15 +19,15 @@ For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    'Arrival_distributions': {'Class 0': [['Exponential', 2.4],
-                                          ['Uniform', 0.3, 0.5]],
-                              'Class 1': [['Exponential', 3.0],
-                                          ['Deterministic', 0.8]]}
+    Arrival_distributions={'Class 0': [['Exponential', 2.4],
+                                       ['Uniform', 0.3, 0.5]],
+                           'Class 1': [['Exponential', 3.0],
+                                       ['Deterministic', 0.8]]}
 
 An example where only one class of customer is required::
 
-    'Arrival_distributions': [['Exponential', 2.4],
-                              ['Exponential', 2.0]]
+    Arrival_distributions=[['Exponential', 2.4],
+                           ['Exponential', 2.0]]
 
 
 Baulking_functions
@@ -42,7 +42,7 @@ If left out, then bo baulking occurs.
 
 Example::
 
-    'Baulking_functions': {'Class 0': [probability_of_baulking]}
+    Baulking_functions={'Class 0': [probability_of_baulking]}
 
 
 
@@ -56,12 +56,12 @@ For more details see :ref:`dynamic-classes`.
 
 An example for a two node network with two classes of customer::
 
-    'Class_change_matrices': {'Node 0': [[0.3, 0.4, 0.3],
-                                         [0.1, 0.9, 0.0],
-                                         [0.5, 0.1, 0.4]],
-                              'Node 1': [[1.0, 0.0, 0.0],
-                                         [0.4, 0.5, 0.1],
-                                         [0.2, 0.2, 0.6]]}
+    Class_change_matrices={'Node 0': [[0.3, 0.4, 0.3],
+                                      [0.1, 0.9, 0.0],
+                                      [0.5, 0.1, 0.4]],
+                           'Node 1': [[1.0, 0.0, 0.0],
+                                      [0.4, 0.5, 0.1],
+                                      [0.2, 0.2, 0.6]]}
 
 
 Number_of_classes
@@ -74,7 +74,7 @@ If not included, Ciw works this out from the :code:`Arrival_distributions` argum
 
 Example::
 
-    'Number_of_classes': 3
+    Number_of_classes=3
 
 
 Number_of_nodes
@@ -87,7 +87,7 @@ If not included, Ciw works this out from the :code:`Number_of_servers` argument.
 
 Example::
 
-    'Number_of_nodes': 6
+    Number_of_nodes=6
 
 
 Number_of_servers
@@ -102,7 +102,7 @@ A value of 'Inf' may be given is infinite servers are required.
 
 Example::
 
-    'Number_of_servers': [1, 2, 'Inf', 1, 'schedule']
+    Number_of_servers=[1, 2, 'Inf', 1, 'schedule']
 
 
 Priority_classes
@@ -116,9 +116,9 @@ If left out, no priorities are used, that is all customers have equal priorities
 
 Example::
 
-    'Priority_classes': {'Class 0': 0,
-                         'CLass 1': 1,
-                         'Class 2': 1}
+    Priority_classes={'Class 0': 0,
+                      'CLass 1': 1,
+                      'Class 2': 1}
 
 
 
@@ -132,7 +132,7 @@ If ommitted, default values of 'Inf' for every node are given.
 
 Example::
 
-    'Queue_capacities': [5, 'Inf', 'Inf', 10]
+    Queue_capacities=[5, 'Inf', 'Inf', 10]
 
 
 Service_distributions
@@ -147,10 +147,10 @@ For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    'Service_distributions': {'Class 0': [['Exponential', 4.4],
-                                          ['Uniform', 0.1, 0.9]],
-                              'Class 1': [['Exponential', 6.0],
-                                          ['Lognormal', 0.5, 0.6]]}
+    Service_distributions={'Class 0': [['Exponential', 4.4],
+                                       ['Uniform', 0.1, 0.9]],
+                           'Class 1': [['Exponential', 6.0],
+                                       ['Lognormal', 0.5, 0.6]]}
 
 An example where only one class of customer is required::
 
@@ -172,16 +172,16 @@ If only one class of customer is required it is sufficient to simply enter singl
 
 An example is shown::
 
-    'Transition_matrices': {'Class 0': [[0.1, 0.3],
-                                        [0.0, 0.8]],
-                            'Class 1': [[0.0, 1.0],
-                                        [0.0, 0.0]]}
+    Transition_matrices={'Class 0': [[0.1, 0.3],
+                                     [0.0, 0.8]],
+                         'Class 1': [[0.0, 1.0],
+                                     [0.0, 0.0]]}
 
 An example where only one class of customer is required::
 
-    'Transition_matrices': [[0.5, 0.3],
-                            [0.2, 0.6]]
+    Transition_matrices=[[0.5, 0.3],
+                         [0.2, 0.6]]
 
 If using only one node, the default value is::
 
-    'Transition_matrices': {'Class 0`: [[0.0]]}
+    Transition_matrices={'Class 0`: [[0.0]]}

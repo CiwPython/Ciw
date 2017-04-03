@@ -22,22 +22,21 @@ We can define the following baulking function::
     ...         return 0.5
     ...     return 1.0
 
-In the parameter's dictionary we tell Ciw which node and customer class this function applies to with the :code:`Baulking_functions` key::
+When creating the Network object we tell Ciw which node and customer class this function applies to with the :code:`Baulking_functions` keyword::
 	
 	>>> import ciw
-	>>> params = {
-	...     'Arrival_distributions': {'Class 0': [['Exponential', 5]]},
-	...     'Service_distributions': {'Class 0': [['Exponential', 10]]},
-	...     'Baulking_functions': {'Class 0': [probability_of_baulking]},
-	...     'Number_of_servers': [1]
-	... }
+	>>> N = ciw.create_network(
+	...      Arrival_distributions={'Class 0': [['Exponential', 5]]},
+	...      Service_distributions={'Class 0': [['Exponential', 10]]},
+	...      Baulking_functions={'Class 0': [probability_of_baulking]},
+	...      Number_of_servers=[1]
+	... )
 
 When the system is simulated, the baulked customers are recorded in the Simulation object's :code:`baulked_dict`.
 This is a dictionary, that maps node numbers to dictionaries.
 These dictionaries map customer class numbers to a list of dates at which customers baulked::
 
 	>>> ciw.seed(1)
-	>>> N = ciw.create_network(params)
 	>>> Q = ciw.Simulation(N)
 	>>> Q.simulate_until_max_time(45.0)
 	>>> Q.baulked_dict
