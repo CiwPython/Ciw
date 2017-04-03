@@ -4,8 +4,8 @@ import unittest
 import sys
 
 
-def load_tests(loader, tests, ignore):
-    for root, dirs, files in os.walk("./docs"):
+def load_tests(loader, tests, ignorex):
+    for root, dirs, files in os.walk("."):
         for f in files:
             if f.endswith(".rst"):
                  tests.addTests(doctest.DocFileSuite(os.path.join(root, f),
