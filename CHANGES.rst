@@ -1,6 +1,18 @@
 History
 -------
 
+v1.0.0 (2017-04-04)
+~~~~~~~~~~~~~~~~~~~~
+- ciw.create_network takes in kwargs, not dictionary.
+- Add Sequential distribution.
+- Add truncated Normal distribution.
+- Refactor inputs for custom PDF.
+- Refactor inputs for server schedules.
+- Transition matrix now optional for 1 node networks.
+- Overhaul of documentation.
+- Add CONTRIBUTING.rst.
+- Slight improvement of ciw.random_choice.
+
 v0.2.11 (2017-03-13)
 ~~~~~~~~~~~~~~~~~~~~
 - Add ability to simulate until max number of customers have passed arrived/been accepted/passed through the system.
