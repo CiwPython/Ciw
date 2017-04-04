@@ -19,7 +19,7 @@ Customers in class 1 and class 2 are both placed in priority class 1; they have 
 Note:
 
 * The lower the priority class number, the higher the priority. Customers in priority class 0 have higher priority than those with in priority class 1, who have higher priority than those in priority class 2, etc.
-* Priority classes are essentially Python indices, therefore if there are a total of 5 priority classes, priorities **must** be labelled 0, 1, 2, 3, 4. Skipping a priority class, or naming priority classes anything other than increasing integers from 0 wil cause an error.
+* Priority classes are essentially Python indices, therefore if there are a total of 5 priority classes, priorities **must** be labelled 0, 1, 2, 3, 4. Skipping a priority class, or naming priority classes anything other than increasing integers from 0 will cause an error.
 * The priority discipline used is non-preemptive. Customers always finish their service and are not interrupted by higher priority customers.
 
 

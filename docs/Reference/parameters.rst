@@ -154,8 +154,8 @@ An example is shown::
 
 An example where only one class of customer is required::
 
-    'Service_distributions': [['Exponential', 4.8],
-                              ['Exponential', 5.2]]
+    Service_distributions=[['Exponential', 4.8],
+                           ['Exponential', 5.2]]
 
 
 
@@ -184,4 +184,4 @@ An example where only one class of customer is required::
 
 If using only one node, the default value is::
 
-    Transition_matrices={'Class 0`: [[0.0]]}
+    Transition_matrices={'Class 0': [[0.0]]}
