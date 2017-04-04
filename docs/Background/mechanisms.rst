@@ -48,7 +48,7 @@ Simultaneous Events
 In discrete event simulation, simultaneous event are inevitable.
 That is two or more events that are scheduled to happen at the same time.
 However due to the nature of discrete event simulation, these event cannot be carried out computationally at the same time, and the order at which these events are computed can greatly effect their eventual outcome.
-For example, if two customers are scheduled to arrive at an empty M/M/1 queue at the same date: which one should begin service and which one should wait?
+For example, if two customers are scheduled to arrive at an empty :ref:`M/M/1 <kendall-notation>` queue at the same date: which one should begin service and which one should wait?
 
 In Ciw, to prevent any bias, whenever more than one event is scheduled to happen simultaneously, the next event to be computed is uniformly randomly selected from the list of events to be undertaken.
 

@@ -18,15 +18,14 @@ A full explanation of these can be found :ref:`here <simulation-practice>`.
 2. **Cool-down:** Simulate the system for some time after the end of the observation period, such that no concerned customers are stuck in the simulation when results collection happens. Only collect results until the end of the observation period.
 3. **Trials:** Simulate the system many times with different random number streams (different :ref:`seeds <set-seed>`). Keep all interested results from all trials, so that we may take averages and confidence intervals.
 
-Let's define our bank, and create our Network object::
+Let's define our bank by creating our Network object::
 
     >>> import ciw
-    >>> params = {
-    ... 'Arrival_distributions': [['Exponential', 0.2]],
-    ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Number_of_servers': [3]
-    ... }
-    >>> N = ciw.create_network(params)
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Exponential', 0.2]],
+    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Number_of_servers=[3]
+    ... )
 
 For simplicity, we will be concerned with finding the mean waiting time only.
 We'll run 10 simulations in a loop, and take a warm-up time and a cool-down time of 100 time units.
@@ -59,12 +58,11 @@ Using Ciw, we have found that on average customers wait 4.23 minutes in the queu
 What would happen if we added an extra server?
 Let's repeat the analysis with 4 servers::
 
-    >>> params = {
-    ... 'Arrival_distributions': [['Exponential', 0.2]],
-    ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Number_of_servers': [4]
-    ... }
-    >>> N = ciw.create_network(params)
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Exponential', 0.2]],
+    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Number_of_servers=[4]
+    ... )
 
     >>> average_waits = []
     >>> for trial in range(10):

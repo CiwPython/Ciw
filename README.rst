@@ -46,15 +46,13 @@ Import Ciw::
 
     >>> import ciw
 
-To define an M/M/3 queue, with λ = 0.2 and  μ = 0.1::
+To define an M/M/3 queue, with λ = 0.2 and μ = 0.1::
 
-    >>> params = {
-    ... 'Arrival_distributions': [['Exponential', 0.2]],
-    ... 'Service_distributions': [['Exponential', 0.1]],
-    ... 'Number_of_servers': [3]
-    ... }
-
-    >>> N = ciw.create_network(params)
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Exponential', 0.2]],
+    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Number_of_servers=[3]
+    ... )
 
 Now set a seed, create a Simulation object, and simulate for 1440 time units::
 

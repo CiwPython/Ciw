@@ -16,30 +16,27 @@ Imagine a manufacturing plant that produces stools:
 
 Each broken stool costs the factory 10p in wasted wood.
 We wish to know how many stools will fall to the floor and break per hour of operation, and thus the average cost per hour.
-First let's define the parameters dictionary.
-A restricted network such as this is represented by nearly the same parameters dictionary as an unrestricted network, but we now include the dictionary key :code:`Queue_capacities`::
+First let's define the Network.
+A restricted network such as this is represented by nearly the same Network object as an unrestricted network, but we now include the keyword :code:`Queue_capacities`::
 
-	>>> params = {
-	...     'Arrival_distributions': [['Deterministic', 4.0],
-	...                               'NoArrivals',
-	...                               'NoArrivals'],
-	...     'Service_distributions': [['Uniform', 3, 5],
-	...                               ['Uniform', 3, 5],
-	...                               ['Uniform', 3, 5]],
-	...     'Transition_matrices': [[0.0, 1.0, 0.0],
-	...                             [0.0, 0.0, 1.0],
-	...                             [0.0, 0.0, 0.0]],
-	...     'Number_of_servers': [1, 1, 1],
-	...     'Queue_capacities': [3, 3, 3]
-	... }
+    >>> import ciw
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Deterministic', 4.0],
+    ...                            'NoArrivals',
+    ...                            'NoArrivals'],
+    ...     Service_distributions=[['Uniform', 3, 5],
+    ...                            ['Uniform', 3, 5],
+    ...                            ['Uniform', 3, 5]],
+    ...     Transition_matrices=[[0.0, 1.0, 0.0],
+    ...                          [0.0, 0.0, 1.0],
+    ...                          [0.0, 0.0, 0.0]],
+    ...     Number_of_servers=[1, 1, 1],
+    ...     Queue_capacities=[3, 3, 3]
+    ... )
 
 The time taken to attach a leg to the stool (service time) is sampled using the uniform distribution.
 This samples values equally likely between an upper and lower limit.
 Note the time units here are in seconds.
-Let's create a Network object::
-
-    >>> import ciw
-    >>> N = ciw.create_network(params)
 
 If we simulate this, we have access to information about the blockages, for example the amount of time a stool was spent blocked at each node.
 To illustrate, let's simulate for 20 minutes::
@@ -71,20 +68,19 @@ To get the number of stools rejected, take the length of this list::
 Now we'll run 8 trials, and get the average number of rejections in an hour. We will take a warm-up time of 10 minutes.
 A cool-down will be unnecessary as we are recording rejections, which happen at the time of arrival::
 
-	>>> broken_stools = []
-	>>> for trial in range(8):
-	...     ciw.seed(trial)
-	...     N = ciw.create_network(params)
-	...     Q = ciw.Simulation(N)
-	...     Q.simulate_until_max_time(4200)
-	...     num_broken = len([r for r in Q.rejection_dict[1][0] if r > 600])
-	...     broken_stools.append(num_broken)
+    >>> broken_stools = []
+    >>> for trial in range(8):
+    ...     ciw.seed(trial)
+    ...     Q = ciw.Simulation(N)
+    ...     Q.simulate_until_max_time(4200)
+    ...     num_broken = len([r for r in Q.rejection_dict[1][0] if r > 600])
+    ...     broken_stools.append(num_broken)
 
-	>>> broken_stools
-	[7, 4, 7, 8, 5, 8, 9, 6]
+    >>> broken_stools
+    [7, 4, 7, 8, 5, 8, 9, 6]
 
-	>>> sum(broken_stools)/len(broken_stools)
-	6.75
+    >>> sum(broken_stools)/len(broken_stools)
+    6.75
 
 On average the system gets 6.75 broken stools per hour; costing and average of 67.5p per hour of operation.
 
@@ -93,31 +89,30 @@ How many hours of operation will the manufacturing plant need to run for so that
 
 First, under the new system how many broken stools per hour do we expect?::
 
-	>>> params = {
-	...     'Arrival_distributions': [['Deterministic', 4.0],
-	...                               'NoArrivals',
-	...                               'NoArrivals'],
-	...     'Service_distributions': [['Uniform', 3.5, 4.5],
-	...                               ['Uniform', 3.5, 4.5],
-	...                               ['Uniform', 3.5, 4.5]],
-	...     'Transition_matrices': [[0.0, 1.0, 0.0],
-	...                             [0.0, 0.0, 1.0],
-	...                             [0.0, 0.0, 0.0]],
-	...     'Number_of_servers': [1, 1, 1],
-	...     'Queue_capacities': [3, 3, 3]
-	... }
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Deterministic', 4.0],
+    ...                            'NoArrivals',
+    ...                            'NoArrivals'],
+    ...     Service_distributions=[['Uniform', 3.5, 4.5],
+    ...                            ['Uniform', 3.5, 4.5],
+    ...                            ['Uniform', 3.5, 4.5]],
+    ...     Transition_matrices=[[0.0, 1.0, 0.0],
+    ...                          [0.0, 0.0, 1.0],
+    ...                          [0.0, 0.0, 0.0]],
+    ...     Number_of_servers=[1, 1, 1],
+    ...     Queue_capacities=[3, 3, 3]
+    ... )
 
-	>>> broken_stools = []
-	>>> for trial in range(8):
-	...     ciw.seed(trial)
-	...     N = ciw.create_network(params)
-	...     Q = ciw.Simulation(N)
-	...     Q.simulate_until_max_time(4200)
-	...     num_broken = len([r for r in Q.rejection_dict[1][0] if r > 600])
-	...     broken_stools.append(num_broken)
+    >>> broken_stools = []
+    >>> for trial in range(8):
+    ...     ciw.seed(trial)
+    ...     Q = ciw.Simulation(N)
+    ...     Q.simulate_until_max_time(4200)
+    ...     num_broken = len([r for r in Q.rejection_dict[1][0] if r > 600])
+    ...     broken_stools.append(num_broken)
 
-	>>> sum(broken_stools) / len(broken_stools)
-	0.875
+    >>> sum(broken_stools) / len(broken_stools)
+    0.875
 
 Thus the new system saves an average of 5.875 stools per hour, around 58.75p per hour.
 Therefore it would take :math:`2500/0.5875 \approx 4255.32` hours of operation for the system to begin paying off.

@@ -22,36 +22,35 @@ In this set-up we have a scenario where two different types of customer are acce
 + The baby specialist clinic is Node 2.
 + The children's specialist clinic is Node 3.
 
-We assign different behaviour for different customer classes by replacing the values of the parameters dictionary with dictionaries, with customer classes as keys and the required behaviour as values::
+We assign different behaviour for different customer classes by replacing the values of the keywords of the Network object with dictionaries, with customer classes as keys and the required behaviour as values::
 
-    >>> params = {
-    ...     'Arrival_distributions': {'Class 0': [['Exponential', 1.0],
-    ...                                            'NoArrivals',
-    ...                                            'NoArrivals'],
-    ...                               'Class 1': [['Exponential', 2.0],
-    ...                                           'NoArrivals',
-    ...                                           'NoArrivals']},
-    ...     'Service_distributions': {'Class 0': [['Exponential', 4.0],
-    ...                                           ['Exponential', 1.0],
-    ...                                           ['Deterministic', 0.0]],
-    ...                               'Class 1': [['Exponential', 6.0],
-    ...                                           ['Deterministic', 0.0],
-    ...                                           ['Exponential', 1.0]]},
-    ...     'Transition_matrices': {'Class 0': [[0.0, 1.0, 0.0],
-    ...                                         [0.0, 0.0, 0.0],
-    ...                                         [0.0, 0.0, 0.0]],
-    ...                             'Class 1': [[0.0, 0.0, 1.0],
-    ...                                         [0.0, 0.0, 0.0],
-    ...                                         [0.0, 0.0, 0.0]]}, 
-    ...     'Number_of_servers': [1, 2, 3],
-    ... }
+    >>> import ciw
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions={'Class 0': [['Exponential', 1.0],
+    ...                                        'NoArrivals',
+    ...                                        'NoArrivals'],
+    ...                            'Class 1': [['Exponential', 2.0],
+    ...                                        'NoArrivals',
+    ...                                        'NoArrivals']},
+    ...     Service_distributions={'Class 0': [['Exponential', 4.0],
+    ...                                        ['Exponential', 1.0],
+    ...                                        ['Deterministic', 0.0]],
+    ...                            'Class 1': [['Exponential', 6.0],
+    ...                                        ['Deterministic', 0.0],
+    ...                                        ['Exponential', 1.0]]},
+    ...     Transition_matrices={'Class 0': [[0.0, 1.0, 0.0],
+    ...                                      [0.0, 0.0, 0.0],
+    ...                                      [0.0, 0.0, 0.0]],
+    ...                          'Class 1': [[0.0, 0.0, 1.0],
+    ...                                      [0.0, 0.0, 0.0],
+    ...                                      [0.0, 0.0, 0.0]]}, 
+    ...     Number_of_servers=[1, 2, 3],
+    ... )
 
 Notice that where we know certain customer classes will not require a service (for example babies will never require service at the children's specialist: Class 0 customers will never require service at Node 3) we are still required to input a service distribution. We choose the dummy distribution :code:`['Deterministic', 0.0]`.
 
 Let's simulate this clinic for 9 hours::
 
-    >>> import ciw
-    >>> N = ciw.create_network(params)
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(9)
     >>> recs = Q.get_all_records()

@@ -51,13 +51,15 @@ Example
 
 
 The example below shows the simplest way to perform multiple replications, and use a warm-up and cool-down time, in Ciw.
-It shows how to find the average waiting time in an M/M/1 queue::
+It shows how to find the average waiting time in an :ref:`M/M/1 <kendall-notation>` queue::
 
     >>> import ciw
-    >>> params = {'Arrival_distributions': [['Exponential', 5.0]],
-    ...           'Service_distributions': [['Exponential', 8.0]],
-    ...           'Transition_matrices': [[0.0]],
-    ...           'Number_of_servers': [1]}
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Exponential', 5.0]],
+    ...     Service_distributions=[['Exponential', 8.0]],
+    ...     Transition_matrices=[[0.0]],
+    ...     Number_of_servers=[1]
+    ... )
     >>>
     >>> average_waits = []
     >>> warmup = 10
@@ -66,7 +68,6 @@ It shows how to find the average waiting time in an M/M/1 queue::
     >>>
     >>> for s in range(25):
     ...     ciw.seed(s)
-    ...     N = ciw.create_network(params)
     ...     Q = ciw.Simulation(N)
     ...     Q.simulate_until_max_time(warmup + maxsimtime + cooldown)
     ...     recs = Q.get_all_records()

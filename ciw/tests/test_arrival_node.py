@@ -5,7 +5,7 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_init_method(self):
         ciw.seed(5)
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
@@ -20,7 +20,7 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_initialise_event_dates_dict_method(self):
         ciw.seed(6)
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         dates_dict_1 = {1: {0: 0.4362282541, 1: 0.2672232406, 2: 0.3864256273},
@@ -40,14 +40,14 @@ class TestArrivalNode(unittest.TestCase):
             dates_dict_2)
 
     def test_repr_method(self):
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(str(N), 'Arrival Node')
 
     def test_find_next_event_date_method(self):
         ciw.seed(1)
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00105)
@@ -63,7 +63,7 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_have_event_method(self):
         ciw.seed(1)
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
@@ -94,7 +94,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_node, 3)
 
         ciw.seed(12)
-        Q = ciw.Simulation(ciw.create_network(
+        Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
@@ -132,7 +132,7 @@ class TestArrivalNode(unittest.TestCase):
            ['Exponential', 1.0],
            ['Exponential', 4.0],
            ['Exponential', 3.5]]
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
         self.assertEqual(
             AN.simulation.network.customer_classes[0].arrival_distributions[0],
@@ -147,7 +147,7 @@ class TestArrivalNode(unittest.TestCase):
                   'Transition_matrices':[[0.0, 1.0], [0.0, 0.0]],
                   'Number_of_servers':[1, 1],
                   'Queue_capacities':[1, 1]}
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.rejection_dict,
@@ -158,7 +158,7 @@ class TestArrivalNode(unittest.TestCase):
                   'Service_distributions':[['Exponential', 10.0]],
                   'Transition_matrices':[[0.5]],
                   'Number_of_servers':[1]}
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
         ind1 = ciw.Individual(555)
         ind2 = ciw.Individual(666)
@@ -176,7 +176,7 @@ class TestArrivalNode(unittest.TestCase):
                   'Service_distributions':[['Exponential', 10.0]],
                   'Transition_matrices':[[0.5]],
                   'Number_of_servers':[1]}
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
         AN.next_event_date = 3.33
         self.assertEqual(AN.rejection_dict, {1: {0: []}})
@@ -191,7 +191,7 @@ class TestArrivalNode(unittest.TestCase):
                   'Service_distributions':[['Exponential', 10.0]],
                   'Transition_matrices':[[0.5]],
                   'Number_of_servers':[1]}
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
         AN.next_event_date = 3.33
         AN.update_next_event_date()

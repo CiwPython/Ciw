@@ -38,7 +38,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Uniform', 2.2, 3.3]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nu = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -74,7 +74,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Uniform', ul, uh]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nu = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(
@@ -92,22 +92,22 @@ class TestSampling(unittest.TestCase):
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_EE,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_EE,
                  'Number_of_servers':Number_of_servers,
@@ -119,7 +119,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Deterministic', 4.4]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nd = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -151,7 +151,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Deterministic', d]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nd = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertEqual(
@@ -167,12 +167,12 @@ class TestSampling(unittest.TestCase):
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                  {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
@@ -184,7 +184,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Triangular', 1.1, 6.6, 1.5]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nt = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -220,7 +220,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Triangular', tl, th, tm]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nt = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(
@@ -238,22 +238,22 @@ class TestSampling(unittest.TestCase):
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_EE,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_EE,
                  'Number_of_servers':Number_of_servers,
@@ -265,7 +265,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Exponential', 4.4]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Ne = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -297,7 +297,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Exponential', e]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Ne = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(
@@ -311,7 +311,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Gamma', 0.6, 1.2]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Ng = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -344,7 +344,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Gamma', ga, gb]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Ng = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(
@@ -358,7 +358,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Lognormal', 0.8, 0.2]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nl = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -391,7 +391,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Lognormal', lm, lsd]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nl = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(
@@ -405,7 +405,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Weibull', 0.9, 0.8]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -438,7 +438,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Weibull', wa, wb]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(
@@ -453,7 +453,7 @@ class TestSampling(unittest.TestCase):
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -487,7 +487,7 @@ class TestSampling(unittest.TestCase):
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(
@@ -503,7 +503,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Empirical', my_empirical_dist]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nem = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -539,7 +539,7 @@ class TestSampling(unittest.TestCase):
                 'ciw/tests/testing_parameters/sample_empirical_dist.csv']],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nem = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Nem.simulation.service_times[
@@ -557,12 +557,12 @@ class TestSampling(unittest.TestCase):
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions': Arrival_distributions_E,
                  'Service_distributions': Service_distributions,
                  'Number_of_servers': Number_of_servers,
                  'Transition_matrices': Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions': Arrival_distributions,
                  'Service_distributions': Service_distributions_E,
                  'Number_of_servers': Number_of_servers,
@@ -576,7 +576,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Custom', my_custom_dist_values, my_custom_dist_probs]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nc = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(round(
@@ -613,7 +613,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Custom', cust_vals, probs]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nc = Q.transitive_nodes[0]
         for itr in range(10): # Because repition happens in the simulation
             self.assertTrue(Nc.simulation.service_times[
@@ -637,22 +637,22 @@ class TestSampling(unittest.TestCase):
         Number_of_servers = [1]
         Transition_matrices = [[0.1]]
         Simulation_time = 2222
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_EE,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
                  'Transition_matrices':Transition_matrices})
-        self.assertRaises(ValueError, ciw.create_network,
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_EE,
                  'Number_of_servers':Number_of_servers,
@@ -670,7 +670,7 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
@@ -733,7 +733,7 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
@@ -754,7 +754,7 @@ class TestSampling(unittest.TestCase):
             'Service_distributions': [['Deterministic', 6.6]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Na = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(
@@ -766,13 +766,13 @@ class TestSampling(unittest.TestCase):
                   'Number_of_servers': [1],
                   'Transition_matrices': [[0.1]],
                   'Simulation_time': 2222}
-        self.assertRaises(ValueError, ciw.create_network, params)
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary, params)
         params = {'Arrival_distributions': [['skjfhkjsfhjk']],
                   'Service_distributions': [['Exponential', 9.5]],
                   'Number_of_servers': [1],
                   'Transition_matrices': [[0.1]],
                   'Simulation_time': 2222}
-        self.assertRaises(ValueError, ciw.create_network, params)
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary, params)
 
     @given(positive_float=floats(min_value=0.0, max_value=100.0),
            negative_float=floats(min_value=-100.0, max_value=0.0),
@@ -781,7 +781,8 @@ class TestSampling(unittest.TestCase):
     def test_check_userdef_dist(self, positive_float, negative_float, word, rm):
         assume(negative_float < 0)
         Q = ciw.Simulation(
-            ciw.create_network('ciw/tests/testing_parameters/params.yml'))
+            ciw.create_network_from_yml(
+            'ciw/tests/testing_parameters/params.yml'))
         self.assertEqual(
             Q.check_userdef_dist(lambda : positive_float), positive_float)
         self.assertRaises(
@@ -802,7 +803,7 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
@@ -867,7 +868,7 @@ class TestSampling(unittest.TestCase):
                 ['TimeDependent', broken_td_func]],
             'Number_of_servers': [1]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         N = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertRaises(ValueError, N.simulation.service_times[N.id_number][0], 3.0)
@@ -885,7 +886,7 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params), exact=26)
+        Q = ciw.Simulation(ciw.create_network(**params), exact=26)
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
@@ -907,7 +908,7 @@ class TestSampling(unittest.TestCase):
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
         self.assertEqual(round(
             Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
@@ -954,7 +955,7 @@ class TestSampling(unittest.TestCase):
             'Number_of_servers': [1],
             'Transition_matrices': [[0.1]]
         }
-        Q = ciw.Simulation(ciw.create_network(params))
+        Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
 
         len1 = len(my_sequential_dist_1)

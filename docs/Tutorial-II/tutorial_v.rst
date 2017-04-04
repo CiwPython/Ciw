@@ -29,7 +29,7 @@ A diagram of the system is shown below:
    :alt: Diagram of café queueing network.
    :align: center
 
-This system can be described in one parameters dictionary.
+This system can be described in one Network object.
 Arrival and Service distributions are listed in the order of the nodes.
 So are number of servers.
 We do however require a *transition matrix*.
@@ -49,20 +49,21 @@ The transition matrix for the café system looks like this:
 
 That is 30% of cold food customers then go to hot food, while the remaining 70% go to the till, and 100% of hot food customers go to the till.
 This is included in the parameters dictionary with the key :code:`Transition_matrices`.
-So, our parameters dictionary for the café looks like this::
+So, our Network for the café looks like this::
 
-    >>> params = {
-    ...     'Arrival_distributions': [['Exponential', 0.3],
-    ...                               ['Exponential', 0.2],
-    ...                               'NoArrivals'],
-    ...     'Service_distributions': [['Exponential', 1.0],
-    ...                               ['Exponential', 0.4],
-    ...                               ['Exponential', 0.5]],
-    ...     'Transition_matrices': [[0.0, 0.3, 0.7],
-    ...                             [0.0, 0.0, 1.0],
-    ...                             [0.0, 0.0, 0.0]],
-    ...     'Number_of_servers': [1, 2, 2]
-    ... }
+    >>> import ciw
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Exponential', 0.3],
+    ...                            ['Exponential', 0.2],
+    ...                            'NoArrivals'],
+    ...     Service_distributions=[['Exponential', 1.0],
+    ...                            ['Exponential', 0.4],
+    ...                            ['Exponential', 0.5]],
+    ...     Transition_matrices=[[0.0, 0.3, 0.7],
+    ...                          [0.0, 0.0, 1.0],
+    ...                          [0.0, 0.0, 0.0]],
+    ...     Number_of_servers=[1, 2, 2]
+    ... )
 
 Notice the Arrival distributions:
 18 cold food arrivals per hour is equivalent to :code:`0.3` per minute; 12 hot food arrivals per hour is equivalent to :code:`0.2` per minute; and we want no arrivals to occur at the Till.
@@ -77,11 +78,9 @@ We'll use 20 minutes of cool-down time.
 We'll run 10 trials, to get a measure of the average number of customers that pass through the system.
 To find the average number of customers that pass through the system, we can count the number of data records that have passed through Node 3 (the Till)::
 
-    >>> import ciw
     >>> completed_custs = []
     >>> for trial in range(10):
     ...     ciw.seed(trial)
-    ...     N = ciw.create_network(params)
     ...     Q = ciw.Simulation(N)
     ...     Q.simulate_until_max_time(200)
     ...     recs = Q.get_all_records()

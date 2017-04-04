@@ -17,12 +17,11 @@ The argument :code:`exact` is used to indicate the precision level.
 Let's look at an example::
     
     >>> import ciw
-    >>> params = {
-    ...     'Arrival_distributions': [['Exponential', 5]],
-    ...     'Service_distributions': [['Exponential', 10]],
-    ...     'Number_of_servers': [1]
-    ... }
-    >>> N = ciw.create_network(params)
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Exponential', 5]],
+    ...     Service_distributions=[['Exponential', 10]],
+    ...     Number_of_servers=[1]
+    ... )
 
 Without envoking exact arithmetic, we see that floats are used throughout::
 

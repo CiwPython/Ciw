@@ -4,17 +4,11 @@ import copy
 from .network import *
 
 
-def create_network(params):
+def create_network(**kwargs):
     """
-    Identifies the type of parameters that is input and
-    calls the correct function
+    Takes in kwargs, creates dictionary.
     """
-    if isinstance(params, dict):
-        return create_network_from_dictionary(params)
-    if isinstance(params, str):
-        if params[-4:] == '.yml':
-            return create_network_from_yml(params)
-    return None
+    return create_network_from_dictionary(kwargs)
 
 
 def load_parameters(directory_name):
