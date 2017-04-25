@@ -220,7 +220,8 @@ This is done by feeding in a function in the following way::
 Time Dependent Distributions
 ----------------------------
 
-Similar to adding :code:`UserDefined` functions, Ciw allows for time dependent functions. These are lambda functions that take in a time parameter.
+Similar to adding :code:`UserDefined` functions, Ciw allows for time dependent functions.
+These are lambda functions that take in a time parameter.
 Ciw uses the simulation's current time to sample a new service or inter-arrival time::
 
     ['TimeDependent', time_dependent_function]
@@ -235,7 +236,7 @@ Ciw uses the simulation's current time to sample a new service or inter-arrival 
 No Arrivals
 -----------
 
-If a node does not have any arrivals of a certain class, then the following may be input into the parameters dictionary::
+If a node does not have any arrivals of a certain class, then the following may be input instead of a distribution::
 
     'NoArrivals'
 
