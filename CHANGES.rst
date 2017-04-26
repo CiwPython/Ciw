@@ -1,6 +1,11 @@
 History
 -------
 
+v1.1.0 (2017-04-26)
+~~~~~~~~~~~~~~~~~~~
+- Replace kwargs with actual keyword arguments in ciw.create_network.
+- Refactor server schedule inputs (schedules placed inside Number_of_servers instead of as their own keyword).
+
 v1.0.0 (2017-04-04)
 ~~~~~~~~~~~~~~~~~~~~
 - ciw.create_network takes in kwargs, not dictionary.
