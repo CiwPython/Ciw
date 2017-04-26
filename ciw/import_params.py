@@ -11,8 +11,7 @@ def create_network(Arrival_distributions=None,
                    Priority_classes=None,
                    Queue_capacities=None,
                    Service_distributions=None,
-                   Transition_matrices=None,
-                   **kwargs):
+                   Transition_matrices=None):
     """
     Takes in kwargs, creates dictionary.
     """

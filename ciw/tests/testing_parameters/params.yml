@@ -26,8 +26,6 @@ Arrival_distributions:
     - 2.0
   - - Exponential
     - 0.5
-Number_of_classes: 3
-Number_of_nodes: 4
 Number_of_servers:
 - 9
 - 10
@@ -69,7 +67,6 @@ Service_distributions:
     - 8.0
   - - Exponential
     - 9.0
-Simulation_time: 150
 Transition_matrices:
   Class 0:
   - - 0.1

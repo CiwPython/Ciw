@@ -382,9 +382,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Arrival_distributions={'Class 0': [['Exponential', 3.0]]},
                 Service_distributions={'Class 0': [['Exponential', 7.0]]},
                 Number_of_servers=[9],
-                Number_of_classes=1,
                 Transition_matrices={'Class 0': [[0.5]]},
-                Number_of_nodes=1,
                 Queue_capacities=['Inf']
             )
         
@@ -440,7 +438,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Number_of_servers=[9],
                 Transition_matrices={'Class 0': [[0.5]],
                                      'Class 1': [[0.0]]},
-                Number_of_nodes=1,
                 Queue_capacities=['Inf'],
                 Class_change_matrices={'Node 1': [[0.0, 1.0],
                                                   [0.2, 0.8]]}
@@ -471,7 +468,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Number_of_servers=[9],
                 Transition_matrices={'Class 0': [[0.5]],
                                      'Class 1': [[0.0]]},
-                Number_of_nodes=1,
                 Queue_capacities=['Inf'],
                 Priority_classes={'Class 0': 1,
                                   'Class 1': 0}
@@ -506,7 +502,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Transition_matrices=[[0.5, 0.0, 0.1],
                                      [0.2, 0.1, 0.0],
                                      [0.0, 0.0, 0.0]],
-                Number_of_nodes=3,
                 Queue_capacities=['Inf', 'Inf', 'Inf'],
                 Baulking_functions=[None, None, example_baulking_function]
             )
@@ -536,13 +531,20 @@ class TestCreateNetworkKwargs(unittest.TestCase):
 
 
     def test_error_no_arrivals_servers_services(self):
-        self.assertRaises(ValueError, ciw.create_network, {})
-        self.assertRaises(ValueError, ciw.create_network, {'Arrival_distributions': [['Exponential', 0.2]]})
-        self.assertRaises(ValueError, ciw.create_network, {'Service_distributions': [['Exponential', 0.2]]})
-        self.assertRaises(ValueError, ciw.create_network, {'Number_of_servers': [1]})
-        self.assertRaises(ValueError, ciw.create_network, {'Arrival_distributions': [['Exponential', 0.2]], 'Number_of_servers': [1]})
-        self.assertRaises(ValueError, ciw.create_network, {'Arrival_distributions': [['Exponential', 0.2]], 'Service_distributions': [['Exponential', 0.2]]})
-        self.assertRaises(ValueError, ciw.create_network, {'Service_distributions': [['Exponential', 0.2]], 'Number_of_servers': [1]})
+        with self.assertRaises(ValueError):
+            ciw.create_network()
+        with self.assertRaises(ValueError):
+            ciw.create_network(Arrival_distributions=[['Exponential', 0.2]])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Service_distributions=[['Exponential', 0.2]])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Number_of_servers=[1])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Arrival_distributions=[['Exponential', 0.2]], Number_of_servers=[1])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Arrival_distributions=[['Exponential', 0.2]], Service_distributions=[['Exponential', 0.2]])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Service_distributions=[['Exponential', 0.2]], Number_of_servers=[1])
 
     def test_error_extra_args(self):
         params = {'Arrival_distributions': [['Exponential', 3.0]],
@@ -550,4 +552,5 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                   'Number_of_servers': [4],
                   'Something_else': 56
                   }
-        self.assertRaises(ValueError, ciw.create_network, params)
+        with self.assertRaises(TypeError):
+            ciw.create_network(**params)
