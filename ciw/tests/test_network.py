@@ -541,3 +541,13 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                                                                    [0.0, 0.0, 0.0]])
         self.assertEqual(N.customer_classes[0].baulking_functions, [None, None, example_baulking_function])
         self.assertEqual(N.number_of_priority_classes, 1)
+
+
+    def test_error_no_arrivals_servers_services(self):
+        self.assertRaises(ValueError, ciw.create_network, {})
+        self.assertRaises(ValueError, ciw.create_network, {'Arrival_distributions': [['Exponential', 0.2]]})
+        self.assertRaises(ValueError, ciw.create_network, {'Service_distributions': [['Exponential', 0.2]]})
+        self.assertRaises(ValueError, ciw.create_network, {'Number_of_servers': [1]})
+        self.assertRaises(ValueError, ciw.create_network, {'Arrival_distributions': [['Exponential', 0.2]], 'Number_of_servers': [1]})
+        self.assertRaises(ValueError, ciw.create_network, {'Arrival_distributions': [['Exponential', 0.2]], 'Service_distributions': [['Exponential', 0.2]]})
+        self.assertRaises(ValueError, ciw.create_network, {'Service_distributions': [['Exponential', 0.2]], 'Number_of_servers': [1]})
