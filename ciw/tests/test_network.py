@@ -115,9 +115,7 @@ class TestNetwork(unittest.TestCase):
         params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]]},
                   'Service_distributions': {'Class 0': [['Exponential', 7.0]]},
                   'Number_of_servers': [9],
-                  'Number_of_classes': 1,
                   'Transition_matrices': {'Class 0': [[0.5]]},
-                  'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf']}
         N = ciw.create_network_from_dictionary(params)
         
@@ -139,12 +137,11 @@ class TestNetwork(unittest.TestCase):
                                             ['Uniform', 0.2, 0.6]],
                   'Service_distributions': [['Exponential', 7.0],
                                             ['Deterministic', 0.7]],
-                  'Number_of_servers': ['my_amazing_schedule', 3],
+                  'Number_of_servers': [[[1, 20], [4, 50]], 3],
                   'Transition_matrices': [[0.5, 0.2],
                                           [0.0, 0.0]],
-                  'Queue_capacities': [10, 'Inf'],
-                  'my_amazing_schedule': [[1, 20],
-                                          [4, 50]]}
+                  'Queue_capacities': [10, 'Inf']
+                  }
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 2)
         self.assertEqual(N.number_of_classes, 1)
@@ -172,7 +169,6 @@ class TestNetwork(unittest.TestCase):
                   'Number_of_servers': [9],
                   'Transition_matrices': {'Class 0': [[0.5]],
                                           'Class 1': [[0.0]]},
-                  'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf'],
                   'Class_change_matrices': {'Node 1': [[0.0, 1.0],
                                                        [0.2, 0.8]]}}
@@ -201,7 +197,6 @@ class TestNetwork(unittest.TestCase):
                   'Number_of_servers': [9],
                   'Transition_matrices': {'Class 0': [[0.5]],
                                           'Class 1': [[0.0]]},
-                  'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf'],
                   'Priority_classes': {'Class 0': 1,
                                        'Class 1': 0}}
@@ -230,7 +225,6 @@ class TestNetwork(unittest.TestCase):
                   'Transition_matrices': [[0.5, 0.0, 0.1],
                                           [0.2, 0.1, 0.0],
                                           [0.0, 0.0, 0.0]],
-                  'Number_of_nodes': 3,
                   'Queue_capacities': ['Inf', 'Inf', 'Inf'],
                   'Baulking_functions': [None, None, example_baulking_function]}
         N = ciw.create_network_from_dictionary(params)
@@ -388,9 +382,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Arrival_distributions={'Class 0': [['Exponential', 3.0]]},
                 Service_distributions={'Class 0': [['Exponential', 7.0]]},
                 Number_of_servers=[9],
-                Number_of_classes=1,
                 Transition_matrices={'Class 0': [[0.5]]},
-                Number_of_nodes=1,
                 Queue_capacities=['Inf']
             )
         
@@ -413,12 +405,10 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                                        ['Uniform', 0.2, 0.6]],
                 Service_distributions=[['Exponential', 7.0],
                                        ['Deterministic', 0.7]],
-                Number_of_servers=['my_amazing_schedule', 3],
+                Number_of_servers=[[[1, 20], [4, 50]], 3],
                 Transition_matrices=[[0.5, 0.2],
                                      [0.0, 0.0]],
-                Queue_capacities=[10, 'Inf'],
-                my_amazing_schedule=[[1, 20],
-                                     [4, 50]]
+                Queue_capacities=[10, 'Inf']
             )
 
         self.assertEqual(N.number_of_nodes, 2)
@@ -448,7 +438,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Number_of_servers=[9],
                 Transition_matrices={'Class 0': [[0.5]],
                                      'Class 1': [[0.0]]},
-                Number_of_nodes=1,
                 Queue_capacities=['Inf'],
                 Class_change_matrices={'Node 1': [[0.0, 1.0],
                                                   [0.2, 0.8]]}
@@ -479,7 +468,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Number_of_servers=[9],
                 Transition_matrices={'Class 0': [[0.5]],
                                      'Class 1': [[0.0]]},
-                Number_of_nodes=1,
                 Queue_capacities=['Inf'],
                 Priority_classes={'Class 0': 1,
                                   'Class 1': 0}
@@ -514,7 +502,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Transition_matrices=[[0.5, 0.0, 0.1],
                                      [0.2, 0.1, 0.0],
                                      [0.0, 0.0, 0.0]],
-                Number_of_nodes=3,
                 Queue_capacities=['Inf', 'Inf', 'Inf'],
                 Baulking_functions=[None, None, example_baulking_function]
             )
@@ -541,3 +528,29 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                                                                    [0.0, 0.0, 0.0]])
         self.assertEqual(N.customer_classes[0].baulking_functions, [None, None, example_baulking_function])
         self.assertEqual(N.number_of_priority_classes, 1)
+
+
+    def test_error_no_arrivals_servers_services(self):
+        with self.assertRaises(ValueError):
+            ciw.create_network()
+        with self.assertRaises(ValueError):
+            ciw.create_network(Arrival_distributions=[['Exponential', 0.2]])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Service_distributions=[['Exponential', 0.2]])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Number_of_servers=[1])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Arrival_distributions=[['Exponential', 0.2]], Number_of_servers=[1])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Arrival_distributions=[['Exponential', 0.2]], Service_distributions=[['Exponential', 0.2]])
+        with self.assertRaises(ValueError):
+            ciw.create_network(Service_distributions=[['Exponential', 0.2]], Number_of_servers=[1])
+
+    def test_error_extra_args(self):
+        params = {'Arrival_distributions': [['Exponential', 3.0]],
+                  'Service_distributions': [['Exponential', 7.0]],
+                  'Number_of_servers': [4],
+                  'Something_else': 56
+                  }
+        with self.assertRaises(TypeError):
+            ciw.create_network(**params)

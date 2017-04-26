@@ -4,11 +4,38 @@ import copy
 from .network import *
 
 
-def create_network(**kwargs):
+def create_network(Arrival_distributions=None,
+                   Baulking_functions=None,
+                   Class_change_matrices=None,
+                   Number_of_servers=None,
+                   Priority_classes=None,
+                   Queue_capacities=None,
+                   Service_distributions=None,
+                   Transition_matrices=None):
     """
     Takes in kwargs, creates dictionary.
     """
-    return create_network_from_dictionary(kwargs)
+    if Arrival_distributions == None or Number_of_servers == None or Service_distributions == None:
+        raise ValueError('Arrival_distributions, Service_distributions and Number_of_servers are required arguments.')
+
+    params = {
+        'Arrival_distributions': Arrival_distributions,
+        'Number_of_servers': Number_of_servers,
+        'Service_distributions': Service_distributions
+    }
+
+    if Baulking_functions != None:
+        params['Baulking_functions'] = Baulking_functions
+    if Class_change_matrices != None:
+        params['Class_change_matrices'] = Class_change_matrices
+    if Priority_classes != None:
+        params['Priority_classes'] = Priority_classes
+    if Queue_capacities != None:
+        params['Queue_capacities'] = Queue_capacities
+    if Transition_matrices != None:
+        params['Transition_matrices'] = Transition_matrices
+
+    return create_network_from_dictionary(params)
 
 
 def load_parameters(directory_name):
@@ -58,14 +85,14 @@ def create_network_from_dictionary(params_input):
         {'Node ' + str(nd + 1): None for nd in range(number_of_nodes)})
     number_of_servers, schedules, nodes, classes, preempts = [], [], [], [], []
     for c in params['Number_of_servers']:
-        if isinstance(c, str) and c != 'Inf':
-            number_of_servers.append('schedule')
-            if isinstance(params[c], tuple):
-                s = params[c][0]
-                p = params[c][1]
-            else:
-                s = params[c]
+        if isinstance(c, (tuple, list)):
+            if isinstance(c, tuple):
+                s = c[0]
+                p = c[1]
+            if isinstance(c, list):
+                s = c
                 p = False
+            number_of_servers.append('schedule')
             schedules.append(s)
             preempts.append(p)
         elif c == 'Inf':
