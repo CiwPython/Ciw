@@ -386,9 +386,8 @@ class TestSimulation(unittest.TestCase):
         params = {'Arrival_distributions': [['Exponential', 20]],
                   'Service_distributions': [['Deterministic', 0.01]],
                   'Transition_matrices': [[0.0]],
-                  'Number_of_servers': ['server_schedule'],
-                  'server_schedule': [[0, 0.5], [1, 0.55], [0, 3.0]]}
-
+                  'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
+                  }
         ciw.seed(777)
         Q = ciw.Simulation(ciw.create_network(**params))
         Q.simulate_until_max_time(10)
@@ -416,8 +415,8 @@ class TestSimulation(unittest.TestCase):
         params = {'Arrival_distributions': [['Exponential', 20]],
                   'Service_distributions': [['Deterministic', 0.01]],
                   'Transition_matrices': [[0.0]],
-                  'Number_of_servers': ['server_schedule'],
-                  'server_schedule': [[0, 0.5], [1, 0.55], [0, 3.0]]}
+                  'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
+                  }
         Q = ciw.Simulation(ciw.create_network(**params))
         self.assertEqual(Q.NodeType, ciw.Node)
         self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
@@ -448,9 +447,8 @@ class TestSimulation(unittest.TestCase):
         params = {'Arrival_distributions': [['Exponential', 20]],
                   'Service_distributions': [['Deterministic', 0.01]],
                   'Transition_matrices': [[0.0]],
-                  'Number_of_servers': ['server_schedule'],
-                  'server_schedule': [[0, 0.5], [1, 0.55], [0, 3.0]]}
-
+                  'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
+                  }
         Q = ciw.Simulation(ciw.create_network(**params),
             node_class=None, arrival_node_class=None)
         self.assertEqual(Q.NodeType, ciw.Node)

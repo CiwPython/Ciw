@@ -36,9 +36,6 @@ def create_network(Arrival_distributions=None,
     if Transition_matrices != None:
         params['Transition_matrices'] = Transition_matrices
 
-    for kw in kwargs:
-        params[kw] = kwargs[kw]
-
     return create_network_from_dictionary(params)
 
 
@@ -89,14 +86,14 @@ def create_network_from_dictionary(params_input):
         {'Node ' + str(nd + 1): None for nd in range(number_of_nodes)})
     number_of_servers, schedules, nodes, classes, preempts = [], [], [], [], []
     for c in params['Number_of_servers']:
-        if isinstance(c, str) and c != 'Inf':
-            number_of_servers.append('schedule')
-            if isinstance(params[c], tuple):
-                s = params[c][0]
-                p = params[c][1]
-            else:
-                s = params[c]
+        if isinstance(c, (tuple, list)):
+            if isinstance(c, tuple):
+                s = c[0]
+                p = c[1]
+            if isinstance(c, list):
+                s = c
                 p = False
+            number_of_servers.append('schedule')
             schedules.append(s)
             preempts.append(p)
         elif c == 'Inf':

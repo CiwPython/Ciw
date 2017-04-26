@@ -12,7 +12,7 @@ Arrival_distributions:
 Number_of_classes: 2
 Number_of_nodes: 2
 Number_of_servers:
-- 'schedule_1'
+- [[1, 30], [2, 60], [1, 90], [3, 100]]
 - 3
 Queue_capacities:
 - "Inf"
@@ -40,12 +40,3 @@ Transition_matrices:
     - 0.1
   - - 0.2
     - 0.0
-schedule_1:
-  - - 1
-    - 30
-  - - 2
-    - 60
-  - - 1
-    - 90
-  - - 3
-    - 100
