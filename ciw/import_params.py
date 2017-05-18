@@ -182,15 +182,15 @@ def validify_dictionary(params):
         raise ValueError('Ensure correct names for customer classes.')
     num_nodes_count = [
         params['Number_of_nodes']] + [
-        len(obs) for obs in params['Arrival_distributions'].values()] + [
-        len(obs) for obs in params['Service_distributions'].values()] + [
-        len(obs) for obs in params['Transition_matrices'].values()] + [
-        len(row) for row in [obs for obs in params['Transition_matrices'].values()][0]] + [
+        len(obs) for obs in list(params['Arrival_distributions'].values())] + [
+        len(obs) for obs in list(params['Service_distributions'].values())] + [
+        len(obs) for obs in list(params['Transition_matrices'].values())] + [
+        len(row) for row in [obs for obs in list(params['Transition_matrices'].values())][0]] + [
         len(params['Number_of_servers'])] + [
         len(params['Queue_capacities'])]
     if len(set(num_nodes_count)) != 1:
         raise ValueError('Ensure consistant number of nodes is used throughout.')
-    for clss in params['Transition_matrices'].values():
+    for clss in list(params['Transition_matrices'].values()):
         for row in clss:
             if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
                 raise ValueError('Ensure that transition matrix is valid.')
@@ -213,7 +213,7 @@ def validify_dictionary(params):
         node_names = set(params['Class_change_matrices']) == set(['Node ' + str(i+1) for i in range(params['Number_of_nodes'])])
         if not (num_nodes and node_names):
             raise ValueError('Ensure correct nodes used in Class_change_matrices.')
-        for nd in params['Class_change_matrices'].values():
+        for nd in list(params['Class_change_matrices'].values()):
             for row in nd:
                 if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
                     raise ValueError('Ensure that class change matrix is valid.')
@@ -223,7 +223,7 @@ def validify_dictionary(params):
                 raise ValueError('No schedule ' + str(n) + ' defined.')
 
     # Distribution parameters:::
-    for clss in params['Arrival_distributions'].values():
+    for clss in list(params['Arrival_distributions'].values()):
         for nd in clss:
             if nd != 'NoArrivals':
                 if nd[0] == 'Uniform':
@@ -251,7 +251,7 @@ def validify_dictionary(params):
                     if isinstance(nd[1], list):
                         if any([el<0.0 for el in nd[1]]):
                             raise ValueError('Empirical distribution must sample positive floats.')
-    for clss in params['Service_distributions'].values():
+    for clss in list(params['Service_distributions'].values()):
         for nd in clss:
             if nd[0] == 'Uniform':
                 if nd[1] < 0.0 or nd[2] < 0.0:
