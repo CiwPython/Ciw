@@ -1,4 +1,4 @@
-from __future__ import division
+
 import os
 import tqdm
 from random import (expovariate, uniform, triangular, gammavariate,
@@ -272,7 +272,7 @@ class Simulation(object):
             current_time = next_active_node.next_event_date
         self.times_to_deadlock = {state:
             time_of_deadlock - self.times_dictionary[state]
-            for state in self.times_dictionary.keys()}
+            for state in list(self.times_dictionary.keys())}
 
     def simulate_until_max_time(self, max_simulation_time, progress_bar=False):
         """

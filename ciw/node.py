@@ -1,4 +1,4 @@
-from __future__ import division
+
 from random import random
 import os
 from csv import writer
@@ -190,7 +190,7 @@ class Node(object):
         if self.class_change:
             individual.previous_class = individual.customer_class
             individual.customer_class = random_choice(
-                range(len(self.class_change)),
+                list(range(len(self.class_change))),
                 self.class_change[individual.previous_class])
             individual.prev_priority_class = individual.priority_class
             individual.priority_class = self.simulation.network.priority_class_mapping[individual.customer_class]
