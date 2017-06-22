@@ -38,7 +38,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(s.busy_time, 7.0)
         self.assertEqual(s.utilisation, 0.5)
 
-        # Multi serve14
+        # Multi server
         N = ciw.create_network(
             Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
             Service_distributions=[['Sequential', [10.0, 6.0, 100.0]]],

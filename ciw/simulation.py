@@ -360,6 +360,7 @@ class Simulation(object):
                     srvr.total_time = current_time
                     if srvr.busy:
                         srvr.busy_time += (current_time - srvr.cust.arrival_date)
+            nd.find_server_utilisation()
 
     def source(self, c, n, kind):
         """

@@ -57,6 +57,8 @@ class Node(object):
         self.simulation.deadlock_detector.initialise_at_node(self)
         self.preempt = node.preempt
         self.interrupted_individuals = []
+        self.all_servers_total = []
+        self.all_servers_busy = []
 
     @property
     def all_individuals(self):
@@ -270,6 +272,18 @@ class Node(object):
         else:
             next_individual_index = next_individual_indices[0]
         return self.all_individuals[next_individual_index], next_individual_index
+
+    def find_server_utilisation(self):
+        """
+        Finds the overall server utilisation for the node
+        """
+        if self.c == float('Inf') or self.c == 0:
+            self.server_utilisation = None
+        else:
+            for server in self.servers:
+                self.all_servers_total.append(server.total_time)
+                self.all_servers_busy.append(server.busy_time)
+            self.server_utilisation = sum(self.all_servers_busy) / sum(self.all_servers_total)
 
     def finish_service(self):
         """
