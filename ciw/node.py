@@ -234,6 +234,11 @@ class Node(object):
         individual.server = False
         self.simulation.deadlock_detector.action_at_detach_server(
             server)
+        if not server.busy_time:
+            server.busy_time = (individual.exit_date - individual.service_start_date)
+        else:
+            server.busy_time += (individual.exit_date - individual.service_start_date)
+        server.total_time = individual.exit_date
         if server.offduty:
             self.kill_server(server)
 

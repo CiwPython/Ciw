@@ -270,6 +270,8 @@ class Simulation(object):
             if deadlocked:
                 time_of_deadlock = current_time
             current_time = next_active_node.next_event_date
+
+        self.wrap_up_servers(time_of_deadlock)
         self.times_to_deadlock = {state:
             time_of_deadlock - self.times_dictionary[state]
             for state in self.times_dictionary.keys()}
@@ -294,6 +296,7 @@ class Simulation(object):
 
             current_time = next_active_node.next_event_date
 
+        self.wrap_up_servers(max_simulation_time)
         if progress_bar:
             remaining_time = max(max_simulation_time - self.progress_bar.n, 0)
             self.progress_bar.update(remaining_time)
@@ -336,12 +339,27 @@ class Simulation(object):
                 time_increment = check() - old_check
                 self.progress_bar.update(min(time_increment, remaining_time))
 
+            previous_time = current_time
             current_time = next_active_node.next_event_date
+
+        self.wrap_up_servers(previous_time)
 
         if progress_bar:
             remaining_time = max(max_customers - self.progress_bar.n, 0)
             self.progress_bar.update(remaining_time)
             self.progress_bar.close()
+
+    def wrap_up_servers(self, current_time):
+        """
+        Updates the servers' total_time and busy_time
+        as the end of the simulation run.
+        """
+        for nd in self.transitive_nodes:
+            if nd.c != float('Inf'):
+                for srvr in nd.servers:
+                    srvr.total_time = current_time
+                    if srvr.busy:
+                        srvr.busy_time += (current_time - srvr.cust.arrival_date)
 
     def source(self, c, n, kind):
         """

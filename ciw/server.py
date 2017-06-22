@@ -13,6 +13,13 @@ class Server(object):
         self.cust = False
         self.busy = False
         self.offduty = False
+        self.all_time = False
+        self.busy_time = False
+        self.total_time = False
+
+    @property
+    def utilisation(self):
+        return self.busy_time / self.total_time
 
     def __repr__(self):
         """
