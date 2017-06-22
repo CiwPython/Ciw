@@ -351,15 +351,12 @@ class Simulation(object):
 
     def wrap_up_servers(self, current_time):
         """
-        Updates the servers' total_time and busy_time
-        as the end of the simulation run.
+        Updates the servers' total_time and busy_time as
+        the end of the simulation run. Finds the overall
+        server utilisation for each node.
         """
         for nd in self.transitive_nodes:
-            if nd.c != float('Inf'):
-                for srvr in nd.servers:
-                    srvr.total_time = current_time
-                    if srvr.busy:
-                        srvr.busy_time += (current_time - srvr.cust.arrival_date)
+            nd.wrap_up_servers(current_time)
             nd.find_server_utilisation()
 
     def source(self, c, n, kind):

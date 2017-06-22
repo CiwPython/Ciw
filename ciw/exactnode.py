@@ -1,6 +1,7 @@
 from .node import Node
 from .arrival_node import ArrivalNode
 from decimal import Decimal, getcontext
+from .server import Server
 
 class ExactNode(Node):
     """
@@ -8,6 +9,12 @@ class ExactNode(Node):
     precise version of addition to fix discrepencies
     with floating point numbers.
     """
+    def create_starting_servers(self):
+        """
+        Initialise the servers
+        """
+        return [Server(self, i + 1, Decimal('0.0')) for i in range(self.c)]
+
     def increment_time(self, original, increment):
         """
         Increments the original time by the increment
