@@ -579,3 +579,35 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
         self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [['Individual 3'], ['Individual 4']])
         self.assertEqual([str(obs) for obs in N2.all_individuals], ['Individual 3', 'Individual 4'])
+
+    def test_server_utilisation(self):
+        # Single server
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
+            Service_distributions=[['Sequential', [1.0, 6.0, 100.0]]],
+            Number_of_servers=[1],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(14.0)
+        self.assertEqual(Q.transitive_nodes[0].server_utilisation, 0.5)
+
+        # Multi server
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
+            Service_distributions=[['Sequential', [10.0, 6.0, 100.0]]],
+            Number_of_servers=[3],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20.0)
+        self.assertEqual(Q.transitive_nodes[0].server_utilisation, 4.0/15.0)
+
+    def test_server_utilisation_with_schedules(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [2.0, 4.0, 4.0, 0.0, 7.0, 1000.0]]],
+            Service_distributions=[['Sequential', [4.0, 2.0, 6.0, 6.0, 3.0]]],
+            Number_of_servers=[[[1, 9], [2, 23]]]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(23)
+        recs = Q.get_all_records()
+        self.assertEqual(Q.transitive_nodes[0].server_utilisation, 21.0/37.0)

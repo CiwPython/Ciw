@@ -76,4 +76,12 @@ The histogram of waits below was created using matplotlib, using the following c
    :alt: Histogram of waits for Tutorial III.
    :align: center
 
+If we'd like to see how busy or idle the servers have been throughout the simulation run, we can look at the :code:`server_utilisation` of a Node.
+This is the average utilisation of each server, which is the amount of time a server was busy (with a customer), divided by the total amount of time the server was on duty::
+
+    >>> Q.transitive_nodes[0].server_utilisation
+    0.60517...
+
+Thus in out bank, on average the servers were busy 60.5% of the time.
+
 The next tutorial will show how to use Ciw to get trustworthy results, and finally find out the average waiting time at the bank.

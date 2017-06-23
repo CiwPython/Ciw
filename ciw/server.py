@@ -4,7 +4,7 @@ class Server(object):
     """
     A class to contain server information
     """
-    def __init__(self, node, id_number):
+    def __init__(self, node, id_number, start_date=0.0):
         """
         Initialise the server object
         """
@@ -13,6 +13,14 @@ class Server(object):
         self.cust = False
         self.busy = False
         self.offduty = False
+        self.all_time = False
+        self.start_date = start_date
+        self.busy_time = False
+        self.total_time = False
+
+    @property
+    def utilisation(self):
+        return self.busy_time / self.total_time
 
     def __repr__(self):
         """

@@ -52,11 +52,13 @@ class Node(object):
             self.next_event_date = float("Inf")
         self.blocked_queue = []
         if self.c < float('Inf'):
-            self.servers = [Server(self, i + 1) for i in range(self.c)]
+            self.servers = self.create_starting_servers()
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
         self.preempt = node.preempt
         self.interrupted_individuals = []
+        self.all_servers_total = []
+        self.all_servers_busy = []
 
     @property
     def all_individuals(self):
@@ -94,7 +96,7 @@ class Node(object):
         num_servers = self.schedule[shift_indx][1]
         for i in range(num_servers):
             self.highest_id += 1
-            self.servers.append(Server(self, self.highest_id))
+            self.servers.append(Server(self, self.highest_id, self.next_event_date))
 
     def attach_server(self, server, individual):
         """
@@ -216,7 +218,6 @@ class Node(object):
         self.begin_service_if_possible_change_shift(
             self.next_event_date)
 
-
     def check_if_shiftchange(self):
         """
         Check whether current time is a shift change.
@@ -224,6 +225,12 @@ class Node(object):
         if self.schedule:
             return self.next_event_date == self.next_shift_change
         return False
+
+    def create_starting_servers(self):
+        """
+        Initialise the servers
+        """
+        return [Server(self, i + 1, 0.0) for i in range(self.c)]
 
     def detatch_server(self, server, individual):
         """
@@ -234,6 +241,11 @@ class Node(object):
         individual.server = False
         self.simulation.deadlock_detector.action_at_detach_server(
             server)
+        if not server.busy_time:
+            server.busy_time = (individual.exit_date - individual.service_start_date)
+        else:
+            server.busy_time += (individual.exit_date - individual.service_start_date)
+        server.total_time = self.increment_time(individual.exit_date, -server.start_date)
         if server.offduty:
             self.kill_server(server)
 
@@ -265,6 +277,18 @@ class Node(object):
         else:
             next_individual_index = next_individual_indices[0]
         return self.all_individuals[next_individual_index], next_individual_index
+
+    def find_server_utilisation(self):
+        """
+        Finds the overall server utilisation for the node
+        """
+        if self.c == float('Inf') or self.c == 0:
+            self.server_utilisation = None
+        else:
+            for server in self.servers:
+                self.all_servers_total.append(server.total_time)
+                self.all_servers_busy.append(server.busy_time)
+            self.server_utilisation = sum(self.all_servers_busy) / sum(self.all_servers_total)
 
     def finish_service(self):
         """
@@ -301,10 +325,13 @@ class Node(object):
         """
         return original + increment
 
-    def kill_server(self,srvr):
+    def kill_server(self, srvr):
         """
         Kills server.
         """
+        srvr.total_time = self.increment_time(self.next_event_date, -srvr.start_date)
+        self.all_servers_busy.append(srvr.busy_time)
+        self.all_servers_total.append(srvr.total_time)
         indx = self.servers.index(srvr)
         del self.servers[indx]
 
@@ -397,6 +424,18 @@ class Node(object):
                 next_end_service, next_shift_change)
         else:
             self.next_event_date = next_end_service
+
+    def wrap_up_servers(self, current_time):
+        """
+        Updates the servers' total_time and busy_time
+        as the end of the simulation run.
+        """
+        if self.c != float('Inf'):
+            for srvr in self.servers:
+                srvr.total_time = self.increment_time(current_time, -srvr.start_date)
+                if srvr.busy:
+                    srvr.busy_time += self.increment_time(current_time, -srvr.cust.arrival_date)
+
 
     def write_individual_record(self, individual):
         """
