@@ -68,3 +68,25 @@ Ciw defaults to non-pre-emptive schedules, and so the following code implies a n
 
     Number_of_servers=[[[2, 10], [0, 30], [1, 100]]] # non-preemptive
 
+
+
+Overtime
+--------
+
+Non-preemptive schedules allow for the possibility of overtime, that is servers working after their shift has ended in order to complete a customer's service.
+The amount of overtime each server works is recorded in the Node object's :code:`overtime` attribute.
+Consider the following example::
+
+    >>> import ciw
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Deterministic', 3.0]],
+    ...     Service_distributions=[['Deterministic', 5.0]],
+    ...     Number_of_servers=[[[1, 4.0], [2, 10.0], [0, 100.0]]]
+    ... )
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(20.0)
+
+    >>> Q.transitive_nodes[0].overtime
+    [4.0, 1.0, 4.0]
+
+Here we see that the first server that went off duty worked 4.0 time units of overtime, the second worked 1.0 time unit of overtime, and the third worked 4.0 time units of overtime.
