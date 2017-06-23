@@ -1,5 +1,7 @@
 import unittest
 import ciw
+from decimal import Decimal
+
 
 class TestScheduling(unittest.TestCase):
 
@@ -251,3 +253,30 @@ class TestScheduling(unittest.TestCase):
         # finishing at time 12.5 (total: 9.5 time units). Then server goes off duty
         # for 4.5 time units (total: 14 time units). Then resample service time and
         # get serviced for another 10 time units (total: 24 time units).
+
+
+    def test_overtime(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [1.0, 0.0, 0.0, 8.0, 0.0, 3.0, 10000.0]]],
+            Service_distributions=[['Sequential', [5.0, 7.0, 9.0, 4.0, 5.0, 5.0]]],
+            Number_of_servers=[([[3, 7.0], [2, 11.0], [1, 20.0]], False)]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(19.0)
+
+        nd = Q.transitive_nodes[0]
+        self.assertEqual(nd.overtime, [0.0, 1.0, 3.0, 2.0, 3.0])
+        self.assertEqual(sum(nd.overtime)/len(nd.overtime), 1.8)
+
+    def test_overtime_exact(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [1.0, 0.0, 0.0, 8.0, 0.0, 3.0, 10000.0]]],
+            Service_distributions=[['Sequential', [5.0, 7.0, 9.0, 4.0, 5.0, 5.0]]],
+            Number_of_servers=[([[3, 7.0], [2, 11.0], [1, 20.0]], False)]
+        )
+        Q = ciw.Simulation(N, exact=26)
+        Q.simulate_until_max_time(19.0)
+
+        nd = Q.transitive_nodes[0]
+        self.assertEqual(nd.overtime, [Decimal('0.0'), Decimal('1.0'), Decimal('3.0'), Decimal('2.0'), Decimal('3.0')])
+        self.assertEqual(sum(nd.overtime)/len(nd.overtime), Decimal('1.8'))

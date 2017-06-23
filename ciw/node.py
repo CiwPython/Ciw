@@ -48,6 +48,7 @@ class Node(object):
             self.simulation.network.number_of_classes)]
         if self.schedule:
             self.next_event_date = self.next_shift_change
+            self.overtime = []
         else:
             self.next_event_date = float("Inf")
         self.blocked_queue = []
@@ -330,6 +331,8 @@ class Node(object):
         Kills server.
         """
         srvr.total_time = self.increment_time(self.next_event_date, -srvr.start_date)
+        self.overtime.append(
+            self.increment_time(self.next_event_date, -srvr.shift_end))
         self.all_servers_busy.append(srvr.busy_time)
         self.all_servers_total.append(srvr.total_time)
         indx = self.servers.index(srvr)
@@ -394,6 +397,7 @@ class Node(object):
         if not self.preempt:
             to_delete = []
             for srvr in self.servers:
+                srvr.shift_end = self.next_event_date
                 if srvr.busy:
                     srvr.offduty = True
                 else:
@@ -401,6 +405,7 @@ class Node(object):
         else:
             to_delete = self.servers[::1]  # copy
             for s in self.servers:
+                s.shift_end = self.next_event_date
                 if s.cust is not False:
                     self.interrupted_individuals.append(s.cust)
                     self.interrupted_individuals[-1].service_end_date = False

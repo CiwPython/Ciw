@@ -17,6 +17,7 @@ class Server(object):
         self.start_date = start_date
         self.busy_time = False
         self.total_time = False
+        self.shift_end = False
 
     @property
     def utilisation(self):
