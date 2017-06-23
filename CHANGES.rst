@@ -1,6 +1,11 @@
 History
 -------
 
+v1.1.1 (2017-06-23)
+~~~~~~~~~~~~~~~~~~~
+- Server utilisation & overtime.
+- Small fixes to docs.
+
 v1.1.0 (2017-04-26)
 ~~~~~~~~~~~~~~~~~~~
 - Replace kwargs with actual keyword arguments in ciw.create_network.
