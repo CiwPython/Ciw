@@ -131,8 +131,8 @@ html_theme_options = {
     "headtextcolor":"black",
     "linkcolor":"#cc5200",
     "visitedlinkcolor":"#cc5200",
-    "bodyfont":"Optima",
-    "headfont":"Optima",
+    "bodyfont":"Verdana",
+    "headfont":"Verdana",
     "codebgcolor":"#F7F7F7"
 }
 # Add any paths that contain custom themes here, relative to this directory.

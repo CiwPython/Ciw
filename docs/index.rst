@@ -5,7 +5,7 @@ Etymology: **Ciw**
     *noun* Welsh word for a queue. *pl.* ciwiau.
 
 Ciw is a discrete event simulation library for open queueing networks.
-It's core features include the capability to simulate networks of queues, multiple customer classes, and implementation of Type I blocking for restricted networks.
+Its core features include the capability to simulate networks of queues, multiple customer classes, and implementation of Type I blocking for restricted networks.
 A number of other features are also implemented, including priorities, baulking, schedules, and deadlock detection.
 
 Please note that Ciw is currently supported for and regularly tested on Python versions 2.7, 3.4 and 3.5.

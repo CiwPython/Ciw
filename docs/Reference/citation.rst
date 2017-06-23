@@ -6,7 +6,7 @@ Citing the Library
 Please use the following to cite the latest version of the Ciw library::
 
     @misc{ciwpython,
-      author       = {{ {The Ciw library developers} }}
+      author       = {{{The Ciw library developers}}},
       title        = {Ciw: <RELEASE TITLE>},
       year         = <YEAR>,
       doi          = {<DOI INFORMATION>},
