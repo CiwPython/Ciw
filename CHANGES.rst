@@ -5,6 +5,7 @@ v1.1.1 (2017-06-23)
 ~~~~~~~~~~~~~~~~~~~
 - Server utilisation & overtime.
 - Small fixes to docs.
+- Testing on Python 3.6.
 
 v1.1.0 (2017-04-26)
 ~~~~~~~~~~~~~~~~~~~
