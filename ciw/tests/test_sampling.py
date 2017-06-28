@@ -41,26 +41,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Nu = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nu.simulation.service_times[Nu.id_number][0](), 2), 2.89)
-        self.assertEqual(round(
-            Nu.simulation.service_times[Nu.id_number][0](), 2), 3.02)
-        self.assertEqual(round(
-            Nu.simulation.service_times[Nu.id_number][0](), 2), 3.07)
-        self.assertEqual(round(
-            Nu.simulation.service_times[Nu.id_number][0](), 2), 3.24)
-        self.assertEqual(round(
-            Nu.simulation.service_times[Nu.id_number][0](), 2), 3.01)
-        self.assertEqual(round(
-            Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 3.21)
-        self.assertEqual(round(
-            Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.23)
-        self.assertEqual(round(
-            Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.71)
-        self.assertEqual(round(
-            Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 3.24)
-        self.assertEqual(round(
-            Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2), 2.91)
+
+        samples = [round(Nu.simulation.service_times[Nu.id_number][0](), 2) for _ in range(5)]
+        expected = [2.89, 3.02, 3.07, 3.24, 3.01]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nu.simulation.inter_arrival_times[Nu.id_number][0](), 2) for _ in range(5)]
+        expected = [3.21, 2.23, 2.71, 3.24, 2.91]
+        self.assertEqual(samples, expected)
+
 
     @given(u=lists(floats(min_value=0.0, max_value=10000),
                    min_size=2,
@@ -122,26 +111,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Nd = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.service_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
-        self.assertEqual(round(
-            Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2), 4.40)
+
+        samples = [round(Nd.simulation.service_times[Nd.id_number][0](), 2) for _ in range(5)]
+        expected = [4.40, 4.40, 4.40, 4.40, 4.40]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nd.simulation.inter_arrival_times[Nd.id_number][0](), 2) for _ in range(5)]
+        expected = [4.40, 4.40, 4.40, 4.40, 4.40]
+        self.assertEqual(samples, expected)
+
 
     @given(d=floats(min_value=0.0, max_value=10000),
            rm=random_module())
@@ -187,26 +165,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Nt = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nt.simulation.service_times[Nt.id_number][0](), 2), 3.35)
-        self.assertEqual(round(
-            Nt.simulation.service_times[Nt.id_number][0](), 2), 3.91)
-        self.assertEqual(round(
-            Nt.simulation.service_times[Nt.id_number][0](), 2), 4.20)
-        self.assertEqual(round(
-            Nt.simulation.service_times[Nt.id_number][0](), 2), 5.33)
-        self.assertEqual(round(
-            Nt.simulation.service_times[Nt.id_number][0](), 2), 3.90)
-        self.assertEqual(round(
-            Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 5.12)
-        self.assertEqual(round(
-            Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 1.35)
-        self.assertEqual(round(
-            Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 2.73)
-        self.assertEqual(round(
-            Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 5.34)
-        self.assertEqual(round(
-            Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2), 3.46)
+
+        samples = [round(Nt.simulation.service_times[Nt.id_number][0](), 2) for _ in range(5)]
+        expected = [3.35, 3.91, 4.20, 5.33, 3.90]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nt.simulation.inter_arrival_times[Nt.id_number][0](), 2) for _ in range(5)]
+        expected = [5.12, 1.35, 2.73, 5.34, 3.46]
+        self.assertEqual(samples, expected)
+
 
     @given(t=lists(floats(min_value=0.0, max_value=10000),
                    min_size=3,
@@ -268,26 +235,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Ne = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Ne.simulation.service_times[Ne.id_number][0](), 2), 0.22)
-        self.assertEqual(round(
-            Ne.simulation.service_times[Ne.id_number][0](), 2), 0.31)
-        self.assertEqual(round(
-            Ne.simulation.service_times[Ne.id_number][0](), 2), 0.36)
-        self.assertEqual(round(
-            Ne.simulation.service_times[Ne.id_number][0](), 2), 0.65)
-        self.assertEqual(round(
-            Ne.simulation.service_times[Ne.id_number][0](), 2), 0.31)
-        self.assertEqual(round(
-            Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.58)
-        self.assertEqual(round(
-            Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.01)
-        self.assertEqual(round(
-            Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.14)
-        self.assertEqual(round(
-            Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.65)
-        self.assertEqual(round(
-            Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2), 0.24)
+
+        samples = [round(Ne.simulation.service_times[Ne.id_number][0](), 2) for _ in range(5)]
+        expected = [0.22, 0.31, 0.36, 0.65, 0.31]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Ne.simulation.inter_arrival_times[Ne.id_number][0](), 2) for _ in range(5)]
+        expected = [0.58, 0.01, 0.14, 0.65, 0.24]
+        self.assertEqual(samples, expected)
+
 
     @given(e=floats(min_value=0.001, max_value=10000),
            rm=random_module())
@@ -314,26 +270,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Ng = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Ng.simulation.service_times[Ng.id_number][0](), 2), 0.00)
-        self.assertEqual(round(
-            Ng.simulation.service_times[Ng.id_number][0](), 2), 2.59)
-        self.assertEqual(round(
-            Ng.simulation.service_times[Ng.id_number][0](), 2), 1.92)
-        self.assertEqual(round(
-            Ng.simulation.service_times[Ng.id_number][0](), 2), 0.47)
-        self.assertEqual(round(
-            Ng.simulation.service_times[Ng.id_number][0](), 2), 0.61)
-        self.assertEqual(round(
-            Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.00)
-        self.assertEqual(round(
-            Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 1.07)
-        self.assertEqual(round(
-            Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 1.15)
-        self.assertEqual(round(
-            Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.75)
-        self.assertEqual(round(
-            Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2), 0.00)
+
+        samples = [round(Ng.simulation.service_times[Ng.id_number][0](), 2) for _ in range(5)]
+        expected = [0.0, 2.59, 1.92, 0.47, 0.61]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Ng.simulation.inter_arrival_times[Ng.id_number][0](), 2) for _ in range(5)]
+        expected = [0.00, 1.07, 1.15, 0.75, 0.00]
+        self.assertEqual(samples, expected)
+
 
     @given(ga=floats(min_value=0.001, max_value=10000),
            gb=floats(min_value=0.001, max_value=10000),
@@ -361,26 +306,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Nl = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nl.simulation.service_times[Nl.id_number][0](), 2), 2.62)
-        self.assertEqual(round(
-            Nl.simulation.service_times[Nl.id_number][0](), 2), 1.64)
-        self.assertEqual(round(
-            Nl.simulation.service_times[Nl.id_number][0](), 2), 2.19)
-        self.assertEqual(round(
-            Nl.simulation.service_times[Nl.id_number][0](), 2), 2.31)
-        self.assertEqual(round(
-            Nl.simulation.service_times[Nl.id_number][0](), 2), 2.48)
-        self.assertEqual(round(
-            Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.51)
-        self.assertEqual(round(
-            Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.33)
-        self.assertEqual(round(
-            Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 1.96)
-        self.assertEqual(round(
-            Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.32)
-        self.assertEqual(round(
-            Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2), 2.70)
+
+        samples = [round(Nl.simulation.service_times[Nl.id_number][0](), 2) for _ in range(5)]
+        expected = [2.62, 1.64, 2.19, 2.31, 2.48]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nl.simulation.inter_arrival_times[Nl.id_number][0](), 2) for _ in range(5)]
+        expected = [2.51, 2.33, 1.96, 2.32, 2.70]
+        self.assertEqual(samples, expected)
+
 
     @given(lm=floats(min_value=-200, max_value=200),
            lsd=floats(min_value=0.001, max_value=80),
@@ -408,26 +342,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.87)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 1.31)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 1.60)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 3.34)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 1.31)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 2.91)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.01)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.50)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 3.36)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.95)
+
+        samples = [round(Nw.simulation.service_times[Nw.id_number][0](), 2) for _ in range(5)]
+        expected = [0.87, 1.31, 1.60, 3.34, 1.31]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2) for _ in range(5)]
+        expected = [2.91, 0.01, 0.50, 3.36, 0.95]
+        self.assertEqual(samples, expected)
+
 
     @given(wa=floats(min_value=0.01, max_value=200),
            wb=floats(min_value=0.01, max_value=200),
@@ -454,28 +377,17 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
-        Nw = Q.transitive_nodes[0]
+        Nn = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.58)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.35)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.49)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.52)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.55)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.56)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.52)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.44)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.52)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.60)
+
+        samples = [round(Nn.simulation.service_times[Nn.id_number][0](), 2) for _ in range(5)]
+        expected = [0.58, 0.35, 0.49, 0.52, 0.55]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nn.simulation.inter_arrival_times[Nn.id_number][0](), 2) for _ in range(5)]
+        expected = [0.56, 0.52, 0.44, 0.52, 0.60]
+        self.assertEqual(samples, expected)
+
 
     @given(nm=floats(min_value=0.01, max_value=20),
            ns=floats(min_value=0.0001, max_value=5),
@@ -506,26 +418,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Nem = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 12.3)
-        self.assertEqual(round(
-            Nem.simulation.service_times[Nem.id_number][0](), 2), 8.8)
-        self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.3)
-        self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.0)
-        self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.7)
-        self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.3)
-        self.assertEqual(round(
-            Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2), 7.1)
+
+        samples = [round(Nem.simulation.service_times[Nem.id_number][0](), 2) for _ in range(5)]
+        expected = [8.8, 8.8, 8.8, 12.3, 8.8]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nem.simulation.inter_arrival_times[Nem.id_number][0](), 2) for _ in range(5)]
+        expected = [7.3, 7.0, 7.7, 7.3, 7.1]
+        self.assertEqual(samples, expected)
+
 
     @given(dist=lists(floats(min_value=0.001, max_value=10000),
                       min_size=1,
@@ -579,26 +480,15 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Nc = Q.transitive_nodes[0]
         ciw.seed(5)
-        self.assertEqual(round(
-            Nc.simulation.service_times[Nc.id_number][0](), 2), 3.8)
-        self.assertEqual(round(
-            Nc.simulation.service_times[Nc.id_number][0](), 2), 4.1)
-        self.assertEqual(round(
-            Nc.simulation.service_times[Nc.id_number][0](), 2), 4.1)
-        self.assertEqual(round(
-            Nc.simulation.service_times[Nc.id_number][0](), 2), 4.1)
-        self.assertEqual(round(
-            Nc.simulation.service_times[Nc.id_number][0](), 2), 4.1)
-        self.assertEqual(round(
-            Nc.simulation.inter_arrival_times[Nc.id_number][0](), 2), 4.1)
-        self.assertEqual(round(
-            Nc.simulation.inter_arrival_times[Nc.id_number][0](), 2), 3.7)
-        self.assertEqual(round(
-            Nc.simulation.inter_arrival_times[Nc.id_number][0](), 2), 3.8)
-        self.assertEqual(round(
-            Nc.simulation.inter_arrival_times[Nc.id_number][0](), 2), 4.1)
-        self.assertEqual(round(
-            Nc.simulation.inter_arrival_times[Nc.id_number][0](), 2), 3.8)
+
+        samples = [round(Nc.simulation.service_times[Nc.id_number][0](), 2) for _ in range(5)]
+        expected = [3.8, 4.1, 4.1, 4.1, 4.1]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nc.simulation.inter_arrival_times[Nc.id_number][0](), 2) for _ in range(5)]
+        expected = [4.1, 3.7, 3.8, 4.1, 3.8]
+        self.assertEqual(samples, expected)
+
 
     @given(custs=lists(floats(min_value=0.001, max_value=10000),
                        min_size=2,
@@ -674,47 +564,23 @@ class TestSampling(unittest.TestCase):
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
-        self.assertEqual(round(
-            N1.simulation.service_times[N1.id_number][0](), 2), 0.62)
-        self.assertEqual(round(
-            N1.simulation.service_times[N1.id_number][0](), 2), 0.74)
-        self.assertEqual(round(
-            N1.simulation.service_times[N1.id_number][0](), 2), 0.80)
-        self.assertEqual(round(
-            N1.simulation.service_times[N1.id_number][0](), 2), 0.94)
-        self.assertEqual(round(
-            N1.simulation.service_times[N1.id_number][0](), 2), 0.74)
-        self.assertEqual(round(
-            N2.simulation.service_times[N2.id_number][0](), 2), 0.46)
-        self.assertEqual(round(
-            N2.simulation.service_times[N2.id_number][0](), 2), 0.06)
-        self.assertEqual(round(
-            N2.simulation.service_times[N2.id_number][0](), 2), 0.93)
-        self.assertEqual(round(
-            N2.simulation.service_times[N2.id_number][0](), 2), 0.47)
-        self.assertEqual(round(
-            N2.simulation.service_times[N2.id_number][0](), 2), 1.30)
 
-        self.assertEqual(round(
-            N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.90)
-        self.assertEqual(round(
-            N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.11)
-        self.assertEqual(round(
-            N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.47)
-        self.assertEqual(round(
-            N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.25)
-        self.assertEqual(round(
-            N1.simulation.inter_arrival_times[N1.id_number][0](), 2), 0.54)
-        self.assertEqual(round(
-            N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.29)
-        self.assertEqual(round(
-            N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.03)
-        self.assertEqual(round(
-            N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.43)
-        self.assertEqual(round(
-            N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.56)
-        self.assertEqual(round(
-            N2.simulation.inter_arrival_times[N2.id_number][0](), 2), 0.46)
+        samples = [round(N1.simulation.service_times[N1.id_number][0](), 2) for _ in range(5)]
+        expected = [0.62, 0.74, 0.80, 0.94, 0.74]
+        self.assertEqual(samples, expected)
+
+        samples = [round(N2.simulation.service_times[N2.id_number][0](), 2) for _ in range(5)]
+        expected = [0.46, 0.06, 0.93, 0.47, 1.30]
+        self.assertEqual(samples, expected)
+
+        samples = [round(N1.simulation.inter_arrival_times[N1.id_number][0](), 2) for _ in range(5)]
+        expected = [0.90, 0.11, 0.47, 0.25, 0.54]
+        self.assertEqual(samples, expected)
+
+        samples = [round(N2.simulation.inter_arrival_times[N2.id_number][0](), 2) for _ in range(5)]
+        expected = [0.29, 0.03, 0.43, 0.56, 0.46]
+        self.assertEqual(samples, expected)
+
 
 
     @given(const=floats(min_value = 0.02, max_value=200),
@@ -807,58 +673,43 @@ class TestSampling(unittest.TestCase):
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
-        self.assertEqual(
-            N1.simulation.service_times[N1.id_number][0](3.0), 3.0)
-        self.assertEqual(
-            N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(
-            N1.simulation.service_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(
-            N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(
-            N1.simulation.service_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(
-            N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(
-            N2.simulation.service_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(
-            N2.simulation.service_times[N2.id_number][0](17.0), 8.5)
-        self.assertEqual(
-            N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
-        self.assertEqual(
-            N2.simulation.service_times[N2.id_number][0](22.0), 8.0)
 
-        self.assertEqual(N1.get_service_time(0, 3.0), 3.0)
-        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
-        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
-        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
-        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
-        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
-        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
-        self.assertEqual(N2.get_service_time(0, 17.0), 8.5)
-        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
-        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
+        samples = []
+        for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
+            samples.append(round(N1.simulation.service_times[N1.id_number][0](t), 2))
+        expected = [3.0, 3.0, 3.0, 5.0, 5.0]
+        self.assertEqual(samples, expected)
 
-        self.assertEqual(
-            N1.simulation.inter_arrival_times[N1.id_number][0](3.0), 3.0)
-        self.assertEqual(
-            N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(
-            N1.simulation.inter_arrival_times[N1.id_number][0](9.0), 3.0)
-        self.assertEqual(
-            N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(
-            N1.simulation.inter_arrival_times[N1.id_number][0](11.0), 5.0)
-        self.assertEqual(
-            N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(
-            N2.simulation.inter_arrival_times[N2.id_number][0](4.0), 2.0)
-        self.assertEqual(
-            N2.simulation.inter_arrival_times[N2.id_number][0](17.0), 8.5)
-        self.assertEqual(
-            N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
-        self.assertEqual(
-            N2.simulation.inter_arrival_times[N2.id_number][0](22.0), 8.0)
+        samples = []
+        for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
+            samples.append(round(N2.simulation.service_times[N2.id_number][0](t), 2))
+        expected = [2.0, 2.0, 8.5, 8.0, 8.0]
+        self.assertEqual(samples, expected)
+
+        samples = []
+        for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
+            samples.append(round(N1.get_service_time(0, t), 2))
+        expected = [3.0, 3.0, 3.0, 5.0, 5.0]
+        self.assertEqual(samples, expected)
+
+        samples = []
+        for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
+            samples.append(round(N2.get_service_time(0, t), 2))
+        expected = [2.0, 2.0, 8.5, 8.0, 8.0]
+        self.assertEqual(samples, expected)
+
+        samples = []
+        for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
+            samples.append(round(N1.simulation.inter_arrival_times[N1.id_number][0](t), 2))
+        expected = [3.0, 3.0, 3.0, 5.0, 5.0]
+        self.assertEqual(samples, expected)
+
+        samples = []
+        for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
+            samples.append(round(N2.simulation.inter_arrival_times[N2.id_number][0](t), 2))
+        expected = [2.0, 2.0, 8.5, 8.0, 8.0]
+        self.assertEqual(samples, expected)
+
 
     def test_broken_timedependent_function_dist(self):
         params = {
@@ -890,16 +741,19 @@ class TestSampling(unittest.TestCase):
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         ciw.seed(5)
-        self.assertEqual(N1.get_service_time(0, 3.0), 3.0)
-        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
-        self.assertEqual(N1.get_service_time(0, 9.0), 3.0)
-        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
-        self.assertEqual(N1.get_service_time(0, 11.0), 5.0)
-        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
-        self.assertEqual(N2.get_service_time(0, 4.0), 2.0)
-        self.assertEqual(N2.get_service_time(0, 17.0), 8.5)
-        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
-        self.assertEqual(N2.get_service_time(0, 22.0), 8.0)
+
+        samples = []
+        for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
+            samples.append(round(N1.get_service_time(0, t), 2))
+        expected = [3.0, 3.0, 3.0, 5.0, 5.0]
+        self.assertEqual(samples, expected)
+
+        samples = []
+        for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
+            samples.append(round(N2.get_service_time(0, t), 2))
+        expected = [2.0, 2.0, 8.5, 8.0, 8.0]
+        self.assertEqual(samples, expected)
+
 
     def test_sampling_sequential_dist(self):
         params = {
@@ -909,36 +763,18 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
-        Nw = Q.transitive_nodes[0]
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.7)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.5)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.3)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.1)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.9)
-        self.assertEqual(round(
-            Nw.simulation.service_times[Nw.id_number][0](), 2), 0.7)
+        Ns = Q.transitive_nodes[0]
+
+        samples = [round(Ns.simulation.service_times[Ns.id_number][0](), 2) for _ in range(7)]
+        expected = [0.9, 0.7, 0.5, 0.3, 0.1, 0.9, 0.7]
+        self.assertEqual(samples, expected)
 
         # First arrival will be offset by 1, as first customer's inter-arrival
         # time has already been sampled by the arrival node
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.4)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.6)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.8)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.2)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.4)
-        self.assertEqual(round(
-            Nw.simulation.inter_arrival_times[Nw.id_number][0](), 2), 0.6)
+        samples = [round(Ns.simulation.inter_arrival_times[Ns.id_number][0](), 2) for _ in range(6)]
+        expected = [0.4, 0.6, 0.8, 0.2, 0.4, 0.6]
+        self.assertEqual(samples, expected)
+
 
     @given(dist1=lists(floats(min_value=0.001, max_value=10000),
                        min_size=1,
@@ -956,7 +792,7 @@ class TestSampling(unittest.TestCase):
             'Transition_matrices': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
-        Nw = Q.transitive_nodes[0]
+        Ns = Q.transitive_nodes[0]
 
         len1 = len(my_sequential_dist_1)
         len2 = len(my_sequential_dist_2)
@@ -964,7 +800,7 @@ class TestSampling(unittest.TestCase):
         expected_inter_arrival_times = 3*my_sequential_dist_1 + my_sequential_dist_1[:1]
         expected_service_times = 3*my_sequential_dist_2
 
-        inter_arrivals = [Nw.simulation.inter_arrival_times[Nw.id_number][0]() for _ in range(3*len1)]
-        services = [Nw.simulation.service_times[Nw.id_number][0]() for _ in range(3*len2)]
+        inter_arrivals = [Ns.simulation.inter_arrival_times[Ns.id_number][0]() for _ in range(3*len1)]
+        services = [Ns.simulation.service_times[Ns.id_number][0]() for _ in range(3*len2)]
         self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
         self.assertEqual(services, expected_service_times)
