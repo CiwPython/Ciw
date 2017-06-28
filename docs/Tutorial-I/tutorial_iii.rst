@@ -82,6 +82,6 @@ This is the average utilisation of each server, which is the amount of time a se
     >>> Q.transitive_nodes[0].server_utilisation
     0.60517...
 
-Thus in out bank, on average the servers were busy 60.5% of the time.
+Thus in our bank, on average the servers were busy 60.5% of the time.
 
 The next tutorial will show how to use Ciw to get trustworthy results, and finally find out the average waiting time at the bank.

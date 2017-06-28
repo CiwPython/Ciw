@@ -16,7 +16,7 @@ Customers arrive and can take a few routes:
 
 In this system there are three nodes: Cold food counter (Node 1), Hot food counter (Node 2), and the till (Node 3):
 
-+ Customer wanting hot food only arrive at a rate of 12 per hour.
++ Customers wanting hot food only arrive at a rate of 12 per hour.
 + Customers wanting cold food arrive at a rate of 18 per hour.
 + 30% of all customer who buy cold food also want to buy hot food.
 + On average it takes 1 minute to be served cold food, 2 and a half minutes to be served hot food, and 2 minutes to pay.

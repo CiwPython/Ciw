@@ -50,7 +50,7 @@ To illustrate, let's simulate for 20 minutes::
     >>> max(blockages)
     1.503404...
 
-Here we see that in 10 minutes the maximum time a stool was blocked at a workstation for was 1.5 seconds.
+Here we see that in 20 minutes the maximum time a stool was blocked at a workstation for was 1.5 seconds.
 
 We can get information about the stools that fell off the conveyor-belt using the Simulation's :code:`rejection_dict` attribute.
 This is a dictionary, that maps node numbers to dictionaries.
@@ -65,7 +65,8 @@ To get the number of stools rejected, take the length of this list::
     >>> len(Q.rejection_dict[1][0])
     3
 
-Now we'll run 8 trials, and get the average number of rejections in an hour. We will take a warm-up time of 10 minutes.
+Now we'll run 8 trials, and get the average number of rejections in an hour.
+We will take a warm-up time of 10 minutes.
 A cool-down will be unnecessary as we are recording rejections, which happen at the time of arrival::
 
     >>> broken_stools = []
