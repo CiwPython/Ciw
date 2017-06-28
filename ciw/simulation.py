@@ -43,6 +43,7 @@ class Simulation(object):
         self.generators = self.find_generators()
         self.inter_arrival_times = self.find_times_dict('Arr')
         self.service_times = self.find_times_dict('Ser')
+        self.batch_sizes = self.find_batches_dict()
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [self.NodeType(i + 1, self)
             for i in range(network.number_of_nodes)]
@@ -152,17 +153,21 @@ class Simulation(object):
         """
         A dictionary containing all generators used for distributions.
         """
-        generators_dict = {'Arr': {}, 'Ser': {}}
+        generators_dict = {'Arr': {}, 'Ser': {}, 'Bch': {}}
         for nd in range(self.network.number_of_nodes):
             generators_dict['Arr'][nd] = {}
             generators_dict['Ser'][nd] = {}
+            generators_dict['Bch'][nd] = {}
             for clss in range(self.network.number_of_classes):
                 arrival = self.network.customer_classes[clss].arrival_distributions[nd]
                 service = self.network.customer_classes[clss].service_distributions[nd]
+                batches = self.network.customer_classes[clss].batching_distributions[nd]
                 if arrival[0] == 'Sequential':
                     generators_dict['Arr'][nd][clss] = cycle(arrival[1])
                 if service[0] == 'Sequential':
                     generators_dict['Ser'][nd][clss] = cycle(service[1])
+                if batches[0] == 'Sequential':
+                    generators_dict['Bch'][nd][clss] = cycle(batches[1])
         return generators_dict
 
     def find_next_active_node(self):
@@ -178,11 +183,21 @@ class Simulation(object):
 
     def find_times_dict(self, kind):
         """
-        Create the dictionary of service time
-        functions for each node for each class
+        Create the dictionary of service and arrival
+        time functions for each node for each class
         """
         return {node+1: {
             clss: self.find_distributions(node, clss, kind)
+            for clss in range(self.network.number_of_classes)}
+            for node in range(self.network.number_of_nodes)}
+
+    def find_batches_dict(self):
+        """
+        Create the dictionary of batch size
+        functions for each node for each class
+        """
+        return {node+1: {
+            clss: self.find_distributions(node, clss, 'Bch')
             for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
 
@@ -368,6 +383,8 @@ class Simulation(object):
             return self.network.customer_classes[c].arrival_distributions[n]
         if kind == 'Ser':
             return self.network.customer_classes[c].service_distributions[n]
+        if kind == 'Bch':
+            return self.network.customer_classes[c].batching_distributions[n]
 
     def write_records_to_file(self, file_name, headers=True):
         """
