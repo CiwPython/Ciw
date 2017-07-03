@@ -277,7 +277,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(len(N.all_individuals), 20)
 
     def test_batching_custom(self):
-        # Test sequential batches
+        # Test custom batches
         N = ciw.create_network(
             Arrival_distributions=[['Sequential', [5.0, 5.0, 100.0]]],
             Service_distributions=[['Sequential', [2.0, 3.0]]],
@@ -297,3 +297,47 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(observerd_inds,
             [0, 1, 6, 11, 12, 13, 14, 15, 20, 25, 30, 35, 40, 41, 42, 43, 48, 49, 54, 55])
 
+    def test_batching_multi_node(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Deterministic', 20], ['Deterministic', 23], ['Deterministic', 25]],
+            Service_distributions=[['Deterministic', 1], ['Deterministic', 1], ['Deterministic', 1]],
+            Number_of_servers=[10, 10, 10],
+            Batching_distributions=[['Deterministic', 3], ['Deterministic', 2], ['Deterministic', 1]],
+            Transition_matrices=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+        )
+        ciw.seed(12)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(28)
+        recs = Q.get_all_records()
+        
+        arrivals = [r.arrival_date for r in recs]
+        nodes = [r.node for r in recs]
+        classes = [r.customer_class for r in recs]
+        self.assertEqual(arrivals, [20, 20, 20, 23, 23, 25])
+        self.assertEqual(nodes, [1, 1, 1, 2, 2, 3])
+        self.assertEqual(classes, [0, 0, 0, 0, 0, 0])
+
+    def test_batching_multi_classes(self):
+        N = ciw.create_network(
+            Arrival_distributions={'Class 0': [['Deterministic', 20]],
+                                   'Class 1': [['Deterministic', 23]],
+                                   'Class 2': [['Deterministic', 25]]},
+            Service_distributions={'Class 0': [['Deterministic', 1]],
+                                   'Class 1': [['Deterministic', 1]],
+                                   'Class 2': [['Deterministic', 1]]},
+            Number_of_servers=[10],
+            Batching_distributions={'Class 0': [['Deterministic', 3]],
+                                    'Class 1': [['Deterministic', 2]],
+                                    'Class 2': [['Deterministic', 1]]}
+        )
+        ciw.seed(12)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(28)
+        recs = Q.get_all_records()
+        
+        arrivals = [r.arrival_date for r in recs]
+        nodes = [r.node for r in recs]
+        classes = [r.customer_class for r in recs]
+        self.assertEqual(arrivals, [20, 20, 20, 23, 23, 25])
+        self.assertEqual(nodes, [1, 1, 1, 1, 1, 1])
+        self.assertEqual(classes, [0, 0, 0, 1, 1, 2])
