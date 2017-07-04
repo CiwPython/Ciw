@@ -20,8 +20,8 @@ Let's show an example::
     ... )
 
 If this system is simulated for 30 time units, only one arrival event will occur.
-However, 3 customers will arrival that that node simultaneously.
-Note there is only one server however, so two of those customers will have to wait::
+However, 3 customers will arrive at that node simultaneously.
+As there is only one server, two of those customers will have to wait::
 
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(30.0)
@@ -32,7 +32,7 @@ Note there is only one server however, so two of those customers will have to wa
     >>> [r.waiting_time for r in recs]
     [0.0, 3.0, 6.0]
 
-Note that, just like arrival and service distributions, batching distributions can be defined for multiple nodes and multiple customer classes, using lists and dictionaries::
+Just like arrival and service distributions, batching distributions can be defined for multiple nodes and multiple customer classes, using lists and dictionaries::
 
     Batching_distributions={
         'Class 0': [['Deterministic', 3],
