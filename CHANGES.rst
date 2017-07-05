@@ -1,6 +1,10 @@
 History
 -------
 
+v1.1.2 (2017-07-05)
+~~~~~~~~~~~~~~~~~~~
+- Batch arrivals.
+
 v1.1.1 (2017-06-23)
 ~~~~~~~~~~~~~~~~~~~
 - Server utilisation & overtime.
