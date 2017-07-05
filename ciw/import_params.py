@@ -11,7 +11,8 @@ def create_network(Arrival_distributions=None,
                    Priority_classes=None,
                    Queue_capacities=None,
                    Service_distributions=None,
-                   Transition_matrices=None):
+                   Transition_matrices=None,
+                   Batching_distributions=None):
     """
     Takes in kwargs, creates dictionary.
     """
@@ -34,6 +35,8 @@ def create_network(Arrival_distributions=None,
         params['Queue_capacities'] = Queue_capacities
     if Transition_matrices != None:
         params['Transition_matrices'] = Transition_matrices
+    if Batching_distributions != None:
+        params['Batching_distributions'] = Batching_distributions
 
     return create_network_from_dictionary(params)
 
@@ -78,6 +81,8 @@ def create_network_from_dictionary(params_input):
         for clss in range(len(params['Priority_classes']))]
     baulking_functions = [params['Baulking_functions']['Class ' + str(clss)]
         for clss in range(len(params['Baulking_functions']))]
+    batches = [params['Batching_distributions']['Class ' + str(clss)]
+        for clss in range(len(params['Batching_distributions']))]
     number_of_classes = params['Number_of_classes']
     number_of_nodes = params['Number_of_nodes']
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['Queue_capacities']]
@@ -116,7 +121,8 @@ def create_network_from_dictionary(params_input):
             services[clss],
             transitions[clss],
             priorities[clss],
-            baulking_functions[clss]))
+            baulking_functions[clss],
+            batches[clss]))
     return Network(nodes, classes)
 
 
@@ -140,6 +146,10 @@ def fill_out_dictionary(params_input):
         if isinstance(params['Baulking_functions'], list):
             blk_fncs = params['Baulking_functions']
             params['Baulking_functions'] = {'Class 0': blk_fncs}
+    if 'Batching_distributions' in params:
+        if isinstance(params['Batching_distributions'], list):
+            btch_dists = params['Batching_distributions']
+            params['Batching_distributions'] = {'Class 0': btch_dists}
 
     default_dict = {
         'Name': 'Simulation',
@@ -153,6 +163,9 @@ def fill_out_dictionary(params_input):
             for i in range(len(params['Arrival_distributions']))},
         'Baulking_functions': {'Class ' + str(i): [
             None for _ in range(len(params['Number_of_servers']))]
+            for i in range(len(params['Arrival_distributions']))},
+        'Batching_distributions': {'Class ' + str(i): [['Deterministic',
+            1] for _ in range(len(params['Number_of_servers']))]
             for i in range(len(params['Arrival_distributions']))}
         }
 
@@ -170,13 +183,15 @@ def validify_dictionary(params):
         params['Number_of_classes'] ==
         len(params['Arrival_distributions']) ==
         len(params['Service_distributions']) ==
-        len(params['Transition_matrices']))
+        len(params['Transition_matrices']) ==
+        len(params['Batching_distributions']))
     if not consistant_num_classes:
         raise ValueError('Ensure consistant number of classes is used throughout.')
     consistant_class_names = (
         set(params['Arrival_distributions']) ==
         set(params['Service_distributions']) ==
         set(params['Transition_matrices']) ==
+        set(params['Batching_distributions']) ==
         set(['Class ' + str(i) for i in range(params['Number_of_classes'])]))
     if not consistant_class_names:
         raise ValueError('Ensure correct names for customer classes.')
@@ -185,6 +200,7 @@ def validify_dictionary(params):
         len(obs) for obs in params['Arrival_distributions'].values()] + [
         len(obs) for obs in params['Service_distributions'].values()] + [
         len(obs) for obs in params['Transition_matrices'].values()] + [
+        len(obs) for obs in params['Batching_distributions'].values()] + [
         len(row) for row in [obs for obs in params['Transition_matrices'].values()][0]] + [
         len(params['Number_of_servers'])] + [
         len(params['Queue_capacities'])]
@@ -202,6 +218,11 @@ def validify_dictionary(params):
         'Weibull', 'Empirical', 'Custom', 'UserDefined',
         'TimeDependent', 'Normal', 'Sequential'])):
         raise ValueError('Ensure that valid Arrival and Service Distributions are used.')
+    batch_dists = [params['Batching_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes'])]
+    if not set(batch_dists).issubset(set([
+        'Deterministic', 'Empirical', 'Custom',
+        'Sequential'])):
+        raise ValueError('Ensure that valid Batching Distributions are used.')
     neg_numservers = any([(isinstance(obs, int) and obs < 0) for obs in params['Number_of_servers']])
     valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])
     if neg_numservers:

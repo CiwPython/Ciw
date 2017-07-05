@@ -55,10 +55,14 @@ class TestCustomerClass(unittest.TestCase):
         transition_matrix = [[.2, .6, .2], [0, 0, 0], [.5, 0, 0]]
         priority_class = 2
         baulking_functions = [None, None, example_baulking_function]
+        batching_distributions = [['Deterministic', 1],
+                                  ['Deterministic', 1],
+                                  ['Deterministic', 1]]
 
-        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class, baulking_functions)
+        CC = ciw.CustomerClass(arrival_distributions, service_distributions, transition_matrix, priority_class, baulking_functions, batching_distributions)
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
         self.assertEqual(CC.service_distributions, service_distributions)
+        self.assertEqual(CC.batching_distributions, batching_distributions)
         self.assertEqual(CC.transition_matrix, transition_matrix)
         self.assertEqual(CC.priority_class, priority_class)
 
@@ -92,6 +96,9 @@ class TestNetwork(unittest.TestCase):
                              [0.0, 0.0, 0.0],
                              [0.5, 0.0, 0.0]]
         priority_class = 0
+        batching_distributions = [['Deterministic', 1],
+                                  ['Deterministic', 1],
+                                  ['Deterministic', 1]]
         baulking_functions = [None, None, example_baulking_function]
         service_centres = [ciw.ServiceCentre(number_of_servers,
                                              queueing_capacity,
@@ -101,7 +108,8 @@ class TestNetwork(unittest.TestCase):
                                               service_distributions,
                                               transition_matrix,
                                               priority_class,
-                                              baulking_functions) for i in range(2)]
+                                              baulking_functions,
+                                              batching_distributions) for i in range(2)]
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)
@@ -553,4 +561,13 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                   'Something_else': 56
                   }
         with self.assertRaises(TypeError):
+            ciw.create_network(**params)
+
+    def test_raise_error_wrong_batch_dist(self):
+        params = {'Arrival_distributions': [['Exponential', 3.0]],
+                  'Service_distributions': [['Exponential', 7.0]],
+                  'Number_of_servers': [4],
+                  'Batching_distributions': [['Exponential', 1.3]]
+                  }
+        with self.assertRaises(ValueError):
             ciw.create_network(**params)

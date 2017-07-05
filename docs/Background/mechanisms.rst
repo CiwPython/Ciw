@@ -42,6 +42,8 @@ Circular blockages can lead to :ref:`deadlock <detect-deadlock>`.
 
 
 
+.. _simultaneous_events:
+
 Simultaneous Events
 ~~~~~~~~~~~~~~~~~~~
 

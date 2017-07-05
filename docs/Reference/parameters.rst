@@ -30,6 +30,30 @@ An example where only one class of customer is required::
                            ['Exponential', 2.0]]
 
 
+Batching_distributions
+~~~~~~~~~~~~~~~~~~~~~~
+
+*Optional*
+
+Describes the discrete distributions of size of the batch arrivals for each node and customer class.
+This is a dictionary, with keys as customer classes, and values are lists describing the batch distributions for each node.
+If only one class of customer is required it is sufficient to simply enter a list of batch distributions.
+For more details on batching, see :ref:`batch-arrivals`.
+
+An example is shown::
+
+    Batching_distributions={'Class 0': [['Deterministic', 1],
+                                        ['Sequential', [1, 1, 2]]],
+                            'Class 1': [['Deterministic', 3],
+                                        ['Deterministic', 2]]}
+
+An example where only one class of customer is required::
+
+    Batching_distributions=[['Deterministic', 2],
+                            ['Deterministic', 1]]
+
+
+
 Baulking_functions
 ~~~~~~~~~~~~~~~~~~
 

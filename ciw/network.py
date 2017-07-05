@@ -27,12 +27,14 @@ class CustomerClass(object):
                  service_distributions,
                  transition_matrix,
                  priority_class,
-                 baulking_functions):
+                 baulking_functions,
+                 batching_distributions):
         """
         Initialises the CutomerCass object
         """
         self.arrival_distributions = arrival_distributions
         self.service_distributions = service_distributions
+        self.batching_distributions = batching_distributions
         self.transition_matrix = transition_matrix
         self.priority_class = priority_class
         self.baulking_functions = baulking_functions

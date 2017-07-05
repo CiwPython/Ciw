@@ -199,3 +199,145 @@ class TestArrivalNode(unittest.TestCase):
         AN.update_next_event_date()
         self.assertEqual(AN.next_event_date, 3.33)
 
+    def test_batching(self):
+        # Test that 2 arrivals occur at a time
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [5.0, 5.0, 100.0]]],
+            Service_distributions=[['Sequential', [2.0, 3.0]]],
+            Number_of_servers=[1],
+            Batching_distributions=[['Deterministic', 2]]
+        )
+        Q = ciw.Simulation(N)
+        N = Q.transitive_nodes[0]
+
+        self.assertEqual(len(N.all_individuals), 0)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 2)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 4)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 6)
+
+        # Test that batched individuals have same arrival date
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [5.0, 5.0, 2.0, 1.0, 5.0, 100.0]]],
+            Service_distributions=[['Sequential', [2.0, 3.0]]],
+            Number_of_servers=[1],
+            Batching_distributions=[['Deterministic', 2]]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(70.0)
+        recs = Q.get_all_records()
+
+        self.assertEqual(
+            [r.arrival_date for r in recs],
+            [5.0, 5.0, 10.0, 10.0, 12.0, 12.0, 13.0, 13.0, 18.0, 18.0])
+        self.assertEqual(
+            [r.service_start_date for r in recs],
+            [5.0, 7.0, 10.0, 12.0, 15.0, 17.0, 20.0, 22.0, 25.0, 27.0])
+        self.assertEqual(
+            [r.service_time for r in recs],
+            [2.0, 3.0, 2.0, 3.0, 2.0, 3.0, 2.0, 3.0, 2.0, 3.0])
+        self.assertEqual(
+            [r.service_end_date for r in recs],
+            [7.0, 10.0, 12.0, 15.0, 17.0, 20.0, 22.0, 25.0, 27.0, 30.0])
+        self.assertEqual(
+            [r.waiting_time for r in recs],
+            [0.0, 2.0, 0.0, 2.0, 3.0, 5.0, 7.0, 9.0, 7.0, 9.0])
+
+    def test_batching_sequential(self):
+        # Test sequential batches
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [5.0, 5.0, 100.0]]],
+            Service_distributions=[['Sequential', [2.0, 3.0]]],
+            Number_of_servers=[1],
+            Batching_distributions=[['Sequential', [1, 1, 4, 2, 1, 5]]]
+        )
+        Q = ciw.Simulation(N)
+        N = Q.transitive_nodes[0]
+
+        self.assertEqual(len(N.all_individuals), 0)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 1)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 2)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 6)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 8)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 9)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 14)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 15)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 16)
+        Q.nodes[0].have_event()
+        self.assertEqual(len(N.all_individuals), 20)
+
+    def test_batching_custom(self):
+        # Test custom batches
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [5.0, 5.0, 100.0]]],
+            Service_distributions=[['Sequential', [2.0, 3.0]]],
+            Number_of_servers=[1],
+            Batching_distributions=[['Custom', [1, 5], [0.5, 0.5]]]
+        )
+        ciw.seed(12)
+        Q = ciw.Simulation(N)
+        N = Q.transitive_nodes[0]
+
+        observerd_inds = []
+        for _ in range(20):
+            observerd_inds.append(len(N.all_individuals))
+            Q.nodes[0].have_event()
+
+        # Numbers of individuals should only increase by 1 or by 5
+        self.assertEqual(observerd_inds,
+            [0, 1, 6, 11, 12, 13, 14, 15, 20, 25, 30, 35, 40, 41, 42, 43, 48, 49, 54, 55])
+
+    def test_batching_multi_node(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Deterministic', 20], ['Deterministic', 23], ['Deterministic', 25]],
+            Service_distributions=[['Deterministic', 1], ['Deterministic', 1], ['Deterministic', 1]],
+            Number_of_servers=[10, 10, 10],
+            Batching_distributions=[['Deterministic', 3], ['Deterministic', 2], ['Deterministic', 1]],
+            Transition_matrices=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+        )
+        ciw.seed(12)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(28)
+        recs = Q.get_all_records()
+        
+        arrivals = [r.arrival_date for r in recs]
+        nodes = [r.node for r in recs]
+        classes = [r.customer_class for r in recs]
+        self.assertEqual(arrivals, [20, 20, 20, 23, 23, 25])
+        self.assertEqual(nodes, [1, 1, 1, 2, 2, 3])
+        self.assertEqual(classes, [0, 0, 0, 0, 0, 0])
+
+    def test_batching_multi_classes(self):
+        N = ciw.create_network(
+            Arrival_distributions={'Class 0': [['Deterministic', 20]],
+                                   'Class 1': [['Deterministic', 23]],
+                                   'Class 2': [['Deterministic', 25]]},
+            Service_distributions={'Class 0': [['Deterministic', 1]],
+                                   'Class 1': [['Deterministic', 1]],
+                                   'Class 2': [['Deterministic', 1]]},
+            Number_of_servers=[10],
+            Batching_distributions={'Class 0': [['Deterministic', 3]],
+                                    'Class 1': [['Deterministic', 2]],
+                                    'Class 2': [['Deterministic', 1]]}
+        )
+        ciw.seed(12)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(28)
+        recs = Q.get_all_records()
+        
+        arrivals = [r.arrival_date for r in recs]
+        nodes = [r.node for r in recs]
+        classes = [r.customer_class for r in recs]
+        self.assertEqual(arrivals, [20, 20, 20, 23, 23, 25])
+        self.assertEqual(nodes, [1, 1, 1, 1, 1, 1])
+        self.assertEqual(classes, [0, 0, 0, 1, 1, 2])

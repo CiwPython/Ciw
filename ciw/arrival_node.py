@@ -14,7 +14,10 @@ class ArrivalNode(object):
         self.simulation = simulation
         self.number_of_individuals = 0
         self.number_accepted_individuals = 0
-        self.event_dates_dict = {nd + 1: {clss:False for clss in range(
+        self.event_dates_dict = {nd + 1: {clss: False for clss in range(
+            self.simulation.network.number_of_classes)}
+            for nd in range(self.simulation.network.number_of_nodes)}
+        self.batch_size_dict = {nd + 1: {clss: 1 for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
         self.rejection_dict = {nd + 1: {clss:[] for clss in range(
@@ -24,6 +27,7 @@ class ArrivalNode(object):
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
         self.initialise_event_dates_dict()
+        self.initialise_batch_size_dict()
         self.find_next_event_date()
 
     def __repr__(self):
@@ -67,20 +71,25 @@ class ArrivalNode(object):
         """
         Send new arrival to relevent node.
         """
-        self.number_of_individuals += 1
-        priority_class = self.simulation.network.priority_class_mapping[
-            self.next_class]
-        next_individual = Individual(self.number_of_individuals,
-                                     self.next_class,
-                                     priority_class)
-        next_node = self.simulation.transitive_nodes[self.next_node-1]
-        self.release_individual(next_node, next_individual)
+        for _ in range(self.batch_size_dict[self.next_node][self.next_class]):
+            self.number_of_individuals += 1
+            priority_class = self.simulation.network.priority_class_mapping[
+                self.next_class]
+            next_individual = Individual(self.number_of_individuals,
+                                         self.next_class,
+                                         priority_class)
+            next_node = self.simulation.transitive_nodes[self.next_node-1]
+            self.release_individual(next_node, next_individual)
+
         self.event_dates_dict[self.next_node][
             self.next_class] = self.increment_time(
             self.event_dates_dict[self.next_node][
             self.next_class], self.inter_arrival(
             self.next_node, self.next_class,
             self.next_event_date))
+        self.batch_size_dict[self.next_node][
+            self.next_class] = self.batch_size(
+            self.next_node, self.next_class)
         self.find_next_event_date()
 
     def increment_time(self, original, increment):
@@ -99,6 +108,16 @@ class ArrivalNode(object):
                 self.event_dates_dict[nd][
                 clss] = self.inter_arrival(nd, clss, 0.0)
 
+    def initialise_batch_size_dict(self):
+        """
+        Initialises the batch sizes dictionary with
+        random batch sizes for each node and class.
+        """
+        for nd in self.batch_size_dict:
+            for clss in self.batch_size_dict[nd]:
+                self.batch_size_dict[nd][
+                clss] = self.batch_size(nd, clss)
+
     def inter_arrival(self, nd, clss, current_time):
         """
         Samples the inter-arrival time for next class and node.
@@ -107,6 +126,12 @@ class ArrivalNode(object):
             clss].arrival_distributions[nd-1][0] == "TimeDependent":
             return self.simulation.inter_arrival_times[nd][clss](current_time)
         return self.simulation.inter_arrival_times[nd][clss]()
+
+    def batch_size(self, nd, clss):
+        """
+        Samples the batch size for next class and node.
+        """
+        return self.simulation.batch_sizes[nd][clss]()
 
     def record_baulk(self, next_node):
         """
