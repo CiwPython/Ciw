@@ -43,7 +43,7 @@ These dictionaries map customer class numbers to a list of dates at which custom
 	{1: {0: [21.1040..., 42.2023..., 43.7558..., 43.7837..., 44.2266...]}}
 
 Note that baulking works and behaves differently to simply setting a queue capacity.
-Filling a queue's capacity results in arriving customers begin *rejected* (and recorded in the :code:`rejection_dict`), and transitioning customers to be blocked.
+Filling a queue's capacity results in arriving customers being *rejected* (and recorded in the :code:`rejection_dict`), and transitioning customers to be blocked.
 Baulking on the other hand does not effect transitioning customers, and customer who have baulked are recorded in the :code:`baulked_dict`.
 This means that if you set a deterministic baulking threshold of 5, but do not set a queue capacity, then the number of individuals at that node may exceed 5, due to customers transitioning from other nodes ignoring the baulking threshold.
 This also means you can use baulking and limited capacities in conjunction with one another.

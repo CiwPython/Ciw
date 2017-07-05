@@ -4,7 +4,9 @@
 How to Read & Write to/from File
 ================================
 
-When running experiments, it may be useful to read in parameters from a file, and to export data records to file. This can be done easily in Ciw. Parameter dictionaries can be represented as :code:`.yml` files, and results can be output as :code:`.csv` files.
+When running experiments, it may be useful to read in parameters from a file, and to export data records to file.
+This can be done easily in Ciw.
+Parameter dictionaries can be represented as :code:`.yml` files, and results can be output as :code:`.csv` files.
 
 Parameter Files
 ~~~~~~~~~~~~~~~
@@ -66,7 +68,8 @@ This method writes all results that are obtained by the :code:`get_all_records` 
 	>>> Q.write_records_to_file('<path_to_file>') # doctest:+SKIP
 
 This method also takes the optional keyword argument :code:`header`.
-If this is set to :code:`True` then the first row of the :code:`.csv` file will be the variable names. The default value is True, set to False is a row of variable names are not needed::
+If this is set to :code:`True` then the first row of the :code:`.csv` file will be the variable names.
+The default value is :code:`True`, set to :code:`False` is a row of variable names are not needed::
 
 	>>> Q.write_records_to_file('<path_to_file>', headers=True) # doctest:+SKIP
 	>>> Q.write_records_to_file('<path_to_file>', headers=False) # doctest:+SKIP

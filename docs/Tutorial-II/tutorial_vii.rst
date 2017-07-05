@@ -14,7 +14,9 @@ Imagine a 24 hour paediatricians clinic:
 + There is one receptionist on duty, two baby specialists on duty, and three children's specialists on duty.
 + Babies arrive randomly at a rate of one per hour, children at a rate two per hour.
 
-In this set-up we have a scenario where two different types of customer are accessing the same resources, but may use them in different ways. Ciw handles this by assigning **customer classes** to customers. In this set-up:
+In this set-up we have a scenario where two different types of customer are accessing the same resources, but may use them in different ways.
+Ciw handles this by assigning **customer classes** to customers.
+In this set-up:
 
 + Babies are assigned customer :code:`'Class 0'`.
 + Children are assigned customer :code:`'Class 1'`.
@@ -65,7 +67,7 @@ Now we should see that no customer of Class 0 ever reached Node 3; and no custom
     >>> set([r.node for r in recs if r.customer_class==1]) == visited_by_children
     True
 
-Now say we'd like to find the average waiting time at the reception, baby specialist's clinic, and children's specialist's clinic. We'll simulate for 24 hours, using 3 hour war-mup and 3 hour cool-down, for 16 trials. Let's collect the average waiting times at each node every time::
+Now say we'd like to find the average waiting time at the reception, baby specialist's clinic, and children's specialist's clinic. We'll simulate for 24 hours, using 3 hour warm-up and 3 hour cool-down, for 16 trials. Let's collect the average waiting times at each node every time::
 
 	>>> average_waits_1 = []
 	>>> average_waits_2 = []

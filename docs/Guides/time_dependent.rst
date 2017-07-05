@@ -46,7 +46,7 @@ Let's implement this into a one node infinite server queue::
     ... )
 
 We'll then simulate this for 1 day.
-We would expect 24 arrivals in the morning (12 hours, one every half an hour); 8 arrivals over lunch (2 hours, one every 15 minutes), 8 arrivals in the afternoon (6 hours, one every 45 mins); and 2 arrivals in the night (4 hours, one every hour and a half).
+We would expect 24 arrivals in the morning (12 hours, one every half an hour); 8 arrivals over lunch (2 hours, one every 15 minutes); 8 arrivals in the afternoon (6 hours, one every 45 mins); and 2 arrivals in the night (4 hours, one every hour and a half).
 Therefore a total of 42 customers passed through the system::
 
    >>> Q = ciw.Simulation(N)

@@ -38,7 +38,7 @@ Baulking_functions
 A dictionary of baulking functions for each customer class and each node.
 It describes the baulking mechanism of the customers.
 For more details see :ref:`baulking-functions`.
-If left out, then bo baulking occurs.
+If left out, then no baulking occurs.
 
 Example::
 
@@ -64,31 +64,6 @@ An example for a two node network with two classes of customer::
                                       [0.2, 0.2, 0.6]]}
 
 
-Number_of_classes
-~~~~~~~~~~~~~~~~~
-
-*Optional*
-
-Denotes the number of customer classes in the simulation.
-If not included, Ciw works this out from the :code:`Arrival_distributions` argument.
-
-Example::
-
-    Number_of_classes=3
-
-
-Number_of_nodes
-~~~~~~~~~~~~~~~
-
-*Optional*
-
-Denotes the number of nodes in the queueing network.
-If not included, Ciw works this out from the :code:`Number_of_servers` argument.
-
-Example::
-
-    Number_of_nodes=6
-
 
 Number_of_servers
 ~~~~~~~~~~~~~~~~~
@@ -96,7 +71,7 @@ Number_of_servers
 *Required*
 
 A list of the number of parallel servers at each node.
-If a server schedule is used, the name of the schedule is given instead of a number.
+If a server schedule is used, the schedule is given instead of a number.
 For more details on server schedules, see :ref:`server-schedule`.
 A value of 'Inf' may be given is infinite servers are required.
 

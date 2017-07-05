@@ -14,7 +14,7 @@ An example cyclic work schedule is shown in the table below:
     +-------------------+---------+--------+--------+
 
 This schedule is cyclic, therefore after the last shift (30-100), schedule begins again with the shift (0-10).
-The cycle length for this schedule is 100. Let's call this schedule :code:`schedule`.
+The cycle length for this schedule is 100.
 This is defines by a list of lists indicating the number of servers that should be on duty during that shift, and the end date of that shift::
 
     [[2, 10], [0, 30], [1, 100]]

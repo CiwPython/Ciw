@@ -107,7 +107,7 @@ Write a gamma distribution with parameters :math:`\alpha = 0.6` and :math:`\beta
 The Truncated Normal Distribution
 ---------------------------------
 
-The truncated normal distribution samples a random number from the normal distribution with mean parameter :math:`\mu` and sstandard deviation :math:`\sigma`.
+The truncated normal distribution samples a random number from the normal distribution with mean :math:`\mu` and standard deviation :math:`\sigma`.
 The distribution is truncated at 0, thus if negative numbers are sampled then that observation is resampled until a positive value is sampled.
 Write a normal distribution with parameters :math:`\mu = 0.7` and :math:`\sigma = 0.4` as follows::
 

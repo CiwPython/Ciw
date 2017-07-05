@@ -30,7 +30,7 @@ Of course there may be situations where collecting all results from an empty sys
 One standard method of overcoming this is to use a warm-up time.
 The simulation is run for a certain amount of time (the warm-up time) to get the system in an appropriate state before results are collected.
 
-In Ciw, the simplest way of implementing this is to filter out records that were created before the warm-up time.
+In Ciw, the simplest way of implementing this is to filter out records that were created during the warm-up time.
 
 
 --------------

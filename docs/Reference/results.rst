@@ -40,7 +40,7 @@ The data records contained in this list are named tuples with the following vari
     - :code:`service_time`
        - The amount of time spent in service at that node.
     - :code:`service_end_date`
-       - The date which the customer finished theor service at that node.
+       - The date which the customer finished their service at that node.
     - :code:`time_blocked`
        - The amount of time spent blocked at that node. That is the time between finishing service at exiting the node.
     - :code:`exit_date`
