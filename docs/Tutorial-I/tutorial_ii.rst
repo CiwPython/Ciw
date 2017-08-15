@@ -59,12 +59,12 @@ Individuals carry data records, that contain information such as arrival date, w
     >>> ind = Q.nodes[-1].all_individuals[0]
     >>> ind
     Individual 2
-    >>> ind.data_records
-    [Data Record]
+    >>> len(ind.data_records)
+    1
 
     >>> ind.data_records[0].arrival_date
     7.936299...
-    >>> ind.data_records[0].wait
+    >>> ind.data_records[0].waiting_time
     0.0
     >>> ind.data_records[0].service_start_date
     7.936299...
