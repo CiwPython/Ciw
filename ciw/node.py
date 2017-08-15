@@ -458,15 +458,19 @@ class Node(object):
             - Queue size at arrival
             - Queue size at departure
         """
-        record = DataRecord(individual.arrival_date,
-                            individual.service_end_date,
-                            individual.service_start_date,
-                            individual.exit_date,
-                            self.id_number,
-                            individual.destination,
-                            individual.previous_class,
-                            individual.queue_size_at_arrival,
-                            individual.queue_size_at_departure)
+        record = DataRecord(individual.id_number,
+            individual.previous_class,
+            self.id_number,
+            individual.arrival_date,
+            individual.service_start_date - individual.arrival_date,
+            individual.service_start_date,
+            individual.service_end_date - individual.service_start_date,
+            individual.service_end_date,
+            individual.exit_date - individual.service_end_date,
+            individual.exit_date,
+            individual.destination,
+            individual.queue_size_at_arrival,
+            individual.queue_size_at_departure)
         individual.data_records.append(record)
 
         individual.arrival_date = False

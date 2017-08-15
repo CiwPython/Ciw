@@ -500,11 +500,11 @@ class TestNode(unittest.TestCase):
         ind.exit_date = 9
         N.write_individual_record(ind)
         self.assertEqual(ind.data_records[0].arrival_date, 3)
-        self.assertEqual(ind.data_records[0].wait, 0.5)
+        self.assertEqual(ind.data_records[0].waiting_time, 0.5)
         self.assertEqual(ind.data_records[0].service_start_date, 3.5)
         self.assertEqual(ind.data_records[0].service_time, 2)
         self.assertEqual(ind.data_records[0].service_end_date, 5.5)
-        self.assertEqual(ind.data_records[0].blocked, 3.5)
+        self.assertEqual(ind.data_records[0].time_blocked, 3.5)
         self.assertEqual(ind.data_records[0].exit_date, 9)
         self.assertEqual(ind.data_records[0].customer_class, 0)
 

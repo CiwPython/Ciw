@@ -5,7 +5,6 @@ from random import (expovariate, uniform, triangular, gammavariate,
                     lognormvariate, weibullvariate)
 from csv import writer, reader
 from decimal import getcontext
-from collections import namedtuple
 from itertools import cycle
 
 from .auxiliary import *
@@ -15,8 +14,6 @@ from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
 from .state_tracker import *
 from .deadlock_detector import *
-
-Record = namedtuple('Record', 'id_number customer_class node arrival_date waiting_time service_start_date service_time service_end_date time_blocked exit_date destination queue_size_at_arrival queue_size_at_departure')
 
 class Simulation(object):
     """
@@ -216,19 +213,7 @@ class Simulation(object):
         records = []
         for individual in self.get_all_individuals():
             for record in individual.data_records:
-                records.append(Record(individual.id_number,
-                                record.customer_class,
-                                record.node,
-                                record.arrival_date,
-                                record.wait,
-                                record.service_start_date,
-                                record.service_time,
-                                record.service_end_date,
-                                record.blocked,
-                                record.exit_date,
-                                record.destination,
-                                record.queue_size_at_arrival,
-                                record.queue_size_at_departure))
+                records.append(record)
         self.all_records = records
         return records
 
