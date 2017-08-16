@@ -194,17 +194,27 @@ class TestNode(unittest.TestCase):
             [['Individual 1', 'Individual 2', 'Individual 3']])
         N.update_next_event_date(0.03)
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
-        N.all_individuals[1].exit_date = 0.04
-        N.update_next_event_date(N.next_event_date + 0.00001)
-        self.assertEqual(round(N.next_event_date, 5), 0.03708)
+
+        N.servers[1].next_end_service_date = float('Inf')
         N.release(1, Q.transitive_nodes[1], N.next_event_date)
         self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 3'])
         self.assertEqual(
             [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
             [['Individual 1', 'Individual 3']])
-        N.update_next_event_date(N.next_event_date + 0.00001)
+        N.update_next_event_date(N.next_event_date)
+        self.assertEqual(round(N.next_event_date, 5), 0.03708)
+
+        N.servers[0].next_end_service_date = float('Inf')
+        N.release(0, Q.transitive_nodes[1], N.next_event_date)
+        self.assertEqual([str(obs) for obs in N.all_individuals],
+            ['Individual 3'])
+        self.assertEqual(
+            [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+            [['Individual 3']])
+        N.update_next_event_date(N.next_event_date)
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
+
 
     def test_begin_service_if_possible_release_method(self):
         ciw.seed(50)
@@ -402,8 +412,12 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind.service_end_date, 5), 300.03382)
 
     def test_update_next_event_date_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Net = ciw.create_network(
+            Arrival_distributions=[['Deterministic', 10.0]],
+            Service_distributions=[['Sequential', [0.5, 0.2]]],
+            Number_of_servers=[5]
+        )
+        Q = ciw.Simulation(Net)
         N = Q.transitive_nodes[0]
         self.assertEqual(N.next_event_date, float('Inf'))
         self.assertEqual(N.all_individuals, [])
@@ -412,48 +426,24 @@ class TestNode(unittest.TestCase):
 
         ind1 = ciw.Individual(1)
         ind1.arrival_date = 0.3
-        ind1.service_time = 0.2
-        ind1.service_end_date = 0.5
         N.next_event_date = 0.3
-        N.individuals = [[ind1]]
-        N.update_next_event_date(N.next_event_date + 0.000001)
-        self.assertEqual(N.next_event_date, 0.5)
+        N.accept(ind1, 0.3)
+        N.update_next_event_date(N.next_event_date)
+        self.assertEqual(N.next_event_date, 0.8)
 
         ind2 = ciw.Individual(2)
         ind2.arrival_date = 0.4
-        ind2.service_time = 0.2
-        ind2.service_end_date = 0.6
-        ind2.exit_date = False
-
-        N.individuals = [[ind1, ind2]]
+        N.accept(ind2, 0.4)
         N.update_next_event_date(N.next_event_date + 0.000001)
-        self.assertEqual(N.next_event_date, 0.6)
+        self.assertEqual(round(N.next_event_date, 4), 0.6)
 
-        ind2.exit_date = 0.9
+        N.finish_service()
+        N.update_next_event_date(N.next_event_date)
+        self.assertEqual(N.next_event_date, 0.8)
 
-        N.update_next_event_date(N.next_event_date + 0.000001)
+        N.finish_service()
+        N.update_next_event_date(N.next_event_date)
         self.assertEqual(N.next_event_date, float('Inf'))
-
-
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
-        N = Q.transitive_nodes[0]
-        self.assertEqual(N.next_event_date, 30)
-        self.assertEqual(N.individuals, [[]])
-        N.update_next_event_date(0.0)
-        self.assertEqual(N.next_event_date, 30)
-
-        ind1 = ciw.Individual(1)
-        ind1.arrival_date = 0.3
-        ind1.service_time = 0.2
-        ind1.service_end_date = 0.5
-        N.next_event_date = 0.3
-        N.individuals = [[ind1]]
-        N.update_next_event_date(N.next_event_date + 0.000001)
-        self.assertEqual(N.next_event_date, 0.5)
-
-        N.update_next_event_date(N.next_event_date + 0.000001)
-        self.assertEqual(N.next_event_date, 30)
 
     def test_next_node_method(self):
         ciw.seed(6)

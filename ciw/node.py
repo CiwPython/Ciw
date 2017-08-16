@@ -67,11 +67,6 @@ class Node(object):
         return [i for priority_class in self.individuals
                 for i in priority_class]
 
-    # @property
-    # def number_of_individuals(self):
-    #     return len(self.all_individuals)
-
-
     def __repr__(self):
         """
         Representation of a node.
@@ -108,6 +103,7 @@ class Node(object):
         server.cust = individual
         server.busy = True
         individual.server = server
+        server.next_end_service_date = individual.service_end_date
         self.simulation.deadlock_detector.action_at_attach_server(
             self, server, individual)
 
@@ -122,12 +118,12 @@ class Node(object):
         next_individual.service_time = self.get_service_time(
             next_individual.customer_class, current_time)
         if self.free_server():
-            if self.c < float('Inf'):
-                self.attach_server(self.find_free_server(),
-                                   next_individual)
             next_individual.service_start_date = self.get_now(current_time)
             next_individual.service_end_date = self.increment_time(
                 current_time, next_individual.service_time)
+            if self.c < float('Inf'):
+                self.attach_server(self.find_free_server(),
+                                   next_individual)
 
     def begin_interrupted_individuals_service(self, current_time, srvr):
         """
@@ -135,11 +131,11 @@ class Node(object):
         resampking service time)
         """
         ind = [i for i in self.interrupted_individuals][0]
-        self.attach_server(srvr, ind)
         ind.service_time = self.get_service_time(ind.customer_class,
                                                  current_time)
         ind.service_end_date = self.increment_time(self.get_now(current_time),
                                                    ind.service_time)
+        self.attach_server(srvr, ind)
         self.interrupted_individuals.remove(ind)
 
     def begin_service_if_possible_change_shift(self, current_time):
@@ -153,10 +149,10 @@ class Node(object):
                 self.begin_interrupted_individuals_service(current_time, srvr)
             elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
-                self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
                 ind.service_end_date = self.increment_time(
                     ind.service_start_date, ind.service_time)
+                self.attach_server(srvr, ind)
 
     def begin_service_if_possible_release(self, current_time):
         """
@@ -169,10 +165,10 @@ class Node(object):
                 self.begin_interrupted_individuals_service(current_time, srvr)
             elif len([i for i in self.all_individuals if not i.server]) > 0:
                 ind = [i for i in self.all_individuals if not i.server][0]
-                self.attach_server(srvr, ind)
                 ind.service_start_date = self.get_now(current_time)
                 ind.service_end_date = self.increment_time(
                     ind.service_start_date, ind.service_time)
+                self.attach_server(srvr, ind)
 
     def block_individual(self, individual, next_node):
         """
@@ -301,6 +297,8 @@ class Node(object):
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual.customer_class)
         next_individual.destination = next_node.id_number
+        if self.c < float('Inf'):
+            next_individual.server.next_end_service_date = float('Inf')
         if next_node.number_of_individuals < next_node.node_capacity:
             self.release(next_individual_index, next_node,
                 self.next_event_date)
@@ -422,10 +420,14 @@ class Node(object):
         """
         Finds the time of the next event at this node
         """
-        next_end_service = min([ind.service_end_date
-            for ind in self.all_individuals
-            if not ind.is_blocked
-            if ind.service_end_date >= current_time] + [float("Inf")])
+        if self.c != float('Inf'):
+            next_end_service = min([s.next_end_service_date
+                for s in self.servers] + [float("Inf")])
+        else:
+            next_end_service = min([ind.service_end_date
+                for ind in self.all_individuals
+                if not ind.is_blocked
+                if ind.service_end_date >= current_time] + [float("Inf")])
         if self.schedule:
             next_shift_change = self.next_shift_change
             self.next_event_date = min(

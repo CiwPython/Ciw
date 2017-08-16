@@ -180,24 +180,25 @@ class TestSimulation(unittest.TestCase):
         N = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
 
+        max_custs = 250
+
         ciw.seed(1)
         Q1 = ciw.Simulation(N)
-        Q1.simulate_until_max_customers(10, progress_bar=True, method='Finish')
-        self.assertEqual(Q1.progress_bar.total, 10)
-        self.assertEqual(Q1.progress_bar.n, 10)
+        Q1.simulate_until_max_customers(max_custs, progress_bar=True, method='Finish')
+        self.assertEqual(Q1.progress_bar.total, max_custs)
+        self.assertEqual(Q1.progress_bar.n, max_custs)
 
         ciw.seed(1)
         Q2 = ciw.Simulation(N)
-        Q2.simulate_until_max_customers(10, progress_bar=True, method='Arrive')
-        self.assertEqual(Q2.progress_bar.total, 10)
-        self.assertEqual(Q2.progress_bar.n, 10)
+        Q2.simulate_until_max_customers(max_custs, progress_bar=True, method='Arrive')
+        self.assertEqual(Q2.progress_bar.total, max_custs)
+        self.assertEqual(Q2.progress_bar.n, max_custs)
 
         ciw.seed(1)
         Q3 = ciw.Simulation(N)
-        Q3.simulate_until_max_customers(10, progress_bar=True, method='Accept')
-        self.assertEqual(Q3.progress_bar.total, 10)
-        self.assertEqual(Q3.progress_bar.n, 10)
-
+        Q3.simulate_until_max_customers(max_custs, progress_bar=True, method='Accept')
+        self.assertEqual(Q3.progress_bar.total, max_custs)
+        self.assertEqual(Q3.progress_bar.n, max_custs)
 
     def test_simulate_until_deadlock_method(self):
         ciw.seed(3)
@@ -340,7 +341,6 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(data[0], expected_headers)
         self.assertEqual(len(data[0]), len(ciw.data_record.DataRecord._fields))
         os.remove('ciw/tests/testing_parameters/data_2.csv')
-
 
     def test_simultaneous_events_example(self):
         # This should yield 3 or 2 customers finishing service.

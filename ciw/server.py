@@ -18,6 +18,7 @@ class Server(object):
         self.busy_time = False
         self.total_time = False
         self.shift_end = False
+        self.next_end_service_date = float('Inf')
 
     @property
     def utilisation(self):
