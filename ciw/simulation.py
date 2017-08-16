@@ -322,7 +322,7 @@ class Simulation(object):
             self.progress_bar = tqdm.tqdm(total=max_customers)
 
         if method == 'Finish':
-            check = lambda : self.nodes[-1].number_completed
+            check = lambda : self.nodes[-1].number_of_individuals
         elif method == 'Arrive':
             check = lambda : self.nodes[0].number_of_individuals
         elif method == 'Accept':

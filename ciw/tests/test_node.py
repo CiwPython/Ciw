@@ -61,14 +61,16 @@ class TestNode(unittest.TestCase):
             N.accept(inds[int(current_time*100 - 1)], current_time)
         self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 2', 'Individual 3'])
-        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+        self.assertEqual(
+            [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
             [['Individual 1', 'Individual 2', 'Individual 3']])
         N.update_next_event_date(0.03)
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
         N.finish_service()
         self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 3'])
-        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+        self.assertEqual(
+            [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
             [['Individual 1', 'Individual 3']])
 
     def test_change_customer_class_method(self):
@@ -187,7 +189,8 @@ class TestNode(unittest.TestCase):
             N.accept(inds[int(current_time*100 - 1)], current_time)
         self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 2', 'Individual 3'])
-        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+        self.assertEqual(
+            [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
             [['Individual 1', 'Individual 2', 'Individual 3']])
         N.update_next_event_date(0.03)
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
@@ -197,7 +200,8 @@ class TestNode(unittest.TestCase):
         N.release(1, Q.transitive_nodes[1], N.next_event_date)
         self.assertEqual([str(obs) for obs in N.all_individuals],
             ['Individual 1', 'Individual 3'])
-        self.assertEqual([[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
+        self.assertEqual(
+            [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
             [['Individual 1', 'Individual 3']])
         N.update_next_event_date(N.next_event_date + 0.00001)
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
@@ -539,46 +543,78 @@ class TestNode(unittest.TestCase):
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
 
-        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [[], []])
-        self.assertEqual([str(obs) for obs in N1.all_individuals], [])
-        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
-        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N1.individuals], [[], []])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals], [])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 1
         Q.nodes[0].next_class = 0
         Q.nodes[0].have_event()
 
-        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], []])
-        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1'])
-        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
-        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N1.individuals],
+            [['Individual 1'], []])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals],
+            ['Individual 1'])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 1
         Q.nodes[0].next_class = 1
         Q.nodes[0].have_event()
 
-        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], ['Individual 2']])
-        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
-        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
-        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N1.individuals],
+            [['Individual 1'], ['Individual 2']])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals],
+            ['Individual 1', 'Individual 2'])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 2
         Q.nodes[0].next_class = 0
         Q.nodes[0].have_event()
 
-        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], ['Individual 2']])
-        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
-        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [['Individual 3'], []])
-        self.assertEqual([str(obs) for obs in N2.all_individuals], ['Individual 3'])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N1.individuals],
+            [['Individual 1'], ['Individual 2']])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals],
+            ['Individual 1', 'Individual 2'])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N2.individuals],
+            [['Individual 3'], []])
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals],
+            ['Individual 3'])
 
         Q.nodes[0].next_node = 2
         Q.nodes[0].next_class = 1
         Q.nodes[0].have_event()
 
-        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [['Individual 1'], ['Individual 2']])
-        self.assertEqual([str(obs) for obs in N1.all_individuals], ['Individual 1', 'Individual 2'])
-        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [['Individual 3'], ['Individual 4']])
-        self.assertEqual([str(obs) for obs in N2.all_individuals], ['Individual 3', 'Individual 4'])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N1.individuals],
+            [['Individual 1'], ['Individual 2']])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals],
+            ['Individual 1', 'Individual 2'])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N2.individuals],
+            [['Individual 3'], ['Individual 4']])
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals],
+            ['Individual 3', 'Individual 4'])
 
     def test_server_utilisation(self):
         # Single server
@@ -603,11 +639,37 @@ class TestNode(unittest.TestCase):
 
     def test_server_utilisation_with_schedules(self):
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 4.0, 4.0, 0.0, 7.0, 1000.0]]],
-            Service_distributions=[['Sequential', [4.0, 2.0, 6.0, 6.0, 3.0]]],
+            Arrival_distributions=[['Sequential',
+                [2.0, 4.0, 4.0, 0.0, 7.0, 1000.0]]],
+            Service_distributions=[['Sequential',
+                [4.0, 2.0, 6.0, 6.0, 3.0]]],
             Number_of_servers=[[[1, 9], [2, 23]]]
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(23)
         recs = Q.get_all_records()
         self.assertEqual(Q.transitive_nodes[0].server_utilisation, 21.0/37.0)
+
+    def test_num_inds_equal_len_all_inds(self):
+        # Create a Simulatin class that inherits form ciw.Simulation so that
+        # an assertion than number_of_individuals == len(all_individuals)
+        # every time self.event_and_return_nextnode is called.
+        class AssertSim(ciw.Simulation):
+            def event_and_return_nextnode(simself, next_active_node, current_time):
+                """
+                Carries out the event of current next_active_node, and return the next
+                next_active_node
+                """
+                next_active_node.have_event()
+                for node in simself.transitive_nodes:
+                    node.update_next_event_date(current_time)
+                    self.assertEqual(
+                        node.number_of_individuals, len(node.all_individuals))
+                return simself.find_next_active_node()
+
+        # Now carry out the tests by running a simulation with this new
+        # inherited Node class.
+        N = ciw.create_network_from_yml(
+            'ciw/tests/testing_parameters/params.yml')
+        Q = AssertSim(N)
+        Q.simulate_until_max_time(100)

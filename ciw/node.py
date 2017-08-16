@@ -42,6 +42,7 @@ class Node(object):
         self.class_change = node.class_change_matrix
         self.individuals = [[] for _ in
                 range(simulation.number_of_priority_classes)]
+        self.number_of_individuals = 0
         self.id_number = id_
         self.baulking_functions = [self.simulation.network.customer_classes[
             clss].baulking_functions[id_-1] for clss in range(
@@ -66,9 +67,9 @@ class Node(object):
         return [i for priority_class in self.individuals
                 for i in priority_class]
 
-    @property
-    def number_of_individuals(self):
-        return len(self.all_individuals)
+    # @property
+    # def number_of_individuals(self):
+    #     return len(self.all_individuals)
 
 
     def __repr__(self):
@@ -87,6 +88,7 @@ class Node(object):
             next_individual, current_time)
         next_individual.queue_size_at_arrival = self.number_of_individuals
         self.individuals[next_individual.priority_class].append(next_individual)
+        self.number_of_individuals += 1
         self.simulation.statetracker.change_state_accept(
             self.id_number, next_individual.customer_class)
 
@@ -299,7 +301,7 @@ class Node(object):
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual.customer_class)
         next_individual.destination = next_node.id_number
-        if len(next_node.all_individuals) < next_node.node_capacity:
+        if next_node.number_of_individuals < next_node.node_capacity:
             self.release(next_individual_index, next_node,
                 self.next_event_date)
         else:
@@ -352,6 +354,7 @@ class Node(object):
         """
         next_individual =  self.all_individuals[next_individual_index]
         self.individuals[next_individual.prev_priority_class].remove(next_individual)
+        self.number_of_individuals -= 1
         next_individual.queue_size_at_departure = len(self.all_individuals)
         next_individual.exit_date = current_time
         if self.c < float('Inf'):

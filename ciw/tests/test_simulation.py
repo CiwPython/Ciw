@@ -124,14 +124,14 @@ class TestSimulation(unittest.TestCase):
         ciw.seed(2)
         Q1 = ciw.Simulation(N)
         Q1.simulate_until_max_customers(10, method='Finish')
-        self.assertEqual(Q1.nodes[-1].number_completed, 10)
+        self.assertEqual(Q1.nodes[-1].number_of_individuals, 10)
         self.assertEqual(len(Q1.nodes[-1].all_individuals), 10)
 
         # Test 'Finish' method
         ciw.seed(2)
         Q2 = ciw.Simulation(N)
         Q2.simulate_until_max_customers(10)
-        self.assertEqual(Q2.nodes[-1].number_completed, 10)
+        self.assertEqual(Q2.nodes[-1].number_of_individuals, 10)
         self.assertEqual(len(Q2.nodes[-1].all_individuals), 10)
 
         next_active_node = Q2.find_next_active_node()
