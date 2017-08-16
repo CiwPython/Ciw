@@ -201,7 +201,7 @@ class Node(object):
         Add servers and deletes or indicates which servers
         should go off duty.
         """
-        shift = self.next_event_date%self.cyclelength
+        shift = self.next_event_date % self.cyclelength
 
         try: indx = self.schedule.index(shift)
         except:

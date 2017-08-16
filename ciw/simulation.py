@@ -183,7 +183,7 @@ class Simulation(object):
         Create the dictionary of service and arrival
         time functions for each node for each class
         """
-        return {node+1: {
+        return {node + 1: {
             clss: self.find_distributions(node, clss, kind)
             for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
@@ -193,7 +193,7 @@ class Simulation(object):
         Create the dictionary of batch size
         functions for each node for each class
         """
-        return {node+1: {
+        return {node + 1: {
             clss: self.find_distributions(node, clss, 'Bch')
             for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
@@ -283,7 +283,7 @@ class Simulation(object):
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
 
-        if progress_bar is not False:
+        if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_simulation_time)
 
         while current_time < max_simulation_time:
@@ -318,7 +318,7 @@ class Simulation(object):
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
 
-        if progress_bar is not False:
+        if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_customers)
 
         if method == 'Finish':

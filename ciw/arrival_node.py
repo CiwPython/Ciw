@@ -55,7 +55,7 @@ class ArrivalNode(object):
         """
         Finds the time of the next arrival.
         """
-        times = [[self.event_dates_dict[nd+1][clss]
+        times = [[self.event_dates_dict[nd + 1][clss]
             for clss in range(len(self.event_dates_dict[1]))]
             for nd in range(len(self.event_dates_dict))]
 
