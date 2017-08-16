@@ -41,7 +41,7 @@ class ArrivalNode(object):
         Either makes an individual baulk, or sends the individual
         to the next node
         """
-        if next_node.baulking_functions[self.next_class] == None:
+        if next_node.baulking_functions[self.next_class] is None:
             self.send_individual(next_node, next_individual)
         else:
             rnd_num = random()
