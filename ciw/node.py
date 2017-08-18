@@ -2,6 +2,7 @@ from __future__ import division
 from random import random
 import os
 from csv import writer
+from math import isinf
 
 import networkx as nx
 
@@ -121,7 +122,7 @@ class Node(object):
             next_individual.service_start_date = self.get_now(current_time)
             next_individual.service_end_date = self.increment_time(
                 current_time, next_individual.service_time)
-            if self.c < float('Inf'):
+            if not isinf(self.c):
                 self.attach_server(self.find_free_server(),
                                    next_individual)
 
@@ -159,7 +160,7 @@ class Node(object):
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
         """
-        if self.free_server() and self.c != float('Inf'):
+        if self.free_server() and (not isinf(self.c)):
             srvr = self.find_free_server()
             if len(self.interrupted_individuals) > 0:
                 self.begin_interrupted_individuals_service(current_time, srvr)
@@ -252,7 +253,7 @@ class Node(object):
         """
         Returns True if a server is available, False otherwise
         """
-        if self.c == float('Inf'):
+        if isinf(self.c):
             return True
         return len([svr for svr in self.servers if not svr.busy]) > 0
 
@@ -280,7 +281,7 @@ class Node(object):
         """
         Finds the overall server utilisation for the node
         """
-        if self.c == float('Inf') or self.c == 0:
+        if isinf(self.c) or self.c == 0:
             self.server_utilisation = None
         else:
             for server in self.servers:
@@ -296,7 +297,7 @@ class Node(object):
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual.customer_class)
         next_individual.destination = next_node.id_number
-        if self.c < float('Inf'):
+        if not isinf(self.c):
             next_individual.server.next_end_service_date = float('Inf')
         if next_node.number_of_individuals < next_node.node_capacity:
             self.release(next_individual_index, next_node,
@@ -354,7 +355,7 @@ class Node(object):
         self.number_of_individuals -= 1
         next_individual.queue_size_at_departure = self.number_of_individuals
         next_individual.exit_date = current_time
-        if self.c < float('Inf'):
+        if not isinf(self.c):
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
         self.simulation.statetracker.change_state_release(self.id_number,
@@ -419,7 +420,7 @@ class Node(object):
         """
         Finds the time of the next event at this node
         """
-        if self.c != float('Inf'):
+        if not isinf(self.c):
             next_end_service = min([s.next_end_service_date
                 for s in self.servers] + [float("Inf")])
         else:
@@ -439,7 +440,7 @@ class Node(object):
         Updates the servers' total_time and busy_time
         as the end of the simulation run.
         """
-        if self.c != float('Inf'):
+        if not isinf(self.c):
             for srvr in self.servers:
                 srvr.total_time = self.increment_time(current_time, -srvr.start_date)
                 if srvr.busy:
