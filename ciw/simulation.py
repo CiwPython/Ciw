@@ -172,8 +172,8 @@ class Simulation(object):
         Returns the next active node:
         """
         next_event_date = min([nd.next_event_date for nd in self.nodes])
-        next_active_node_indices = [i for i, x in enumerate([
-            nd.next_event_date for nd in self.nodes]) if x == next_event_date]
+        next_active_node_indices = [i for i, nd in enumerate(
+            self.nodes) if nd.next_event_date == next_event_date]
         if len(next_active_node_indices) > 1:
             return self.nodes[random_choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
