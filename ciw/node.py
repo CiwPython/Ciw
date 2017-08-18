@@ -54,7 +54,7 @@ class Node(object):
         else:
             self.next_event_date = float("Inf")
         self.blocked_queue = []
-        if self.c < float('Inf'):
+        if not isinf(self.c):
             self.servers = self.create_starting_servers()
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
