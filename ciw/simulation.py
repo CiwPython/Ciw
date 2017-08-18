@@ -5,7 +5,6 @@ from random import (expovariate, uniform, triangular, gammavariate,
                     lognormvariate, weibullvariate)
 from csv import writer, reader
 from decimal import getcontext
-from collections import namedtuple
 from itertools import cycle
 
 from .auxiliary import *
@@ -15,8 +14,6 @@ from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
 from .state_tracker import *
 from .deadlock_detector import *
-
-Record = namedtuple('Record', 'id_number customer_class node arrival_date waiting_time service_start_date service_time service_end_date time_blocked exit_date destination queue_size_at_arrival queue_size_at_departure')
 
 class Simulation(object):
     """
@@ -174,9 +171,9 @@ class Simulation(object):
         """
         Returns the next active node:
         """
-        next_active_node_indices = [i for i, x in enumerate([
-            nd.next_event_date for nd in self.nodes]) if x == min([
-            nd.next_event_date for nd in self.nodes])]
+        next_event_date = min([nd.next_event_date for nd in self.nodes])
+        next_active_node_indices = [i for i, nd in enumerate(
+            self.nodes) if nd.next_event_date == next_event_date]
         if len(next_active_node_indices) > 1:
             return self.nodes[random_choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
@@ -186,7 +183,7 @@ class Simulation(object):
         Create the dictionary of service and arrival
         time functions for each node for each class
         """
-        return {node+1: {
+        return {node + 1: {
             clss: self.find_distributions(node, clss, kind)
             for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
@@ -196,7 +193,7 @@ class Simulation(object):
         Create the dictionary of batch size
         functions for each node for each class
         """
-        return {node+1: {
+        return {node + 1: {
             clss: self.find_distributions(node, clss, 'Bch')
             for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
@@ -216,19 +213,7 @@ class Simulation(object):
         records = []
         for individual in self.get_all_individuals():
             for record in individual.data_records:
-                records.append(Record(individual.id_number,
-                                record.customer_class,
-                                record.node,
-                                record.arrival_date,
-                                record.wait,
-                                record.service_start_date,
-                                record.service_time,
-                                record.service_end_date,
-                                record.blocked,
-                                record.exit_date,
-                                record.destination,
-                                record.queue_size_at_arrival,
-                                record.queue_size_at_departure))
+                records.append(record)
         self.all_records = records
         return records
 
@@ -298,7 +283,7 @@ class Simulation(object):
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
 
-        if progress_bar is not False:
+        if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_simulation_time)
 
         while current_time < max_simulation_time:
@@ -333,11 +318,11 @@ class Simulation(object):
         next_active_node = self.find_next_active_node()
         current_time = next_active_node.next_event_date
 
-        if progress_bar is not False:
+        if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_customers)
 
         if method == 'Finish':
-            check = lambda : self.nodes[-1].number_completed
+            check = lambda : self.nodes[-1].number_of_individuals
         elif method == 'Arrive':
             check = lambda : self.nodes[0].number_of_individuals
         elif method == 'Accept':

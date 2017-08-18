@@ -124,19 +124,18 @@ class TestSimulation(unittest.TestCase):
         ciw.seed(2)
         Q1 = ciw.Simulation(N)
         Q1.simulate_until_max_customers(10, method='Finish')
-        self.assertEqual(Q1.nodes[-1].number_completed, 10)
+        self.assertEqual(Q1.nodes[-1].number_of_individuals, 10)
         self.assertEqual(len(Q1.nodes[-1].all_individuals), 10)
 
         # Test 'Finish' method
         ciw.seed(2)
         Q2 = ciw.Simulation(N)
         Q2.simulate_until_max_customers(10)
-        self.assertEqual(Q2.nodes[-1].number_completed, 10)
+        self.assertEqual(Q2.nodes[-1].number_of_individuals, 10)
         self.assertEqual(len(Q2.nodes[-1].all_individuals), 10)
 
         next_active_node = Q2.find_next_active_node()
         end_time_finish = next_active_node.next_event_date
-
 
         # Test 'Arrive' method
         ciw.seed(2)
@@ -153,7 +152,6 @@ class TestSimulation(unittest.TestCase):
 
         next_active_node = Q3.find_next_active_node()
         end_time_arrive = next_active_node.next_event_date
-
 
         # Test 'Accept' method
         ciw.seed(2)
@@ -182,24 +180,25 @@ class TestSimulation(unittest.TestCase):
         N = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
 
+        max_custs = 250
+
         ciw.seed(1)
         Q1 = ciw.Simulation(N)
-        Q1.simulate_until_max_customers(10, progress_bar=True, method='Finish')
-        self.assertEqual(Q1.progress_bar.total, 10)
-        self.assertEqual(Q1.progress_bar.n, 10)
+        Q1.simulate_until_max_customers(max_custs, progress_bar=True, method='Finish')
+        self.assertEqual(Q1.progress_bar.total, max_custs)
+        self.assertEqual(Q1.progress_bar.n, max_custs)
 
         ciw.seed(1)
         Q2 = ciw.Simulation(N)
-        Q2.simulate_until_max_customers(10, progress_bar=True, method='Arrive')
-        self.assertEqual(Q2.progress_bar.total, 10)
-        self.assertEqual(Q2.progress_bar.n, 10)
+        Q2.simulate_until_max_customers(max_custs, progress_bar=True, method='Arrive')
+        self.assertEqual(Q2.progress_bar.total, max_custs)
+        self.assertEqual(Q2.progress_bar.n, max_custs)
 
         ciw.seed(1)
         Q3 = ciw.Simulation(N)
-        Q3.simulate_until_max_customers(10, progress_bar=True, method='Accept')
-        self.assertEqual(Q3.progress_bar.total, 10)
-        self.assertEqual(Q3.progress_bar.n, 10)
-
+        Q3.simulate_until_max_customers(max_custs, progress_bar=True, method='Accept')
+        self.assertEqual(Q3.progress_bar.total, max_custs)
+        self.assertEqual(Q3.progress_bar.n, max_custs)
 
     def test_simulate_until_deadlock_method(self):
         ciw.seed(3)
@@ -299,7 +298,7 @@ class TestSimulation(unittest.TestCase):
             data.append(row)
         data_file.close()
         self.assertEqual(data[0], expected_headers)
-        self.assertEqual(len(data[0]), len(ciw.simulation.Record._fields))
+        self.assertEqual(len(data[0]), len(ciw.data_record.DataRecord._fields))
         os.remove('ciw/tests/testing_parameters/data.csv')
 
         Q = ciw.Simulation(ciw.create_network_from_yml(
@@ -340,9 +339,8 @@ class TestSimulation(unittest.TestCase):
             data.append(row)
         data_file.close()
         self.assertEqual(data[0], expected_headers)
-        self.assertEqual(len(data[0]), len(ciw.simulation.Record._fields))
+        self.assertEqual(len(data[0]), len(ciw.data_record.DataRecord._fields))
         os.remove('ciw/tests/testing_parameters/data_2.csv')
-
 
     def test_simultaneous_events_example(self):
         # This should yield 3 or 2 customers finishing service.
@@ -355,7 +353,6 @@ class TestSimulation(unittest.TestCase):
                                             ['Deterministic', 5.0]],
                   'Transition_matrices': [[1.0, 0.0], [0.0, 0.0]],
                   'Number_of_servers': [2, 1]}
-
 
         ciw.seed(36)
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -487,8 +484,8 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(50)
         recs = Q.get_all_records()
         for row in recs:
-            self.assertIsInstance(row, ciw.simulation.Record)
-            self.assertEqual(len(row), len(ciw.simulation.Record._fields))
+            self.assertIsInstance(row, ciw.data_record.DataRecord)
+            self.assertEqual(len(row), len(ciw.data_record.DataRecord._fields))
 
     def test_namedtuple_record(self):
         expected_fields = ('id_number',
@@ -504,11 +501,10 @@ class TestSimulation(unittest.TestCase):
             'destination',
             'queue_size_at_arrival',
             'queue_size_at_departure')
-        self.assertEqual(ciw.simulation.Record._fields, expected_fields)
-        self.assertEqual(ciw.simulation.Record.__name__, 'Record')
+        self.assertEqual(ciw.data_record.DataRecord._fields, expected_fields)
+        self.assertEqual(ciw.data_record.DataRecord.__name__, 'Record')
 
     def test_priority_output(self):
-
         params_dict = {'Arrival_distributions': {'Class 0': [['Deterministic', 1.0]],
                                                  'Class 1': [['Deterministic', 1.0]]},
                        'Service_distributions': {'Class 0': [['Deterministic', 0.75]],
@@ -603,7 +599,6 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual([r.waiting_time for r in recs], [0.0, 16.0])
         self.assertEqual([r.service_start_date for r in recs], [5.0, 26.0])
         self.assertEqual([r.service_end_date for r in recs], [26.0, 47.0])
-
 
         params_dict = {
             'Arrival_distributions': [['Deterministic', 5.0],

@@ -41,7 +41,7 @@ class ArrivalNode(object):
         Either makes an individual baulk, or sends the individual
         to the next node
         """
-        if next_node.baulking_functions[self.next_class] == None:
+        if next_node.baulking_functions[self.next_class] is None:
             self.send_individual(next_node, next_individual)
         else:
             rnd_num = random()
@@ -55,7 +55,7 @@ class ArrivalNode(object):
         """
         Finds the time of the next arrival.
         """
-        times = [[self.event_dates_dict[nd+1][clss]
+        times = [[self.event_dates_dict[nd + 1][clss]
             for clss in range(len(self.event_dates_dict[1]))]
             for nd in range(len(self.event_dates_dict))]
 

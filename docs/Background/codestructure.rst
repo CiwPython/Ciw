@@ -22,7 +22,6 @@ Core:
 - Node
 - Server
 - Individual
-- Data Record
 
 Input:
 
