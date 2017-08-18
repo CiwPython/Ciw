@@ -1,6 +1,11 @@
 History
 -------
 
+v1.1.3 (2017-08-18)
+~~~~~~~~~~~~~~~~~~~
+- Replace DataRecord object with namedtuple.
+- Number of minor tweaks for speed improvements.
+
 v1.1.2 (2017-07-05)
 ~~~~~~~~~~~~~~~~~~~
 - Batch arrivals.
