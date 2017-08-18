@@ -128,7 +128,7 @@ class Node(object):
     def begin_interrupted_individuals_service(self, current_time, srvr):
         """
         Restarts the next interrupted individual's service (by
-        resampking service time)
+        resampling service time)
         """
         ind = [i for i in self.interrupted_individuals][0]
         ind.service_time = self.get_service_time(ind.customer_class,
@@ -268,9 +268,8 @@ class Node(object):
         """
         Finds the next individual that should now finish service
         """
-        next_individual_indices = [i for i, x in enumerate(
-            [ind.service_end_date for ind in self.all_individuals]
-            ) if x == self.next_event_date]
+        next_individual_indices = [i for i, ind in enumerate(
+            self.all_individuals) if ind.service_end_date == self.next_event_date]
         if len(next_individual_indices) > 1:
             next_individual_index = random_choice(next_individual_indices)
         else:

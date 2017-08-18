@@ -100,7 +100,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.customer_class, 1)
         self.assertEqual(ind.previous_class, 0)
 
-
         # Test for case of having priorities
         ciw.seed(14)
         parameters_dictionary = ciw.load_parameters(
@@ -154,7 +153,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.customer_class, 0)
         self.assertEqual(ind.priority_class, 0)
         self.assertEqual(ind.previous_class, 0)
-
 
     def test_block_individual_method(self):
         ciw.seed(4)
@@ -214,7 +212,6 @@ class TestNode(unittest.TestCase):
             [['Individual 3']])
         N.update_next_event_date(N.next_event_date)
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
-
 
     def test_begin_service_if_possible_release_method(self):
         ciw.seed(50)

@@ -354,7 +354,6 @@ class TestSimulation(unittest.TestCase):
                   'Transition_matrices': [[1.0, 0.0], [0.0, 0.0]],
                   'Number_of_servers': [2, 1]}
 
-
         ciw.seed(36)
         Q = ciw.Simulation(ciw.create_network(**params))
         Q.simulate_until_max_time(36)
