@@ -352,7 +352,7 @@ class Node(object):
         next_individual =  self.all_individuals[next_individual_index]
         self.individuals[next_individual.prev_priority_class].remove(next_individual)
         self.number_of_individuals -= 1
-        next_individual.queue_size_at_departure = len(self.all_individuals)
+        next_individual.queue_size_at_departure = self.number_of_individuals
         next_individual.exit_date = current_time
         if self.c < float('Inf'):
             self.detatch_server(next_individual.server, next_individual)
