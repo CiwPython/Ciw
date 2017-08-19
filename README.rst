@@ -36,8 +36,16 @@ A number of other features are also implemented, including priorities, baulking,
 - `Example Jupyter Notebooks <https://github.com/CiwPython/Ciw-notebooks>`_
 - `Contribution guidelines <https://github.com/CiwPython/Ciw/blob/master/CONTRIBUTING.rst>`_
 - `Our great contributors <https://github.com/CiwPython/Ciw/blob/master/AUTHORS.rst>`_
-- Install with :code:`pip install ciw`
 
+Install with :code:`pip install ciw`.
+
+Current supported version of Python:
+
+- Python 2.7
+- Python 3.4
+- Python 3.5
+- Python 3.6
+- PyPy 5.3.1
 
 Usage
 -----
