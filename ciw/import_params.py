@@ -221,7 +221,7 @@ def validify_dictionary(params):
     batch_dists = [params['Batching_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes'])]
     if not set(batch_dists).issubset(set([
         'Deterministic', 'Empirical', 'Custom',
-        'Sequential'])):
+        'Sequential','TimeDependent'])):
         raise ValueError('Ensure that valid Batching Distributions are used.')
     neg_numservers = any([(isinstance(obs, int) and obs < 0) for obs in params['Number_of_servers']])
     valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])
