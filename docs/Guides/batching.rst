@@ -46,6 +46,7 @@ Note:
      + :code:`Empirical`
      + :code:`Custom`
      + :code:`Sequential`
+     + :code:`TimeDependent`
   + If the keyword :code:`Batching_distributions` is omitted, then no batching is assumed. That is only one customer arrives at a time. Equivalent to :code:`['Deterministic', 1]`.
   + If some nodes/customer classes require no batching, but others do, please use :code:`['Deterministic', 1]`.
   + Batch arrivals may lead to :ref:`simultaneous events <simultaneous_events>`, please take care.
