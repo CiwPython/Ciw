@@ -4,7 +4,7 @@ python:
   - 3.4
   - 3.5
   - 3.6
-  - "pypy-5.3.1"
+  - "pypy-5.1"
 
 cache:
   directories:
@@ -13,7 +13,7 @@ cache:
 install:
   - pip install -r requirements.txt
   - python setup.py develop
-  - pip install coveralls
+  - pip install coveralls==1.1
   - pip install sphinx
 script:
   - cd docs; make html

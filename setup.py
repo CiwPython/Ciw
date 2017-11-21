@@ -9,6 +9,13 @@ with open('CHANGES.rst') as changes_file:
 with open('AUTHORS.rst') as authors_file:
     authors = authors_file.read()
 
+with open('requirements.txt') as f:
+    requirements = []
+    for library in f.read().splitlines():
+        if "hypothesis" not in library:  # Skip: used only for dev
+            requirements.append(library)
+
+
 # Read in the version number
 exec(open('ciw/version.py', 'r').read())
 
@@ -21,5 +28,5 @@ setup(
     packages=['ciw'],
     description='A discrete event simulation library for open queueing networks',
     long_description=readme + '\n\n' + changes + '\n\n' + authors,
-    install_requires=["PyYAML", "networkx", "hypothesis", "tqdm"]
+    install_requires=requirements
 )
