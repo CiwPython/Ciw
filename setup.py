@@ -12,7 +12,8 @@ with open('AUTHORS.rst') as authors_file:
 with open('requirements.txt') as f:
     requirements = []
     for library in f.read().splitlines():
-        requirements.append(library)
+        if "hypothesis" not in library:  # Skip: used only for dev
+            requirements.append(library)
 
 
 # Read in the version number
