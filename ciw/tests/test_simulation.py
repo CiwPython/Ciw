@@ -768,3 +768,33 @@ class TestSimulation(unittest.TestCase):
         self.assertTrue(isinstance(Q_all.generators['Ser'][0][1], cycle))
         self.assertTrue(isinstance(Q_all.generators['Ser'][1][0], cycle))
         self.assertTrue(isinstance(Q_all.generators['Ser'][1][1], cycle))
+
+    def test_enter_and_exit(self):
+        """
+        Test the context manager:
+
+        - Records are deleted;
+        - Individuals are deleted
+        """
+        N1 = ciw.create_network_from_yml(
+          'ciw/tests/testing_parameters/params.yml')
+        with ciw.Simulation(N1) as Q:
+            Q.simulate_until_max_time(50)
+            records = Q.nodes[-1].all_individuals[0].data_records
+            individuals = Q.nodes[-1].all_individuals
+            individual = individuals[0]
+
+            self.assertIsInstance(records, list)
+            self.assertGreater(len(records), 0)
+
+            self.assertIsInstance(individuals, list)
+            self.assertGreater(len(individuals), 0)
+
+            self.assertIsInstance(individual, ciw.Individual)
+
+        self.assertEqual(len(records), 0)
+        self.assertEqual(len(individuals), 0)
+
+        # This test fails: I seem unable to delete the individuals
+        with self.assertRaises(NameError):
+            individual
