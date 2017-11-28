@@ -43,7 +43,7 @@ class Simulation(object):
         self.batch_sizes = self.find_batches_dict()
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [self.NodeType(i + 1, self)
-            for i in range(network.number_of_nodes)]
+                                 for i in range(network.number_of_nodes)]
         self.nodes = ([self.ArrivalNodeType(self)] +
                       self.transitive_nodes +
                       [ExitNode()])
@@ -397,3 +397,20 @@ class Simulation(object):
         for row in records:
             csv_wrtr.writerow(row)
         data_file.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        for node in self.nodes[1: -1]:
+            for server in node.individuals:
+                for individual in server:
+                    del individual.data_records[:]
+                    del individual
+                del server[:]
+            del node.individuals[:]
+
+        for individual in self.nodes[-1].all_individuals:
+            del individual.data_records[:]
+            del individual
+        del self.nodes[-1].all_individuals[:]
