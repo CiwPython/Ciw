@@ -1,6 +1,11 @@
 import unittest
 import ciw
 
+def time_dependent_batches(current_time):
+    if current_time < 11.0:
+        return 5
+    return 1
+
 class TestArrivalNode(unittest.TestCase):
 
     def test_init_method(self):
