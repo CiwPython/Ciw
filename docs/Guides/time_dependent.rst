@@ -4,7 +4,7 @@
 How to Define Time Dependent Distributions
 ==========================================
 
-In Ciw we can get a time dependent distribution, that is a service time or inter-arrival time distribution that changes as the simulation time progresses.
+In Ciw we can get a time dependent distribution, that is a service time, inter-arrival time, or batching distribution that changes as the simulation time progresses.
 In order to do this a time dependent function, that returns a sampled time, must be defined.
 This must take in a time variable `t`.
 
@@ -54,8 +54,3 @@ Therefore a total of 42 customers passed through the system::
 
    >>> len(Q.nodes[-1].all_individuals)
    42
-
-Time dependent function can be used for batching distributions too.
-In this case the time dependent function must return the number of individuals that must enter the simulation at the given time.
-Note that the function must return a float number, but the result will then be rounded to the nearest integer.
-The function may return zero, if no individuals are expected to enter the simulation at the given time.
