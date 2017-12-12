@@ -1,4 +1,4 @@
-PyYAML
-networkx
-hypothesis
-tqdm
+PyYAML==3.12
+networkx==1.11
+hypothesis==3.8.5
+tqdm==4.14.0
