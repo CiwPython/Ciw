@@ -1,6 +1,11 @@
 History
 -------
 
+v1.1.4 (2017-12-12)
+~~~~~~~~~~~~~~~~~~~
+- Time dependent batching distributions
+- Hard pin requirements versions
+
 v1.1.3 (2017-08-18)
 ~~~~~~~~~~~~~~~~~~~
 - Replace DataRecord object with namedtuple.
