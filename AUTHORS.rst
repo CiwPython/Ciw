@@ -10,3 +10,4 @@ Ciw has been developed by the following contributors:
 + `Alex Carney <https://github.com/alcarney/>`_
 + `Adam Johnson <https://github.com/adamchainz/>`_
 + `Nikoleta Glynatsi <https://github.com/Nikoleta-v3/>`_
++ `caipirginka <https://github.com/caipirginka>`_

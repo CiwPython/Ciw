@@ -89,7 +89,8 @@ class ArrivalNode(object):
             self.next_event_date))
         self.batch_size_dict[self.next_node][
             self.next_class] = self.batch_size(
-            self.next_node, self.next_class)
+            self.next_node, self.next_class,
+            self.next_event_date)
         self.find_next_event_date()
 
     def increment_time(self, original, increment):
@@ -116,7 +117,7 @@ class ArrivalNode(object):
         for nd in self.batch_size_dict:
             for clss in self.batch_size_dict[nd]:
                 self.batch_size_dict[nd][
-                clss] = self.batch_size(nd, clss)
+                clss] = self.batch_size(nd, clss, 0.0)
 
     def inter_arrival(self, nd, clss, current_time):
         """
@@ -127,10 +128,15 @@ class ArrivalNode(object):
             return self.simulation.inter_arrival_times[nd][clss](current_time)
         return self.simulation.inter_arrival_times[nd][clss]()
 
-    def batch_size(self, nd, clss):
+    def batch_size(self, nd, clss, current_time):
         """
         Samples the batch size for next class and node.
         """
+        if self.simulation.network.customer_classes[
+            clss].batching_distributions[nd-1][0] == "TimeDependent":
+            return self.simulation.batch_sizes[nd][clss](
+                self.event_dates_dict[nd][clss]
+                )
         return self.simulation.batch_sizes[nd][clss]()
 
     def record_baulk(self, next_node):

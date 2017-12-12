@@ -4,7 +4,7 @@
 How to Define Time Dependent Distributions
 ==========================================
 
-In Ciw we can get a time dependent distribution, that is a service time or inter-arrival time distribution that changes as the simulation time progresses.
+In Ciw we can get a time dependent distribution, that is a service time, inter-arrival time, or batching distribution that changes as the simulation time progresses.
 In order to do this a time dependent function, that returns a sampled time, must be defined.
 This must take in a time variable `t`.
 

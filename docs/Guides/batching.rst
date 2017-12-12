@@ -46,6 +46,44 @@ Note:
      + :code:`Empirical`
      + :code:`Custom`
      + :code:`Sequential`
+     + :code:`TimeDependent`
   + If the keyword :code:`Batching_distributions` is omitted, then no batching is assumed. That is only one customer arrives at a time. Equivalent to :code:`['Deterministic', 1]`.
   + If some nodes/customer classes require no batching, but others do, please use :code:`['Deterministic', 1]`.
   + Batch arrivals may lead to :ref:`simultaneous events <simultaneous_events>`, please take care.
+
+
+---------------------------------
+How to Set Time Dependent Batches
+---------------------------------
+
+Ciw allows batching distributions to be time dependent.
+That is the batch size, the number of customers arriving simultaneously, is sampled from a distribution that varies with time.
+
+Let's show an example, we wish to have batch sizes of 2 for the first 10 time units, but batch sizes of 1 thereafter.
+Define a time dependent batching distribution::
+
+    >>> def time_dependent_batches(t):
+    ...     if t < 10.0:
+    ...         return 2
+    ...     return 1
+
+Now use this when defining a network:
+
+    >>> import ciw
+    >>> N = ciw.create_network(
+    ...     Arrival_distributions=[['Deterministic', 3.0]],
+    ...     Service_distributions=[['Deterministic', 0.5]],
+    ...     Batching_distributions=[['TimeDependent', time_dependent_batches]],
+    ...     Number_of_servers=[1]
+    ... )
+
+We'll simulate this for 16 time units.
+Now at times 3, 6, and 9 we would expect 2 customers arriving (a total of 6).
+And at times 12 and 15 we would expect 1 customer arriving (a total of 2).
+So 8 customers in total should finish service::
+
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(16.0)
+    >>> len(Q.nodes[-1].all_individuals)
+    8
+
