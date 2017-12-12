@@ -132,11 +132,12 @@ class ArrivalNode(object):
         """
         Samples the batch size for next class and node.
         """
-        #return int(round(self.simulation.batch_sizes[nd][clss](getattr(self,'next_event_date',None))))
         if self.simulation.network.customer_classes[
             clss].batching_distributions[nd-1][0] == "TimeDependent":
-            return int(round(self.simulation.batch_sizes[nd][clss](current_time)))
-        return int(round(self.simulation.batch_sizes[nd][clss]()))
+            return self.simulation.batch_sizes[nd][clss](
+                self.event_dates_dict[nd][clss]
+                )
+        return self.simulation.batch_sizes[nd][clss]()
 
     def record_baulk(self, next_node):
         """

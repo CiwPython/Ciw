@@ -341,3 +341,31 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(arrivals, [20, 20, 20, 23, 23, 25])
         self.assertEqual(nodes, [1, 1, 1, 1, 1, 1])
         self.assertEqual(classes, [0, 0, 0, 1, 1, 2])
+
+    def test_batching_time_dependent(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Sequential', [5.0, 5.0, 2.0, 1.0, 1000.0]]],
+            Service_distributions=[['Deterministic', 2]],
+            Number_of_servers=[1],
+            Batching_distributions=[['TimeDependent', time_dependent_batches]]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(30.0)
+        recs = Q.get_all_records()
+
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 12)
+        self.assertEqual(len(Q.nodes[1].all_individuals), 0)
+
+        recs = Q.get_all_records()
+        self.assertEqual([r.arrival_date for r in recs], [5.0, 5.0, 5.0, 5.0, 5.0, 10.0, 10.0, 10.0, 10.0, 10.0, 12.0, 13.0])
+        self.assertEqual([r.exit_date for r in recs], [7.0, 9.0, 11.0, 13.0, 15.0, 17.0, 19.0, 21.0, 23.0, 25.0, 27.0, 29.0])
+
+    def test_error_batching_time_dependent(self):
+        params = {
+            'Arrival_distributions': [['Sequential', [5.0, 5.0, 2.0, 1.0, 1000.0]]],
+            'Service_distributions': [['Deterministic', 2]],
+            'Number_of_servers': [1],
+            'Batching_distributions': [['TimeDependent', lambda t: 1.5]]
+        }
+        N = ciw.create_network(**params)
+        self.assertRaises(ValueError, ciw.Simulation, N)

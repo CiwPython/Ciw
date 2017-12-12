@@ -68,10 +68,12 @@ class Simulation(object):
             raise ValueError("UserDefined func must return positive float.")
         return sample
 
-    def check_timedependent_dist(self, func, current_time):
+    def check_timedependent_dist(self, func, kind, current_time):
         sample = func(current_time)
-        if not isinstance(sample, float) or sample < 0:
+        if kind in ['Arr', 'Ser'] and not isinstance(sample, float) or sample < 0:
             raise ValueError("TimeDependent func must return positive float.")
+        if kind in ['Bch'] and not isinstance(sample, int) or sample < 0:
+            raise ValueError("TimeDependent batching func must return positive integer.")
         return sample
 
 
@@ -142,7 +144,7 @@ class Simulation(object):
                 return lambda : random_choice(empirical_dist)
             return lambda : random_choice(self.source(c, n, kind)[1])
         if self.source(c, n, kind)[0] == 'TimeDependent':
-            return lambda t : self.check_timedependent_dist(self.source(c, n, kind)[1], t)
+            return lambda t : self.check_timedependent_dist(self.source(c, n, kind)[1], kind, t)
         if self.source(c, n, kind)[0] == 'Sequential':
             return lambda : next(self.generators[kind][n][c])
 
