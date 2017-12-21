@@ -1,7 +1,7 @@
 import unittest
 import ciw
 from hypothesis import given
-from hypothesis.strategies import (floats, integers, random_module)
+from hypothesis.strategies import floats, integers, random_module
 
 class TestNode(unittest.TestCase):
 
@@ -667,6 +667,7 @@ class TestNode(unittest.TestCase):
         for srvr in Q.transitive_nodes[0].servers:
             self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
         self.assertLessEqual(Q.transitive_nodes[0].server_utilisation, 1.0)
+        self.assertGreaterEqual(Q.transitive_nodes[0].server_utilisation, 0.0)
 
     def test_num_inds_equal_len_all_inds(self):
         # Create a Simulatin class that inherits form ciw.Simulation so that
