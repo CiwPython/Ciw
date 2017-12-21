@@ -637,6 +637,18 @@ class TestNode(unittest.TestCase):
         recs = Q.get_all_records()
         self.assertEqual(Q.transitive_nodes[0].server_utilisation, 21.0/37.0)
 
+    def test_server_utilisation_with_wrapup(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Exponential',7.14]],
+            Service_distributions=[['Exponential',0.04]],
+            Number_of_servers=[70]
+        )
+        ciw.seed(1)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(168)
+        for srvr in Q.transitive_nodes[0].servers:
+            self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
+
     def test_num_inds_equal_len_all_inds(self):
         # Create a Simulatin class that inherits form ciw.Simulation so that
         # an assertion than number_of_individuals == len(all_individuals)
