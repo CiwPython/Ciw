@@ -1,6 +1,10 @@
 History
 -------
 
+v1.1.5 (2018-01-11)
+~~~~~~~~~~~~~~~~~~~
+- Fixed bug calculating the utilisation of servers.
+
 v1.1.4 (2017-12-12)
 ~~~~~~~~~~~~~~~~~~~
 - Time dependent batching distributions
