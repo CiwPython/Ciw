@@ -1,5 +1,7 @@
 import unittest
 import ciw
+from hypothesis import given
+from hypothesis.strategies import floats, integers, random_module
 
 class TestNode(unittest.TestCase):
 
@@ -636,6 +638,36 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(23)
         recs = Q.get_all_records()
         self.assertEqual(Q.transitive_nodes[0].server_utilisation, 21.0/37.0)
+
+    def test_server_utilisation_with_wrapup(self):
+        N = ciw.create_network(
+            Arrival_distributions=[['Exponential',7.14]],
+            Service_distributions=[['Exponential',0.04]],
+            Number_of_servers=[70]
+        )
+        ciw.seed(1)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(168)
+        for srvr in Q.transitive_nodes[0].servers:
+            self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
+
+    @given(lmbda=floats(min_value=0.01, max_value=10),
+           mu=floats(min_value=0.01, max_value=10),
+           c=integers(min_value=1, max_value=10),
+           rm=random_module())
+    def test_utilisation_always_1_or_less(self, lmbda, mu, c, rm):
+        N = ciw.create_network(
+            Arrival_distributions=[['Exponential', lmbda]],
+            Service_distributions=[['Exponential', mu]],
+            Number_of_servers=[c]
+        )
+        ciw.seed(1)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(200)
+        for srvr in Q.transitive_nodes[0].servers:
+            self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
+        self.assertLessEqual(Q.transitive_nodes[0].server_utilisation, 1.0)
+        self.assertGreaterEqual(Q.transitive_nodes[0].server_utilisation, 0.0)
 
     def test_num_inds_equal_len_all_inds(self):
         # Create a Simulatin class that inherits form ciw.Simulation so that

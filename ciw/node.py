@@ -444,7 +444,7 @@ class Node(object):
             for srvr in self.servers:
                 srvr.total_time = self.increment_time(current_time, -srvr.start_date)
                 if srvr.busy:
-                    srvr.busy_time += self.increment_time(current_time, -srvr.cust.arrival_date)
+                    srvr.busy_time += self.increment_time(current_time, -srvr.cust.service_start_date)
 
 
     def write_individual_record(self, individual):
