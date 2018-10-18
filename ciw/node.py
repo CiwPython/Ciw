@@ -183,6 +183,7 @@ class Node(object):
             (self.id_number, individual.id_number))
         self.simulation.deadlock_detector.action_at_blockage(
             individual, next_node)
+        self.simulation.unchecked_blockage = True
 
     def change_customer_class(self,individual):
         """
