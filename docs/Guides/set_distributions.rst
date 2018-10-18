@@ -43,7 +43,7 @@ The system uses the following eight distributions:
    + Always sample 0.2.
 + :code:`['Empirical', [0.1, 0.1, 0.1, 0.2]`:
    + Randomly sample from the numbers 0.1, 0.1, 0.1 and 0.2.
-+ :code:`['Custom', [[0.5, 0.2], [0.5, 0.4]]]`:
++ :code:`['Custom', [0.2, 0.4], [0.5, 0.5]]`:
    + Sample 0.2 half the time, and 0.4 half the time.
 + :code:`['Exponential', 6.0]`:
    + Sample from the `exponential <https://en.wikipedia.org/wiki/Exponential_distribution>`_ distribution with parameter :math:`\lambda = 6.0`. Expected mean of 0.1666...
