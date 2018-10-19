@@ -768,3 +768,30 @@ class TestSimulation(unittest.TestCase):
         self.assertTrue(isinstance(Q_all.generators['Ser'][0][1], cycle))
         self.assertTrue(isinstance(Q_all.generators['Ser'][1][0], cycle))
         self.assertTrue(isinstance(Q_all.generators['Ser'][1][1], cycle))
+
+    def test_schedules_and_blockages_work_together(self):
+        N = ciw.create_network(
+            Arrival_distributions={
+                'Class 0': [['Exponential', 0.5], ['Exponential', 0.9]],
+                'Class 1': [['Exponential', 0.6], ['Exponential', 1.0]]},
+            Service_distributions={
+                'Class 0': [['Exponential', 0.8], ['Exponential', 1.2]],
+                'Class 1': [['Exponential', 0.5], ['Exponential', 1.0]]},
+            Number_of_servers=[([[1, 10], [0, 20], [2, 30]], True), 2],
+            Transition_matrices={
+                'Class 0': [[0.1, 0.3], [0.2, 0.2]],
+                'Class 1': [[0.0, 0.6], [0.2, 0.1]]},
+            Class_change_matrices={
+                'Node 1': [[0.8, 0.2],
+                           [0.5, 0.5]],
+                'Node 2': [[1.0, 0.0],
+                           [0.1, 0.9]]},
+            Queue_capacities=[2, 2]
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(120)
+        recs = Q.get_all_records()
+        waits = [r.waiting_time for r in recs]
+        average_wait = sum(waits) / len(waits)
+        self.assertEqual(round(average_wait, 5), 3.62446)

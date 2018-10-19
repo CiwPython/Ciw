@@ -10,7 +10,7 @@ from .auxiliary import random_choice
 from .data_record import DataRecord
 from .server import Server
 
-len
+
 class Node(object):
     """
     Class for a node on our network
@@ -134,6 +134,12 @@ class Node(object):
         resampling service time)
         """
         ind = [i for i in self.interrupted_individuals][0]
+        if ind.is_blocked:
+            node_blocked_to = self.simulation.nodes[ind.destination]
+            ind.destination = False
+            node_blocked_to.blocked_queue.remove((self.id_number, ind.id_number))
+            node_blocked_to.len_blocked_queue -= 1
+            ind.is_blocked = False
         ind.service_time = self.get_service_time(ind.customer_class,
                                                  current_time)
         ind.service_end_date = self.increment_time(self.get_now(current_time),
