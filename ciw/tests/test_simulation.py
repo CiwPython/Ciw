@@ -788,10 +788,9 @@ class TestSimulation(unittest.TestCase):
                            [0.1, 0.9]]},
             Queue_capacities=[2, 2]
         )
-        ciw.seed(0)
-        Q = ciw.Simulation(N)
-        Q.simulate_until_max_time(120)
-        recs = Q.get_all_records()
-        waits = [r.waiting_time for r in recs]
-        average_wait = sum(waits) / len(waits)
-        self.assertEqual(round(average_wait, 5), 3.62446)
+
+        ciw.seed(6)
+        Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
+        Q.simulate_until_deadlock()
+        ttd = Q.times_to_deadlock[((0, 0), (0, 0))]
+        self.assertEqual(round(ttd, 5), 92.49468)
