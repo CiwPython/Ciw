@@ -144,6 +144,7 @@ class Node(object):
                                                  current_time)
         ind.service_end_date = self.increment_time(self.get_now(current_time),
                                                    ind.service_time)
+        ind.interrupted = False
         self.attach_server(srvr, ind)
         self.interrupted_individuals.remove(ind)
         self.number_interrupted_individuals -= 1
@@ -395,6 +396,10 @@ class Node(object):
                 individual_to_receive_index]
             self.blocked_queue.pop(0)
             self.len_blocked_queue -= 1
+            if individual_to_receive.interrupted:
+                individual_to_receive.interrupted = False
+                node_to_receive_from.interrupted_individuals.remove(individual_to_receive)
+                node_to_receive_from.number_interrupted_individuals -= 1
             node_to_receive_from.release(individual_to_receive_index,
                 self, current_time)
 
@@ -425,6 +430,7 @@ class Node(object):
                 s.shift_end = self.next_event_date
                 if s.cust is not False:
                     self.interrupted_individuals.append(s.cust)
+                    s.cust.interrupted = True
                     self.number_interrupted_individuals += 1
                     self.interrupted_individuals[-1].service_end_date = False
                     self.interrupted_individuals[-1].service_time = False
@@ -432,6 +438,7 @@ class Node(object):
                                                              x.arrival_date))
         for obs in to_delete:
             self.kill_server(obs)
+
 
     def update_next_event_date(self, current_time):
         """
