@@ -54,6 +54,7 @@ class Node(object):
         else:
             self.next_event_date = float("Inf")
         self.blocked_queue = []
+        self.len_blocked_queue = 0
         if not isinf(self.c):
             self.servers = self.create_starting_servers()
         self.highest_id = self.c
@@ -187,6 +188,7 @@ class Node(object):
             individual.customer_class)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
+        next_node.len_blocked_queue += 1
         self.simulation.deadlock_detector.action_at_blockage(
             individual, next_node)
         self.simulation.unchecked_blockage = True
@@ -377,7 +379,7 @@ class Node(object):
         Releases an individual who becomes unblocked
         when another individual is released.
         """
-        if len(self.blocked_queue) > 0 and self.number_of_individuals < self.node_capacity:
+        if self.len_blocked_queue > 0 and self.number_of_individuals < self.node_capacity:
             node_to_receive_from = self.simulation.nodes[
                 self.blocked_queue[0][0]]
             individual_to_receive_index = [ind.id_number
@@ -386,6 +388,7 @@ class Node(object):
             individual_to_receive = node_to_receive_from.all_individuals[
                 individual_to_receive_index]
             self.blocked_queue.pop(0)
+            self.len_blocked_queue -= 1
             node_to_receive_from.release(individual_to_receive_index,
                 self, current_time)
 
