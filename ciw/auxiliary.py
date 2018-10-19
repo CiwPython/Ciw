@@ -45,3 +45,9 @@ def truncated_normal(mean, sd):
 	while sample <= 0.0:
 		sample = random.normalvariate(mean, sd)
 	return sample
+
+def flatten_list(list_of_lists):
+	flat = []
+	for a_list in list_of_lists:
+		flat += a_list
+	return flat

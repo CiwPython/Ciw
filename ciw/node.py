@@ -6,7 +6,7 @@ from math import isinf
 
 import networkx as nx
 
-from .auxiliary import random_choice
+from .auxiliary import random_choice, flatten_list
 from .data_record import DataRecord
 from .server import Server
 
@@ -67,8 +67,7 @@ class Node(object):
 
     @property
     def all_individuals(self):
-        return [i for priority_class in self.individuals
-                for i in priority_class]
+        return flatten_list(self.individuals)
 
     def __repr__(self):
         """
