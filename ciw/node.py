@@ -6,7 +6,7 @@ from math import isinf
 
 import networkx as nx
 
-from .auxiliary import random_choice
+from .auxiliary import random_choice, flatten_list
 from .data_record import DataRecord
 from .server import Server
 
@@ -54,19 +54,20 @@ class Node(object):
         else:
             self.next_event_date = float("Inf")
         self.blocked_queue = []
+        self.len_blocked_queue = 0
         if not isinf(self.c):
             self.servers = self.create_starting_servers()
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
         self.preempt = node.preempt
         self.interrupted_individuals = []
+        self.number_interrupted_individuals = 0
         self.all_servers_total = []
         self.all_servers_busy = []
 
     @property
     def all_individuals(self):
-        return [i for priority_class in self.individuals
-                for i in priority_class]
+        return flatten_list(self.individuals)
 
     def __repr__(self):
         """
@@ -132,12 +133,20 @@ class Node(object):
         resampling service time)
         """
         ind = [i for i in self.interrupted_individuals][0]
+        if ind.is_blocked:
+            node_blocked_to = self.simulation.nodes[ind.destination]
+            ind.destination = False
+            node_blocked_to.blocked_queue.remove((self.id_number, ind.id_number))
+            node_blocked_to.len_blocked_queue -= 1
+            ind.is_blocked = False
         ind.service_time = self.get_service_time(ind.customer_class,
                                                  current_time)
         ind.service_end_date = self.increment_time(self.get_now(current_time),
                                                    ind.service_time)
+        ind.interrupted = False
         self.attach_server(srvr, ind)
         self.interrupted_individuals.remove(ind)
+        self.number_interrupted_individuals -= 1
 
     def begin_service_if_possible_change_shift(self, current_time):
         """
@@ -146,14 +155,16 @@ class Node(object):
         """
         free_servers = [s for s in self.servers if not s.busy]
         for srvr in free_servers:
-            if len(self.interrupted_individuals) > 0:
+            if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(current_time, srvr)
-            elif len([i for i in self.all_individuals if not i.server]) > 0:
-                ind = [i for i in self.all_individuals if not i.server][0]
-                ind.service_start_date = self.get_now(current_time)
-                ind.service_end_date = self.increment_time(
-                    ind.service_start_date, ind.service_time)
-                self.attach_server(srvr, ind)
+            else:
+                inds_without_server = [i for i in self.all_individuals if not i.server]
+                if len(inds_without_server) > 0:
+                    ind = inds_without_server[0]
+                    ind.service_start_date = self.get_now(current_time)
+                    ind.service_end_date = self.increment_time(
+                        ind.service_start_date, ind.service_time)
+                    self.attach_server(srvr, ind)
 
     def begin_service_if_possible_release(self, current_time):
         """
@@ -162,14 +173,16 @@ class Node(object):
         """
         if self.free_server() and (not isinf(self.c)):
             srvr = self.find_free_server()
-            if len(self.interrupted_individuals) > 0:
+            if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(current_time, srvr)
-            elif len([i for i in self.all_individuals if not i.server]) > 0:
-                ind = [i for i in self.all_individuals if not i.server][0]
-                ind.service_start_date = self.get_now(current_time)
-                ind.service_end_date = self.increment_time(
-                    ind.service_start_date, ind.service_time)
-                self.attach_server(srvr, ind)
+            else:
+                inds_without_server = [i for i in self.all_individuals if not i.server]
+                if len(inds_without_server) > 0:
+                    ind = inds_without_server[0]
+                    ind.service_start_date = self.get_now(current_time)
+                    ind.service_end_date = self.increment_time(
+                        ind.service_start_date, ind.service_time)
+                    self.attach_server(srvr, ind)
 
     def block_individual(self, individual, next_node):
         """
@@ -181,8 +194,10 @@ class Node(object):
             individual.customer_class)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
+        next_node.len_blocked_queue += 1
         self.simulation.deadlock_detector.action_at_blockage(
             individual, next_node)
+        self.simulation.unchecked_blockage = True
 
     def change_customer_class(self,individual):
         """
@@ -192,7 +207,7 @@ class Node(object):
         if self.class_change:
             individual.previous_class = individual.customer_class
             individual.customer_class = random_choice(
-                range(len(self.class_change)),
+                range(self.simulation.network.number_of_classes),
                 self.class_change[individual.previous_class])
             individual.prev_priority_class = individual.priority_class
             individual.priority_class = self.simulation.network.priority_class_mapping[individual.customer_class]
@@ -370,7 +385,7 @@ class Node(object):
         Releases an individual who becomes unblocked
         when another individual is released.
         """
-        if len(self.blocked_queue) > 0 and self.number_of_individuals < self.node_capacity:
+        if self.len_blocked_queue > 0 and self.number_of_individuals < self.node_capacity:
             node_to_receive_from = self.simulation.nodes[
                 self.blocked_queue[0][0]]
             individual_to_receive_index = [ind.id_number
@@ -379,6 +394,11 @@ class Node(object):
             individual_to_receive = node_to_receive_from.all_individuals[
                 individual_to_receive_index]
             self.blocked_queue.pop(0)
+            self.len_blocked_queue -= 1
+            if individual_to_receive.interrupted:
+                individual_to_receive.interrupted = False
+                node_to_receive_from.interrupted_individuals.remove(individual_to_receive)
+                node_to_receive_from.number_interrupted_individuals -= 1
             node_to_receive_from.release(individual_to_receive_index,
                 self, current_time)
 
@@ -409,12 +429,15 @@ class Node(object):
                 s.shift_end = self.next_event_date
                 if s.cust is not False:
                     self.interrupted_individuals.append(s.cust)
+                    s.cust.interrupted = True
+                    self.number_interrupted_individuals += 1
                     self.interrupted_individuals[-1].service_end_date = False
                     self.interrupted_individuals[-1].service_time = False
             self.interrupted_individuals.sort(key=lambda x: (x.priority_class,
                                                              x.arrival_date))
         for obs in to_delete:
             self.kill_server(obs)
+
 
     def update_next_event_date(self, current_time):
         """

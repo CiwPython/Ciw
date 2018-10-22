@@ -52,6 +52,7 @@ class Simulation(object):
         self.times_to_deadlock = {}
         self.rejection_dict = self.nodes[0].rejection_dict
         self.baulked_dict = self.nodes[0].baulked_dict
+        self.unchecked_blockage = False
 
     def __repr__(self):
         """
@@ -268,7 +269,9 @@ class Simulation(object):
             current_state = self.statetracker.hash_state()
             if current_state not in self.times_dictionary:
                 self.times_dictionary[current_state] = current_time
-            deadlocked = self.deadlock_detector.detect_deadlock()
+            if self.unchecked_blockage:
+                deadlocked = self.deadlock_detector.detect_deadlock()
+                self.unchecked_blockage = False
             if deadlocked:
                 time_of_deadlock = current_time
             current_time = next_active_node.next_event_date

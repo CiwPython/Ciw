@@ -77,4 +77,10 @@ class TestAuxiliary(unittest.TestCase):
         self.assertEqual(choice_counts, {'Exit Node': 100})
         self.assertEqual(r1, r2)
 
-
+    def test_flatten_list(self):
+        for seed in range(20):
+            random.seed(seed)
+            all_classes = [[random.random() for _ in range(random.randrange(3, 30, 1))] for _ in range(random.randrange(5, 20, 1))]
+            A = [i for priority in all_classes for i in priority]
+            B = ciw.flatten_list(all_classes)
+            self.assertEqual(A, B)
