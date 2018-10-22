@@ -1,6 +1,14 @@
 History
 -------
 
+v1.1.6 (2018-10-22)
+~~~~~~~~~~~~~~~~~~~
+- Fixed bug in which preemptively iterrupted individuals remained blocked once service resampled.
+- Fixed bug in which interrupted individuals not removed from interrupted list when restarting service.
+- Some performance improvements.
+- Improve deadlock detection to check for knots less often.
+
+
 v1.1.5 (2018-01-11)
 ~~~~~~~~~~~~~~~~~~~
 - Fixed bug calculating the utilisation of servers.
