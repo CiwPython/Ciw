@@ -69,7 +69,8 @@ class StateDigraphMethod(NoDeadlockDetection):
         #663 knot.py (09/06/2015)
         """
         knots = []
-        for subgraph in nx.strongly_connected_component_subgraphs(self.statedigraph):
+        for c in nx.strongly_connected_components(self.statedigraph):
+            subgraph = self.statedigraph.subgraph(c)
             nodes = set(subgraph.nodes())
             if len(nodes) == 1:
                 n = nodes.pop()
@@ -111,6 +112,8 @@ class StateDigraphMethod(NoDeadlockDetection):
         The action taken at the 'detatch_server' method of the node.
         """
         self.statedigraph.remove_edges_from(
-            self.statedigraph.in_edges(
-            str(server)) + self.statedigraph.out_edges(
-            str(server)))
+            list(
+                self.statedigraph.in_edges(str(server))
+            ) + list(
+                self.statedigraph.out_edges(str(server)))
+            )
