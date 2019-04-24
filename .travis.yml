@@ -2,7 +2,7 @@ language: python
 python:
   - 3.5
   - 3.6
-  - "pypy3-7.0.0"
+  - "pypy3.5"
 
 cache:
   directories:
