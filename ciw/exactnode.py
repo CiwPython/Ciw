@@ -26,7 +26,7 @@ class ExactNode(Node):
         Returns a service time for the given customer class
         """
         if self.simulation.network.customer_classes[clss].service_distributions[self.id_number-1][0] == "TimeDependent":
-            return Decimal(str(self.simulation.service_times[self.id_number][clss](self.get_now())))
+            return Decimal(str(self.simulation.service_times[self.id_number][clss](self.simulation.current_time)))
         return Decimal(str(self.simulation.service_times[self.id_number][clss]()))
 
 
