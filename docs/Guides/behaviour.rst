@@ -46,9 +46,9 @@ First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.Arrival
 	...         """
 	...         self.number_accepted_individuals += 1
 	...         if len(next_node.all_individuals) <= 10:
-	...             next_node.accept(next_individual, self.next_event_date)
+	...             next_node.accept(next_individual)
 	...         else:
-	...             self.simulation.nodes[2].accept(next_individual, self.next_event_date)
+	...             self.simulation.nodes[2].accept(next_individual)
 
 To run the same system, we need to remove the keyword :code:`'Queue_capacities'` when creating a network, so that customers are not rejected before reaching the :code:`send_individual` method::
 
