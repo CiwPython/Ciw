@@ -142,7 +142,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(
             AN.simulation.network.customer_classes[0].arrival_distributions[0],
             'NoArrivals')
-        self.assertEqual(AN.inter_arrival(1, 0, 0.0), float('Inf'))
+        self.assertEqual(AN.inter_arrival(1, 0), float('Inf'))
 
     def test_rejection_dict(self):
         params = {'Arrival_distributions':[['Deterministic', 3.0],

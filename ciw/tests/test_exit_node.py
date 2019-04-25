@@ -28,9 +28,9 @@ class TestExitNode(unittest.TestCase):
         i1 = ciw.Individual(3)
         i2 = ciw.Individual(8)
         self.assertEqual(n.all_individuals, [])
-        n.accept(i1, 42.1)
+        n.accept(i1)
         self.assertEqual(n.all_individuals, [i1])
-        n.accept(i2, 51.8)
+        n.accept(i2)
         self.assertEqual(n.all_individuals, [i1, i2])
 
     def test_update_next_event_date_method(self):

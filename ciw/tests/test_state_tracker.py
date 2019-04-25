@@ -51,12 +51,14 @@ class TestStateTracker(unittest.TestCase):
             srvr = N.find_free_server()
             N.attach_server(srvr, ind)
         self.assertEqual(Q.statetracker.state, None)
-        N.release(0, Q.nodes[1], 43.11)
+        Q.current_time = 43.11
+        N.release(0, Q.nodes[1])
         self.assertEqual(Q.statetracker.state, None)
         N.all_individuals[1].is_blocked = True
-        N.release(1, Q.nodes[1], 46.72)
+        Q.current_time = 46.72
+        N.release(1, Q.nodes[1])
         self.assertEqual(Q.statetracker.state, None)
-        N.release(1, Q.nodes[-1], 46.72)
+        N.release(1, Q.nodes[-1])
         self.assertEqual(Q.statetracker.state, None)
 
     def test_base_block_method_within_simulation(self):
@@ -74,7 +76,8 @@ class TestStateTracker(unittest.TestCase):
         Q = ciw.Simulation(Net)
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, None)
-        N.accept(ciw.Individual(3, 2), 45.6)
+        Q.current_time = 45.6
+        N.accept(ciw.Individual(3, 2))
         self.assertEqual(Q.statetracker.state, None)
 
 
@@ -134,12 +137,14 @@ class TestNaiveTracker(unittest.TestCase):
             N.attach_server(srvr, ind)
         Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
         self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
-        N.release(0, Q.nodes[1], 43.11)
+        Q.current_time = 43.11
+        N.release(0, Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [[5, 1], [3, 0], [4, 1], [0, 0]])
         N.all_individuals[1].is_blocked = True
-        N.release(1, Q.nodes[1], 46.72)
+        Q.current_time = 46.72
+        N.release(1, Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [4, 0], [0, 0]])
-        N.release(1, Q.nodes[-1], 46.72)
+        N.release(1, Q.nodes[-1])
         self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [3, 0], [0, 0]])
 
     def test_naive_block_method_within_simulation(self):
@@ -158,7 +163,8 @@ class TestNaiveTracker(unittest.TestCase):
         Q = ciw.Simulation(params, tracker='Naive')
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
-        N.accept(ciw.Individual(3, 2), 45.6)
+        Q.current_time = 45.6
+        N.accept(ciw.Individual(3, 2))
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [1, 0], [0, 0]])
 
 
@@ -279,20 +285,23 @@ class TestMatrixTracker(unittest.TestCase):
                                                  [[1], [],  [], []],
                                                  [[],  [],  [], []]],
                                                  [5, 3, 6, 0]])
-        N.release(0, Q.nodes[1], 43.11)
+        Q.current_time = 43.11
+        N.release(0, Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [[[[],  [2], [], []],
                                                  [[],  [],  [], []],
                                                  [[1], [],  [], []],
                                                  [[],  [],  [], []]],
                                                  [6, 3, 5, 0]])
         N.all_individuals[1].is_blocked = True
-        N.release(1, Q.nodes[1], 46.72)
+        Q.current_time = 46.72
+        N.release(1, Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [[[[], [1], [], []],
                                                  [[], [],  [], []],
                                                  [[], [],  [], []],
                                                  [[], [],  [], []]],
                                                  [7, 3, 4, 0]])
-        N.release(1, Q.nodes[-1], 48.39)
+        Q.current_time = 48.39
+        N.release(1, Q.nodes[-1])
         self.assertEqual(Q.statetracker.state, [[[[], [1], [], []],
                                                  [[], [],  [], []],
                                                  [[], [],  [], []],
@@ -332,7 +341,8 @@ class TestMatrixTracker(unittest.TestCase):
                                                  [[], [], [], []],
                                                  [[], [], [], []]],
                                                  [0, 0, 0, 0]])
-        N.accept(ciw.Individual(3, 2), 45.6)
+        Q.current_time = 45.6
+        N.accept(ciw.Individual(3, 2))
         self.assertEqual(Q.statetracker.state, [[[[], [], [], []],
                                                  [[], [], [], []],
                                                  [[], [], [], []],

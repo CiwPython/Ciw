@@ -20,7 +20,7 @@ class ExitNode(object):
         """
         return 'Exit Node'
 
-    def accept(self, next_individual, current_time):
+    def accept(self, next_individual):
         """
         Adds customer to the list of completed customers
         """

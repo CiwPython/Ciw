@@ -688,13 +688,15 @@ class TestSampling(unittest.TestCase):
 
         samples = []
         for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
-            samples.append(round(N1.get_service_time(0, t), 2))
+            Q.current_time = t
+            samples.append(round(N1.get_service_time(0), 2))
         expected = [3.0, 3.0, 3.0, 5.0, 5.0]
         self.assertEqual(samples, expected)
 
         samples = []
         for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
-            samples.append(round(N2.get_service_time(0, t), 2))
+            Q.current_time = t
+            samples.append(round(N2.get_service_time(0), 2))
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 
@@ -722,8 +724,9 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         N = Q.transitive_nodes[0]
         ciw.seed(5)
+        Q.current_time = 3.0
         self.assertRaises(ValueError, N.simulation.service_times[N.id_number][0], 3.0)
-        self.assertRaises(ValueError, N.get_service_time, 0, 3.0)
+        self.assertRaises(ValueError, N.get_service_time, 0)
 
     def test_timedependent_exact(self):
         params = {
@@ -744,13 +747,15 @@ class TestSampling(unittest.TestCase):
 
         samples = []
         for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
-            samples.append(round(N1.get_service_time(0, t), 2))
+            Q.current_time = t
+            samples.append(round(N1.get_service_time(0), 2))
         expected = [3.0, 3.0, 3.0, 5.0, 5.0]
         self.assertEqual(samples, expected)
 
         samples = []
         for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
-            samples.append(round(N2.get_service_time(0, t), 2))
+            Q.current_time = t
+            samples.append(round(N2.get_service_time(0), 2))
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 
