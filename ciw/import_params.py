@@ -49,7 +49,7 @@ def load_parameters(directory_name):
     directory = os.path.join(root, directory_name)
     parameter_file_name = directory
     parameter_file = open(parameter_file_name, 'r')
-    parameters = yaml.load(parameter_file)
+    parameters = yaml.load(parameter_file, Loader=yaml.FullLoader)
     parameter_file.close()
     return parameters
 

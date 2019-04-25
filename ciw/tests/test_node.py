@@ -168,7 +168,7 @@ class TestNode(unittest.TestCase):
         N2.accept(inds[6], 2)
         self.assertEqual(inds[6].is_blocked, False)
         self.assertEqual(N1.blocked_queue, [])
-        self.assertEqual(Q.deadlock_detector.statedigraph.edges(), [])
+        self.assertEqual(set(Q.deadlock_detector.statedigraph.edges()), set([]))
         N2.block_individual(inds[6], N1)
         self.assertEqual(inds[6].is_blocked, True)
         [(2, 7)]
