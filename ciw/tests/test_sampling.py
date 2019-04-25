@@ -744,13 +744,15 @@ class TestSampling(unittest.TestCase):
 
         samples = []
         for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
-            samples.append(round(N1.get_service_time(0, t), 2))
+            Q.current_time = t
+            samples.append(round(N1.get_service_time(0), 2))
         expected = [3.0, 3.0, 3.0, 5.0, 5.0]
         self.assertEqual(samples, expected)
 
         samples = []
         for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
-            samples.append(round(N2.get_service_time(0, t), 2))
+            Q.current_time = t
+            samples.append(round(N2.get_service_time(0), 2))
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 

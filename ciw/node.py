@@ -75,14 +75,14 @@ class Node(object):
         """
         return 'Node %s' % self.id_number
 
-    def accept(self, next_individual, current_time):
+    def accept(self, next_individual):
         """
         Accepts a new customer to the queue.
         """
         next_individual.exit_date = False
         next_individual.is_blocked = False
         self.begin_service_if_possible_accept(
-            next_individual, current_time)
+            next_individual)
         next_individual.queue_size_at_arrival = self.number_of_individuals
         self.individuals[next_individual.priority_class].append(next_individual)
         self.number_of_individuals += 1
@@ -110,24 +110,23 @@ class Node(object):
             self, server, individual)
 
     def begin_service_if_possible_accept(self,
-                                         next_individual,
-                                         current_time):
+                                         next_individual):
         """
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
         """
-        next_individual.arrival_date = self.get_now(current_time)
+        next_individual.arrival_date = self.get_now()
         next_individual.service_time = self.get_service_time(
-            next_individual.customer_class, current_time)
+            next_individual.customer_class)
         if self.free_server():
-            next_individual.service_start_date = self.get_now(current_time)
+            next_individual.service_start_date = self.get_now()
             next_individual.service_end_date = self.increment_time(
-                current_time, next_individual.service_time)
+                self.get_now(), next_individual.service_time)
             if not isinf(self.c):
                 self.attach_server(self.find_free_server(),
                                    next_individual)
 
-    def begin_interrupted_individuals_service(self, current_time, srvr):
+    def begin_interrupted_individuals_service(self, srvr):
         """
         Restarts the next interrupted individual's service (by
         resampling service time)
@@ -139,16 +138,15 @@ class Node(object):
             node_blocked_to.blocked_queue.remove((self.id_number, ind.id_number))
             node_blocked_to.len_blocked_queue -= 1
             ind.is_blocked = False
-        ind.service_time = self.get_service_time(ind.customer_class,
-                                                 current_time)
-        ind.service_end_date = self.increment_time(self.get_now(current_time),
+        ind.service_time = self.get_service_time(ind.customer_class)
+        ind.service_end_date = self.increment_time(self.get_now(),
                                                    ind.service_time)
         ind.interrupted = False
         self.attach_server(srvr, ind)
         self.interrupted_individuals.remove(ind)
         self.number_interrupted_individuals -= 1
 
-    def begin_service_if_possible_change_shift(self, current_time):
+    def begin_service_if_possible_change_shift(self):
         """
         Attempts to begin service if change_shift
         yields any free servers.
@@ -156,17 +154,17 @@ class Node(object):
         free_servers = [s for s in self.servers if not s.busy]
         for srvr in free_servers:
             if self.number_interrupted_individuals > 0:
-                self.begin_interrupted_individuals_service(current_time, srvr)
+                self.begin_interrupted_individuals_service(srvr)
             else:
                 inds_without_server = [i for i in self.all_individuals if not i.server]
                 if len(inds_without_server) > 0:
                     ind = inds_without_server[0]
-                    ind.service_start_date = self.get_now(current_time)
+                    ind.service_start_date = self.get_now()
                     ind.service_end_date = self.increment_time(
                         ind.service_start_date, ind.service_time)
                     self.attach_server(srvr, ind)
 
-    def begin_service_if_possible_release(self, current_time):
+    def begin_service_if_possible_release(self):
         """
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
@@ -174,12 +172,12 @@ class Node(object):
         if self.free_server() and (not isinf(self.c)):
             srvr = self.find_free_server()
             if self.number_interrupted_individuals > 0:
-                self.begin_interrupted_individuals_service(current_time, srvr)
+                self.begin_interrupted_individuals_service(srvr)
             else:
                 inds_without_server = [i for i in self.all_individuals if not i.server]
                 if len(inds_without_server) > 0:
                     ind = inds_without_server[0]
-                    ind.service_start_date = self.get_now(current_time)
+                    ind.service_start_date = self.get_now()
                     ind.service_end_date = self.increment_time(
                         ind.service_start_date, ind.service_time)
                     self.attach_server(srvr, ind)
@@ -230,8 +228,7 @@ class Node(object):
 
         self.c = self.schedule[indx][1]
         self.next_shift_change = next(self.date_generator)
-        self.begin_service_if_possible_change_shift(
-            self.next_event_date)
+        self.begin_service_if_possible_change_shift()
 
     def check_if_shiftchange(self):
         """
@@ -315,16 +312,15 @@ class Node(object):
         if not isinf(self.c):
             next_individual.server.next_end_service_date = float('Inf')
         if next_node.number_of_individuals < next_node.node_capacity:
-            self.release(next_individual_index, next_node,
-                self.next_event_date)
+            self.release(next_individual_index, next_node)
         else:
             self.block_individual(next_individual, next_node)
 
-    def get_now(self, current_time):
+    def get_now(self):
         """
         Gets the current time
         """
-        return current_time
+        return self.simulation.current_time
 
     def have_event(self):
         """
@@ -361,7 +357,7 @@ class Node(object):
             self.transition_row[customer_class] + [1.0 - sum(
             self.transition_row[customer_class])])
 
-    def release(self, next_individual_index, next_node, current_time):
+    def release(self, next_individual_index, next_node):
         """
         Update node when an individual is released.
         """
@@ -369,18 +365,18 @@ class Node(object):
         self.individuals[next_individual.prev_priority_class].remove(next_individual)
         self.number_of_individuals -= 1
         next_individual.queue_size_at_departure = self.number_of_individuals
-        next_individual.exit_date = current_time
+        next_individual.exit_date = self.get_now()
         if not isinf(self.c):
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
         self.simulation.statetracker.change_state_release(self.id_number,
             next_node.id_number, next_individual.customer_class,
             next_individual.is_blocked)
-        self.begin_service_if_possible_release(current_time)
-        next_node.accept(next_individual, current_time)
-        self.release_blocked_individual(current_time)
+        self.begin_service_if_possible_release()
+        next_node.accept(next_individual)
+        self.release_blocked_individual()
 
-    def release_blocked_individual(self, current_time):
+    def release_blocked_individual(self):
         """
         Releases an individual who becomes unblocked
         when another individual is released.
@@ -400,15 +396,15 @@ class Node(object):
                 node_to_receive_from.interrupted_individuals.remove(individual_to_receive)
                 node_to_receive_from.number_interrupted_individuals -= 1
             node_to_receive_from.release(individual_to_receive_index,
-                self, current_time)
+                self)
 
-    def get_service_time(self, clss, current_time):
+    def get_service_time(self, clss):
         """
         Returns a service time for the given customer class
         """
         if self.simulation.network.customer_classes[clss].service_distributions[
             self.id_number-1][0] == 'TimeDependent':
-            return self.simulation.service_times[self.id_number][clss](current_time)
+            return self.simulation.service_times[self.id_number][clss](self.get_now())
         return self.simulation.service_times[self.id_number][clss]()
 
     def take_servers_off_duty(self):
@@ -439,7 +435,7 @@ class Node(object):
             self.kill_server(obs)
 
 
-    def update_next_event_date(self, current_time):
+    def update_next_event_date(self):
         """
         Finds the time of the next event at this node
         """
@@ -450,7 +446,7 @@ class Node(object):
             next_end_service = min([ind.service_end_date
                 for ind in self.all_individuals
                 if not ind.is_blocked
-                if ind.service_end_date >= current_time] + [float("Inf")])
+                if ind.service_end_date >= self.get_now()] + [float("Inf")])
         if self.schedule:
             next_shift_change = self.next_shift_change
             self.next_event_date = min(

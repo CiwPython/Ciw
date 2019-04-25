@@ -85,12 +85,10 @@ class ArrivalNode(object):
             self.next_class] = self.increment_time(
             self.event_dates_dict[self.next_node][
             self.next_class], self.inter_arrival(
-            self.next_node, self.next_class,
-            self.next_event_date))
+            self.next_node, self.next_class))
         self.batch_size_dict[self.next_node][
             self.next_class] = self.batch_size(
-            self.next_node, self.next_class,
-            self.next_event_date)
+            self.next_node, self.next_class)
         self.find_next_event_date()
 
     def increment_time(self, original, increment):
@@ -107,7 +105,7 @@ class ArrivalNode(object):
         for nd in self.event_dates_dict:
             for clss in self.event_dates_dict[nd]:
                 self.event_dates_dict[nd][
-                clss] = self.inter_arrival(nd, clss, 0.0)
+                clss] = self.inter_arrival(nd, clss)
 
     def initialise_batch_size_dict(self):
         """
@@ -117,18 +115,18 @@ class ArrivalNode(object):
         for nd in self.batch_size_dict:
             for clss in self.batch_size_dict[nd]:
                 self.batch_size_dict[nd][
-                clss] = self.batch_size(nd, clss, 0.0)
+                clss] = self.batch_size(nd, clss)
 
-    def inter_arrival(self, nd, clss, current_time):
+    def inter_arrival(self, nd, clss):
         """
         Samples the inter-arrival time for next class and node.
         """
         if self.simulation.network.customer_classes[
             clss].arrival_distributions[nd-1][0] == "TimeDependent":
-            return self.simulation.inter_arrival_times[nd][clss](current_time)
+            return self.simulation.inter_arrival_times[nd][clss](self.simulation.current_time)
         return self.simulation.inter_arrival_times[nd][clss]()
 
-    def batch_size(self, nd, clss, current_time):
+    def batch_size(self, nd, clss):
         """
         Samples the batch size for next class and node.
         """
@@ -168,7 +166,7 @@ class ArrivalNode(object):
         Sends the next_individual to the next_node
         """
         self.number_accepted_individuals += 1
-        next_node.accept(next_individual, self.next_event_date)
+        next_node.accept(next_individual)
 
     def update_next_event_date(self):
         """

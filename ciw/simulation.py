@@ -28,6 +28,7 @@ class Simulation(object):
         """
         Initialise a queue instance.
         """
+        self.current_time = 0.0
         self.network = network
         self.set_classes(node_class, arrival_node_class)
         if exact:
@@ -69,8 +70,8 @@ class Simulation(object):
             raise ValueError("UserDefined func must return positive float.")
         return sample
 
-    def check_timedependent_dist(self, func, kind, current_time):
-        sample = func(current_time)
+    def check_timedependent_dist(self, func, kind, t):
+        sample = func(t)
         if kind in ['Arr', 'Ser'] and not isinstance(sample, float) or sample < 0:
             raise ValueError("TimeDependent func must return positive float.")
         if kind in ['Bch'] and not isinstance(sample, int) or sample < 0:
@@ -246,14 +247,14 @@ class Simulation(object):
         else:
             self.NodeType = Node
 
-    def event_and_return_nextnode(self, next_active_node, current_time):
+    def event_and_return_nextnode(self, next_active_node):
         """
         Carries out the event of current next_active_node, and return the next
         next_active_node
         """
         next_active_node.have_event()
         for node in self.transitive_nodes:
-            node.update_next_event_date(current_time)
+            node.update_next_event_date()
         return self.find_next_active_node()
 
     def simulate_until_deadlock(self):
@@ -262,19 +263,19 @@ class Simulation(object):
         """
         deadlocked = False
         next_active_node = self.find_next_active_node()
-        current_time = next_active_node.next_event_date
+        self.current_time = next_active_node.next_event_date
         while not deadlocked:
-            next_active_node = self.event_and_return_nextnode(next_active_node, current_time)
+            next_active_node = self.event_and_return_nextnode(next_active_node)
 
             current_state = self.statetracker.hash_state()
             if current_state not in self.times_dictionary:
-                self.times_dictionary[current_state] = current_time
+                self.times_dictionary[current_state] = self.current_time
             if self.unchecked_blockage:
                 deadlocked = self.deadlock_detector.detect_deadlock()
                 self.unchecked_blockage = False
             if deadlocked:
-                time_of_deadlock = current_time
-            current_time = next_active_node.next_event_date
+                time_of_deadlock = self.current_time
+            self.current_time = next_active_node.next_event_date
 
         self.wrap_up_servers(time_of_deadlock)
         self.times_to_deadlock = {state:
@@ -286,20 +287,20 @@ class Simulation(object):
         Runs the simulation until max_simulation_time is reached.
         """
         next_active_node = self.find_next_active_node()
-        current_time = next_active_node.next_event_date
+        self.current_time = next_active_node.next_event_date
 
         if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_simulation_time)
 
-        while current_time < max_simulation_time:
-            next_active_node = self.event_and_return_nextnode(next_active_node, current_time)
+        while self.current_time < max_simulation_time:
+            next_active_node = self.event_and_return_nextnode(next_active_node)
 
             if progress_bar:
                 remaining_time = max_simulation_time - self.progress_bar.n
-                time_increment = next_active_node.next_event_date - current_time
+                time_increment = next_active_node.next_event_date - self.current_time
                 self.progress_bar.update(min(time_increment, remaining_time))
 
-            current_time = next_active_node.next_event_date
+            self.current_time = next_active_node.next_event_date
 
         self.wrap_up_servers(max_simulation_time)
         if progress_bar:
@@ -321,7 +322,7 @@ class Simulation(object):
                 (not rejected) at the Arrival Node
         """
         next_active_node = self.find_next_active_node()
-        current_time = next_active_node.next_event_date
+        self.current_time = next_active_node.next_event_date
 
         if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_customers)
@@ -337,15 +338,15 @@ class Simulation(object):
 
         while check() < max_customers:
             old_check = check()
-            next_active_node = self.event_and_return_nextnode(next_active_node, current_time)
+            next_active_node = self.event_and_return_nextnode(next_active_node)
 
             if progress_bar:
                 remaining_time = max_customers - self.progress_bar.n
                 time_increment = check() - old_check
                 self.progress_bar.update(min(time_increment, remaining_time))
 
-            previous_time = current_time
-            current_time = next_active_node.next_event_date
+            previous_time = self.current_time
+            self.current_time = next_active_node.next_event_date
 
         self.wrap_up_servers(previous_time)
 
