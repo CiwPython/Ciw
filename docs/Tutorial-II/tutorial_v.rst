@@ -32,11 +32,11 @@ A diagram of the system is shown below:
 This system can be described in one Network object.
 Arrival and Service distributions are listed in the order of the nodes.
 So are number of servers.
-We do however require a *transition matrix*.
+We do however require a *routing matrix*.
 
-A transition matrix is an :math:`n \times n` matrix (where :math:`n` is the number of nodes in the network) such that the :math:`(i,j)\text{th}` element corresponds to the probability of transitioning to node :math:`j` after service at node :math:`i`.
+A routing matrix is an :math:`n \times n` matrix (where :math:`n` is the number of nodes in the network) such that the :math:`(i,j)\text{th}` element corresponds to the probability of transitioning to node :math:`j` after service at node :math:`i`.
 In Python, we write this matrix as a list of lists.
-The transition matrix for the café system looks like this:
+The routing matrix for the café system looks like this:
 
 .. math::
 
@@ -48,7 +48,7 @@ The transition matrix for the café system looks like this:
 
 
 That is 30% of cold food customers then go to hot food, while the remaining 70% go to the till, and 100% of hot food customers go to the till.
-This is included when creating a network, with the keyword :code:`Transition_matrices`.
+This is included when creating a network, with the keyword :code:`Routing`.
 So, our Network for the café looks like this::
 
     >>> import ciw
@@ -59,7 +59,7 @@ So, our Network for the café looks like this::
     ...     Service_distributions=[['Exponential', 1.0],
     ...                            ['Exponential', 0.4],
     ...                            ['Exponential', 0.5]],
-    ...     Transition_matrices=[[0.0, 0.3, 0.7],
+    ...     Routing=[[0.0, 0.3, 0.7],
     ...                          [0.0, 0.0, 1.0],
     ...                          [0.0, 0.0, 0.0]],
     ...     Number_of_servers=[1, 2, 2]

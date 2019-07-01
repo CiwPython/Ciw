@@ -20,7 +20,7 @@ Service_distributions:
   - - Exponential
     - 30.0
 Simulation_time: 2500
-Transition_matrices:
+Routing:
   Class 0:
   - - 0.3
     - 0.4

@@ -123,7 +123,7 @@ class TestNetwork(unittest.TestCase):
         params = {'Arrival_distributions': {'Class 0': [['Exponential', 3.0]]},
                   'Service_distributions': {'Class 0': [['Exponential', 7.0]]},
                   'Number_of_servers': [9],
-                  'Transition_matrices': {'Class 0': [[0.5]]},
+                  'Routing': {'Class 0': [[0.5]]},
                   'Queue_capacities': ['Inf']}
         N = ciw.create_network_from_dictionary(params)
         
@@ -146,7 +146,7 @@ class TestNetwork(unittest.TestCase):
                   'Service_distributions': [['Exponential', 7.0],
                                             ['Deterministic', 0.7]],
                   'Number_of_servers': [[[1, 20], [4, 50]], 3],
-                  'Transition_matrices': [[0.5, 0.2],
+                  'Routing': [[0.5, 0.2],
                                           [0.0, 0.0]],
                   'Queue_capacities': [10, 'Inf']
                   }
@@ -175,7 +175,7 @@ class TestNetwork(unittest.TestCase):
                   'Service_distributions': {'Class 0': [['Exponential', 7.0]],
                                             'Class 1': [['Uniform', 0.4, 1.2]]},
                   'Number_of_servers': [9],
-                  'Transition_matrices': {'Class 0': [[0.5]],
+                  'Routing': {'Class 0': [[0.5]],
                                           'Class 1': [[0.0]]},
                   'Queue_capacities': ['Inf'],
                   'Class_change_matrices': {'Node 1': [[0.0, 1.0],
@@ -203,7 +203,7 @@ class TestNetwork(unittest.TestCase):
                   'Service_distributions': {'Class 0': [['Exponential', 7.0]],
                                             'Class 1': [['Uniform', 0.4, 1.2]]},
                   'Number_of_servers': [9],
-                  'Transition_matrices': {'Class 0': [[0.5]],
+                  'Routing': {'Class 0': [[0.5]],
                                           'Class 1': [[0.0]]},
                   'Queue_capacities': ['Inf'],
                   'Priority_classes': {'Class 0': 1,
@@ -230,7 +230,7 @@ class TestNetwork(unittest.TestCase):
         params = {'Arrival_distributions': [['Exponential', 3.0], ['Exponential', 4.0], ['Exponential', 2.0]],
                   'Service_distributions': [['Exponential', 7.0], ['Uniform', 0.4, 1.2], ['Deterministic', 5.33]],
                   'Number_of_servers': [9, 2, 4],
-                  'Transition_matrices': [[0.5, 0.0, 0.1],
+                  'Routing': [[0.5, 0.0, 0.1],
                                           [0.2, 0.1, 0.0],
                                           [0.0, 0.0, 0.0]],
                   'Queue_capacities': ['Inf', 'Inf', 'Inf'],
@@ -299,7 +299,7 @@ class TestNetwork(unittest.TestCase):
                   'Service_distributions': {'Class 0':[['Exponential', 7.0]]},
                   'Number_of_servers': [9],
                   'Number_of_classes': 1,
-                  'Transition_matrices': {'Class 0': [[0.5]]},
+                  'Routing': {'Class 0': [[0.5]]},
                   'Number_of_nodes': 1,
                   'Queue_capacities': ['Inf'],
                   'Detect_deadlock': False}
@@ -335,18 +335,18 @@ class TestNetwork(unittest.TestCase):
         params_list[12]['Service_distributions']['Class 0'] = [['Exponential', 3.1],
                                                                ['Exponential', 2.4]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[12])
-        params_list[13]['Transition_matrices'] = {'Class 0':[[0.2]],
+        params_list[13]['Routing'] = {'Class 0':[[0.2]],
                                                   'Class 1':[[0.3]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[13])
-        params_list[14]['Transition_matrices'] = {'Patient 0':[[0.5]]}
+        params_list[14]['Routing'] = {'Patient 0':[[0.5]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[14])
-        params_list[15]['Transition_matrices']['Class 0'] = [[0.2], [0.1]]
+        params_list[15]['Routing']['Class 0'] = [[0.2], [0.1]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[15])
-        params_list[16]['Transition_matrices']['Class 0'] = [[0.2, 0.1]]
+        params_list[16]['Routing']['Class 0'] = [[0.2, 0.1]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[16])
-        params_list[17]['Transition_matrices']['Class 0'] = [[-0.6]]
+        params_list[17]['Routing']['Class 0'] = [[-0.6]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[17])
-        params_list[18]['Transition_matrices']['Class 0'] = [[1.4]]
+        params_list[18]['Routing']['Class 0'] = [[1.4]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[18])
         params_list[19]['Class_change_matrices'] = {'Node 1':[[0.0]],
                                                     'Node 2':[[0.0]]}
@@ -390,7 +390,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Arrival_distributions={'Class 0': [['Exponential', 3.0]]},
                 Service_distributions={'Class 0': [['Exponential', 7.0]]},
                 Number_of_servers=[9],
-                Transition_matrices={'Class 0': [[0.5]]},
+                Routing={'Class 0': [[0.5]]},
                 Queue_capacities=['Inf']
             )
         
@@ -414,7 +414,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Service_distributions=[['Exponential', 7.0],
                                        ['Deterministic', 0.7]],
                 Number_of_servers=[[[1, 20], [4, 50]], 3],
-                Transition_matrices=[[0.5, 0.2],
+                Routing=[[0.5, 0.2],
                                      [0.0, 0.0]],
                 Queue_capacities=[10, 'Inf']
             )
@@ -444,7 +444,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Service_distributions={'Class 0': [['Exponential', 7.0]],
                                        'Class 1': [['Uniform', 0.4, 1.2]]},
                 Number_of_servers=[9],
-                Transition_matrices={'Class 0': [[0.5]],
+                Routing={'Class 0': [[0.5]],
                                      'Class 1': [[0.0]]},
                 Queue_capacities=['Inf'],
                 Class_change_matrices={'Node 1': [[0.0, 1.0],
@@ -474,7 +474,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 Service_distributions={'Class 0': [['Exponential', 7.0]],
                                        'Class 1': [['Uniform', 0.4, 1.2]]},
                 Number_of_servers=[9],
-                Transition_matrices={'Class 0': [[0.5]],
+                Routing={'Class 0': [[0.5]],
                                      'Class 1': [[0.0]]},
                 Queue_capacities=['Inf'],
                 Priority_classes={'Class 0': 1,
@@ -507,7 +507,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                                        ['Uniform', 0.4, 1.2],
                                        ['Deterministic', 5.33]],
                 Number_of_servers=[9, 2, 4],
-                Transition_matrices=[[0.5, 0.0, 0.1],
+                Routing=[[0.5, 0.0, 0.1],
                                      [0.2, 0.1, 0.0],
                                      [0.0, 0.0, 0.0]],
                 Queue_capacities=['Inf', 'Inf', 'Inf'],

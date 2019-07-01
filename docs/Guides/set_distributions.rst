@@ -23,7 +23,7 @@ The following example, with two nodes and two customer classes, uses eight diffe
     ...                                        ['Lognormal', -1, 0.5]],
     ...                            'Class 1': [['Uniform', 0.1, 0.7],
     ...                                        ['Triangular', 0.2, 0.7, 0.3]]},
-    ...     Transition_matrices={'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+    ...     Routing={'Class 0': [[0.0, 0.0], [0.0, 0.0]],
     ...                          'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
     ...     Number_of_servers=[1, 1]
     ... )

@@ -134,6 +134,36 @@ Example::
     Queue_capacities=[5, 'Inf', 'Inf', 10]
 
 
+
+Routing
+~~~~~~~~~~~~~~~~~~~
+
+*Required for more than 1 node*
+
+*Optional for 1 node*
+
+Describes the routing matrix for each customer class.
+This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the routing probabilities.
+If only one class of customer is required it is sufficient to simply enter single routing matrix (a list of lists).
+
+An example is shown::
+
+    Routing={'Class 0': [[0.1, 0.3],
+                                     [0.0, 0.8]],
+                         'Class 1': [[0.0, 1.0],
+                                     [0.0, 0.0]]}
+
+An example where only one class of customer is required::
+
+    Routing=[[0.5, 0.3],
+                         [0.2, 0.6]]
+
+If using only one node, the default value is::
+
+    Routing={'Class 0': [[0.0]]}
+
+
+
 Service_distributions
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -156,31 +186,3 @@ An example where only one class of customer is required::
     Service_distributions=[['Exponential', 4.8],
                            ['Exponential', 5.2]]
 
-
-
-Transition_matrices
-~~~~~~~~~~~~~~~~~~~
-
-*Required for more than 1 node*
-
-*Optional for 1 node*
-
-Describes the transition matrix for each customer class.
-This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the transition probabilities.
-If only one class of customer is required it is sufficient to simply enter single transition matrix (a list of lists).
-
-An example is shown::
-
-    Transition_matrices={'Class 0': [[0.1, 0.3],
-                                     [0.0, 0.8]],
-                         'Class 1': [[0.0, 1.0],
-                                     [0.0, 0.0]]}
-
-An example where only one class of customer is required::
-
-    Transition_matrices=[[0.5, 0.3],
-                         [0.2, 0.6]]
-
-If using only one node, the default value is::
-
-    Transition_matrices={'Class 0': [[0.0]]}
