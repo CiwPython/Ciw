@@ -20,5 +20,6 @@ Contents:
    server_schedule.rst
    dynamic_customerclasses.rst
    deadlock.rst
+   process_based.rst
    behaviour.rst
    from_file.rst
