@@ -76,7 +76,7 @@ def create_network_from_dictionary(params_input):
         for clss in range(len(params['Arrival_distributions']))]
     services = [params['Service_distributions']['Class ' + str(clss)]
         for clss in range(len(params['Service_distributions']))]
-    if isinstance(params['Routing'], types.FunctionType):
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
         routing = params['Routing']
     else:
         routing = [params['Routing']['Class ' + str(clss)]
@@ -120,7 +120,7 @@ def create_network_from_dictionary(params_input):
             schedules[nd],
             preempts[nd]))
     for clss in range(number_of_classes):
-        if isinstance(params['Routing'], types.FunctionType):
+        if all(isinstance(f, types.FunctionType) for f in params['Routing']):
             classes.append(CustomerClass(
                 arrivals[clss],
                 services[clss],
@@ -137,7 +137,7 @@ def create_network_from_dictionary(params_input):
                 baulking_functions[clss],
                 batches[clss]))
     n = Network(nodes, classes)
-    if isinstance(params['Routing'], types.FunctionType):
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
         n.process_based = True
     else:
         n.process_based = False
@@ -157,7 +157,7 @@ def fill_out_dictionary(params_input):
         srv_dists = params['Service_distributions']
         params['Service_distributions'] = {'Class 0': srv_dists}
     if 'Routing' in params:            
-        if isinstance(params['Routing'], list):
+        if all(isinstance(f, list) for f in params['Routing']):
             rtng_mat = params['Routing']
             params['Routing'] = {'Class 0': rtng_mat}
     if 'Baulking_functions' in params:
@@ -197,7 +197,7 @@ def validify_dictionary(params):
     Raises errors if there is something wrong with the
     parameters dictionary
     """
-    if isinstance(params['Routing'], types.FunctionType):
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
         consistant_num_classes = (
             params['Number_of_classes'] ==
             len(params['Arrival_distributions']) ==
@@ -212,7 +212,7 @@ def validify_dictionary(params):
             len(params['Batching_distributions']))
     if not consistant_num_classes:
         raise ValueError('Ensure consistant number of classes is used throughout.')
-    if isinstance(params['Routing'], types.FunctionType):
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
         consistant_class_names = (
             set(params['Arrival_distributions']) ==
             set(params['Service_distributions']) ==
@@ -227,12 +227,13 @@ def validify_dictionary(params):
             set(['Class ' + str(i) for i in range(params['Number_of_classes'])]))
     if not consistant_class_names:
         raise ValueError('Ensure correct names for customer classes.')
-    if isinstance(params['Routing'], types.FunctionType):
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
         num_nodes_count = [
         params['Number_of_nodes']] + [
         len(obs) for obs in params['Arrival_distributions'].values()] + [
         len(obs) for obs in params['Service_distributions'].values()] + [
         len(obs) for obs in params['Batching_distributions'].values()] + [
+        len(params['Routing'])] + [
         len(params['Number_of_servers'])] + [
         len(params['Queue_capacities'])]
     else:
@@ -247,7 +248,7 @@ def validify_dictionary(params):
             len(params['Queue_capacities'])]
     if len(set(num_nodes_count)) != 1:
         raise ValueError('Ensure consistant number of nodes is used throughout.')
-    if not isinstance(params['Routing'], types.FunctionType):    
+    if not all(isinstance(f, types.FunctionType) for f in params['Routing']):    
         for clss in params['Routing'].values():
             for row in clss:
                 if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:

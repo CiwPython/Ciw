@@ -359,6 +359,8 @@ class Node(object):
             return random_choice(self.simulation.nodes[1:],
                 self.transition_row[customer_class] + [1.0 - sum(
                 self.transition_row[customer_class])])
+        if ind.route == [] or ind.route[0] != self.id_number:
+            raise ValueError('Individual process route sent to wrong node')
         ind.route.pop(0)
         if len(ind.route) == 0:
             next_node_number = -1

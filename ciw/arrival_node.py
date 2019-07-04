@@ -80,7 +80,7 @@ class ArrivalNode(object):
                                          priority_class)
             if self.simulation.network.process_based:
                 next_individual.route = self.simulation.network.customer_classes[
-                    next_individual.customer_class].routing(next_individual)
+                    next_individual.customer_class].routing[self.next_node-1](next_individual)
             next_node = self.simulation.transitive_nodes[self.next_node-1]
             self.release_individual(next_node, next_individual)
 
