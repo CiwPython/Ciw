@@ -115,7 +115,7 @@ class TestSimulation(unittest.TestCase):
             'Arrival_distributions': [['Exponential', 1.0]],
             'Service_distributions': [['Exponential', 0.5]],
             'Number_of_servers': [1],
-            'Transition_matrices': [[0.0]],
+            'Routing': [[0.0]],
             'Queue_capacities': [3]
         }
         N = ciw.create_network(**params)
@@ -258,7 +258,7 @@ class TestSimulation(unittest.TestCase):
         params = {'Arrival_distributions': [['Exponential', arrival_rate]],
                   'Service_distributions': [['Exponential', service_rate]],
                   'Number_of_servers': ['Inf'],
-                  'Transition_matrices': [[0.0]]}
+                  'Routing': [[0.0]]}
 
         Q = ciw.Simulation(ciw.create_network(**params))
         Q.simulate_until_max_time(5)
@@ -351,7 +351,7 @@ class TestSimulation(unittest.TestCase):
                                             'NoArrivals'],
                   'Service_distributions': [['Deterministic', 5.0],
                                             ['Deterministic', 5.0]],
-                  'Transition_matrices': [[1.0, 0.0], [0.0, 0.0]],
+                  'Routing': [[1.0, 0.0], [0.0, 0.0]],
                   'Number_of_servers': [2, 1]}
 
         ciw.seed(36)
@@ -382,7 +382,7 @@ class TestSimulation(unittest.TestCase):
     def test_exactness(self):
         params = {'Arrival_distributions': [['Exponential', 20]],
                   'Service_distributions': [['Deterministic', 0.01]],
-                  'Transition_matrices': [[0.0]],
+                  'Routing': [[0.0]],
                   'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
                   }
         ciw.seed(777)
@@ -411,7 +411,7 @@ class TestSimulation(unittest.TestCase):
 
         params = {'Arrival_distributions': [['Exponential', 20]],
                   'Service_distributions': [['Deterministic', 0.01]],
-                  'Transition_matrices': [[0.0]],
+                  'Routing': [[0.0]],
                   'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
                   }
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -443,7 +443,7 @@ class TestSimulation(unittest.TestCase):
 
         params = {'Arrival_distributions': [['Exponential', 20]],
                   'Service_distributions': [['Deterministic', 0.01]],
-                  'Transition_matrices': [[0.0]],
+                  'Routing': [[0.0]],
                   'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
                   }
         Q = ciw.Simulation(ciw.create_network(**params),
@@ -509,7 +509,7 @@ class TestSimulation(unittest.TestCase):
                                                  'Class 1': [['Deterministic', 1.0]]},
                        'Service_distributions': {'Class 0': [['Deterministic', 0.75]],
                                                  'Class 1': [['Deterministic', 0.75]]},
-                       'Transition_matrices': {'Class 0': [[0.0]],
+                       'Routing': {'Class 0': [[0.0]],
                                                'Class 1': [[0.0]]},
                        'Number_of_servers': [1],
                        'Priority_classes': {'Class 0': 0,
@@ -529,7 +529,7 @@ class TestSimulation(unittest.TestCase):
                                                  'Class 1': [['Deterministic', 1.0]]},
                        'Service_distributions': {'Class 0': [['Deterministic', 0.75]],
                                                  'Class 1': [['Deterministic', 0.75]]},
-                       'Transition_matrices': {'Class 0': [[0.0]],
+                       'Routing': {'Class 0': [[0.0]],
                                                'Class 1': [[0.0]]},
                        'Number_of_servers': [1]
                        }
@@ -550,7 +550,7 @@ class TestSimulation(unittest.TestCase):
                                          'Class 1': [['Exponential', 0.6]]},
                'Service_distributions': {'Class 0': [['Exponential', 1.0]],
                                          'Class 1': [['Exponential', 1.0]]},
-               'Transition_matrices': {'Class 0': [[0.0]],
+               'Routing': {'Class 0': [[0.0]],
                                        'Class 1': [[0.0]]},
                'Number_of_servers': [1],
                'Priority_classes': {'Class 0': 0,
@@ -605,7 +605,7 @@ class TestSimulation(unittest.TestCase):
                                       ['Deterministic', 23.0]],
             'Service_distributions': [['Deterministic', 21.0],
                                       ['Deterministic', 1.5]],
-            'Transition_matrices': [[0.0, 0.0], [1.0, 0.0]],
+            'Routing': [[0.0, 0.0], [1.0, 0.0]],
             'Number_of_servers': [1, 1],
             'Baulking_functions': [my_baulking_function, None]
         }
@@ -637,7 +637,7 @@ class TestSimulation(unittest.TestCase):
                                       'Class 1': [['Uniform', 0.9, 1.1],
                                                   ['Uniform', 0.9, 1.1]]},
             'Number_of_servers': [1, 1],
-            'Transition_matrices': {'Class 0': [[0.0, 1.0],
+            'Routing': {'Class 0': [[0.0, 1.0],
                                                 [1.0, 0.0]],
                                     'Class 1': [[0.0, 1.0],
                                                 [1.0, 0.0]]},
@@ -717,7 +717,7 @@ class TestSimulation(unittest.TestCase):
                                       'Class 1': [['Exponential', 5], ['Exponential', 5]]},
             'Service_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
                                       'Class 1': [['Exponential', 5], ['Exponential', 5]]},
-            'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+            'Routing': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
                                     'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
             'Number_of_servers': [1, 1]
         }
@@ -727,7 +727,7 @@ class TestSimulation(unittest.TestCase):
                                       'Class 1': [['Exponential', 5], ['Exponential', 5]]},
             'Service_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
                                       'Class 1': [['Sequential', [5, 6]], ['Exponential', 5]]},
-            'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+            'Routing': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
                                     'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
             'Number_of_servers': [1, 1]
         }
@@ -737,7 +737,7 @@ class TestSimulation(unittest.TestCase):
                                       'Class 1': [['Sequential', [5, 6]], ['Sequential', [5, 6]]]},
             'Service_distributions': {'Class 0': [['Sequential', [5, 6]], ['Sequential', [5, 6]]],
                                       'Class 1': [['Sequential', [5, 6]], ['Sequential', [5, 6]]]},
-            'Transition_matrices': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+            'Routing': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
                                     'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
             'Number_of_servers': [1, 1]
         }
@@ -778,7 +778,7 @@ class TestSimulation(unittest.TestCase):
                 'Class 0': [['Exponential', 0.8], ['Exponential', 1.2]],
                 'Class 1': [['Exponential', 0.5], ['Exponential', 1.0]]},
             Number_of_servers=[([[1, 10], [0, 20], [2, 30]], True), 2],
-            Transition_matrices={
+            Routing={
                 'Class 0': [[0.1, 0.3], [0.2, 0.2]],
                 'Class 1': [[0.0, 0.6], [0.2, 0.1]]},
             Class_change_matrices={

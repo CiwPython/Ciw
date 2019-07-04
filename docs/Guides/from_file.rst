@@ -18,7 +18,7 @@ Consider the following Network::
 	>>> N = ciw.create_network(
 	...     Arrival_distributions={'Class 0': [['Exponential', 6.0], ['Exponential', 2.5]]},
 	...     Service_distributions={'Class 0': [['Exponential', 8.5], ['Exponential', 5.5]]},
-	...     Transition_matrices={'Class 0': [[0.0, 0.2], [0.1, 0.0]]},
+	...     Routing={'Class 0': [[0.0, 0.2], [0.1, 0.0]]},
 	...     Number_of_servers=[1, 1],
 	...     Queue_capacities=['Inf', 4]
 	... )
@@ -39,7 +39,7 @@ This can be represented by the :code:`.yml` file below::
 	    - 8.5
 	  - - Exponential
 	    - 5.5
-	Transition_matrices:
+	Routing:
 	  Class 0:
 	  - - 0.0
 	    - 0.2

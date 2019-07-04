@@ -149,7 +149,7 @@ class TestArrivalNode(unittest.TestCase):
                                            ['Deterministic', 4.0]],
                   'Service_distributions':[['Deterministic', 10.0],
                                            ['Deterministic', 10.0]],
-                  'Transition_matrices':[[0.0, 1.0], [0.0, 0.0]],
+                  'Routing':[[0.0, 1.0], [0.0, 0.0]],
                   'Number_of_servers':[1, 1],
                   'Queue_capacities':[1, 1]}
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -161,7 +161,7 @@ class TestArrivalNode(unittest.TestCase):
     def test_send_individual(self):
         params = {'Arrival_distributions':[['Exponential', 3.0]],
                   'Service_distributions':[['Exponential', 10.0]],
-                  'Transition_matrices':[[0.5]],
+                  'Routing':[[0.5]],
                   'Number_of_servers':[1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
@@ -179,7 +179,7 @@ class TestArrivalNode(unittest.TestCase):
     def test_report_rejection(self):
         params = {'Arrival_distributions':[['Exponential', 3.0]],
                   'Service_distributions':[['Exponential', 10.0]],
-                  'Transition_matrices':[[0.5]],
+                  'Routing':[[0.5]],
                   'Number_of_servers':[1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
@@ -194,7 +194,7 @@ class TestArrivalNode(unittest.TestCase):
     def test_update_next_event_date_passes(self):
         params = {'Arrival_distributions':[['Exponential', 3.0]],
                   'Service_distributions':[['Exponential', 10.0]],
-                  'Transition_matrices':[[0.5]],
+                  'Routing':[[0.5]],
                   'Number_of_servers':[1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
@@ -308,7 +308,7 @@ class TestArrivalNode(unittest.TestCase):
             Service_distributions=[['Deterministic', 1], ['Deterministic', 1], ['Deterministic', 1]],
             Number_of_servers=[10, 10, 10],
             Batching_distributions=[['Deterministic', 3], ['Deterministic', 2], ['Deterministic', 1]],
-            Transition_matrices=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+            Routing=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
         )
         ciw.seed(12)
         Q = ciw.Simulation(N)

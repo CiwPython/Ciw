@@ -67,7 +67,7 @@ Service_distributions:
     - 8.0
   - - Exponential
     - 9.0
-Transition_matrices:
+Routing:
   Class 0:
   - - 0.1
     - 0.2

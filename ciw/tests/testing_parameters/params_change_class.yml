@@ -29,7 +29,7 @@ Service_distributions:
   - - Deterministic
     - 10.0
 Simulation_time: 50
-Transition_matrices:
+Routing:
   Class 0:
   - - 0.8
     - 0.1

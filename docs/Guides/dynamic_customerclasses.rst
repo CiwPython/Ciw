@@ -31,7 +31,7 @@ This is input into the simulation model by including :code:`Class_change_matrice
     ...     Service_distributions={'Class 0': [['Exponential', 10]],
     ...                            'Class 1': [['Exponential', 10]],
     ...                            'Class 2': [['Exponential', 10]]},
-    ...     Transition_matrices={'Class 0': [[1.0]],
+    ...     Routing={'Class 0': [[1.0]],
     ...                          'Class 1': [[1.0]],
     ...                          'Class 2': [[1.0]]},
     ...     Class_change_matrices={'Node 1': [[0.0, 0.5, 0.5],

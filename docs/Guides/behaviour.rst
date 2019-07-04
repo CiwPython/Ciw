@@ -21,7 +21,7 @@ The second node is redundent in this scenario::
 	>>> N = ciw.create_network(
 	...     Arrival_distributions=[['Exponential', 6.0], 'NoArrivals'],
 	...     Service_distributions=[['Exponential', 5.0], ['Exponential', 5.0]],
-	...     Transition_matrices=[[0.0, 0.0], [0.0, 0.0]],
+	...     Routing=[[0.0, 0.0], [0.0, 0.0]],
 	...     Number_of_servers=[1, 1],
 	...     Queue_capacities=[10, 'Inf']
 	... )
@@ -55,7 +55,7 @@ To run the same system, we need to remove the keyword :code:`'Queue_capacities'`
 	>>> N = ciw.create_network(
 	...     Arrival_distributions=[['Exponential', 6.0], 'NoArrivals'],
 	...     Service_distributions=[['Exponential', 5.0], ['Exponential', 5.0]],
-	...     Transition_matrices=[[0.0, 0.0], [0.0, 0.0]],
+	...     Routing=[[0.0, 0.0], [0.0, 0.0]],
 	...     Number_of_servers=[1, 1]
 	... )
 

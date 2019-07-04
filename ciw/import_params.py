@@ -1,6 +1,7 @@
 import os
 import yaml
 import copy
+import types
 from .network import *
 
 
@@ -11,7 +12,7 @@ def create_network(Arrival_distributions=None,
                    Priority_classes=None,
                    Queue_capacities=None,
                    Service_distributions=None,
-                   Transition_matrices=None,
+                   Routing=None,
                    Batching_distributions=None):
     """
     Takes in kwargs, creates dictionary.
@@ -33,8 +34,8 @@ def create_network(Arrival_distributions=None,
         params['Priority_classes'] = Priority_classes
     if Queue_capacities != None:
         params['Queue_capacities'] = Queue_capacities
-    if Transition_matrices != None:
-        params['Transition_matrices'] = Transition_matrices
+    if Routing != None:
+        params['Routing'] = Routing
     if Batching_distributions != None:
         params['Batching_distributions'] = Batching_distributions
 
@@ -75,8 +76,11 @@ def create_network_from_dictionary(params_input):
         for clss in range(len(params['Arrival_distributions']))]
     services = [params['Service_distributions']['Class ' + str(clss)]
         for clss in range(len(params['Service_distributions']))]
-    transitions = [params['Transition_matrices']['Class ' + str(clss)]
-        for clss in range(len(params['Transition_matrices']))]
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
+        routing = params['Routing']
+    else:
+        routing = [params['Routing']['Class ' + str(clss)]
+            for clss in range(len(params['Routing']))]
     priorities = [params['Priority_classes']['Class ' + str(clss)]
         for clss in range(len(params['Priority_classes']))]
     baulking_functions = [params['Baulking_functions']['Class ' + str(clss)]
@@ -116,14 +120,28 @@ def create_network_from_dictionary(params_input):
             schedules[nd],
             preempts[nd]))
     for clss in range(number_of_classes):
-        classes.append(CustomerClass(
-            arrivals[clss],
-            services[clss],
-            transitions[clss],
-            priorities[clss],
-            baulking_functions[clss],
-            batches[clss]))
-    return Network(nodes, classes)
+        if all(isinstance(f, types.FunctionType) for f in params['Routing']):
+            classes.append(CustomerClass(
+                arrivals[clss],
+                services[clss],
+                routing,
+                priorities[clss],
+                baulking_functions[clss],
+                batches[clss]))
+        else:
+            classes.append(CustomerClass(
+                arrivals[clss],
+                services[clss],
+                routing[clss],
+                priorities[clss],
+                baulking_functions[clss],
+                batches[clss]))
+    n = Network(nodes, classes)
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
+        n.process_based = True
+    else:
+        n.process_based = False
+    return n
 
 
 def fill_out_dictionary(params_input):
@@ -138,10 +156,10 @@ def fill_out_dictionary(params_input):
     if isinstance(params['Service_distributions'], list):
         srv_dists = params['Service_distributions']
         params['Service_distributions'] = {'Class 0': srv_dists}
-    if 'Transition_matrices' in params:
-        if isinstance(params['Transition_matrices'], list):
-            trns_mat = params['Transition_matrices']
-            params['Transition_matrices'] = {'Class 0': trns_mat}
+    if 'Routing' in params:            
+        if all(isinstance(f, list) for f in params['Routing']):
+            rtng_mat = params['Routing']
+            params['Routing'] = {'Class 0': rtng_mat}
     if 'Baulking_functions' in params:
         if isinstance(params['Baulking_functions'], list):
             blk_fncs = params['Baulking_functions']
@@ -153,7 +171,7 @@ def fill_out_dictionary(params_input):
 
     default_dict = {
         'Name': 'Simulation',
-        'Transition_matrices': {'Class ' + str(i): [[0.0]]
+        'Routing': {'Class ' + str(i): [[0.0]]
             for i in range(len(params['Arrival_distributions']))},
         'Number_of_nodes': len(params['Number_of_servers']),
         'Number_of_classes': len(params['Arrival_distributions']),
@@ -179,37 +197,62 @@ def validify_dictionary(params):
     Raises errors if there is something wrong with the
     parameters dictionary
     """
-    consistant_num_classes = (
-        params['Number_of_classes'] ==
-        len(params['Arrival_distributions']) ==
-        len(params['Service_distributions']) ==
-        len(params['Transition_matrices']) ==
-        len(params['Batching_distributions']))
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
+        consistant_num_classes = (
+            params['Number_of_classes'] ==
+            len(params['Arrival_distributions']) ==
+            len(params['Service_distributions']) ==
+            len(params['Batching_distributions']))
+    else:
+        consistant_num_classes = (
+            params['Number_of_classes'] ==
+            len(params['Arrival_distributions']) ==
+            len(params['Service_distributions']) ==
+            len(params['Routing']) ==
+            len(params['Batching_distributions']))
     if not consistant_num_classes:
         raise ValueError('Ensure consistant number of classes is used throughout.')
-    consistant_class_names = (
-        set(params['Arrival_distributions']) ==
-        set(params['Service_distributions']) ==
-        set(params['Transition_matrices']) ==
-        set(params['Batching_distributions']) ==
-        set(['Class ' + str(i) for i in range(params['Number_of_classes'])]))
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
+        consistant_class_names = (
+            set(params['Arrival_distributions']) ==
+            set(params['Service_distributions']) ==
+            set(params['Batching_distributions']) ==
+            set(['Class ' + str(i) for i in range(params['Number_of_classes'])]))
+    else:
+        consistant_class_names = (
+            set(params['Arrival_distributions']) ==
+            set(params['Service_distributions']) ==
+            set(params['Routing']) ==
+            set(params['Batching_distributions']) ==
+            set(['Class ' + str(i) for i in range(params['Number_of_classes'])]))
     if not consistant_class_names:
         raise ValueError('Ensure correct names for customer classes.')
-    num_nodes_count = [
+    if all(isinstance(f, types.FunctionType) for f in params['Routing']):
+        num_nodes_count = [
         params['Number_of_nodes']] + [
         len(obs) for obs in params['Arrival_distributions'].values()] + [
         len(obs) for obs in params['Service_distributions'].values()] + [
-        len(obs) for obs in params['Transition_matrices'].values()] + [
         len(obs) for obs in params['Batching_distributions'].values()] + [
-        len(row) for row in [obs for obs in params['Transition_matrices'].values()][0]] + [
+        len(params['Routing'])] + [
         len(params['Number_of_servers'])] + [
         len(params['Queue_capacities'])]
+    else:
+        num_nodes_count = [
+            params['Number_of_nodes']] + [
+            len(obs) for obs in params['Arrival_distributions'].values()] + [
+            len(obs) for obs in params['Service_distributions'].values()] + [
+            len(obs) for obs in params['Routing'].values()] + [
+            len(obs) for obs in params['Batching_distributions'].values()] + [
+            len(row) for row in [obs for obs in params['Routing'].values()][0]] + [
+            len(params['Number_of_servers'])] + [
+            len(params['Queue_capacities'])]
     if len(set(num_nodes_count)) != 1:
         raise ValueError('Ensure consistant number of nodes is used throughout.')
-    for clss in params['Transition_matrices'].values():
-        for row in clss:
-            if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
-                raise ValueError('Ensure that transition matrix is valid.')
+    if not all(isinstance(f, types.FunctionType) for f in params['Routing']):    
+        for clss in params['Routing'].values():
+            for row in clss:
+                if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
+                    raise ValueError('Ensure that routing matrix is valid.')
     dists = [params['Service_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes'])] + [
         params['Arrival_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes']) if params['Arrival_distributions']['Class ' + str(i)][j] != 'NoArrivals']
     if not set(dists).issubset(set([

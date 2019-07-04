@@ -36,10 +36,11 @@ class Node(object):
             self.c = node.number_of_servers
             self.schedule = None
         self.node_capacity = node.queueing_capacity + self.c
-        self.transition_row = [
-            self.simulation.network.customer_classes[
-            clss].transition_matrix[id_ - 1] for clss in range(
-            self.simulation.network.number_of_classes)]
+        if not self.simulation.network.process_based:
+            self.transition_row = [
+                self.simulation.network.customer_classes[
+                clss].routing[id_ - 1] for clss in range(
+                self.simulation.network.number_of_classes)]
         self.class_change = node.class_change_matrix
         self.individuals = [[] for _ in
                 range(simulation.number_of_priority_classes)]
@@ -307,7 +308,7 @@ class Node(object):
         """
         next_individual, next_individual_index = self.find_next_individual()
         self.change_customer_class(next_individual)
-        next_node = self.next_node(next_individual.customer_class)
+        next_node = self.next_node(next_individual)
         next_individual.destination = next_node.id_number
         if not isinf(self.c):
             next_individual.server.next_end_service_date = float('Inf')
@@ -349,13 +350,23 @@ class Node(object):
         indx = self.servers.index(srvr)
         del self.servers[indx]
 
-    def next_node(self, customer_class):
+    def next_node(self, ind):
         """
         Finds the next node according the random distribution.
         """
-        return random_choice(self.simulation.nodes[1:],
-            self.transition_row[customer_class] + [1.0 - sum(
-            self.transition_row[customer_class])])
+        if not self.simulation.network.process_based:
+            customer_class = ind.customer_class
+            return random_choice(self.simulation.nodes[1:],
+                self.transition_row[customer_class] + [1.0 - sum(
+                self.transition_row[customer_class])])
+        if ind.route == [] or ind.route[0] != self.id_number:
+            raise ValueError('Individual process route sent to wrong node')
+        ind.route.pop(0)
+        if len(ind.route) == 0:
+            next_node_number = -1
+        else:
+            next_node_number = ind.route[0]
+        return self.simulation.nodes[next_node_number]
 
     def release(self, next_individual_index, next_node):
         """

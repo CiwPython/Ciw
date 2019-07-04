@@ -63,7 +63,7 @@ class TestServer(unittest.TestCase):
             Service_distributions=[['Sequential', [1.0, 6.0, 100.0]]],
             Number_of_servers=[1],
             Queue_capacities=[0],
-            Transition_matrices=[[1.0]]
+            Routing=[[1.0]]
         )
         Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
         Q.simulate_until_deadlock()

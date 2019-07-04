@@ -25,7 +25,7 @@ class CustomerClass(object):
     def __init__(self,
                  arrival_distributions,
                  service_distributions,
-                 transition_matrix,
+                 routing,
                  priority_class,
                  baulking_functions,
                  batching_distributions):
@@ -35,7 +35,7 @@ class CustomerClass(object):
         self.arrival_distributions = arrival_distributions
         self.service_distributions = service_distributions
         self.batching_distributions = batching_distributions
-        self.transition_matrix = transition_matrix
+        self.routing = routing
         self.priority_class = priority_class
         self.baulking_functions = baulking_functions
 

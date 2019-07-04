@@ -51,3 +51,11 @@ def flatten_list(list_of_lists):
 	for a_list in list_of_lists:
 		flat += a_list
 	return flat
+
+def no_routing(ind):
+	"""
+	Sends customer straight to exit node. 
+	Should not be used. 
+	It is a place holder for NoArrivals. 
+	"""
+	return []

@@ -40,7 +40,7 @@ We assign different behaviour for different customer classes by replacing the va
     ...                            'Class 1': [['Exponential', 6.0],
     ...                                        ['Deterministic', 0.0],
     ...                                        ['Exponential', 1.0]]},
-    ...     Transition_matrices={'Class 0': [[0.0, 1.0, 0.0],
+    ...     Routing={'Class 0': [[0.0, 1.0, 0.0],
     ...                                      [0.0, 0.0, 0.0],
     ...                                      [0.0, 0.0, 0.0]],
     ...                          'Class 1': [[0.0, 0.0, 1.0],

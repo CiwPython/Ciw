@@ -79,28 +79,28 @@ class TestSampling(unittest.TestCase):
         Service_distributions_E = [['Uniform', 2.2, -3.3]]
         Service_distributions_EE = [['Uniform', 3.3, 2.2]]
         Number_of_servers = [1]
-        Transition_matrices = [[0.1]]
+        Routing = [[0.1]]
         Simulation_time = 2222
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_EE,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_EE,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
 
     def test_sampling_deterministic_dist(self):
         params = {
@@ -143,18 +143,18 @@ class TestSampling(unittest.TestCase):
         Service_distributions = [['Deterministic', 3.3]]
         Service_distributions_E = [['Deterministic', -3.3]]
         Number_of_servers = [1]
-        Transition_matrices = [[0.1]]
+        Routing = [[0.1]]
         Simulation_time = 2222
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                  {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
 
     def test_sampling_triangular_dist(self):
         params = {
@@ -203,28 +203,28 @@ class TestSampling(unittest.TestCase):
         Service_distributions_E = [['Triangular', 2.2, -3.3, 2.8]]
         Service_distributions_EE = [['Triangular', 2.2, 2.6, 2.9]]
         Number_of_servers = [1]
-        Transition_matrices = [[0.1]]
+        Routing = [[0.1]]
         Simulation_time = 2222
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_EE,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_EE,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
 
     def test_sampling_exponential_dist(self):
         params = {
@@ -374,7 +374,7 @@ class TestSampling(unittest.TestCase):
             'Arrival_distributions': [['Normal', 0.5, 0.1]],
             'Service_distributions': [['Normal', 0.5, 0.1]],
             'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nn = Q.transitive_nodes[0]
@@ -397,7 +397,7 @@ class TestSampling(unittest.TestCase):
             'Arrival_distributions': [['Normal', nm, ns]],
             'Service_distributions': [['Normal', nm, ns]],
             'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
@@ -456,18 +456,18 @@ class TestSampling(unittest.TestCase):
         Service_distributions = [['Empirical', my_empirical_dist]]
         Service_distributions_E = [['Empirical', my_empirical_dist_E]]
         Number_of_servers = [1]
-        Transition_matrices = [[0.1]]
+        Routing = [[0.1]]
         Simulation_time = 2222
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions': Arrival_distributions_E,
                  'Service_distributions': Service_distributions,
                  'Number_of_servers': Number_of_servers,
-                 'Transition_matrices': Transition_matrices})
+                 'Routing': Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions': Arrival_distributions,
                  'Service_distributions': Service_distributions_E,
                  'Number_of_servers': Number_of_servers,
-                 'Transition_matrices': Transition_matrices})
+                 'Routing': Routing})
 
     def test_sampling_custom_dist(self):
         my_custom_dist_values =  [3.7, 3.8, 4.1]
@@ -525,28 +525,28 @@ class TestSampling(unittest.TestCase):
         Service_distributions_E = [['Custom', my_custom_dist_vals_E, my_custom_dist_probs]]
         Service_distributions_EE = [['Custom', my_custom_dist_vals, my_custom_dist_probs_E]]
         Number_of_servers = [1]
-        Transition_matrices = [[0.1]]
+        Routing = [[0.1]]
         Simulation_time = 2222
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_E,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions_EE,
                  'Service_distributions':Service_distributions,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
         self.assertRaises(ValueError, ciw.create_network_from_dictionary,
                 {'Arrival_distributions':Arrival_distributions,
                  'Service_distributions':Service_distributions_EE,
                  'Number_of_servers':Number_of_servers,
-                 'Transition_matrices':Transition_matrices})
+                 'Routing':Routing})
 
     def test_userdefined_function_dist(self):
         params = {
@@ -557,7 +557,7 @@ class TestSampling(unittest.TestCase):
                 ['UserDefined', lambda : random()],
                 ['UserDefined', lambda : custom_function()]],
             'Number_of_servers': [1, 1],
-            'Transition_matrices': [[0.1, 0.1],
+            'Routing': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -596,7 +596,7 @@ class TestSampling(unittest.TestCase):
                 ['UserDefined', lambda : random()],
                 ['UserDefined', lambda : custom_function()]],
             'Number_of_servers': [1, 1],
-            'Transition_matrices': [[0.1, 0.1],
+            'Routing': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -630,13 +630,13 @@ class TestSampling(unittest.TestCase):
         params = {'Arrival_distributions': ['NoArrivals'],
                   'Service_distributions': [['dlkjdlksj', 9]],
                   'Number_of_servers': [1],
-                  'Transition_matrices': [[0.1]],
+                  'Routing': [[0.1]],
                   'Simulation_time': 2222}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params)
         params = {'Arrival_distributions': [['skjfhkjsfhjk']],
                   'Service_distributions': [['Exponential', 9.5]],
                   'Number_of_servers': [1],
-                  'Transition_matrices': [[0.1]],
+                  'Routing': [[0.1]],
                   'Simulation_time': 2222}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params)
 
@@ -666,7 +666,7 @@ class TestSampling(unittest.TestCase):
                 ['TimeDependent', time_dependent_function_1],
                 ['TimeDependent', time_dependent_function_2]],
             'Number_of_servers': [1, 1],
-            'Transition_matrices': [[0.1, 0.1],
+            'Routing': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -737,7 +737,7 @@ class TestSampling(unittest.TestCase):
                 ['TimeDependent', time_dependent_function_1],
                 ['TimeDependent', time_dependent_function_2]],
             'Number_of_servers': [1, 1],
-            'Transition_matrices': [[0.1, 0.1],
+            'Routing': [[0.1, 0.1],
                                     [0.1, 0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params), exact=26)
@@ -765,7 +765,7 @@ class TestSampling(unittest.TestCase):
             'Arrival_distributions': [['Sequential', [0.2, 0.4, 0.6, 0.8]]],
             'Service_distributions': [['Sequential', [0.9, 0.7, 0.5, 0.3, 0.1]]],
             'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ns = Q.transitive_nodes[0]
@@ -794,7 +794,7 @@ class TestSampling(unittest.TestCase):
             'Arrival_distributions': [['Sequential', my_sequential_dist_1]],
             'Service_distributions': [['Sequential', my_sequential_dist_2]],
             'Number_of_servers': [1],
-            'Transition_matrices': [[0.1]]
+            'Routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ns = Q.transitive_nodes[0]
