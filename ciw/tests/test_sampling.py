@@ -7,7 +7,6 @@ from hypothesis.strategies import (floats, integers, lists,
 import os
 import copy
 
-
 def custom_function():
     """
     Custom function to test user defined function functionality.
@@ -31,6 +30,13 @@ def broken_td_func(current_time):
     return -4.0
 
 class TestSampling(unittest.TestCase):
+
+    def test_uniform_dist_object(self):
+        U = ciw.dist.Uniform(2.2, 3.3)
+        ciw.seed(5)
+        samples = [U.sample() for _ in range(10)]
+        expected = [2.89, 3.02, 3.07, 3.24, 3.01, 3.21, 2.23, 2.71, 3.24, 2.91]
+        self.assertEqual(samples, expected)
 
     def test_sampling_uniform_dist(self):
         params = {
@@ -102,6 +108,13 @@ class TestSampling(unittest.TestCase):
                  'Number_of_servers':Number_of_servers,
                  'Routing':Routing})
 
+    def test_deterministic_dist_object(self):
+        D = ciw.dist.Deterministic(4.4)
+        ciw.seed(5)
+        samples = [D.sample() for _ in range(10)]
+        expected = [4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4]
+        self.assertEqual(samples, expected)
+
     def test_sampling_deterministic_dist(self):
         params = {
             'Arrival_distributions': [['Deterministic', 4.4]],
@@ -155,6 +168,13 @@ class TestSampling(unittest.TestCase):
                  'Service_distributions':Service_distributions_E,
                  'Number_of_servers':Number_of_servers,
                  'Routing':Routing})
+
+    def test_triangular_dist_object(self):
+        Tr = ciw.dist.Triangular(1.1, 6.6, 1.5)
+        ciw.seed(5)
+        samples = [Tr.sample() for _ in range(10)]
+        expected = [3.35, 3.91, 4.20, 5.33, 3.90, 5.12, 1.35, 2.73, 5.34, 3.46]
+        self.assertEqual(samples, expected)
 
     def test_sampling_triangular_dist(self):
         params = {
@@ -226,6 +246,13 @@ class TestSampling(unittest.TestCase):
                  'Number_of_servers':Number_of_servers,
                  'Routing':Routing})
 
+    def test_exponential_dist_object(self):
+        E = ciw.dist.Exponential(4.4)
+        ciw.seed(5)
+        samples = [E.sample() for _ in range(10)]
+        expected = [0.22, 0.31, 0.36, 0.65, 0.31, 0.58, 0.01, 0.14, 0.65, 0.24]
+        self.assertEqual(samples, expected)
+
     def test_sampling_exponential_dist(self):
         params = {
             'Arrival_distributions': [['Exponential', 4.4]],
@@ -260,6 +287,13 @@ class TestSampling(unittest.TestCase):
                 Ne.simulation.service_times[Ne.id_number][0]() >= 0.0)
             self.assertTrue(
                 Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
+
+    def test_gamma_dist_object(self):
+        G = ciw.dist.Gamma(0.6, 1.2)
+        ciw.seed(5)
+        samples = [G.sample() for _ in range(10)]
+        expected = [0.0, 2.59, 1.92, 0.47, 0.61, 0.00, 1.07, 1.15, 0.75, 0.00]
+        self.assertEqual(samples, expected)
 
     def test_sampling_gamma_dist(self):
         params = {
@@ -297,6 +331,13 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
 
+    def test_lognormal_dist_object(self):
+        Ln = ciw.dist.Lognormal(0.8, 0.2)
+        ciw.seed(5)
+        samples = [Ln.sample() for _ in range(10)]
+        expected = [2.62, 1.64, 2.19, 2.31, 2.48, 2.51, 2.33, 1.96, 2.32, 2.70]
+        self.assertEqual(samples, expected)
+
     def test_sampling_lognormal_dist(self):
         params = {
             'Arrival_distributions': [['Lognormal', 0.8, 0.2]],
@@ -333,6 +374,13 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
 
+    def test_weibull_dist_object(self):
+        W = ciw.dist.Weibull(0.9, 0.8)
+        ciw.seed(5)
+        samples = [W.sample() for _ in range(10)]
+        expected = [0.87, 1.31, 1.60, 3.34, 1.31, 2.91, 0.01, 0.50, 3.36, 0.95]
+        self.assertEqual(samples, expected)
+
     def test_sampling_weibull_dist(self):
         params = {
             'Arrival_distributions': [['Weibull', 0.9, 0.8]],
@@ -368,6 +416,13 @@ class TestSampling(unittest.TestCase):
                 Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
             self.assertTrue(
                 Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
+
+    def test_normal_dist_object(self):
+        N = ciw.dist.Normal(0.5, 0.1)
+        ciw.seed(5)
+        samples = [N.sample() for _ in range(10)]
+        expected = [0.58, 0.35, 0.49, 0.52, 0.55, 0.56, 0.52, 0.44, 0.52, 0.60]
+        self.assertEqual(samples, expected)
 
     def test_sampling_normal_dist(self):
         params = {
@@ -406,6 +461,13 @@ class TestSampling(unittest.TestCase):
                 Nw.simulation.service_times[Nw.id_number][0]() >= 0.0)
             self.assertTrue(
                 Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
+
+    def test_empirical_dist_object(self):
+        Em = ciw.dist.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
+        ciw.seed(5)
+        samples = [Em.sample() for _ in range(10)]
+        expected = [8.8, 8.8, 8.8, 12.3, 8.8, 8.8, 8.8, 8.8, 12.3, 8.8]
+        self.assertEqual(samples, expected)
 
     def test_sampling_empirical_dist(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
@@ -468,6 +530,13 @@ class TestSampling(unittest.TestCase):
                  'Service_distributions': Service_distributions_E,
                  'Number_of_servers': Number_of_servers,
                  'Routing': Routing})
+
+    def test_pmf_object(self):
+        Pmf = ciw.dist.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
+        ciw.seed(5)
+        samples = [Pmf.sample() for _ in range(10)]
+        expected = [3.8, 4.1, 4.1, 4.1, 4.1, 4.1, 3.7, 3.8, 4.1, 3.8]
+        self.assertEqual(samples, expected)
 
     def test_sampling_custom_dist(self):
         my_custom_dist_values =  [3.7, 3.8, 4.1]
@@ -614,6 +683,13 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 0.0 <= N2.simulation.service_times[N2.id_number][0]() <= 2.0)
 
+    def test_noarrivals_object(self):
+        Na = ciw.dist.NoArrivals()
+        ciw.seed(5)
+        samples = [Na.sample() for _ in range(10)]
+        expected = [float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf')]
+        self.assertEqual(samples, expected)
+
     def test_no_arrivals_dist(self):
         params = {
             'Arrival_distributions': ['NoArrivals'],
@@ -759,6 +835,18 @@ class TestSampling(unittest.TestCase):
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 
+    def test_sequential_dist_object(self):
+        S = ciw.dist.Sequential([0.9, 0.7, 0.5, 0.3, 0.1])
+        ciw.seed(5)
+        samples = [S.sample() for _ in range(7)]
+        expected = [0.9, 0.7, 0.5, 0.3, 0.1, 0.9, 0.7]
+        self.assertEqual(samples, expected)
+
+        S = ciw.dist.Sequential([0.2, 0.4, 0.6, 0.8])
+        ciw.seed(5)
+        samples = [S.sample() for _ in range(6)]
+        expected = [0.4, 0.6, 0.8, 0.2, 0.4, 0.6]
+        self.assertEqual(samples, expected)
 
     def test_sampling_sequential_dist(self):
         params = {
