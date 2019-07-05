@@ -32,9 +32,9 @@ def broken_td_func(current_time):
 class TestSampling(unittest.TestCase):
 
     def test_uniform_dist_object(self):
-        U = ciw.dist.Uniform(2.2, 3.3)
+        U = ciw.dists.Uniform(2.2, 3.3)
         ciw.seed(5)
-        samples = [U.sample() for _ in range(10)]
+        samples = [round(U.sample(), 2) for _ in range(10)]
         expected = [2.89, 3.02, 3.07, 3.24, 3.01, 3.21, 2.23, 2.71, 3.24, 2.91]
         self.assertEqual(samples, expected)
 
@@ -109,10 +109,10 @@ class TestSampling(unittest.TestCase):
                  'Routing':Routing})
 
     def test_deterministic_dist_object(self):
-        D = ciw.dist.Deterministic(4.4)
+        D = ciw.dists.Deterministic(4.4)
         ciw.seed(5)
-        samples = [D.sample() for _ in range(10)]
-        expected = [4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4, 4.4]
+        samples = [round(D.sample(), 2) for _ in range(10)]
+        expected = [4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40]
         self.assertEqual(samples, expected)
 
     def test_sampling_deterministic_dist(self):
@@ -170,9 +170,9 @@ class TestSampling(unittest.TestCase):
                  'Routing':Routing})
 
     def test_triangular_dist_object(self):
-        Tr = ciw.dist.Triangular(1.1, 6.6, 1.5)
+        Tr = ciw.dists.Triangular(1.1, 1.5, 6.6)
         ciw.seed(5)
-        samples = [Tr.sample() for _ in range(10)]
+        samples = [round(Tr.sample(), 2) for _ in range(10)]
         expected = [3.35, 3.91, 4.20, 5.33, 3.90, 5.12, 1.35, 2.73, 5.34, 3.46]
         self.assertEqual(samples, expected)
 
@@ -247,9 +247,9 @@ class TestSampling(unittest.TestCase):
                  'Routing':Routing})
 
     def test_exponential_dist_object(self):
-        E = ciw.dist.Exponential(4.4)
+        E = ciw.dists.Exponential(4.4)
         ciw.seed(5)
-        samples = [E.sample() for _ in range(10)]
+        samples = [round(E.sample(), 2) for _ in range(10)]
         expected = [0.22, 0.31, 0.36, 0.65, 0.31, 0.58, 0.01, 0.14, 0.65, 0.24]
         self.assertEqual(samples, expected)
 
@@ -289,9 +289,9 @@ class TestSampling(unittest.TestCase):
                 Ne.simulation.inter_arrival_times[Ne.id_number][0]() >= 0.0)
 
     def test_gamma_dist_object(self):
-        G = ciw.dist.Gamma(0.6, 1.2)
+        G = ciw.dists.Gamma(0.6, 1.2)
         ciw.seed(5)
-        samples = [G.sample() for _ in range(10)]
+        samples = [round(G.sample(), 2) for _ in range(10)]
         expected = [0.0, 2.59, 1.92, 0.47, 0.61, 0.00, 1.07, 1.15, 0.75, 0.00]
         self.assertEqual(samples, expected)
 
@@ -332,9 +332,9 @@ class TestSampling(unittest.TestCase):
                 Ng.simulation.inter_arrival_times[Ng.id_number][0]() >= 0.0)
 
     def test_lognormal_dist_object(self):
-        Ln = ciw.dist.Lognormal(0.8, 0.2)
+        Ln = ciw.dists.Lognormal(0.8, 0.2)
         ciw.seed(5)
-        samples = [Ln.sample() for _ in range(10)]
+        samples = [round(Ln.sample(), 2) for _ in range(10)]
         expected = [2.62, 1.64, 2.19, 2.31, 2.48, 2.51, 2.33, 1.96, 2.32, 2.70]
         self.assertEqual(samples, expected)
 
@@ -375,9 +375,9 @@ class TestSampling(unittest.TestCase):
                 Nl.simulation.inter_arrival_times[Nl.id_number][0]() >= 0.0)
 
     def test_weibull_dist_object(self):
-        W = ciw.dist.Weibull(0.9, 0.8)
+        W = ciw.dists.Weibull(0.9, 0.8)
         ciw.seed(5)
-        samples = [W.sample() for _ in range(10)]
+        samples = [round(W.sample(), 2) for _ in range(10)]
         expected = [0.87, 1.31, 1.60, 3.34, 1.31, 2.91, 0.01, 0.50, 3.36, 0.95]
         self.assertEqual(samples, expected)
 
@@ -418,9 +418,9 @@ class TestSampling(unittest.TestCase):
                 Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
 
     def test_normal_dist_object(self):
-        N = ciw.dist.Normal(0.5, 0.1)
+        N = ciw.dists.Normal(0.5, 0.1)
         ciw.seed(5)
-        samples = [N.sample() for _ in range(10)]
+        samples = [round(N.sample(), 2) for _ in range(10)]
         expected = [0.58, 0.35, 0.49, 0.52, 0.55, 0.56, 0.52, 0.44, 0.52, 0.60]
         self.assertEqual(samples, expected)
 
@@ -463,10 +463,10 @@ class TestSampling(unittest.TestCase):
                 Nw.simulation.inter_arrival_times[Nw.id_number][0]() >= 0.0)
 
     def test_empirical_dist_object(self):
-        Em = ciw.dist.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
+        Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
         ciw.seed(5)
-        samples = [Em.sample() for _ in range(10)]
-        expected = [8.8, 8.8, 8.8, 12.3, 8.8, 8.8, 8.8, 8.8, 12.3, 8.8]
+        samples = [round(Em.sample(), 2) for _ in range(10)]
+        expected = [8.8, 8.8, 8.8, 12.3, 8.8, 12.3, 8.0, 8.0, 12.3, 8.8]
         self.assertEqual(samples, expected)
 
     def test_sampling_empirical_dist(self):
@@ -532,9 +532,9 @@ class TestSampling(unittest.TestCase):
                  'Routing': Routing})
 
     def test_pmf_object(self):
-        Pmf = ciw.dist.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
+        Pmf = ciw.dists.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
         ciw.seed(5)
-        samples = [Pmf.sample() for _ in range(10)]
+        samples = [round(Pmf.sample(), 2) for _ in range(10)]
         expected = [3.8, 4.1, 4.1, 4.1, 4.1, 4.1, 3.7, 3.8, 4.1, 3.8]
         self.assertEqual(samples, expected)
 
@@ -684,7 +684,7 @@ class TestSampling(unittest.TestCase):
                 0.0 <= N2.simulation.service_times[N2.id_number][0]() <= 2.0)
 
     def test_noarrivals_object(self):
-        Na = ciw.dist.NoArrivals()
+        Na = ciw.dists.NoArrivals()
         ciw.seed(5)
         samples = [Na.sample() for _ in range(10)]
         expected = [float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf')]
@@ -836,16 +836,16 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(samples, expected)
 
     def test_sequential_dist_object(self):
-        S = ciw.dist.Sequential([0.9, 0.7, 0.5, 0.3, 0.1])
+        S = ciw.dists.Sequential([0.9, 0.7, 0.5, 0.3, 0.1])
         ciw.seed(5)
-        samples = [S.sample() for _ in range(7)]
+        samples = [round(S.sample(), 2) for _ in range(7)]
         expected = [0.9, 0.7, 0.5, 0.3, 0.1, 0.9, 0.7]
         self.assertEqual(samples, expected)
 
-        S = ciw.dist.Sequential([0.2, 0.4, 0.6, 0.8])
+        S = ciw.dists.Sequential([0.2, 0.4, 0.6, 0.8])
         ciw.seed(5)
-        samples = [S.sample() for _ in range(6)]
-        expected = [0.4, 0.6, 0.8, 0.2, 0.4, 0.6]
+        samples = [S.sample() for _ in range(7)]
+        expected = [0.2, 0.4, 0.6, 0.8, 0.2, 0.4, 0.6]
         self.assertEqual(samples, expected)
 
     def test_sampling_sequential_dist(self):
