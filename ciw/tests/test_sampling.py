@@ -54,16 +54,30 @@ def time_dependent_function_2(current_time):
         return current_time / 2.0
     return 8.0
 
+class BrokenDist(ciw.dists.Distribution):
+    """
+    Broken distribution that should raise an error.
+    """
+    def sample(self, t=None):
+        return -4.0
+
 def broken_td_func(current_time):
     return -4.0
 
 class TestSampling(unittest.TestCase):
+    def test_distribution_parent_is_useless(self):
+        D = ciw.dists.Distribution()
+        self.assertRaises(ValueError, D._sample)
+
     def test_uniform_dist_object(self):
         U = ciw.dists.Uniform(2.2, 3.3)
         ciw.seed(5)
-        samples = [round(U.sample(), 2) for _ in range(10)]
+        samples = [round(U._sample(), 2) for _ in range(10)]
         expected = [2.89, 3.02, 3.07, 3.24, 3.01, 3.21, 2.23, 2.71, 3.24, 2.91]
         self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Uniform, -3.1, 1.2)
+        self.assertRaises(ValueError, ciw.dists.Uniform, 3.1, 1.2)
 
     def test_sampling_uniform_dist(self):
         params = {
@@ -138,9 +152,11 @@ class TestSampling(unittest.TestCase):
     def test_deterministic_dist_object(self):
         D = ciw.dists.Deterministic(4.4)
         ciw.seed(5)
-        samples = [round(D.sample(), 2) for _ in range(10)]
+        samples = [round(D._sample(), 2) for _ in range(10)]
         expected = [4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40]
         self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Deterministic, -4.4)
 
     def test_sampling_deterministic_dist(self):
         params = {
@@ -199,9 +215,12 @@ class TestSampling(unittest.TestCase):
     def test_triangular_dist_object(self):
         Tr = ciw.dists.Triangular(1.1, 1.5, 6.6)
         ciw.seed(5)
-        samples = [round(Tr.sample(), 2) for _ in range(10)]
+        samples = [round(Tr._sample(), 2) for _ in range(10)]
         expected = [3.35, 3.91, 4.20, 5.33, 3.90, 5.12, 1.35, 2.73, 5.34, 3.46]
         self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Triangular, -4.4, -0.3, 1.4)
+        self.assertRaises(ValueError, ciw.dists.Triangular, 1.3, 2.5, 1.0)
 
     def test_sampling_triangular_dist(self):
         params = {
@@ -276,9 +295,12 @@ class TestSampling(unittest.TestCase):
     def test_exponential_dist_object(self):
         E = ciw.dists.Exponential(4.4)
         ciw.seed(5)
-        samples = [round(E.sample(), 2) for _ in range(10)]
+        samples = [round(E._sample(), 2) for _ in range(10)]
         expected = [0.22, 0.31, 0.36, 0.65, 0.31, 0.58, 0.01, 0.14, 0.65, 0.24]
         self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Exponential, -4.4)
+        self.assertRaises(ValueError, ciw.dists.Exponential, 0.0)
 
     def test_sampling_exponential_dist(self):
         params = {
@@ -318,7 +340,7 @@ class TestSampling(unittest.TestCase):
     def test_gamma_dist_object(self):
         G = ciw.dists.Gamma(0.6, 1.2)
         ciw.seed(5)
-        samples = [round(G.sample(), 2) for _ in range(10)]
+        samples = [round(G._sample(), 2) for _ in range(10)]
         expected = [0.0, 2.59, 1.92, 0.47, 0.61, 0.00, 1.07, 1.15, 0.75, 0.00]
         self.assertEqual(samples, expected)
 
@@ -361,7 +383,7 @@ class TestSampling(unittest.TestCase):
     def test_lognormal_dist_object(self):
         Ln = ciw.dists.Lognormal(0.8, 0.2)
         ciw.seed(5)
-        samples = [round(Ln.sample(), 2) for _ in range(10)]
+        samples = [round(Ln._sample(), 2) for _ in range(10)]
         expected = [2.62, 1.64, 2.19, 2.31, 2.48, 2.51, 2.33, 1.96, 2.32, 2.70]
         self.assertEqual(samples, expected)
 
@@ -404,7 +426,7 @@ class TestSampling(unittest.TestCase):
     def test_weibull_dist_object(self):
         W = ciw.dists.Weibull(0.9, 0.8)
         ciw.seed(5)
-        samples = [round(W.sample(), 2) for _ in range(10)]
+        samples = [round(W._sample(), 2) for _ in range(10)]
         expected = [0.87, 1.31, 1.60, 3.34, 1.31, 2.91, 0.01, 0.50, 3.36, 0.95]
         self.assertEqual(samples, expected)
 
@@ -447,7 +469,7 @@ class TestSampling(unittest.TestCase):
     def test_normal_dist_object(self):
         N = ciw.dists.Normal(0.5, 0.1)
         ciw.seed(5)
-        samples = [round(N.sample(), 2) for _ in range(10)]
+        samples = [round(N._sample(), 2) for _ in range(10)]
         expected = [0.58, 0.35, 0.49, 0.52, 0.55, 0.56, 0.52, 0.44, 0.52, 0.60]
         self.assertEqual(samples, expected)
 
@@ -492,9 +514,11 @@ class TestSampling(unittest.TestCase):
     def test_empirical_dist_object(self):
         Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
         ciw.seed(5)
-        samples = [round(Em.sample(), 2) for _ in range(10)]
+        samples = [round(Em._sample(), 2) for _ in range(10)]
         expected = [8.8, 8.8, 8.8, 12.3, 8.8, 12.3, 8.0, 8.0, 12.3, 8.8]
         self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Empirical, [-4.4, -0.3, 1.4, 1.4])
 
     def test_sampling_empirical_dist(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
@@ -561,9 +585,14 @@ class TestSampling(unittest.TestCase):
     def test_pmf_object(self):
         Pmf = ciw.dists.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
         ciw.seed(5)
-        samples = [round(Pmf.sample(), 2) for _ in range(10)]
+        samples = [round(Pmf._sample(), 2) for _ in range(10)]
         expected = [3.8, 4.1, 4.1, 4.1, 4.1, 4.1, 3.7, 3.8, 4.1, 3.8]
         self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Pmf, [2.7, -3.8, 4.1], [0.2, 0.5, 0.3])
+        self.assertRaises(ValueError, ciw.dists.Pmf, [2.7, 3.8, 4.1], [0.2, -0.5, 0.3])
+        self.assertRaises(ValueError, ciw.dists.Pmf, [2.7, 3.8, 4.1], [0.2, 0.5, 1.3])
+        self.assertRaises(ValueError, ciw.dists.Pmf, [2.7, 3.8, 4.1], [0.4, 0.5, 0.3])
 
     def test_sampling_custom_dist(self):
         my_custom_dist_values =  [3.7, 3.8, 4.1]
@@ -647,7 +676,7 @@ class TestSampling(unittest.TestCase):
     def test_custom_dist_object(self):
         CD = CustomDist()
         ciw.seed(5)
-        samples = [round(CD.sample(), 2) for _ in range(10)]
+        samples = [round(CD._sample(), 2) for _ in range(10)]
         expected = [1.25, 0.37, 0.4, 0.47, 0.37, 0.46, 0.06, 0.93, 0.47, 1.3]
         self.assertEqual(samples, expected)
 
@@ -720,7 +749,7 @@ class TestSampling(unittest.TestCase):
     def test_noarrivals_object(self):
         Na = ciw.dists.NoArrivals()
         ciw.seed(5)
-        samples = [Na.sample() for _ in range(10)]
+        samples = [Na._sample() for _ in range(10)]
         expected = [float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf')]
         self.assertEqual(samples, expected)
 
@@ -838,6 +867,10 @@ class TestSampling(unittest.TestCase):
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 
+    def test_broken_dist_object(self):
+        B = BrokenDist()
+        ciw.seed(5)
+        self.assertRaises(ValueError, B._sample)
 
     def test_broken_timedependent_function_dist(self):
         params = {
@@ -888,15 +921,17 @@ class TestSampling(unittest.TestCase):
     def test_sequential_dist_object(self):
         S = ciw.dists.Sequential([0.9, 0.7, 0.5, 0.3, 0.1])
         ciw.seed(5)
-        samples = [round(S.sample(), 2) for _ in range(7)]
+        samples = [round(S._sample(), 2) for _ in range(7)]
         expected = [0.9, 0.7, 0.5, 0.3, 0.1, 0.9, 0.7]
         self.assertEqual(samples, expected)
 
         S = ciw.dists.Sequential([0.2, 0.4, 0.6, 0.8])
         ciw.seed(5)
-        samples = [S.sample() for _ in range(7)]
+        samples = [S._sample() for _ in range(7)]
         expected = [0.2, 0.4, 0.6, 0.8, 0.2, 0.4, 0.6]
         self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Sequential, [-4.4, -0.3, 1.4, 1.4])
 
     def test_sampling_sequential_dist(self):
         params = {
