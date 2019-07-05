@@ -7,6 +7,16 @@ from hypothesis.strategies import (floats, integers, lists,
 import os
 import copy
 
+class CustomDist(ciw.dists.Distribution):
+    """
+    A custom distribution to test user defined functionality.
+    """
+    def sample(self, t=None):
+        val = random()
+        if int(str(val*10)[0]) % 2 == 0:
+            return 2 * val
+        return val / 2.0
+
 def custom_function():
     """
     Custom function to test user defined function functionality.
@@ -16,10 +26,28 @@ def custom_function():
         return 2 * val
     return val / 2.0
 
+class TimeDependentDist1(ciw.dists.Distribution):
+    """
+    A customer time-dependent distribution to test time-dependent functionality.
+    """
+    def sample(self, t):
+        if t < 10.0:
+            return 3.0
+        return 5.0
+
 def time_dependent_function_1(current_time):
     if current_time < 10.0:
         return 3.0
     return 5.0
+
+class TimeDependentDist2(ciw.dists.Distribution):
+    """
+    A customer time-dependent distribution to test time-dependent functionality.
+    """
+    def sample(self, t):
+        if t < 20.0:
+            return t / 2.0
+        return 8.0
 
 def time_dependent_function_2(current_time):
     if current_time < 20.0:
@@ -30,7 +58,6 @@ def broken_td_func(current_time):
     return -4.0
 
 class TestSampling(unittest.TestCase):
-
     def test_uniform_dist_object(self):
         U = ciw.dists.Uniform(2.2, 3.3)
         ciw.seed(5)
@@ -617,6 +644,13 @@ class TestSampling(unittest.TestCase):
                  'Number_of_servers':Number_of_servers,
                  'Routing':Routing})
 
+    def test_custom_dist_object(self):
+        CD = CustomDist()
+        ciw.seed(5)
+        samples = [round(CD.sample(), 2) for _ in range(10)]
+        expected = [1.25, 0.37, 0.4, 0.47, 0.37, 0.46, 0.06, 0.93, 0.47, 1.3]
+        self.assertEqual(samples, expected)
+
     def test_userdefined_function_dist(self):
         params = {
             'Arrival_distributions': [
@@ -732,6 +766,22 @@ class TestSampling(unittest.TestCase):
         self.assertRaises(
             ValueError, Q.check_userdef_dist, lambda : word)
 
+    def test_timedependent_dist_object(self):
+        TD1 = TimeDependentDist1()
+        ciw.seed(5)
+        samples = []
+        for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
+            samples.append(round(TD1.sample(t), 2))
+        expected = [3.0, 3.0, 3.0, 5.0, 5.0]
+        self.assertEqual(samples, expected)
+
+        TD2 = TimeDependentDist2()
+        ciw.seed(5)
+        samples = []
+        for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
+            samples.append(round(TD2.sample(t), 2))
+        expected = [2.0, 2.0, 8.5, 8.0, 8.0]
+        self.assertEqual(samples, expected)
 
     def test_timedependent_function_dist(self):
         params = {
