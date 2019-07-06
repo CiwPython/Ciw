@@ -39,8 +39,8 @@ It takes in keywords containing the following information about the system:
 For our bank system, create the Network::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.2]],
-    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
     ...     Number_of_servers=[3]
     ... )
 

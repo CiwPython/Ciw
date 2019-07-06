@@ -22,8 +22,8 @@ In order to utilise this, we replace the routing matrix with a list of these rou
     ...     return [1, 1, 1]
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 1]],
-    ...     Service_distributions=[['Exponential', 2]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(1)],
+    ...     Service_distributions=[ciw.dists.Exponential(2)],
     ...     Number_of_servers=[1], 
     ...     Routing=[repeating_route]
     ... )
@@ -88,18 +88,14 @@ For this we will require two routing functions: :code:`routing_function_Node_1`,
 As there are no arrivals at Node 3, no customer will need routing assigned here. However, we need to use the placeholder function :code:`ciw.no_routing` to account for this::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 1],
-    ...                            ['Deterministic', 1],
-    ...                            'NoArrivals'],
-    ...     Service_distributions=[['Exponential', 2],
-    ...                            ['Exponential', 2],
-    ...                            ['Exponential', 2]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(1),
+    ...                            ciw.dists.Deterministic(1),
+    ...                            ciw.dists.NoArrivals()],
+    ...     Service_distributions=[ciw.dists.Exponential(2),
+    ...                            ciw.dists.Exponential(2),
+    ...                            ciw.dists.Exponential(2)],
     ...     Number_of_servers=[1,1,1],
     ...     Routing=[routing_function_Node_1,
     ...              routing_function_Node_2,
     ...              ciw.no_routing]
     ... )
-
-
-
-

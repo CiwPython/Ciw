@@ -53,15 +53,15 @@ So, our Network for the café looks like this::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.3],
-    ...                            ['Exponential', 0.2],
-    ...                            'NoArrivals'],
-    ...     Service_distributions=[['Exponential', 1.0],
-    ...                            ['Exponential', 0.4],
-    ...                            ['Exponential', 0.5]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(0.3),
+    ...                            ciw.dists.Exponential(0.2),
+    ...                            ciw.dists.NoArrivals()],
+    ...     Service_distributions=[ciw.dists.Exponential(1.0),
+    ...                            ciw.dists.Exponential(0.4),
+    ...                            ciw.dists.Exponential(0.5)],
     ...     Routing=[[0.0, 0.3, 0.7],
-    ...                          [0.0, 0.0, 1.0],
-    ...                          [0.0, 0.0, 0.0]],
+    ...              [0.0, 0.0, 1.0],
+    ...              [0.0, 0.0, 0.0]],
     ...     Number_of_servers=[1, 2, 2]
     ... )
 

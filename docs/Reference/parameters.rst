@@ -13,21 +13,21 @@ Arrival_distributions
 *Required*
 
 Describes the inter-arrival distributions for each node and customer class.
-This is a dictionary, with keys as customer classes, and values are lists describing the inter-arrival distributions for each node.
+This is a dictionary, with keys as customer classes, and values are lists containing the inter-arrival distribution objects for each node.
 If only one class of customer is required it is sufficient to simply enter a list of inter-arrival distributions.
 For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    Arrival_distributions={'Class 0': [['Exponential', 2.4],
-                                       ['Uniform', 0.3, 0.5]],
-                           'Class 1': [['Exponential', 3.0],
-                                       ['Deterministic', 0.8]]}
+    Arrival_distributions={'Class 0': [ciw.dists.Exponential(2.4),
+                                       ciw.dists.Uniform(0.3, 0.5)],
+                           'Class 1': [ciw.dists.Exponential(3.0),
+                                       ciw.dists.Deterministic(0.8)]}
 
 An example where only one class of customer is required::
 
-    Arrival_distributions=[['Exponential', 2.4],
-                           ['Exponential', 2.0]]
+    Arrival_distributions=[ciw.dists.Exponential(2.4),
+                           ciw.dists.Exponential(2.0)]
 
 
 Batching_distributions
@@ -36,21 +36,21 @@ Batching_distributions
 *Optional*
 
 Describes the discrete distributions of size of the batch arrivals for each node and customer class.
-This is a dictionary, with keys as customer classes, and values are lists describing the batch distributions for each node.
+This is a dictionary, with keys as customer classes, and values are lists containing the batch distribution objects for each node.
 If only one class of customer is required it is sufficient to simply enter a list of batch distributions.
 For more details on batching, see :ref:`batch-arrivals`.
 
 An example is shown::
 
-    Batching_distributions={'Class 0': [['Deterministic', 1],
-                                        ['Sequential', [1, 1, 2]]],
-                            'Class 1': [['Deterministic', 3],
-                                        ['Deterministic', 2]]}
+    Batching_distributions={'Class 0': [ciw.dists.Deterministic(1),
+                                        ciw.dists.Sequential([1, 1, 2])],
+                            'Class 1': [ciw.dists.Deterministic(3),
+                                        ciw.dists.Deterministic(2)]}
 
 An example where only one class of customer is required::
 
-    Batching_distributions=[['Deterministic', 2],
-                            ['Deterministic', 1]]
+    Batching_distributions=[ciw.dists.Deterministic(2),
+                            ciw.dists.Deterministic(1)]
 
 
 
@@ -149,14 +149,14 @@ If only one class of customer is required it is sufficient to simply enter singl
 An example is shown::
 
     Routing={'Class 0': [[0.1, 0.3],
-                                     [0.0, 0.8]],
-                         'Class 1': [[0.0, 1.0],
-                                     [0.0, 0.0]]}
+                         [0.0, 0.8]],
+             'Class 1': [[0.0, 1.0],
+                         [0.0, 0.0]]}
 
 An example where only one class of customer is required::
 
     Routing=[[0.5, 0.3],
-                         [0.2, 0.6]]
+            [0.2, 0.6]]
 
 If using only one node, the default value is::
 
@@ -170,19 +170,19 @@ Service_distributions
 *Required*
 
 Describes the service distributions for each node and customer class.
-This is a dictionary, with keys as customer classes, and values are lists describing the service distributions for each node.
+This is a dictionary, with keys as customer classes, and values are lists containing the service distribution objects for each node.
 If only one class of customer is required it is sufficient to simply enter a list of service distributions.
 For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    Service_distributions={'Class 0': [['Exponential', 4.4],
-                                       ['Uniform', 0.1, 0.9]],
-                           'Class 1': [['Exponential', 6.0],
-                                       ['Lognormal', 0.5, 0.6]]}
+    Service_distributions={'Class 0': [ciw.dists.Exponential(4.4),
+                                       ciw.dists.Uniform(0.1, 0.9)],
+                           'Class 1': [ciw.dists.Exponential(6.0),
+                                       ciw.dists.Lognormal(0.5, 0.6)]}
 
 An example where only one class of customer is required::
 
-    Service_distributions=[['Exponential', 4.8],
-                           ['Exponential', 5.2]]
+    Service_distributions=[ciw.dists.Exponential(4.8),
+                           ciw.dists.Exponential(5.2)]
 

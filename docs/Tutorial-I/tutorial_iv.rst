@@ -22,8 +22,8 @@ Let's define our bank by creating our Network object::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.2]],
-    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
     ...     Number_of_servers=[3]
     ... )
 
@@ -59,8 +59,8 @@ What would happen if we added an extra server?
 Let's repeat the analysis with 4 servers::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.2]],
-    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
     ...     Number_of_servers=[4]
     ... )
 

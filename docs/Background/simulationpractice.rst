@@ -55,8 +55,8 @@ It shows how to find the average waiting time in an :ref:`M/M/1 <kendall-notatio
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 5.0]],
-    ...     Service_distributions=[['Exponential', 8.0]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(5.0)],
+    ...     Service_distributions=[ciw.dists.Exponential(8.0)],
     ...     Routing=[[0.0]],
     ...     Number_of_servers=[1]
     ... )

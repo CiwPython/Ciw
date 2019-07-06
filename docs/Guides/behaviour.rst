@@ -19,8 +19,8 @@ The second node is redundent in this scenario::
 	>>> from collections import Counter
 
 	>>> N = ciw.create_network(
-	...     Arrival_distributions=[['Exponential', 6.0], 'NoArrivals'],
-	...     Service_distributions=[['Exponential', 5.0], ['Exponential', 5.0]],
+	...     Arrival_distributions=[ciw.dists.Exponential(6.0), ciw.dists.NoArrivals()],
+	...     Service_distributions=[ciw.dists.Exponential(5.0), ciw.dists.Exponential(5.0)],
 	...     Routing=[[0.0, 0.0], [0.0, 0.0]],
 	...     Number_of_servers=[1, 1],
 	...     Queue_capacities=[10, 'Inf']
@@ -53,8 +53,8 @@ First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.Arrival
 To run the same system, we need to remove the keyword :code:`'Queue_capacities'` when creating a network, so that customers are not rejected before reaching the :code:`send_individual` method::
 
 	>>> N = ciw.create_network(
-	...     Arrival_distributions=[['Exponential', 6.0], 'NoArrivals'],
-	...     Service_distributions=[['Exponential', 5.0], ['Exponential', 5.0]],
+	...     Arrival_distributions=[ciw.dists.Exponential(6.0), ciw.dists.NoArrivals()],
+	...     Service_distributions=[ciw.dists.Exponential(5.0), ciw.dists.Exponential(5.0)],
 	...     Routing=[[0.0, 0.0], [0.0, 0.0]],
 	...     Number_of_servers=[1, 1]
 	... )
