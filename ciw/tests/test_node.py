@@ -106,12 +106,19 @@ class TestNode(unittest.TestCase):
 
         # Test for case of having priorities
         ciw.seed(14)
-        parameters_dictionary = ciw.load_parameters(
-            'ciw/tests/testing_parameters/params_priorities.yml')
-        class_change_matrix = {'Node 1': [[.5, .5], [.25, .75]],
-                               'Node 2': [[1, 0], [0, 1]]}
-        parameters_dictionary['Class_change_matrices'] = class_change_matrix
-        Q = ciw.Simulation(ciw.create_network(**parameters_dictionary))
+        parameters_dictionary = {
+            'Arrival_distributions': {'Class 0': [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+                                      'Class 1': [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)]},
+            'Service_distributions': {'Class 0': [ciw.dists.Deterministic(5), ciw.dists.Deterministic(5)],
+                                      'Class 1': [ciw.dists.Deterministic(10), ciw.dists.Deterministic(10)]},
+            'Routing': {'Class 0': [[0.8, 0.1], [0.0, 0.0]],
+                        'Class 1': [[0.8, 0.1], [0.2, 0.0]]},
+            'Number_of_servers': [4, 3],
+            'Class_change_matrices': {'Node 1': [[.5, .5], [.25, .75]],
+                                      'Node 2': [[1, 0], [0, 1]]},
+            'Priority_classes': {'Class 0': 0, 'Class 1': 1}
+        }
+        Q = ciw.Simulation(ciw.create_network_from_dictionary(parameters_dictionary))
         N1 = Q.transitive_nodes[0]
         ind = ciw.Individual(254, 0)
         self.assertEqual(ind.customer_class, 0)
@@ -432,8 +439,8 @@ class TestNode(unittest.TestCase):
 
     def test_update_next_event_date_method(self):
         Net = ciw.create_network(
-            Arrival_distributions=[['Deterministic', 10.0]],
-            Service_distributions=[['Sequential', [0.5, 0.2]]],
+            Arrival_distributions=[ciw.dists.Deterministic(10.0)],
+            Service_distributions=[ciw.dists.Sequential([0.5, 0.2])],
             Number_of_servers=[5]
         )
         Q = ciw.Simulation(Net)
@@ -634,8 +641,8 @@ class TestNode(unittest.TestCase):
     def test_server_utilisation(self):
         # Single server
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [1.0, 6.0, 100.0]]],
+            Arrival_distributions=[ciw.dists.Sequential([2.0, 3.0, 100.0])],
+            Service_distributions=[ciw.dists.Sequential([1.0, 6.0, 100.0])],
             Number_of_servers=[1],
         )
         Q = ciw.Simulation(N)
@@ -644,8 +651,8 @@ class TestNode(unittest.TestCase):
 
         # Multi server
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [10.0, 6.0, 100.0]]],
+            Arrival_distributions=[ciw.dists.Sequential([2.0, 3.0, 100.0])],
+            Service_distributions=[ciw.dists.Sequential([10.0, 6.0, 100.0])],
             Number_of_servers=[3],
         )
         Q = ciw.Simulation(N)
@@ -654,10 +661,8 @@ class TestNode(unittest.TestCase):
 
     def test_server_utilisation_with_schedules(self):
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential',
-                [2.0, 4.0, 4.0, 0.0, 7.0, 1000.0]]],
-            Service_distributions=[['Sequential',
-                [4.0, 2.0, 6.0, 6.0, 3.0]]],
+            Arrival_distributions=[ciw.dists.Sequential([2.0, 4.0, 4.0, 0.0, 7.0, 1000.0])],
+            Service_distributions=[ciw.dists.Sequential([4.0, 2.0, 6.0, 6.0, 3.0])],
             Number_of_servers=[[[1, 9], [2, 23]]]
         )
         Q = ciw.Simulation(N)
@@ -667,8 +672,8 @@ class TestNode(unittest.TestCase):
 
     def test_server_utilisation_with_wrapup(self):
         N = ciw.create_network(
-            Arrival_distributions=[['Exponential',7.14]],
-            Service_distributions=[['Exponential',0.04]],
+            Arrival_distributions=[ciw.dists.Exponential(7.14)],
+            Service_distributions=[ciw.dists.Exponential(0.04)],
             Number_of_servers=[70]
         )
         ciw.seed(1)
@@ -683,8 +688,8 @@ class TestNode(unittest.TestCase):
            rm=random_module())
     def test_utilisation_always_1_or_less(self, lmbda, mu, c, rm):
         N = ciw.create_network(
-            Arrival_distributions=[['Exponential', lmbda]],
-            Service_distributions=[['Exponential', mu]],
+            Arrival_distributions=[ciw.dists.Exponential(lmbda)],
+            Service_distributions=[ciw.dists.Exponential(mu)],
             Number_of_servers=[c]
         )
         ciw.seed(1)

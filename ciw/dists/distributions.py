@@ -7,14 +7,18 @@ class Distribution(object):
     """
     A general distribution from which all other distirbutions will inherit.
     """
-    def sample(self):
+    def __repr__(self):
+        return 'Distribution'
+
+    def sample(self, t=None):
         pass
-    def _sample(self):
+
+    def _sample(self, t=None):
         """
         Performs vaildity checks before sampling.
         """
-        s = self.sample()
-        if isinstance(s, float) and s >= 0:
+        s = self.sample(t=t)
+        if (isinstance(s, float) or isinstance(s, int)) and s >= 0:
             return s
         else:
             raise ValueError('Invalid time sampled.')
@@ -36,6 +40,9 @@ class Uniform(Distribution):
         self.lower = lower
         self.upper = upper
 
+    def __repr__(self):
+        return 'Uniform: {0}, {1}'.format(self.lower, self.upper)
+
     def sample(self, t=None):
         return uniform(self.lower, self.upper)
 
@@ -51,6 +58,9 @@ class Deterministic(Distribution):
         if value < 0.0:
             raise ValueError('Deterministic distribution must sample positive numbers only.')
         self.value = value
+
+    def __repr__(self):
+        return 'Deterministic: {0}'.format(self.value)
 
     def sample(self, t=None):
         return self.value
@@ -74,6 +84,9 @@ class Triangular(Distribution):
         self.mode = mode
         self.upper = upper
 
+    def __repr__(self):
+        return 'Triangular: {0}, {1}, {2}'.format(self.lower, self.mode, self.upper)
+
     def sample(self, t=None):
         return triangular(self.lower, self.upper, self.mode)
 
@@ -90,6 +103,9 @@ class Exponential(Distribution):
             raise ValueError('Exponential distribution must sample positive numbers only.')
         self.rate = rate
 
+    def __repr__(self):
+        return 'Exponential: {0}'.format(self.rate)
+
     def sample(self, t=None):
         return expovariate(self.rate)
 
@@ -104,6 +120,9 @@ class Gamma(Distribution):
     def __init__(self, shape, scale):
         self.shape = shape
         self.scale = scale
+
+    def __repr__(self):
+        return 'Gamma: {0}, {1}'.format(self.shape, self.scale)
 
     def sample(self, t=None):
         return gammavariate(self.shape, self.scale)
@@ -121,6 +140,9 @@ class Normal(Distribution):
         self.mean = mean
         self.sd = sd
 
+    def __repr__(self):
+        return 'Normal: {0}, {1}'.format(self.mean, self.sd)
+
     def sample(self, t=None):
         return truncated_normal(self.mean, self.sd)
 
@@ -136,6 +158,9 @@ class Lognormal(Distribution):
     def __init__(self, mean, sd):
         self.mean = mean
         self.sd = sd
+
+    def __repr__(self):
+        return 'Lognormal: {0}, {1}'.format(self.mean, self.sd)
 
     def sample(self, t=None):
         return lognormvariate(self.mean, self.sd)
@@ -153,6 +178,9 @@ class Weibull(Distribution):
         self.scale = scale
         self.shape = shape
 
+    def __repr__(self):
+        return 'Weibull: {0}, {1}'.format(self.scale, self.shape)
+
     def sample(self, t=None):
         return weibullvariate(self.scale, self.shape)
 
@@ -168,6 +196,9 @@ class Empirical(Distribution):
         if any(o < 0 for o in observations):
             raise ValueError('Empirical distribution must sample positive numbers only.')
         self.observations = observations
+
+    def __repr__(self):
+        return 'Empirical'
 
     def sample(self, t=None):
         return random_choice(self.observations)
@@ -185,6 +216,9 @@ class Sequential(Distribution):
             raise ValueError('Sequential distribution must sample positive numbers only.')
         self.sequence = sequence
         self.generator = cycle(self.sequence)
+
+    def __repr__(self):
+        return 'Sequential'
 
     def sample(self, t=None):
         return next(self.generator)
@@ -208,6 +242,9 @@ class Pmf(Distribution):
         self.values = values
         self.probs = probs
 
+    def __repr__(self):
+        return 'Pmf'
+
     def sample(self, t=None):
         return random_choice(self.values, self.probs)
 
@@ -216,5 +253,8 @@ class NoArrivals(Distribution):
     """
     A placeholder distribution if there are no arrivals.
     """
+    def __repr__(self):
+        return 'NoArrivals'
+
     def sample(self, t=None):
         return float('Inf')

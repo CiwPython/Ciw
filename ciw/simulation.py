@@ -1,6 +1,7 @@
 from __future__ import division
 import os
 import tqdm
+import copy
 from random import (expovariate, uniform, triangular, gammavariate,
                     lognormvariate, weibullvariate)
 from csv import writer, reader
@@ -38,10 +39,10 @@ class Simulation(object):
 
         self.name = name
         self.deadlock_detector = self.choose_deadlock_detection(deadlock_detector)
-        self.generators = self.find_generators()
-        self.inter_arrival_times = self.find_times_dict('Arr')
-        self.service_times = self.find_times_dict('Ser')
-        self.batch_sizes = self.find_batches_dict()
+        # self.generators = self.find_generators()
+        self.inter_arrival_times = self.find_arrival_dists()
+        self.service_times = self.find_service_dists()
+        self.batch_sizes = self.find_batching_dists()
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [self.NodeType(i + 1, self)
             for i in range(network.number_of_nodes)]
@@ -60,24 +61,6 @@ class Simulation(object):
         Represents the simulation
         """
         return self.name
-
-    def check_userdef_dist(self, func):
-        """
-        Safely sample from a user defined distribution
-        """
-        sample = func()
-        if not isinstance(sample, float) or sample < 0:
-            raise ValueError("UserDefined func must return positive float.")
-        return sample
-
-    def check_timedependent_dist(self, func, kind, t):
-        sample = func(t)
-        if kind in ['Arr', 'Ser'] and not isinstance(sample, float) or sample < 0:
-            raise ValueError("TimeDependent func must return positive float.")
-        if kind in ['Bch'] and not isinstance(sample, int) or sample < 0:
-            raise ValueError("TimeDependent batching func must return positive integer.")
-        return sample
-
 
     def choose_tracker(self, tracker, deadlock_detector):
         """
@@ -105,71 +88,41 @@ class Simulation(object):
         if deadlock_detector == 'StateDigraph':
             return StateDigraphMethod()
 
-    def find_distributions(self, n, c, kind):
+    def find_arrival_dists(self):
         """
-        Finds distribution functions
+        Create the dictionary of arrival time dist
+        object for each node for each class
         """
-        if self.source(c, n, kind) == 'NoArrivals':
-            return lambda : float('Inf')
-        if self.source(c, n, kind)[0] == 'Uniform':
-            return lambda : uniform(self.source(c, n, kind)[1],
-                                    self.source(c, n, kind)[2])
-        if self.source(c, n, kind)[0] == 'Deterministic':
-            return lambda : self.source(c, n, kind)[1]
-        if self.source(c, n, kind)[0] == 'Triangular':
-            return lambda : triangular(self.source(c, n, kind)[1],
-                                       self.source(c, n, kind)[2],
-                                       self.source(c, n, kind)[3])
-        if self.source(c, n, kind)[0] == 'Exponential':
-            return lambda : expovariate(self.source(c, n, kind)[1])
-        if self.source(c, n, kind)[0] == 'Gamma':
-            return lambda : gammavariate(self.source(c, n, kind)[1],
-                                         self.source(c, n, kind)[2])
-        if self.source(c, n, kind)[0] == 'Lognormal':
-            return lambda : lognormvariate(self.source(c, n, kind)[1],
-                                           self.source(c, n, kind)[2])
-        if self.source(c, n, kind)[0] == 'Weibull':
-            return lambda : weibullvariate(self.source(c, n, kind)[1],
-                                           self.source(c, n, kind)[2])
-        if self.source(c, n, kind)[0] == 'Normal':
-            return lambda : truncated_normal(self.source(c, n, kind)[1],
-                                             self.source(c, n, kind)[2])
-        if self.source(c, n, kind)[0] == 'Custom':
-            values = self.source(c, n, kind)[1]
-            probs = self.source(c, n, kind)[2]
-            return lambda : random_choice(values, probs)
-        if self.source(c, n, kind)[0] == 'UserDefined':
-            return lambda : self.check_userdef_dist(self.source(c, n, kind)[1])
-        if self.source(c, n, kind)[0] == 'Empirical':
-            if isinstance(self.source(c, n, kind)[1], str):
-                empirical_dist = self.import_empirical(self.source(c, n, kind)[1])
-                return lambda : random_choice(empirical_dist)
-            return lambda : random_choice(self.source(c, n, kind)[1])
-        if self.source(c, n, kind)[0] == 'TimeDependent':
-            return lambda t : self.check_timedependent_dist(self.source(c, n, kind)[1], kind, t)
-        if self.source(c, n, kind)[0] == 'Sequential':
-            return lambda : next(self.generators[kind][n][c])
+        return {node + 1: {
+            clss: copy.deepcopy(
+                self.network.customer_classes[clss].arrival_distributions[node]
+            )
+            for clss in range(self.network.number_of_classes)}
+            for node in range(self.network.number_of_nodes)}
 
-    def find_generators(self):
+    def find_service_dists(self):
         """
-        A dictionary containing all generators used for distributions.
+        Create the dictionary of service time dist
+        object for each node for each class
         """
-        generators_dict = {'Arr': {}, 'Ser': {}, 'Bch': {}}
-        for nd in range(self.network.number_of_nodes):
-            generators_dict['Arr'][nd] = {}
-            generators_dict['Ser'][nd] = {}
-            generators_dict['Bch'][nd] = {}
-            for clss in range(self.network.number_of_classes):
-                arrival = self.network.customer_classes[clss].arrival_distributions[nd]
-                service = self.network.customer_classes[clss].service_distributions[nd]
-                batches = self.network.customer_classes[clss].batching_distributions[nd]
-                if arrival[0] == 'Sequential':
-                    generators_dict['Arr'][nd][clss] = cycle(arrival[1])
-                if service[0] == 'Sequential':
-                    generators_dict['Ser'][nd][clss] = cycle(service[1])
-                if batches[0] == 'Sequential':
-                    generators_dict['Bch'][nd][clss] = cycle(batches[1])
-        return generators_dict
+        return {node + 1: {
+            clss: copy.deepcopy(
+                self.network.customer_classes[clss].service_distributions[node]
+            )
+            for clss in range(self.network.number_of_classes)}
+            for node in range(self.network.number_of_nodes)}
+
+    def find_batching_dists(self):
+        """
+        Create the dictionary of batch size dist
+        object for each node for each class
+        """
+        return {node + 1: {
+            clss: copy.deepcopy(
+                self.network.customer_classes[clss].batching_distributions[node]
+            )
+            for clss in range(self.network.number_of_classes)}
+            for node in range(self.network.number_of_nodes)}
 
     def find_next_active_node(self):
         """
@@ -181,26 +134,6 @@ class Simulation(object):
         if len(next_active_node_indices) > 1:
             return self.nodes[random_choice(next_active_node_indices)]
         return self.nodes[next_active_node_indices[0]]
-
-    def find_times_dict(self, kind):
-        """
-        Create the dictionary of service and arrival
-        time functions for each node for each class
-        """
-        return {node + 1: {
-            clss: self.find_distributions(node, clss, kind)
-            for clss in range(self.network.number_of_classes)}
-            for node in range(self.network.number_of_nodes)}
-
-    def find_batches_dict(self):
-        """
-        Create the dictionary of batch size
-        functions for each node for each class
-        """
-        return {node + 1: {
-            clss: self.find_distributions(node, clss, 'Bch')
-            for clss in range(self.network.number_of_classes)}
-            for node in range(self.network.number_of_nodes)}
 
     def get_all_individuals(self):
         """
@@ -220,18 +153,6 @@ class Simulation(object):
                 records.append(record)
         self.all_records = records
         return records
-
-    def import_empirical(self, dist_file):
-        """
-        Imports an empirical distribution from a .csv file
-        """
-        root = os.getcwd()
-        file_name = root + '/' + dist_file
-        empirical_file = open(file_name, 'r')
-        rdr = reader(empirical_file)
-        empirical_dist = [[float(x) for x in row] for row in rdr][0]
-        empirical_file.close()
-        return empirical_dist
 
     def set_classes(self, node_class, arrival_node_class):
         """
@@ -364,18 +285,6 @@ class Simulation(object):
         for nd in self.transitive_nodes:
             nd.wrap_up_servers(current_time)
             nd.find_server_utilisation()
-
-    def source(self, c, n, kind):
-        """
-        Returns the location of class c node n's arrival or
-        service distributions information, depending on kind.
-        """
-        if kind == 'Arr':
-            return self.network.customer_classes[c].arrival_distributions[n]
-        if kind == 'Ser':
-            return self.network.customer_classes[c].service_distributions[n]
-        if kind == 'Bch':
-            return self.network.customer_classes[c].batching_distributions[n]
 
     def write_records_to_file(self, file_name, headers=True):
         """

@@ -17,9 +17,6 @@ class ArrivalNode(object):
         self.event_dates_dict = {nd + 1: {clss: False for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
-        self.batch_size_dict = {nd + 1: {clss: 1 for clss in range(
-            self.simulation.network.number_of_classes)}
-            for nd in range(self.simulation.network.number_of_nodes)}
         self.rejection_dict = {nd + 1: {clss:[] for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
@@ -27,7 +24,6 @@ class ArrivalNode(object):
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
         self.initialise_event_dates_dict()
-        self.initialise_batch_size_dict()
         self.find_next_event_date()
 
     def __repr__(self):
@@ -71,7 +67,8 @@ class ArrivalNode(object):
         """
         Send new arrival to relevent node.
         """
-        for _ in range(self.batch_size_dict[self.next_node][self.next_class]):
+        batch = self.batch_size(self.next_node, self.next_class)
+        for _ in range(batch):
             self.number_of_individuals += 1
             priority_class = self.simulation.network.priority_class_mapping[
                 self.next_class]
@@ -89,9 +86,6 @@ class ArrivalNode(object):
             self.event_dates_dict[self.next_node][
             self.next_class], self.inter_arrival(
             self.next_node, self.next_class))
-        self.batch_size_dict[self.next_node][
-            self.next_class] = self.batch_size(
-            self.next_node, self.next_class)
         self.find_next_event_date()
 
     def increment_time(self, original, increment):
@@ -110,35 +104,20 @@ class ArrivalNode(object):
                 self.event_dates_dict[nd][
                 clss] = self.inter_arrival(nd, clss)
 
-    def initialise_batch_size_dict(self):
-        """
-        Initialises the batch sizes dictionary with
-        random batch sizes for each node and class.
-        """
-        for nd in self.batch_size_dict:
-            for clss in self.batch_size_dict[nd]:
-                self.batch_size_dict[nd][
-                clss] = self.batch_size(nd, clss)
-
     def inter_arrival(self, nd, clss):
         """
         Samples the inter-arrival time for next class and node.
         """
-        if self.simulation.network.customer_classes[
-            clss].arrival_distributions[nd-1][0] == "TimeDependent":
-            return self.simulation.inter_arrival_times[nd][clss](self.simulation.current_time)
-        return self.simulation.inter_arrival_times[nd][clss]()
+        return self.simulation.inter_arrival_times[nd][clss]._sample(t=self.simulation.current_time)
 
     def batch_size(self, nd, clss):
         """
         Samples the batch size for next class and node.
         """
-        if self.simulation.network.customer_classes[
-            clss].batching_distributions[nd-1][0] == "TimeDependent":
-            return self.simulation.batch_sizes[nd][clss](
-                self.event_dates_dict[nd][clss]
-                )
-        return self.simulation.batch_sizes[nd][clss]()
+        batch = self.simulation.batch_sizes[nd][clss]._sample(t=self.simulation.current_time)
+        if isinstance(batch, int) and batch >= 0:
+            return batch
+        raise ValueError('Batch sizes must be positive integers.')
 
     def record_baulk(self, next_node):
         """

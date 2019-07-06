@@ -48,8 +48,8 @@ class TestSimulation(unittest.TestCase):
                            service_rate,
                            number_of_servers,
                            rm):
-        params = {'Arrival_distributions': [['Exponential', arrival_rate]],
-                  'Service_distributions': [['Exponential', service_rate]],
+        params = {'Arrival_distributions': [ciw.dists.Exponential(arrival_rate)],
+                  'Service_distributions': [ciw.dists.Exponential(service_rate)],
                   'Number_of_servers': [number_of_servers]}
 
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -112,8 +112,8 @@ class TestSimulation(unittest.TestCase):
 
     def test_simulate_until_max_customers_finish(self):
         params = {
-            'Arrival_distributions': [['Exponential', 1.0]],
-            'Service_distributions': [['Exponential', 0.5]],
+            'Arrival_distributions': [ciw.dists.Exponential(1.0)],
+            'Service_distributions': [ciw.dists.Exponential(0.5)],
             'Number_of_servers': [1],
             'Routing': [[0.0]],
             'Queue_capacities': [3]
@@ -255,8 +255,8 @@ class TestSimulation(unittest.TestCase):
            service_rate=floats(min_value=0.1, max_value=10),
            rm=random_module())
     def test_mminf_node(self, arrival_rate, service_rate, rm):
-        params = {'Arrival_distributions': [['Exponential', arrival_rate]],
-                  'Service_distributions': [['Exponential', service_rate]],
+        params = {'Arrival_distributions': [ciw.dists.Exponential(arrival_rate)],
+                  'Service_distributions': [ciw.dists.Exponential(service_rate)],
                   'Number_of_servers': ['Inf'],
                   'Routing': [[0.0]]}
 
@@ -347,10 +347,10 @@ class TestSimulation(unittest.TestCase):
         # Due to randomly choosing the order of events, the seed has
         # a big affect on this.
 
-        params = {'Arrival_distributions': [['Deterministic', 10.0],
-                                            'NoArrivals'],
-                  'Service_distributions': [['Deterministic', 5.0],
-                                            ['Deterministic', 5.0]],
+        params = {'Arrival_distributions': [ciw.dists.Deterministic(10.0),
+                                            ciw.dists.NoArrivals()],
+                  'Service_distributions': [ciw.dists.Deterministic(5.0),
+                                            ciw.dists.Deterministic(5.0)],
                   'Routing': [[1.0, 0.0], [0.0, 0.0]],
                   'Number_of_servers': [2, 1]}
 
@@ -380,8 +380,8 @@ class TestSimulation(unittest.TestCase):
             completed_inds.count(2) / float(1000), 1 / 4.0, places=1)
 
     def test_exactness(self):
-        params = {'Arrival_distributions': [['Exponential', 20]],
-                  'Service_distributions': [['Deterministic', 0.01]],
+        params = {'Arrival_distributions': [ciw.dists.Exponential(20)],
+                  'Service_distributions': [ciw.dists.Deterministic(0.01)],
                   'Routing': [[0.0]],
                   'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
                   }
@@ -409,8 +409,8 @@ class TestSimulation(unittest.TestCase):
         class DummyArrivalNode(ciw.ArrivalNode):
             pass
 
-        params = {'Arrival_distributions': [['Exponential', 20]],
-                  'Service_distributions': [['Deterministic', 0.01]],
+        params = {'Arrival_distributions': [ciw.dists.Exponential(20)],
+                  'Service_distributions': [ciw.dists.Deterministic(0.01)],
                   'Routing': [[0.0]],
                   'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
                   }
@@ -441,8 +441,8 @@ class TestSimulation(unittest.TestCase):
         class DummyArrivalNode(ciw.ArrivalNode):
             pass
 
-        params = {'Arrival_distributions': [['Exponential', 20]],
-                  'Service_distributions': [['Deterministic', 0.01]],
+        params = {'Arrival_distributions': [ciw.dists.Exponential(20)],
+                  'Service_distributions': [ciw.dists.Deterministic(0.01)],
                   'Routing': [[0.0]],
                   'Number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
                   }
@@ -505,12 +505,12 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(ciw.data_record.DataRecord.__name__, 'Record')
 
     def test_priority_output(self):
-        params_dict = {'Arrival_distributions': {'Class 0': [['Deterministic', 1.0]],
-                                                 'Class 1': [['Deterministic', 1.0]]},
-                       'Service_distributions': {'Class 0': [['Deterministic', 0.75]],
-                                                 'Class 1': [['Deterministic', 0.75]]},
+        params_dict = {'Arrival_distributions': {'Class 0': [ciw.dists.Deterministic(1.0)],
+                                                 'Class 1': [ciw.dists.Deterministic(1.0)]},
+                       'Service_distributions': {'Class 0': [ciw.dists.Deterministic(0.75)],
+                                                 'Class 1': [ciw.dists.Deterministic(0.75)]},
                        'Routing': {'Class 0': [[0.0]],
-                                               'Class 1': [[0.0]]},
+                                   'Class 1': [[0.0]]},
                        'Number_of_servers': [1],
                        'Priority_classes': {'Class 0': 0,
                                             'Class 1': 1}
@@ -525,12 +525,12 @@ class TestSimulation(unittest.TestCase):
         # priority individuals have a large wait
         self.assertEqual(sorted(waits), [18.75, 245.25])
 
-        params_dict = {'Arrival_distributions': {'Class 0': [['Deterministic', 1.0]],
-                                                 'Class 1': [['Deterministic', 1.0]]},
-                       'Service_distributions': {'Class 0': [['Deterministic', 0.75]],
-                                                 'Class 1': [['Deterministic', 0.75]]},
+        params_dict = {'Arrival_distributions': {'Class 0': [ciw.dists.Deterministic(1.0)],
+                                                 'Class 1': [ciw.dists.Deterministic(1.0)]},
+                       'Service_distributions': {'Class 0': [ciw.dists.Deterministic(0.75)],
+                                                 'Class 1': [ciw.dists.Deterministic(0.75)]},
                        'Routing': {'Class 0': [[0.0]],
-                                               'Class 1': [[0.0]]},
+                                   'Class 1': [[0.0]]},
                        'Number_of_servers': [1]
                        }
 
@@ -546,12 +546,12 @@ class TestSimulation(unittest.TestCase):
 
     def test_priority_system_compare_literature(self):
         params_dict = {
-               'Arrival_distributions': {'Class 0': [['Exponential', 0.2]],
-                                         'Class 1': [['Exponential', 0.6]]},
-               'Service_distributions': {'Class 0': [['Exponential', 1.0]],
-                                         'Class 1': [['Exponential', 1.0]]},
+               'Arrival_distributions': {'Class 0': [ciw.dists.Exponential(0.2)],
+                                         'Class 1': [ciw.dists.Exponential(0.6)]},
+               'Service_distributions': {'Class 0': [ciw.dists.Exponential(1.0)],
+                                         'Class 1': [ciw.dists.Exponential(1.0)]},
                'Routing': {'Class 0': [[0.0]],
-                                       'Class 1': [[0.0]]},
+                           'Class 1': [[0.0]]},
                'Number_of_servers': [1],
                'Priority_classes': {'Class 0': 0,
                                     'Class 1': 1}
@@ -584,8 +584,8 @@ class TestSimulation(unittest.TestCase):
             return 1.0
 
         params_dict = {
-            'Arrival_distributions': [['Deterministic', 5.0]],
-            'Service_distributions': [['Deterministic', 21.0]],
+            'Arrival_distributions': [ciw.dists.Deterministic(5.0)],
+            'Service_distributions': [ciw.dists.Deterministic(21.0)],
             'Number_of_servers': [1],
             'Baulking_functions': [my_baulking_function]
         }
@@ -601,10 +601,10 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual([r.service_end_date for r in recs], [26.0, 47.0])
 
         params_dict = {
-            'Arrival_distributions': [['Deterministic', 5.0],
-                                      ['Deterministic', 23.0]],
-            'Service_distributions': [['Deterministic', 21.0],
-                                      ['Deterministic', 1.5]],
+            'Arrival_distributions': [ciw.dists.Deterministic(5.0),
+                                      ciw.dists.Deterministic(23.0)],
+            'Service_distributions': [ciw.dists.Deterministic(21.0),
+                                      ciw.dists.Deterministic(1.5)],
             'Routing': [[0.0, 0.0], [1.0, 0.0]],
             'Number_of_servers': [1, 1],
             'Baulking_functions': [my_baulking_function, None]
@@ -628,19 +628,19 @@ class TestSimulation(unittest.TestCase):
 
     def test_prioritys_with_classchanges(self):
         params = {
-            'Arrival_distributions': {'Class 0': [['Exponential', 0.5],
-                                                  ['Exponential', 0.5]],
-                                      'Class 1': [['Exponential', 0.5],
-                                                  ['Exponential', 0.5]]},
-            'Service_distributions': {'Class 0': [['Uniform', 0.9, 1.1],
-                                                  ['Uniform', 0.9, 1.1]],
-                                      'Class 1': [['Uniform', 0.9, 1.1],
-                                                  ['Uniform', 0.9, 1.1]]},
+            'Arrival_distributions': {'Class 0': [ciw.dists.Exponential(0.5),
+                                                  ciw.dists.Exponential(0.5)],
+                                      'Class 1': [ciw.dists.Exponential(0.5),
+                                                  ciw.dists.Exponential(0.5)]},
+            'Service_distributions': {'Class 0': [ciw.dists.Uniform(0.9, 1.1),
+                                                  ciw.dists.Uniform(0.9, 1.1)],
+                                      'Class 1': [ciw.dists.Uniform(0.9, 1.1),
+                                                  ciw.dists.Uniform(0.9, 1.1)]},
             'Number_of_servers': [1, 1],
             'Routing': {'Class 0': [[0.0, 1.0],
-                                                [1.0, 0.0]],
-                                    'Class 1': [[0.0, 1.0],
-                                                [1.0, 0.0]]},
+                                    [1.0, 0.0]],
+                        'Class 1': [[0.0, 1.0],
+                                    [1.0, 0.0]]},
             'Priority_classes': {'Class 1': 0,
                                  'Class 0': 1},
             'Class_change_matrices': {'Node 1': [[0.0, 1.0],
@@ -683,14 +683,14 @@ class TestSimulation(unittest.TestCase):
 
     def test_allow_zero_servers(self):
         params_c1 = {
-            'Arrival_distributions': [['Exponential', 5]],
-            'Service_distributions': [['Deterministic', 0.2]],
+            'Arrival_distributions': [ciw.dists.Exponential(5)],
+            'Service_distributions': [ciw.dists.Deterministic(0.2)],
             'Number_of_servers': [1]
         }
 
         params_c0 = {
-            'Arrival_distributions': [['Exponential', 5]],
-            'Service_distributions': [['Deterministic', 0.2]],
+            'Arrival_distributions': [ciw.dists.Exponential(5)],
+            'Service_distributions': [ciw.dists.Deterministic(0.2)],
             'Number_of_servers': [0]
         }
 
@@ -710,73 +710,18 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(recs, [])
         self.assertEqual(total_inds_0, total_inds_1)
 
-    def test_find_generators(self):
-        # No generators:
-        params_nogenerators = {
-            'Arrival_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
-                                      'Class 1': [['Exponential', 5], ['Exponential', 5]]},
-            'Service_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
-                                      'Class 1': [['Exponential', 5], ['Exponential', 5]]},
-            'Routing': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
-                                    'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
-            'Number_of_servers': [1, 1]
-        }
-
-        params_somegenerators = {
-            'Arrival_distributions': {'Class 0': [['Exponential', 5], ['Sequential', [5, 6]]],
-                                      'Class 1': [['Exponential', 5], ['Exponential', 5]]},
-            'Service_distributions': {'Class 0': [['Exponential', 5], ['Exponential', 5]],
-                                      'Class 1': [['Sequential', [5, 6]], ['Exponential', 5]]},
-            'Routing': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
-                                    'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
-            'Number_of_servers': [1, 1]
-        }
-
-        params_allgenerators = {
-            'Arrival_distributions': {'Class 0': [['Sequential', [5, 6]], ['Sequential', [5, 6]]],
-                                      'Class 1': [['Sequential', [5, 6]], ['Sequential', [5, 6]]]},
-            'Service_distributions': {'Class 0': [['Sequential', [5, 6]], ['Sequential', [5, 6]]],
-                                      'Class 1': [['Sequential', [5, 6]], ['Sequential', [5, 6]]]},
-            'Routing': {'Class 0': [[0.0, 0.0], [0.0, 0.0]],
-                                    'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
-            'Number_of_servers': [1, 1]
-        }
-
-        N_no = ciw.create_network(**params_nogenerators)
-        N_some = ciw.create_network(**params_somegenerators)
-        N_all = ciw.create_network(**params_allgenerators)
-
-        Q_no = ciw.Simulation(N_no)
-        Q_some = ciw.Simulation(N_some)
-        Q_all = ciw.Simulation(N_all)
-
-        self.assertEqual(Q_no.generators['Arr'][0], {})
-        self.assertEqual(Q_no.generators['Arr'][1], {})
-        self.assertEqual(Q_no.generators['Ser'][0], {})
-        self.assertEqual(Q_no.generators['Ser'][1], {})
-
-        self.assertEqual(Q_some.generators['Arr'][0], {})
-        self.assertTrue(isinstance(Q_some.generators['Arr'][1][0], cycle))
-        self.assertTrue(isinstance(Q_some.generators['Ser'][0][1], cycle))
-        self.assertEqual(Q_some.generators['Ser'][1], {})
-
-        self.assertTrue(isinstance(Q_all.generators['Arr'][0][0], cycle))
-        self.assertTrue(isinstance(Q_all.generators['Arr'][0][1], cycle))
-        self.assertTrue(isinstance(Q_all.generators['Arr'][1][0], cycle))
-        self.assertTrue(isinstance(Q_all.generators['Arr'][1][1], cycle))
-        self.assertTrue(isinstance(Q_all.generators['Ser'][0][0], cycle))
-        self.assertTrue(isinstance(Q_all.generators['Ser'][0][1], cycle))
-        self.assertTrue(isinstance(Q_all.generators['Ser'][1][0], cycle))
-        self.assertTrue(isinstance(Q_all.generators['Ser'][1][1], cycle))
-
     def test_schedules_and_blockages_work_together(self):
         N = ciw.create_network(
             Arrival_distributions={
-                'Class 0': [['Exponential', 0.5], ['Exponential', 0.9]],
-                'Class 1': [['Exponential', 0.6], ['Exponential', 1.0]]},
+                'Class 0': [ciw.dists.Exponential(0.5),
+                            ciw.dists.Exponential(0.9)],
+                'Class 1': [ciw.dists.Exponential(0.6),
+                            ciw.dists.Exponential(1.0)]},
             Service_distributions={
-                'Class 0': [['Exponential', 0.8], ['Exponential', 1.2]],
-                'Class 1': [['Exponential', 0.5], ['Exponential', 1.0]]},
+                'Class 0': [ciw.dists.Exponential(0.8),
+                            ciw.dists.Exponential(1.2)],
+                'Class 1': [ciw.dists.Exponential(0.5),
+                            ciw.dists.Exponential(1.0)]},
             Number_of_servers=[([[1, 10], [0, 20], [2, 30]], True), 2],
             Routing={
                 'Class 0': [[0.1, 0.3], [0.2, 0.2]],
