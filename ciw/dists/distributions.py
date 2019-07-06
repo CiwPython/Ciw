@@ -1,5 +1,6 @@
 from ciw.auxiliary import *
 from itertools import cycle
+import copy
 from random import (expovariate, uniform, triangular, gammavariate,
                     lognormvariate, weibullvariate)
 
@@ -22,6 +23,70 @@ class Distribution(object):
             return s
         else:
             raise ValueError('Invalid time sampled.')
+
+    def __add__(self, dist):
+        """
+        Add two distirbutions such that sampling is the sum of the samples.
+        """
+        class CombinedDistribution(Distribution):
+            def __init__(newself, self, dist):
+                newself.d1 = copy.deepcopy(self)
+                newself.d2 = copy.deepcopy(dist)
+            def __repr__(newself):
+                return 'CombinedDistribution'
+            def sample(newself, t=None):
+                s1 = newself.d1.sample()
+                s2 = newself.d2.sample()
+                return s1 + s2
+        return CombinedDistribution(self, dist)
+
+    def __sub__(self, dist):
+        """
+        Subtract two distirbutions such that sampling is the sum of the samples.
+        """
+        class CombinedDistribution(Distribution):
+            def __init__(newself, self, dist):
+                newself.d1 = copy.deepcopy(self)
+                newself.d2 = copy.deepcopy(dist)
+            def __repr__(newself):
+                return 'CombinedDistribution'
+            def sample(newself, t=None):
+                s1 = newself.d1.sample()
+                s2 = newself.d2.sample()
+                return s1 - s2
+        return CombinedDistribution(self, dist)
+
+    def __mul__(self, dist):
+        """
+        Add two distirbutions such that sampling is the sum of the samples.
+        """
+        class CombinedDistribution(Distribution):
+            def __init__(newself, self, dist):
+                newself.d1 = copy.deepcopy(self)
+                newself.d2 = copy.deepcopy(dist)
+            def __repr__(newself):
+                return 'CombinedDistribution'
+            def sample(newself, t=None):
+                s1 = newself.d1.sample()
+                s2 = newself.d2.sample()
+                return s1 * s2
+        return CombinedDistribution(self, dist)
+
+    def __truediv__(self, dist):
+        """
+        Add two distirbutions such that sampling is the sum of the samples.
+        """
+        class CombinedDistribution(Distribution):
+            def __init__(newself, self, dist):
+                newself.d1 = copy.deepcopy(self)
+                newself.d2 = copy.deepcopy(dist)
+            def __repr__(newself):
+                return 'CombinedDistribution'
+            def sample(newself, t=None):
+                s1 = newself.d1.sample()
+                s2 = newself.d2.sample()
+                return s1 / s2
+        return CombinedDistribution(self, dist)
 
 
 class Uniform(Distribution):

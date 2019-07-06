@@ -786,3 +786,119 @@ class TestSampling(unittest.TestCase):
         services = [Ns.simulation.service_times[Ns.id_number][0]._sample() for _ in range(3*len2)]
         self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
         self.assertEqual(services, expected_service_times)
+
+    def test_combining_distributions(self):
+        Dt = ciw.dists.Deterministic(5.0)
+        Sq = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
+        Ex = ciw.dists.Exponential(0.5)
+
+        ## As is
+        ciw.seed(0)
+        samples = [round(Dt._sample(), 3) for _ in range(6)]
+        expected = [5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Sq._sample(), 3) for _ in range(6)]
+        expected = [1.0, 2.0, 3.0, 4.0, 1.0, 2.0]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Ex._sample(), 3) for _ in range(6)]
+        expected = [3.721, 2.837, 1.091, 0.599, 1.432, 1.038]
+        self.assertEqual(samples, expected)
+
+        ## Addition
+        Dt_plus_Sq = ciw.dists.Deterministic(5.0) + ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
+        Dt_plus_Ex = ciw.dists.Deterministic(5.0) + ciw.dists.Exponential(0.5)
+        Sq_plus_Ex = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0]) + ciw.dists.Exponential(0.5)
+        Dt_plus_Sq_plus_Ex = ciw.dists.Deterministic(5.0) + ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0]) + ciw.dists.Exponential(0.5)
+        ciw.seed(0)
+        samples = [round(Dt_plus_Sq._sample(), 3) for _ in range(6)]
+        expected = [6.0, 7.0, 8.0, 9.0, 6.0, 7.0]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Dt_plus_Ex._sample(), 3) for _ in range(6)]
+        expected = [8.721, 7.837, 6.091, 5.599, 6.432, 6.038]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Sq_plus_Ex._sample(), 3) for _ in range(6)]
+        expected = [4.721, 4.837, 4.091, 4.599, 2.432, 3.038]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Dt_plus_Sq_plus_Ex._sample(), 3) for _ in range(6)]
+        expected = [9.721, 9.837, 9.091, 9.599, 7.432, 8.038]
+        self.assertEqual(samples, expected)
+
+        ## Substraction
+        Dt_minus_Sq = ciw.dists.Deterministic(5.0) - ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
+        Dt_minus_Ex = ciw.dists.Deterministic(5.0) - ciw.dists.Exponential(0.5)
+        ciw.seed(0)
+        samples = [round(Dt_minus_Sq._sample(), 3) for _ in range(6)]
+        expected = [4.0, 3.0, 2.0, 1.0, 4.0, 3.0]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Dt_minus_Ex._sample(), 3) for _ in range(6)]
+        expected = [1.279, 2.163, 3.909, 4.401, 3.568, 3.962]
+        self.assertEqual(samples, expected)
+
+        ## Multiplication
+        Dt_mult_Sq = ciw.dists.Deterministic(5.0) * ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
+        Dt_mult_Ex = ciw.dists.Deterministic(5.0) * ciw.dists.Exponential(0.5)
+        Sq_mult_Ex = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0]) * ciw.dists.Exponential(0.5)
+        ciw.seed(0)
+        samples = [round(Dt_mult_Sq._sample(), 3) for _ in range(6)]
+        expected = [5.0, 10.0, 15.0, 20.0, 5.0, 10.0]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Dt_mult_Ex._sample(), 3) for _ in range(6)]
+        expected = [18.606, 14.186, 5.457, 2.996, 7.16, 5.191]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Sq_mult_Ex._sample(), 3) for _ in range(6)]
+        expected = [3.721, 5.675, 3.274, 2.397, 1.432, 2.076]
+        self.assertEqual(samples, expected)
+
+        ## Division
+        Dt_div_Sq = ciw.dists.Deterministic(5.0) / ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
+        Dt_div_Ex = ciw.dists.Deterministic(5.0) / ciw.dists.Exponential(0.5)
+        Sq_div_Ex = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0]) / ciw.dists.Exponential(0.5)
+        Sq_div_Dt = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0]) / ciw.dists.Deterministic(5.0)
+        Ex_div_Dt = ciw.dists.Exponential(0.5) / ciw.dists.Deterministic(5.0)
+        Ex_div_Sq = ciw.dists.Exponential(0.5) / ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
+        ciw.seed(0)
+        samples = [round(Dt_div_Sq._sample(), 3) for _ in range(6)]
+        expected = [5.0, 2.5, 1.667, 1.25, 5.0, 2.5]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Dt_div_Ex._sample(), 3) for _ in range(6)]
+        expected = [1.344, 1.762, 4.581, 8.343, 3.492, 4.816]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Sq_div_Ex._sample(), 3) for _ in range(6)]
+        expected = [0.269, 0.705, 2.749, 6.675, 0.698, 1.926]
+        self.assertEqual(samples, expected)
+        ciw.seed(0)
+        samples = [round(Sq_div_Dt._sample(), 3) for _ in range(6)]
+        expected = [0.2, 0.4, 0.6, 0.8, 0.2, 0.4]
+        ciw.seed(0)
+        samples = [round(Ex_div_Dt._sample(), 3) for _ in range(6)]
+        expected = [5.0, 10.0, 15.0, 20.0, 5.0, 10.0]
+        ciw.seed(0)
+        samples = [round(Ex_div_Sq._sample(), 3) for _ in range(6)]
+        expected = [5.0, 10.0, 15.0, 20.0, 5.0, 10.0]
+
+        ### Test reprs
+        self.assertEqual(str(Dt_plus_Sq), 'CombinedDistribution')
+        self.assertEqual(str(Dt_plus_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Sq_plus_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Dt_plus_Sq_plus_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Dt_minus_Sq), 'CombinedDistribution')
+        self.assertEqual(str(Dt_minus_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Dt_mult_Sq), 'CombinedDistribution')
+        self.assertEqual(str(Dt_mult_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Sq_mult_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Dt_div_Sq), 'CombinedDistribution')
+        self.assertEqual(str(Dt_div_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Sq_div_Dt), 'CombinedDistribution')
+        self.assertEqual(str(Sq_div_Ex), 'CombinedDistribution')
+        self.assertEqual(str(Ex_div_Dt), 'CombinedDistribution')
+        self.assertEqual(str(Ex_div_Sq), 'CombinedDistribution')
