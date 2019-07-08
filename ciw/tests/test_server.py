@@ -27,8 +27,8 @@ class TestServer(unittest.TestCase):
     def test_busy_total_times(self):
         # Single server
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [1.0, 6.0, 100.0]]],
+            Arrival_distributions=[ciw.dists.Sequential([2.0, 3.0, 100.0])],
+            Service_distributions=[ciw.dists.Sequential([1.0, 6.0, 100.0])],
             Number_of_servers=[1],
         )
         Q = ciw.Simulation(N)
@@ -40,8 +40,8 @@ class TestServer(unittest.TestCase):
 
         # Multi server
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [10.0, 6.0, 100.0]]],
+            Arrival_distributions=[ciw.dists.Sequential([2.0, 3.0, 100.0])],
+            Service_distributions=[ciw.dists.Sequential([10.0, 6.0, 100.0])],
             Number_of_servers=[3],
         )
         Q = ciw.Simulation(N)
@@ -59,8 +59,8 @@ class TestServer(unittest.TestCase):
 
         # Until deadlock
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [3.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [1.0, 6.0, 100.0]]],
+            Arrival_distributions=[ciw.dists.Sequential([3.0, 3.0, 100.0])],
+            Service_distributions=[ciw.dists.Sequential([1.0, 6.0, 100.0])],
             Number_of_servers=[1],
             Queue_capacities=[0],
             Routing=[[1.0]]
@@ -74,8 +74,8 @@ class TestServer(unittest.TestCase):
 
         # Until max customers
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 1.0, 7.0, 100.0]]],
-            Service_distributions=[['Sequential', [5.0, 2.0, 2.0, 100.0]]],
+            Arrival_distributions=[ciw.dists.Sequential([2.0, 1.0, 7.0, 100.0])],
+            Service_distributions=[ciw.dists.Sequential([5.0, 2.0, 2.0, 100.0])],
             Number_of_servers=[1],
         )
         Q = ciw.Simulation(N)

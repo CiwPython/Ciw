@@ -41,11 +41,9 @@ Install with :code:`pip install ciw`.
 
 Current supported version of Python:
 
-- Python 2.7
-- Python 3.4
 - Python 3.5
 - Python 3.6
-- PyPy 5.3.1
+- PyPy3.5
 
 Usage
 -----
@@ -57,8 +55,8 @@ Import Ciw::
 To define an M/M/3 queue, with λ = 0.2 and μ = 0.1::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.2]],
-    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
     ...     Number_of_servers=[3]
     ... )
 

@@ -2,8 +2,31 @@ import os
 import yaml
 import copy
 import types
+import ciw.dists
 from .network import *
 
+def get_distribution(dist):
+    if dist[0] == 'Uniform':
+       return ciw.dists.Uniform(dist[1], dist[2])
+    if dist[0] == 'Deterministic':
+        return ciw.dists.Deterministic(dist[1])
+    if dist[0] == 'Triangular':
+        return ciw.dists.Triangular(dist[1], dist[2], dist[3])
+    if dist[0] == 'Exponential':
+        return ciw.dists.Exponential(dist[1])
+    if dist[0] == 'Gamma':
+        return ciw.dists.Gamma(dist[1], dist[2])
+    if dist[0] == 'Normal':
+        return ciw.dists.Normal(dist[1], dist[2])
+    if dist[0] == 'Lognormal':
+        return ciw.dists.Lognormal(dist[1], dist[2])
+    if dist[0] == 'Weibull':
+        return ciw.dists.Weibull(dist[1], dist[2])
+    if dist[0] == 'Pmf':
+        return ciw.dists.Pmf(dist[1], dist[2])
+    if dist[0] == 'NoArrivals':
+        return ciw.dists.NoArrivals()
+    return ciw.dists.Distribution()
 
 def create_network(Arrival_distributions=None,
                    Baulking_functions=None,
@@ -61,6 +84,16 @@ def create_network_from_yml(directory_name):
     """
     params_input = load_parameters(directory_name)
     params = fill_out_dictionary(params_input)
+    for clss in params['Arrival_distributions']:
+        dists = []
+        for dist in params['Arrival_distributions'][clss]:
+            dists.append(get_distribution(dist))
+        params['Arrival_distributions'][clss] = dists
+    for clss in params['Service_distributions']:
+        dists = []
+        for dist in params['Service_distributions'][clss]:
+            dists.append(get_distribution(dist))
+        params['Service_distributions'][clss] = dists
     validify_dictionary(params)
     return create_network_from_dictionary(params)
 
@@ -182,9 +215,10 @@ def fill_out_dictionary(params_input):
         'Baulking_functions': {'Class ' + str(i): [
             None for _ in range(len(params['Number_of_servers']))]
             for i in range(len(params['Arrival_distributions']))},
-        'Batching_distributions': {'Class ' + str(i): [['Deterministic',
-            1] for _ in range(len(params['Number_of_servers']))]
-            for i in range(len(params['Arrival_distributions']))}
+        'Batching_distributions': {'Class ' + str(i): [
+            ciw.dists.Deterministic(1) for _ in range(
+            len(params['Number_of_servers']))] for i in range(
+            len(params['Arrival_distributions']))}
         }
 
     for a in default_dict:
@@ -253,19 +287,6 @@ def validify_dictionary(params):
             for row in clss:
                 if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
                     raise ValueError('Ensure that routing matrix is valid.')
-    dists = [params['Service_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes'])] + [
-        params['Arrival_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes']) if params['Arrival_distributions']['Class ' + str(i)][j] != 'NoArrivals']
-    if not set(dists).issubset(set([
-        'Uniform', 'Triangular', 'Deterministic',
-        'Exponential', 'Gamma', 'Lognormal',
-        'Weibull', 'Empirical', 'Custom', 'UserDefined',
-        'TimeDependent', 'Normal', 'Sequential'])):
-        raise ValueError('Ensure that valid Arrival and Service Distributions are used.')
-    batch_dists = [params['Batching_distributions']['Class ' + str(i)][j][0] for i in range(params['Number_of_classes']) for j in range(params['Number_of_nodes'])]
-    if not set(batch_dists).issubset(set([
-        'Deterministic', 'Empirical', 'Custom',
-        'Sequential','TimeDependent'])):
-        raise ValueError('Ensure that valid Batching Distributions are used.')
     neg_numservers = any([(isinstance(obs, int) and obs < 0) for obs in params['Number_of_servers']])
     valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['Queue_capacities']])
     if neg_numservers:
@@ -285,61 +306,3 @@ def validify_dictionary(params):
         if isinstance(n, str) and n != 'Inf':
             if n not in params:
                 raise ValueError('No schedule ' + str(n) + ' defined.')
-
-    # Distribution parameters:::
-    for clss in params['Arrival_distributions'].values():
-        for nd in clss:
-            if nd != 'NoArrivals':
-                if nd[0] == 'Uniform':
-                    if nd[1] < 0.0 or nd[2] < 0.0:
-                        raise ValueError('Uniform distribution must sample positive numbers only.')
-                    if nd[2] <= nd[1]:
-                        raise ValueError('Upper limit of Uniform distribution must be greater than the lower limit.')
-                if nd[0] == 'Deterministic':
-                    if nd[1] < 0.0:
-                        raise ValueError('Deterministic distribution must sample positive numbers only.')
-                if nd[0] == 'Triangular':
-                    if nd[1] < 0.0 or nd[2] < 0.0 or nd[3] < 0.0:
-                        raise ValueError('Triangular distribution must sample positive numbers only.')
-                    if nd[1] > nd[2] or nd[1] >= nd[3] or nd[3] >= nd[2]:
-                        raise ValueError('Triangular distribution\'s median must lie between the lower and upper limits.')
-                if nd[0] == 'Custom':
-                        V, P = nd[1], nd[2]
-                        for el in P:
-                            if not isinstance(el, float) or el < 0.0:
-                                raise ValueError('Probabilities for Custom distribution need to be floats between 0.0 and 1.0.')
-                        for el in V:
-                            if el < 0.0:
-                                raise ValueError('Custom distribution must sample positive values only.')
-                if nd[0] == 'Empirical':
-                    if isinstance(nd[1], list):
-                        if any([el<0.0 for el in nd[1]]):
-                            raise ValueError('Empirical distribution must sample positive floats.')
-    for clss in params['Service_distributions'].values():
-        for nd in clss:
-            if nd[0] == 'Uniform':
-                if nd[1] < 0.0 or nd[2] < 0.0:
-                    raise ValueError('Uniform distribution must sample positive numbers only.')
-                if nd[2] <= nd[1]:
-                    raise ValueError('Upper limit of Uniform distribution must be greater than the lower limit.')
-            if nd[0] == 'Deterministic':
-                if nd[1] < 0.0:
-                    raise ValueError('Deterministic distribution must sample positive numbers only.')
-            if nd[0] == 'Triangular':
-                if nd[1] < 0.0 or nd[2] < 0.0 or nd[3] < 0.0:
-                    raise ValueError('Triangular distribution must sample positive numbers only.')
-                if nd[1] > nd[2] or nd[1] >= nd[3] or nd[3] >= nd[2]:
-                    raise ValueError('Triangular distribution\'s median must lie between the lower and upper limits.')
-            if nd[0] == 'Custom':
-                    V, P = nd[1], nd[2]
-                    for el in P:
-                        if not isinstance(el, float) or el < 0.0:
-                            raise ValueError('Probabilities for Custom distribution need to be floats between 0.0 and 1.0.')
-                    for el in V:
-                        if el < 0.0:
-                            raise ValueError('Custom distribution must sample positive values only.')
-            if nd[0] == 'Empirical' or nd[0] == 'Sequential':
-                if isinstance(nd[1], list):
-                    if any([el<0.0 for el in nd[1]]):
-                        raise ValueError('Empirical distribution must sample positive floats.')
-

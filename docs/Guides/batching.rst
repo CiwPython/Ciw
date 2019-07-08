@@ -6,16 +6,16 @@ How to Set Batch Arrivals
 
 Ciw allows batch arrivals, that is more than one customer arriving at the same time.
 This is implemented using the :code:`Batching_distributions`.
-Similar to :code:`Arrival_distributions` and :code:`Service_distributions`, this takes in distributions for each node and customer class that will sample the size of the batch.
+Similar to :code:`Arrival_distributions` and :code:`Service_distributions`, this takes in distribution objects for each node and customer class that will sample the size of the batch.
 Only discrete distributions are allowed, that is distributions that sample integers.
 
 Let's show an example::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Deterministic', 18.5]],
-    ...     Service_distributions=[['Deterministic', 3.0]],
-    ...     Batching_distributions=[['Deterministic', 3]],
+    ...     Arrival_distributions=[ciw.dists.Deterministic(18.5)],
+    ...     Service_distributions=[ciw.dists.Deterministic(3.0)],
+    ...     Batching_distributions=[ciw.dists.Deterministic(3)],
     ...     Number_of_servers=[1]
     ... )
 
@@ -35,20 +35,19 @@ As there is only one server, two of those customers will have to wait::
 Just like arrival and service distributions, batching distributions can be defined for multiple nodes and multiple customer classes, using lists and dictionaries::
 
     Batching_distributions={
-        'Class 0': [['Deterministic', 3],
-                    ['Deterministic', 1]],
-        'Class 1': [['Deterministic', 2],
-                    ['Deterministic', 2]]},
+        'Class 0': [ciw.dists.Deterministic(3),
+                    ciw.dists.Deterministic(1)],
+        'Class 1': [ciw.dists.Deterministic(2),
+                    ciw.dists.Deterministic(2)]},
 
 Note:
   + *Only discrete distributions may be used,* currently implemented are:
      + :code:`Deterministic`
      + :code:`Empirical`
-     + :code:`Custom`
+     + :code:`Pmf`
      + :code:`Sequential`
-     + :code:`TimeDependent`
-  + If the keyword :code:`Batching_distributions` is omitted, then no batching is assumed. That is only one customer arrives at a time. Equivalent to :code:`['Deterministic', 1]`.
-  + If some nodes/customer classes require no batching, but others do, please use :code:`['Deterministic', 1]`.
+  + If the keyword :code:`Batching_distributions` is omitted, then no batching is assumed. That is only one customer arrives at a time. Equivalent to :code:`ciw.dists.Deterministic(1)`.
+  + If some nodes/customer classes require no batching, but others do, please use :code:`ciw.dists.Deterministic(1)`.
   + Batch arrivals may lead to :ref:`simultaneous events <simultaneous_events>`, please take care.
 
 
@@ -60,20 +59,23 @@ Ciw allows batching distributions to be time dependent.
 That is the batch size, the number of customers arriving simultaneously, is sampled from a distribution that varies with time.
 
 Let's show an example, we wish to have batch sizes of 2 for the first 10 time units, but batch sizes of 1 thereafter.
-Define a time dependent batching distribution::
+Define a time dependent batching distribution by inheriting from the generic :code:`Distribution` object::
 
-    >>> def time_dependent_batches(t):
-    ...     if t < 10.0:
-    ...         return 2
-    ...     return 1
+    >>> class TimeDependentBatches(ciw.dists.Distribution):
+    ...     def sample(self, t):
+    ...         if t < 10.0:
+    ...             return 2
+    ...         return 1
+
+This requires a :code:`sample` method, that taking in the parameter :code:`t`, the current time.
 
 Now use this when defining a network:
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Deterministic', 3.0]],
-    ...     Service_distributions=[['Deterministic', 0.5]],
-    ...     Batching_distributions=[['TimeDependent', time_dependent_batches]],
+    ...     Arrival_distributions=[ciw.dists.Deterministic(3.0)],
+    ...     Service_distributions=[ciw.dists.Deterministic(0.5)],
+    ...     Batching_distributions=[TimeDependentBatches()],
     ...     Number_of_servers=[1]
     ... )
 

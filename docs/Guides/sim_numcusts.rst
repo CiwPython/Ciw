@@ -19,8 +19,8 @@ Consider an :ref:`M/M/1/3 <kendall-notation>` queue::
 
 	>>> import ciw
 	>>> N = ciw.create_network(
-	...     Arrival_distributions=[['Exponential', 10]],
-	...     Service_distributions=[['Exponential', 5]],
+	...     Arrival_distributions=[ciw.dists.Exponential(10)],
+	...     Service_distributions=[ciw.dists.Exponential(5)],
 	...     Number_of_servers=[1],
 	...     Queue_capacities=[3]
 	... )

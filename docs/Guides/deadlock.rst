@@ -30,8 +30,8 @@ Parameters::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...    Arrival_distributions=[['Exponential', 6.0]],
-    ...    Service_distributions=[['Exponential', 5.0]],
+    ...    Arrival_distributions=[ciw.dists.Exponential(6.0)],
+    ...    Service_distributions=[ciw.dists.Exponential(5.0)],
     ...    Routing=[[0.5]],
     ...    Number_of_servers=[1],
     ...    Queue_capacities=[3]
@@ -67,8 +67,8 @@ Simulating until deadlock, the :code:`times_to_deadlock` dictionary will contain
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...    Arrival_distributions=[['Exponential', 6.0]],
-    ...    Service_distributions=[['Exponential', 5.0]],
+    ...    Arrival_distributions=[ciw.dists.Exponential(6.0)],
+    ...    Service_distributions=[ciw.dists.Exponential(5.0)],
     ...    Routing=[[0.5]],
     ...    Number_of_servers=[2],
     ...    Queue_capacities=[1]

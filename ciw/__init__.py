@@ -13,3 +13,4 @@ from .state_tracker import *
 from .exactnode import *
 from .import_params import *
 from .network import *
+import ciw.dists

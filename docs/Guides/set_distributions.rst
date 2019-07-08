@@ -6,7 +6,7 @@ How to Set Arrival & Service Distributions
 
 Ciw offeres a variety of inter-arrival and service time distributions.
 A full list can be found :ref:`here <refs-dists>`.
-They are defined when creating a Network with the :code:`'Arrival_distributions'` and :code:`'Service_distributions'` keywords.
+They are objects, that are defined in the :code:`Network` with the :code:`'Arrival_distributions'` and :code:`'Service_distributions'` keywords.
 
 + :code:`'Arrival_distributions'`: This is the distribution that inter-arrival times are drawn from. That is the time between two consecutive arrivals. It is particular to specific nodes and customer classes.
 + :code:`'Service_distributions'`: This is the distribution that service times are drawn from. That is the amount of time a customer spends with a server (independent of how many servers there are). It is particular for to specific node and customer classes.
@@ -15,16 +15,16 @@ The following example, with two nodes and two customer classes, uses eight diffe
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions={'Class 0': [['Deterministic', 0.4],
-    ...                                        ['Empirical', [0.1, 0.1, 0.1, 0.2]]],
-    ...                            'Class 1': [['Deterministic', 0.2],
-    ...                                        ['Custom', [0.2, 0.4], [0.5, 0.5]]]},
-    ...     Service_distributions={'Class 0': [['Exponential', 6.0],
-    ...                                        ['Lognormal', -1, 0.5]],
-    ...                            'Class 1': [['Uniform', 0.1, 0.7],
-    ...                                        ['Triangular', 0.2, 0.7, 0.3]]},
+    ...     Arrival_distributions={'Class 0': [ciw.dists.Deterministic(0.4),
+    ...                                        ciw.dists.Empirical([0.1, 0.1, 0.1, 0.2])],
+    ...                            'Class 1': [ciw.dists.Deterministic(0.2),
+    ...                                        ciw.dists.Pmf([0.2, 0.4], [0.5, 0.5])]},
+    ...     Service_distributions={'Class 0': [ciw.dists.Exponential(6.0),
+    ...                                        ciw.dists.Lognormal(-1, 0.5)],
+    ...                            'Class 1': [ciw.dists.Uniform(0.1, 0.7),
+    ...                                        ciw.dists.Triangular(0.2, 0.3, 0.7)]},
     ...     Routing={'Class 0': [[0.0, 0.0], [0.0, 0.0]],
-    ...                          'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
+    ...              'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
     ...     Number_of_servers=[1, 1]
     ... )
 
@@ -35,23 +35,23 @@ We'll run this (in :ref:`exact <exact-arithmetic>` mode) for 25 time units::
     >>> Q.simulate_until_max_time(50)
     >>> recs = Q.get_all_records()
 
-The system uses the following eight distributions:
+The system uses the following eight distribution objects:
 
-+ :code:`['Deterministic', 0.4]`:
++ :code:`ciw.dists.Deterministic(0.4)`:
    + Always sample 0.4.
-+ :code:`['Deterministic', 0.2]`:
++ :code:`ciw.dists.Deterministic(0.2)`:
    + Always sample 0.2.
-+ :code:`['Empirical', [0.1, 0.1, 0.1, 0.2]`:
++ :code:`ciw.dists.Empirical([0.1, 0.1, 0.1, 0.2]):
    + Randomly sample from the numbers 0.1, 0.1, 0.1 and 0.2.
-+ :code:`['Custom', [0.2, 0.4], [0.5, 0.5]]`:
++ :code:`ciw.dists.Pmf([0.2, 0.4], [0.5, 0.5])`:
    + Sample 0.2 half the time, and 0.4 half the time.
-+ :code:`['Exponential', 6.0]`:
++ :code:`ciw.dists.Exponential(6.0)`:
    + Sample from the `exponential <https://en.wikipedia.org/wiki/Exponential_distribution>`_ distribution with parameter :math:`\lambda = 6.0`. Expected mean of 0.1666...
-+ :code:`['Uniform', 0.1, 0.7]`:
++ :code:`ciw.dists.Uniform(0.1, 0.7)`:
    + Sample any number between 0.1 and 0.7 with equal probablity. Expected mean of 0.4.
-+ :code:`['Lognormal', -1, 0.5]`:
++ :code:`ciw.dists.Lognormal(-1, 0.5)`:
    + Sample from the `lognormal <https://en.wikipedia.org/wiki/Log-normal_distribution>`_ distribution with parameters :math:`\mu = -1` and :math:`\sigma = 0.5`. Expected mean of 0.4724...
-+ :code:`['Triangular', 0.2, 0.7, 0.3]`:
++ :code:`ciw.dists.Triangular(0.2, 0.3, 0.7)`:
    + Sample from the `triangular <https://en.wikipedia.org/wiki/Triangular_distribution>`_ distribution, with mode 0.3, lower limit 0.2 and upper limit 0.7. Expected mean of 0.4.
 
 From the records, collect the service times and arrival dates for each node and each customer class::
@@ -96,3 +96,60 @@ Now let's see if the mean service time and inter-arrival times of the simulation
     True
 
 ​
+Custom Distributions
+--------------------
+
+A distribution is defined by inheriting from the generic `ciw.dists.Distribution` class.
+This allows users to define their own distributions.
+
+Consider a distribution that samples the value `3.0` 50% of the time, and samples a uniform random number between 0 and 1 otherwise. That is written by inheriting from the generic class, and defining a new :code:`sample` method::
+
+    >>> import random
+    >>> class CustomDistribution(ciw.dists.Distribution):
+    ...     def sample(t=None):
+    ...         if random.random() < 0.5:
+    ...             return 3.0
+    ...         return random.random()
+
+This can then be implemented into a :code:`Network` object in the usual way.
+
+
+Combined Distributions
+----------------------
+
+As distribution objects inherit from the generic distirbution function, they can be *combined* using the operations :code:`+`, :code:`-`, :code:`*`, and :code:`/`.
+
+For example, let's combine an Exponential distribution with a Deterministic distribution in all four ways::
+
+    >>> Exp_add_Det = ciw.dists.Exponential(0.05) + ciw.dists.Deterministic(3.0)
+    >>> Exp_sub_Det = ciw.dists.Exponential(0.05) - ciw.dists.Deterministic(3.0)
+    >>> Exp_mul_Det = ciw.dists.Exponential(0.05) * ciw.dists.Deterministic(3.0)
+    >>> Exp_div_Det = ciw.dists.Exponential(0.05) / ciw.dists.Deterministic(3.0)
+
+These combined distributions return the combined sampled values:
+
+    >>> ciw.seed(10)
+    >>> [round(ciw.dists.Exponential(0.05).sample(), 2) for _ in range(5)]
+    [16.94, 11.2, 17.26, 4.62, 33.57]
+    >>> [round(ciw.dists.Deterministic(3.0).sample(), 2) for _ in range(5)]
+    [3.0, 3.0, 3.0, 3.0, 3.0]
+
+    >>> # Addition
+    >>> ciw.seed(10)
+    >>> [round(Exp_add_Det.sample(), 2) for _ in range(5)]
+    [19.94, 14.2, 20.26, 7.62, 36.57]
+
+    >>> # Subtraction
+    >>> ciw.seed(10)
+    >>> [round(Exp_sub_Det.sample(), 2) for _ in range(5)]
+    [13.94, 8.2, 14.26, 1.62, 30.57]
+
+    >>> # Multiplication
+    >>> ciw.seed(10)
+    >>> [round(Exp_mul_Det.sample(), 2) for _ in range(5)]
+    [50.83, 33.61, 51.78, 13.85, 100.7]
+
+    >>> # Division
+    >>> ciw.seed(10)
+    >>> [round(Exp_div_Det.sample(), 2) for _ in range(5)]
+    [5.65, 3.73, 5.75, 1.54, 11.19]

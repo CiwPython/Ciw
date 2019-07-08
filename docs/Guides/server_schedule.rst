@@ -26,8 +26,8 @@ To tell Ciw to use this schedule for a given node, in the :code:`Number_of_serve
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 5]],
-    ...     Service_distributions=[['Exponential', 10]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(5)],
+    ...     Service_distributions=[ciw.dists.Exponential(10)],
     ...     Number_of_servers=[[[2, 10], [0, 30], [1, 100]]]
     ... )
 
@@ -79,8 +79,8 @@ Consider the following example::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Deterministic', 3.0]],
-    ...     Service_distributions=[['Deterministic', 5.0]],
+    ...     Arrival_distributions=[ciw.dists.Deterministic(3.0)],
+    ...     Service_distributions=[ciw.dists.Deterministic(5.0)],
     ...     Number_of_servers=[[[1, 4.0], [2, 10.0], [0, 100.0]]]
     ... )
     >>> Q = ciw.Simulation(N)

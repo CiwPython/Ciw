@@ -8,8 +8,8 @@ In the previous tutorials, we defined and simulated our bank for a week, and saw
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.2]],
-    ...     Service_distributions=[['Exponential', 0.1]],
+    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
     ...     Number_of_servers=[3]
     ... )
     >>> ciw.seed(1)

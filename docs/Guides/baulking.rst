@@ -26,8 +26,8 @@ When creating the Network object we tell Ciw which node and customer class this 
 	
 	>>> import ciw
 	>>> N = ciw.create_network(
-	...      Arrival_distributions={'Class 0': [['Exponential', 5]]},
-	...      Service_distributions={'Class 0': [['Exponential', 10]]},
+	...      Arrival_distributions={'Class 0': [ciw.dists.Exponential(5)]},
+	...      Service_distributions={'Class 0': [ciw.dists.Exponential(10)]},
 	...      Baulking_functions={'Class 0': [probability_of_baulking]},
 	...      Number_of_servers=[1]
 	... )

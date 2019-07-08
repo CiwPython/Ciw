@@ -110,8 +110,7 @@ class Node(object):
         self.simulation.deadlock_detector.action_at_attach_server(
             self, server, individual)
 
-    def begin_service_if_possible_accept(self,
-                                         next_individual):
+    def begin_service_if_possible_accept(self, next_individual):
         """
         Begins the service of the next individual, giving
         that customer a service time, end date and node.
@@ -413,10 +412,7 @@ class Node(object):
         """
         Returns a service time for the given customer class
         """
-        if self.simulation.network.customer_classes[clss].service_distributions[
-            self.id_number-1][0] == 'TimeDependent':
-            return self.simulation.service_times[self.id_number][clss](self.simulation.current_time)
-        return self.simulation.service_times[self.id_number][clss]()
+        return self.simulation.service_times[self.id_number][clss]._sample(t=self.simulation.current_time)
 
     def take_servers_off_duty(self):
         """

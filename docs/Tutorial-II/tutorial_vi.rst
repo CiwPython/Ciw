@@ -21,15 +21,15 @@ A restricted network such as this is represented by nearly the same Network obje
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Deterministic', 4.0],
-    ...                            'NoArrivals',
-    ...                            'NoArrivals'],
-    ...     Service_distributions=[['Uniform', 3, 5],
-    ...                            ['Uniform', 3, 5],
-    ...                            ['Uniform', 3, 5]],
+    ...     Arrival_distributions=[ciw.dists.Deterministic(4.0),
+    ...                            ciw.dists.NoArrivals(),
+    ...                            ciw.dists.NoArrivals()],
+    ...     Service_distributions=[ciw.dists.Uniform(3, 5),
+    ...                            ciw.dists.Uniform(3, 5),
+    ...                            ciw.dists.Uniform(3, 5)],
     ...     Routing=[[0.0, 1.0, 0.0],
-    ...                          [0.0, 0.0, 1.0],
-    ...                          [0.0, 0.0, 0.0]],
+    ...              [0.0, 0.0, 1.0],
+    ...              [0.0, 0.0, 0.0]],
     ...     Number_of_servers=[1, 1, 1],
     ...     Queue_capacities=[3, 3, 3]
     ... )
@@ -91,15 +91,15 @@ How many hours of operation will the manufacturing plant need to run for so that
 First, under the new system how many broken stools per hour do we expect?::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Deterministic', 4.0],
-    ...                            'NoArrivals',
-    ...                            'NoArrivals'],
-    ...     Service_distributions=[['Uniform', 3.5, 4.5],
-    ...                            ['Uniform', 3.5, 4.5],
-    ...                            ['Uniform', 3.5, 4.5]],
+    ...     Arrival_distributions=[ciw.dists.Deterministic(4.0),
+    ...                            ciw.dists.NoArrivals(),
+    ...                            ciw.dists.NoArrivals()],
+    ...     Service_distributions=[ciw.dists.Uniform(3.5, 4.5),
+    ...                            ciw.dists.Uniform(3.5, 4.5),
+    ...                            ciw.dists.Uniform(3.5, 4.5)],
     ...     Routing=[[0.0, 1.0, 0.0],
-    ...                          [0.0, 0.0, 1.0],
-    ...                          [0.0, 0.0, 0.0]],
+    ...              [0.0, 0.0, 1.0],
+    ...              [0.0, 0.0, 0.0]],
     ...     Number_of_servers=[1, 1, 1],
     ...     Queue_capacities=[3, 3, 3]
     ... )
