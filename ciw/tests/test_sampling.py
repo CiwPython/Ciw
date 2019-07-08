@@ -4,7 +4,7 @@ from csv import reader
 from random import random, choice
 from hypothesis import given
 from hypothesis.strategies import (floats, integers, lists,
-    random_module, assume, text)
+    random_module, text)
 import os
 import copy
 
