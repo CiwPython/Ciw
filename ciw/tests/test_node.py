@@ -1,6 +1,6 @@
 import unittest
 import ciw
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import floats, integers, random_module
 
 class TestNode(unittest.TestCase):
@@ -682,6 +682,7 @@ class TestNode(unittest.TestCase):
         for srvr in Q.transitive_nodes[0].servers:
             self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
 
+    @settings(deadline=None, max_examples=30)
     @given(lmbda=floats(min_value=0.01, max_value=10),
            mu=floats(min_value=0.01, max_value=10),
            c=integers(min_value=1, max_value=10),
