@@ -682,7 +682,6 @@ class TestNode(unittest.TestCase):
         for srvr in Q.transitive_nodes[0].servers:
             self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
 
-    @settings(deadline=None, max_examples=30)
     @given(lmbda=floats(min_value=0.01, max_value=10),
            mu=floats(min_value=0.01, max_value=10),
            c=integers(min_value=1, max_value=10),
@@ -702,7 +701,7 @@ class TestNode(unittest.TestCase):
         self.assertGreaterEqual(Q.transitive_nodes[0].server_utilisation, 0.0)
 
     def test_num_inds_equal_len_all_inds(self):
-        # Create a Simulatin class that inherits form ciw.Simulation so that
+        # Create a Simulatin class that inherits from ciw.Simulation so that
         # an assertion than number_of_individuals == len(all_individuals)
         # every time self.event_and_return_nextnode is called.
         class AssertSim(ciw.Simulation):
