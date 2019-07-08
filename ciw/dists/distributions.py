@@ -1,6 +1,7 @@
 from ciw.auxiliary import *
 from itertools import cycle
 import copy
+from operator import add, mul, sub, truediv
 from random import (expovariate, uniform, triangular, gammavariate,
                     lognormvariate, weibullvariate)
 
@@ -26,67 +27,47 @@ class Distribution(object):
 
     def __add__(self, dist):
         """
-        Add two distirbutions such that sampling is the sum of the samples.
+        Add two distributions such that sampling is the sum of the samples.
         """
-        class CombinedDistribution(Distribution):
-            def __init__(newself, self, dist):
-                newself.d1 = copy.deepcopy(self)
-                newself.d2 = copy.deepcopy(dist)
-            def __repr__(newself):
-                return 'CombinedDistribution'
-            def sample(newself, t=None):
-                s1 = newself.d1.sample()
-                s2 = newself.d2.sample()
-                return s1 + s2
-        return CombinedDistribution(self, dist)
+        return CombinedDistribution(self, dist, add)
 
     def __sub__(self, dist):
         """
-        Subtract two distirbutions such that sampling is the sum of the samples.
+        Subtract two distributions such that sampling is the difference of the samples.
         """
-        class CombinedDistribution(Distribution):
-            def __init__(newself, self, dist):
-                newself.d1 = copy.deepcopy(self)
-                newself.d2 = copy.deepcopy(dist)
-            def __repr__(newself):
-                return 'CombinedDistribution'
-            def sample(newself, t=None):
-                s1 = newself.d1.sample()
-                s2 = newself.d2.sample()
-                return s1 - s2
-        return CombinedDistribution(self, dist)
+        return CombinedDistribution(self, dist, sub)
 
     def __mul__(self, dist):
         """
-        Add two distirbutions such that sampling is the sum of the samples.
+        Multiply two distributions such that sampling is the product of the samples.
         """
-        class CombinedDistribution(Distribution):
-            def __init__(newself, self, dist):
-                newself.d1 = copy.deepcopy(self)
-                newself.d2 = copy.deepcopy(dist)
-            def __repr__(newself):
-                return 'CombinedDistribution'
-            def sample(newself, t=None):
-                s1 = newself.d1.sample()
-                s2 = newself.d2.sample()
-                return s1 * s2
-        return CombinedDistribution(self, dist)
+        return CombinedDistribution(self, dist, mul)
 
     def __truediv__(self, dist):
         """
-        Add two distirbutions such that sampling is the sum of the samples.
+        Divide two distributions such that sampling is the ratio of the samples.
         """
-        class CombinedDistribution(Distribution):
-            def __init__(newself, self, dist):
-                newself.d1 = copy.deepcopy(self)
-                newself.d2 = copy.deepcopy(dist)
-            def __repr__(newself):
-                return 'CombinedDistribution'
-            def sample(newself, t=None):
-                s1 = newself.d1.sample()
-                s2 = newself.d2.sample()
-                return s1 / s2
-        return CombinedDistribution(self, dist)
+        return CombinedDistribution(self, dist, truediv)
+
+
+class CombinedDistribution(Distribution):
+    """
+    A distribution that combines the samples of two other distributions, `dist1`
+    and `dist2`, using `operator`.
+    """
+
+    def __init__(self, dist1, dist2, operator):
+        self.d1 = copy.deepcopy(dist1)
+        self.d2 = copy.deepcopy(dist2)
+        self.operator = operator
+
+    def __repr__(self):
+        return 'CombinedDistribution'
+
+    def sample(self, t=None):
+        s1 = self.d1.sample()
+        s2 = self.d2.sample()
+        return self.operator(s1, s2)
 
 
 class Uniform(Distribution):
