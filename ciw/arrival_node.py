@@ -60,8 +60,7 @@ class ArrivalNode(object):
         clss = times[nd].index(min(times[nd]))
         self.next_node = nd + 1
         self.next_class = clss
-        self.next_event_date = self.event_dates_dict[
-            self.next_node][self.next_class]
+        self.next_event_date = self.event_dates_dict[self.next_node][self.next_class]
 
     def have_event(self):
         """
@@ -78,8 +77,8 @@ class ArrivalNode(object):
                                          priority_class)
             if self.simulation.network.process_based:
                 next_individual.route = self.simulation.network.customer_classes[
-                    next_individual.customer_class].routing[self.next_node-1](next_individual)
-            next_node = self.simulation.transitive_nodes[self.next_node-1]
+                next_individual.customer_class].routing[self.next_node - 1](next_individual)
+            next_node = self.simulation.transitive_nodes[self.next_node - 1]
             self.release_individual(next_node, next_individual)
 
         self.event_dates_dict[self.next_node][
@@ -102,8 +101,7 @@ class ArrivalNode(object):
         """
         for nd in self.event_dates_dict:
             for clss in self.event_dates_dict[nd]:
-                self.event_dates_dict[nd][
-                clss] = self.inter_arrival(nd, clss)
+                self.event_dates_dict[nd][clss] = self.inter_arrival(nd, clss)
 
     def inter_arrival(self, nd, clss):
         """
@@ -125,15 +123,13 @@ class ArrivalNode(object):
         """
         Adds an individual to the baulked dictionary.
         """
-        self.baulked_dict[next_node.id_number][
-            self.next_class].append(self.next_event_date)
+        self.baulked_dict[next_node.id_number][self.next_class].append(self.next_event_date)
 
     def record_rejection(self, next_node):
         """
         Adds an individual to the rejection dictionary.
         """
-        self.rejection_dict[next_node.id_number][
-            self.next_class].append(self.next_event_date)
+        self.rejection_dict[next_node.id_number][self.next_class].append(self.next_event_date)
 
     def release_individual(self, next_node, next_individual):
         """

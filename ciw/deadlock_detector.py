@@ -66,7 +66,7 @@ class StateDigraphMethod(NoDeadlockDetection):
         Adds the servers of that node if c < Inf.
         """
         if node.c < float('Inf'):
-            self.statedigraph.add_nodes_from([str(s)for s in node.servers])
+            self.statedigraph.add_nodes_from([str(s) for s in node.servers])
 
     def detect_deadlock(self):
         """
@@ -107,8 +107,7 @@ class StateDigraphMethod(NoDeadlockDetection):
                 blq[0]].all_individuals if ind.id_number == blq[1]]
             ind = inds[0]
             if ind != individual:
-                self.statedigraph.add_edge(
-                    str(ind.server), str(server))
+                self.statedigraph.add_edge(str(ind.server), str(server))
 
     def action_at_blockage(self, individual, next_node):
         """
@@ -116,8 +115,7 @@ class StateDigraphMethod(NoDeadlockDetection):
           - Add edges between blocked server and servers of the next node.
         """
         for svr in next_node.servers:
-            self.statedigraph.add_edge(
-                str(individual.server), str(svr))
+            self.statedigraph.add_edge(str(individual.server), str(svr))
 
     def action_at_detatch_server(self, server):
         """

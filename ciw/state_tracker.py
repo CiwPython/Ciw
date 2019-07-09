@@ -23,8 +23,7 @@ class StateTracker(object):
         """
         pass
 
-    def change_state_release(self, node_id, destination,
-        cust_clss, blocked):
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -69,8 +68,7 @@ class NaiveTracker(StateTracker):
         self.state[node_id-1][1] += 1
         self.state[node_id-1][0] -= 1
 
-    def change_state_release(self, node_id, destination,
-        cust_clss, blocked):
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -126,8 +124,7 @@ class MatrixTracker(StateTracker):
         self.state[0][node_id-1][destination-1].append(self.increment)
         self.increment += 1
 
-    def change_state_release(self, node_id, destination,
-        cust_clss, blocked):
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """

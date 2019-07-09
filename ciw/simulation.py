@@ -25,7 +25,8 @@ class Simulation(object):
                  name='Simulation',
                  tracker=False,
                  deadlock_detector=False,
-        node_class=None, arrival_node_class=None):
+                 node_class=None,
+                 arrival_node_class=None):
         """
         Initialise an instance of the simualation.
         """
@@ -43,8 +44,7 @@ class Simulation(object):
         self.service_times = self.find_service_dists()
         self.batch_sizes = self.find_batching_dists()
         self.number_of_priority_classes = self.network.number_of_priority_classes
-        self.transitive_nodes = [self.NodeType(i + 1, self)
-            for i in range(network.number_of_nodes)]
+        self.transitive_nodes = [self.NodeType(i + 1, self) for i in range(network.number_of_nodes)]
         self.nodes = ([self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()])
         self.statetracker = self.choose_tracker(tracker, deadlock_detector)
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
@@ -135,9 +135,8 @@ class Simulation(object):
         """
         Returns list of all individuals with at least one data record.
         """
-        return [individual for node in self.nodes[1:]
-            for individual in node.all_individuals
-            if len(individual.data_records) > 0]
+        return [individual for node in self.nodes[1:] for individual in
+        node.all_individuals if len(individual.data_records) > 0]
 
     def get_all_records(self):
         """
@@ -226,8 +225,10 @@ class Simulation(object):
             self.progress_bar.update(remaining_time)
             self.progress_bar.close()
 
-    def simulate_until_max_customers(self, max_customers,
-                                     progress_bar=False, method='Finish'):
+    def simulate_until_max_customers(self,
+                                     max_customers,
+                                     progress_bar=False,
+                                     method='Finish'):
         """
         Runs the simulation until max_customers is reached:
 
