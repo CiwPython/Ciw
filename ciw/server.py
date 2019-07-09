@@ -2,11 +2,11 @@ from __future__ import division
 
 class Server(object):
     """
-    A class to contain server information
+    A class to contain server information.
     """
     def __init__(self, node, id_number, start_date=0.0):
         """
-        Initialise the server object
+        Initialise the server object.
         """
         self.node = node
         self.id_number = id_number
@@ -26,7 +26,7 @@ class Server(object):
 
     def __repr__(self):
         """
-        Represents the Server instance as a string
+        Represents the Server instance as a string.
         """
         return 'Server %s at Node %s' % (self.id_number,
             self.node.id_number)

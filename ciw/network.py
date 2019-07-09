@@ -1,6 +1,11 @@
 class ServiceCentre(object):
     """
-    An information store for each service centre in the queueing network
+    An information store for each service centre in the queueing network.
+    Contains all information that is independent of customer class:
+      - number of servers
+      - queueing capacity
+      - server schedules + preemtion status
+      - class change matrix
     """
     def __init__(self,
                  number_of_servers,
@@ -9,7 +14,7 @@ class ServiceCentre(object):
                  schedule=None,
                  preempt=False):
         """
-        Initialises the ServiceCentre object
+        Initialises the ServiceCentre object.
         """
         self.number_of_servers = number_of_servers
         self.queueing_capacity = queueing_capacity
@@ -20,7 +25,14 @@ class ServiceCentre(object):
 
 class CustomerClass(object):
     """
-    An information store for each customer class in the queueing network
+    An information store for each customer class in the queueing network.
+    Contains all information that is dependent on customer class:
+      - arrival distributions
+      - service distributions
+      - routing matrices/functions
+      - priority class
+      - baulking functions
+      - batching distributions
     """
     def __init__(self,
                  arrival_distributions,
@@ -30,7 +42,7 @@ class CustomerClass(object):
                  baulking_functions,
                  batching_distributions):
         """
-        Initialises the CutomerCass object
+        Initialises the CutomerCass object.
         """
         self.arrival_distributions = arrival_distributions
         self.service_distributions = service_distributions
@@ -41,7 +53,10 @@ class CustomerClass(object):
 
 class Network(object):
     """
-    An information store the queueing network
+    An information store the queueing network.
+    Contains a list of ServiceCentre objects for each
+    service centre, and a list of CustomerClass objects
+    for each customer class.
     """
     def __init__(self, service_centres, customer_classes):
         """

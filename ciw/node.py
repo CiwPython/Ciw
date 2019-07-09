@@ -13,7 +13,7 @@ from .server import Server
 
 class Node(object):
     """
-    Class for a node on our network
+    Class for a node on the network.
     """
     def __init__(self, id_, simulation):
         """
@@ -78,7 +78,11 @@ class Node(object):
 
     def accept(self, next_individual):
         """
-        Accepts a new customer to the queue.
+        Accepts a new customer to the queue:
+          - remove previous exit date and blockage status
+          - see if possible to begin service
+          - record all other information at arrival point
+          - update state tracker
         """
         next_individual.exit_date = False
         next_individual.is_blocked = False
@@ -112,8 +116,10 @@ class Node(object):
 
     def begin_service_if_possible_accept(self, next_individual):
         """
-        Begins the service of the next individual, giving
-        that customer a service time, end date and node.
+        Begins the service of the next individual (at acceptance point):
+          - give an arrival date and service time
+          - if there's a free server, give a start date and end date
+          - attach server to individual
         """
         next_individual.arrival_date = self.get_now()
         next_individual.service_time = self.get_service_time(
@@ -148,8 +154,11 @@ class Node(object):
 
     def begin_service_if_possible_change_shift(self):
         """
-        Attempts to begin service if change_shift
-        yields any free servers.
+        If there are free servers after a shift change:
+          - restart interrupted customers' services
+          - begin service of any waiting cutsomers
+            - give a start date and end date
+            - attach servers to individual
         """
         free_servers = [s for s in self.servers if not s.busy]
         for srvr in free_servers:
@@ -166,8 +175,13 @@ class Node(object):
 
     def begin_service_if_possible_release(self):
         """
-        Begins the service of the next individual, giving
-        that customer a service time, end date and node.
+        Begins the service of the next individual (at point
+        of previous individual's release)
+          - check if there are any interrupted individuals
+            left to restart service
+          - give an arrival date and service time
+          - give a start date and end date
+          - attach server to individual
         """
         if self.free_server() and (not isinf(self.c)):
             srvr = self.find_free_server()
@@ -184,7 +198,13 @@ class Node(object):
 
     def block_individual(self, individual, next_node):
         """
-        Blocks the individual from entering the next node.
+        Blocks the individual from entering the next node:
+          - change is_blocked attribute
+          - update state tracker
+          - add information to the next node's blocked queue
+          - update deadlock detector
+          - inform simulation that there are unchecked
+          blockages for deadlock detection
         """
         individual.is_blocked = True
         self.simulation.statetracker.change_state_block(
@@ -212,8 +232,9 @@ class Node(object):
 
     def change_shift(self):
         """
-        Add servers and deletes or indicates which servers
-        should go off duty.
+        Implment a server shift change:
+         - adds / deletes servers, or indicates which servers should go off duty
+         - begin any new services if free servers
         """
         shift = self.next_event_date % self.cyclelength
 
@@ -240,18 +261,18 @@ class Node(object):
 
     def create_starting_servers(self):
         """
-        Initialise the servers
+        Initialise the servers.
         """
         return [Server(self, i + 1, 0.0) for i in range(self.c)]
 
     def detatch_server(self, server, individual):
         """
-        Detatches a server from an individual, and vice versa
+        Detatches a server from an individual, and vice versa.
         """
         server.cust = False
         server.busy = False
         individual.server = False
-        self.simulation.deadlock_detector.action_at_detach_server(
+        self.simulation.deadlock_detector.action_at_detatch_server(
             server)
         if not server.busy_time:
             server.busy_time = (individual.exit_date - individual.service_start_date)
@@ -263,7 +284,7 @@ class Node(object):
 
     def free_server(self):
         """
-        Returns True if a server is available, False otherwise
+        Returns True if a server is available, False otherwise.
         """
         if isinf(self.c):
             return True
@@ -279,7 +300,7 @@ class Node(object):
 
     def find_next_individual(self):
         """
-        Finds the next individual that should now finish service
+        Finds the next individual that should now finish service.
         """
         next_individual_indices = [i for i, ind in enumerate(
             self.all_individuals) if ind.service_end_date == self.next_event_date]
@@ -291,7 +312,7 @@ class Node(object):
 
     def find_server_utilisation(self):
         """
-        Finds the overall server utilisation for the node
+        Finds the overall server utilisation for the node.
         """
         if isinf(self.c) or self.c == 0:
             self.server_utilisation = None
@@ -303,7 +324,12 @@ class Node(object):
 
     def finish_service(self):
         """
-        The next individual finishes service
+        The next individual finishes service:
+          - finds the individual to finish service
+          - check if they need to change class
+          - find their next node
+          - release the individual if there is capacity at destination,
+            otherwise cause blockage
         """
         next_individual, next_individual_index = self.find_next_individual()
         self.change_customer_class(next_individual)
@@ -318,7 +344,7 @@ class Node(object):
 
     def get_now(self):
         """
-        Gets the current time
+        Gets the current time.
         """
         return self.simulation.current_time
 
@@ -333,13 +359,13 @@ class Node(object):
 
     def increment_time(self, original, increment):
         """
-        Increments the original time by the increment
+        Increments the original time by the increment.
         """
         return original + increment
 
     def kill_server(self, srvr):
         """
-        Kills server.
+        Kills a server when they go off duty.
         """
         srvr.total_time = self.increment_time(self.next_event_date, -srvr.start_date)
         self.overtime.append(
@@ -351,7 +377,10 @@ class Node(object):
 
     def next_node(self, ind):
         """
-        Finds the next node according the random distribution.
+        Finds the next node according the routing method:
+          - if not process-based then sample from transtition matrix
+          - if process-based then take the next value from the predefined route,
+            removing the current node from the route
         """
         if not self.simulation.network.process_based:
             customer_class = ind.customer_class
@@ -369,7 +398,16 @@ class Node(object):
 
     def release(self, next_individual_index, next_node):
         """
-        Update node when an individual is released.
+        Update node when an individual is released:
+          - find the individual to release
+          - remove from queue
+          - record relevant information to data record
+          - detatch individual from server
+          - write record
+          - update state tracker
+          - begin service of any waiting customers
+          - send individual to next destination
+          - release any individuals blocked by this node
         """
         next_individual =  self.all_individuals[next_individual_index]
         self.individuals[next_individual.prev_priority_class].remove(next_individual)
@@ -388,8 +426,13 @@ class Node(object):
 
     def release_blocked_individual(self):
         """
-        Releases an individual who becomes unblocked
-        when another individual is released.
+        Releases an individual who becomes unblocked when
+        another individual is released:
+          - check if anyone is blocked by this node
+          - find the individual who has been blocked the longest
+          - remove that individual from blocked queue
+          - check if that individual had their service interrupted
+          - release that individual from their node
         """
         if self.len_blocked_queue > 0 and self.number_of_individuals < self.node_capacity:
             node_to_receive_from = self.simulation.nodes[
@@ -410,7 +453,7 @@ class Node(object):
 
     def get_service_time(self, clss):
         """
-        Returns a service time for the given customer class
+        Returns a service time for the given customer class.
         """
         return self.simulation.service_times[self.id_number][clss]._sample(t=self.simulation.current_time)
 
@@ -444,7 +487,11 @@ class Node(object):
 
     def update_next_event_date(self):
         """
-        Finds the time of the next event at this node
+        Finds the time of the next event at this node:
+          - if infinite servers, return time for next individual to
+            end service, or Inf
+          - otherwise return minimum of next shift change, and time for
+            next individual (who isn't blocked) to end service, or Inf
         """
         if not isinf(self.c):
             next_end_service = min([s.next_end_service_date

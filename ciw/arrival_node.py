@@ -5,11 +5,11 @@ from .individual import Individual
 
 class ArrivalNode(object):
     """
-    Class for the arrival node on our network
+    Class for the arrival node of the network
     """
     def __init__(self, simulation):
         """
-        Initialise a node.
+        Initialise the arrvial node.
         """
         self.simulation = simulation
         self.number_of_individuals = 0
@@ -35,7 +35,7 @@ class ArrivalNode(object):
     def decide_baulk(self, next_node, next_individual):
         """
         Either makes an individual baulk, or sends the individual
-        to the next node
+        to the next node.
         """
         if next_node.baulking_functions[self.next_class] is None:
             self.send_individual(next_node, next_individual)
@@ -65,7 +65,8 @@ class ArrivalNode(object):
 
     def have_event(self):
         """
-        Send new arrival to relevent node.
+        Finds a batch size. Creates that many Individuals and send
+        them to the relevent node. Then updates the event_dates_dict.
         """
         batch = self.batch_size(self.next_node, self.next_class)
         for _ in range(batch):
@@ -90,7 +91,7 @@ class ArrivalNode(object):
 
     def increment_time(self, original, increment):
         """
-        Increments the original time by the increment
+        Increments the original time by the increment.
         """
         return original + increment
 
@@ -113,6 +114,7 @@ class ArrivalNode(object):
     def batch_size(self, nd, clss):
         """
         Samples the batch size for next class and node.
+        Raises error if a positive integer is not sampled.
         """
         batch = self.simulation.batch_sizes[nd][clss]._sample(t=self.simulation.current_time)
         if isinstance(batch, int) and batch >= 0:
@@ -121,22 +123,22 @@ class ArrivalNode(object):
 
     def record_baulk(self, next_node):
         """
-        Adds an individual to the baulked dictionary
+        Adds an individual to the baulked dictionary.
         """
         self.baulked_dict[next_node.id_number][
             self.next_class].append(self.next_event_date)
 
     def record_rejection(self, next_node):
         """
-        Adds an individual to the rejection dictionary
+        Adds an individual to the rejection dictionary.
         """
         self.rejection_dict[next_node.id_number][
             self.next_class].append(self.next_event_date)
 
     def release_individual(self, next_node, next_individual):
         """
-        Either sends next_individual to the next node, or rejects
-        that individual.
+        Either rejects the next_individual die to lack of capacity,
+        or sends that individual to baulk or not.
         """
         if next_node.number_of_individuals >= next_node.node_capacity:
             self.record_rejection(next_node)
@@ -145,13 +147,13 @@ class ArrivalNode(object):
 
     def send_individual(self, next_node, next_individual):
         """
-        Sends the next_individual to the next_node
+        Sends the next_individual to the next_node.
         """
         self.number_accepted_individuals += 1
         next_node.accept(next_individual)
 
     def update_next_event_date(self):
         """
-        Passes, updating next event happens at time of event.
+        Passes, as updating next event happens at time of event.
         """
         pass

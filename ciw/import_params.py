@@ -6,6 +6,11 @@ import ciw.dists
 from .network import *
 
 def get_distribution(dist):
+    """
+    For use when parameters are read in from a .yml file.
+    Returns instances of the distribution classes that
+    correspond to the indicator string in the .yml file.
+    """
     if dist[0] == 'Uniform':
        return ciw.dists.Uniform(dist[1], dist[2])
     if dist[0] == 'Deterministic':
@@ -67,7 +72,7 @@ def create_network(arrival_distributions=None,
 
 def load_parameters(directory_name):
     """
-    Loads the parameters into the model
+    Loads the .yml file parameters to a dictionary.
     """
     root = os.getcwd()
     directory = os.path.join(root, directory_name)
@@ -80,7 +85,7 @@ def load_parameters(directory_name):
 
 def create_network_from_yml(directory_name):
     """
-    Creates a Network object form a yaml file
+    Creates a Network object form a yaml file.
     """
     params_input = load_parameters(directory_name)
     params = fill_out_dictionary(params_input)
@@ -100,7 +105,7 @@ def create_network_from_yml(directory_name):
 
 def create_network_from_dictionary(params_input):
     """
-    Creates a Network object from a parameters dictionary
+    Creates a Network object from a parameters dictionary.
     """
     params = fill_out_dictionary(params_input)
     validify_dictionary(params)
@@ -180,7 +185,7 @@ def create_network_from_dictionary(params_input):
 def fill_out_dictionary(params_input):
     """
     Fills out the parameters dictionary with the
-    optional arguments
+    default values of the optional arguments.
     """
     params = copy.deepcopy(params_input)
     if isinstance(params['arrival_distributions'], list):
@@ -229,7 +234,7 @@ def fill_out_dictionary(params_input):
 def validify_dictionary(params):
     """
     Raises errors if there is something wrong with the
-    parameters dictionary
+    parameters dictionary.
     """
     if all(isinstance(f, types.FunctionType) for f in params['routing']):
         consistant_num_classes = (

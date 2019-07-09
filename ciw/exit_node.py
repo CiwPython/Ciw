@@ -2,11 +2,11 @@ from __future__ import division
 
 class ExitNode(object):
     """
-    Class for the exit node on our network
+    Class for the exit node on our network.
     """
     def __init__(self):
         """
-        Initialise a node.
+        Initialise the exit node.
         """
         self.all_individuals = []
         self.number_of_individuals = 0
@@ -16,13 +16,13 @@ class ExitNode(object):
 
     def __repr__(self):
         """
-        Representation of a node.
+        Representation of the exit node.
         """
         return 'Exit Node'
 
     def accept(self, next_individual):
         """
-        Adds customer to the list of completed customers
+        Adds individual to the list of completed individuals.
         """
         self.all_individuals.append(next_individual)
         self.number_of_individuals += 1

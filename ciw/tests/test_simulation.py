@@ -736,3 +736,7 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_deadlock()
         ttd = Q.times_to_deadlock[((0, 0), (0, 0))]
         self.assertEqual(round(ttd, 5), 92.49468)
+
+    def test_generic_deadlock_detector(self):
+        DD = ciw.NoDeadlockDetection()
+        self.assertEqual(DD.detect_deadlock(), False)

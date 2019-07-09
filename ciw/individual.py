@@ -2,11 +2,11 @@ from __future__ import division
 
 class Individual(object):
     """
-    Class for an individual
+    Class for an individual.
     """
     def __init__(self, id_number, customer_class=0, priority_class=0):
         """
-        Initialise an individual
+        Initialise an individual.
         """
         self.arrival_date = False
         self.service_start_date = False
@@ -28,6 +28,6 @@ class Individual(object):
 
     def __repr__(self):
         """
-        Represents an Individual instance as a string
+        Represents an Individual instance as a string.
         """
         return 'Individual %s' % self.id_number
