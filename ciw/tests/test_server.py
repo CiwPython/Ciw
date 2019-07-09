@@ -65,7 +65,7 @@ class TestServer(unittest.TestCase):
             queue_capacities=[0],
             routing=[[1.0]]
         )
-        Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
+        Q = ciw.Simulation(N, deadlock_detector=ciw.deadlock.StateDigraph())
         Q.simulate_until_deadlock()
         s = Q.nodes[1].servers[0]
         self.assertEqual(s.total_time, 4.0)

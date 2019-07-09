@@ -19,7 +19,7 @@ Ciw then records the time until deadlock from each state.
 (Please see the documentation on :ref:`state trackers <state-trackers>`.)
 
 In order to take advantage of this feature, set the :code:`deadlock_detection` argument to one of the deadlock detection methods when creating the Simulation object.
-Currently only :code:`'StateDigraph'` is implemented.
+Currently only :code:`ciw.deadlock.StateDigraph` is implemented.
 Then use the :code:`simulate_until_deadlock` method.
 The attribute :code:`times_to_deadlock` contains the times to deadlock from each state.
 
@@ -37,11 +37,14 @@ Parameters::
     ...    queue_capacities=[3]
     ... )
 
-Running until deadlock::
+Running until deadlock (using a :code:`ciw.trackers.NaiveTracker` object)::
 
     >>> import ciw
     >>> ciw.seed(1)
-    >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
+    >>> Q = ciw.Simulation(N,
+    ...     deadlock_detector=ciw.deadlock.StateDigraph(),
+    ...     tracker=ciw.trackers.NaiveTracker()
+    ... )
     >>> Q.simulate_until_deadlock()
     >>> Q.times_to_deadlock # doctest:+SKIP
     {((0, 0),): 0.94539784..., ((1, 0),): 0.92134933..., ((2, 0),): 0.68085451..., ((3, 0),): 0.56684471..., ((3, 1),): 0.0, ((4, 0),): 0.25332344...}
@@ -56,7 +59,8 @@ How to Set a State Tracker
 ==========================
 
 Ciw has the option to activate a state :code:`tracker` in order to track the state of the system as the simulation progresses towards deadlock.
-The default is the basic :code:`StateTracker` which does nothing (unless the simulation is detecting deadlock, in which case :code:`NaiveTracker` is the default).
+In the example above a :code:`NaiveTracker` was used.
+The default is the basic :code:`StateTracker` which does nothing.
 The state trackers have their uses when simulating until deadlock, as a time to deadlock is recorded for every state the simulation reaches.
 
 For a list and explanation of the state trackers that Ciw currently supports see :ref:`refs-statetrackers`.
@@ -75,7 +79,10 @@ Simulating until deadlock, the :code:`times_to_deadlock` dictionary will contain
     ... )
 
     >>> ciw.seed(1)
-    >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph', tracker='Naive')
+    >>> Q = ciw.Simulation(N,
+    ...     deadlock_detector=ciw.deadlock.StateDigraph(),
+    ...     tracker=ciw.trackers.NaiveTracker()
+    ... )
     >>> Q.simulate_until_deadlock()
     >>> Q.times_to_deadlock # doctest:+SKIP
     {((0, 0),): 1.3354..., ((1, 0),): 1.3113..., ((1, 2),): 0.0, ((2, 0),): 1.0708..., ((2, 1),): 0.9353..., ((3, 0),): 0.9568...}
@@ -83,10 +90,13 @@ Simulating until deadlock, the :code:`times_to_deadlock` dictionary will contain
 The following states are expected if a Matrix Tracker is used: ((()), (0)), ((()), (1)), ((()), (2)), ((()), (3)), (((1)), (3)), (((1, 2)), (3)).
 
     >>> ciw.seed(1)
-    >>> Q = ciw.Simulation(N, deadlock_detector='StateDigraph', tracker='Matrix')
+    >>> Q = ciw.Simulation(N,
+    ...     deadlock_detector=ciw.deadlock.StateDigraph(),
+    ...     tracker=ciw.trackers.MatrixTracker()
+    ... )
     >>> Q.simulate_until_deadlock()
     >>> Q.times_to_deadlock # doctest:+SKIP
     {((((),),), (0,)): 1.3354..., ((((),),), (1,)): 1.3113..., ((((),),), (2,)): 1.0708..., ((((),),), (3,)): 0.9568..., ((((1,),),), (3,)): 0.9353..., ((((1, 2),),), (3,)): 0.0}
 
-Notice that in this simple case, the Naive and Matric trackers correspond to the same states.
+Notice that in this simple case, the Naive and Matrix trackers correspond to the same states.
 In other examples, where customers may get blocked in different orders and to different places, then the two trackers may track different system states.

@@ -13,8 +13,8 @@ from .node import Node
 from .exactnode import ExactNode, ExactArrivalNode
 from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
-from .state_tracker import *
-from .deadlock_detector import *
+from ciw import trackers
+from ciw import deadlock
 
 class Simulation(object):
     """
@@ -23,8 +23,8 @@ class Simulation(object):
     def __init__(self, network,
                  exact=False,
                  name='Simulation',
-                 tracker=False,
-                 deadlock_detector=False,
+                 tracker=trackers.StateTracker(),
+                 deadlock_detector=deadlock.NoDetection(),
                  node_class=None,
                  arrival_node_class=None):
         """
@@ -39,14 +39,15 @@ class Simulation(object):
             getcontext().prec = exact
 
         self.name = name
-        self.deadlock_detector = self.choose_deadlock_detection(deadlock_detector)
+        self.deadlock_detector = deadlock_detector
         self.inter_arrival_times = self.find_arrival_dists()
         self.service_times = self.find_service_dists()
         self.batch_sizes = self.find_batching_dists()
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [self.NodeType(i + 1, self) for i in range(network.number_of_nodes)]
         self.nodes = ([self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()])
-        self.statetracker = self.choose_tracker(tracker, deadlock_detector)
+        self.statetracker = tracker
+        self.statetracker.initialise(self)
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
         self.rejection_dict = self.nodes[0].rejection_dict
@@ -58,31 +59,6 @@ class Simulation(object):
         Representation of the simulation.
         """
         return self.name
-
-    def choose_tracker(self, tracker, deadlock_detector):
-        """
-        Chooses the state tracker to use for the simulation.
-        If no tracker is selected, the basic StateTracker is
-        used, unless Detect_deadlock is on, then NaiveTracker
-        is the default.
-        """
-        if tracker == 'Naive':
-            return NaiveTracker(self)
-        if tracker == 'Matrix':
-            return MatrixTracker(self)
-        elif deadlock_detector:
-            return NaiveTracker(self)
-        return StateTracker(self)
-
-    def choose_deadlock_detection(self, deadlock_detector):
-        """
-        Chooses the deadlock detection mechanism to use for the
-        simulation.
-        """
-        if deadlock_detector == False:
-            return NoDeadlockDetection()
-        if deadlock_detector == 'StateDigraph':
-            return StateDigraphMethod()
 
     def find_arrival_dists(self):
         """

@@ -4,7 +4,7 @@ class StateTracker(object):
     """
     A generic class to record system's state.
     """
-    def __init__(self, simulation):
+    def initialise(self, simulation):
         """
         Initialises the state tracker class.
         """
@@ -47,7 +47,7 @@ class NaiveTracker(StateTracker):
         are blocked, 5 customers at the second node, 4 of which
         are blocked.
     """
-    def __init__(self, simulation):
+    def initialise(self, simulation):
         """
         Initialises the naive tracker class.
         """
@@ -100,7 +100,7 @@ class MatrixTracker(StateTracker):
         the second node to the first. The numbers denote the order
         at which they became blocked.
     """
-    def __init__(self, simulation):
+    def initialise(self, simulation):
         """
         Initialises the naive tracker class.
         """
