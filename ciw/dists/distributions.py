@@ -12,14 +12,14 @@ class Distribution(object):
     def __repr__(self):
         return 'Distribution'
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         pass
 
-    def _sample(self, t=None):
+    def _sample(self, t=None, ind=None):
         """
         Performs vaildity checks before sampling.
         """
-        s = self.sample(t=t)
+        s = self.sample(t=t, ind=ind)
         if (isinstance(s, float) or isinstance(s, int)) and s >= 0:
             return s
         else:
@@ -64,7 +64,7 @@ class CombinedDistribution(Distribution):
     def __repr__(self):
         return 'CombinedDistribution'
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         s1 = self.d1.sample()
         s2 = self.d2.sample()
         return self.operator(s1, s2)
@@ -89,7 +89,7 @@ class Uniform(Distribution):
     def __repr__(self):
         return 'Uniform: {0}, {1}'.format(self.lower, self.upper)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return uniform(self.lower, self.upper)
 
 
@@ -108,7 +108,7 @@ class Deterministic(Distribution):
     def __repr__(self):
         return 'Deterministic: {0}'.format(self.value)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return self.value
 
 
@@ -133,7 +133,7 @@ class Triangular(Distribution):
     def __repr__(self):
         return 'Triangular: {0}, {1}, {2}'.format(self.lower, self.mode, self.upper)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return triangular(self.lower, self.upper, self.mode)
 
 
@@ -152,7 +152,7 @@ class Exponential(Distribution):
     def __repr__(self):
         return 'Exponential: {0}'.format(self.rate)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return expovariate(self.rate)
 
 class Gamma(Distribution):
@@ -170,7 +170,7 @@ class Gamma(Distribution):
     def __repr__(self):
         return 'Gamma: {0}, {1}'.format(self.shape, self.scale)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return gammavariate(self.shape, self.scale)
 
 
@@ -189,7 +189,7 @@ class Normal(Distribution):
     def __repr__(self):
         return 'Normal: {0}, {1}'.format(self.mean, self.sd)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return truncated_normal(self.mean, self.sd)
 
 
@@ -208,7 +208,7 @@ class Lognormal(Distribution):
     def __repr__(self):
         return 'Lognormal: {0}, {1}'.format(self.mean, self.sd)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return lognormvariate(self.mean, self.sd)
 
 
@@ -227,7 +227,7 @@ class Weibull(Distribution):
     def __repr__(self):
         return 'Weibull: {0}, {1}'.format(self.scale, self.shape)
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return weibullvariate(self.scale, self.shape)
 
 
@@ -246,7 +246,7 @@ class Empirical(Distribution):
     def __repr__(self):
         return 'Empirical'
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return random_choice(self.observations)
 
 
@@ -266,7 +266,7 @@ class Sequential(Distribution):
     def __repr__(self):
         return 'Sequential'
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return next(self.generator)
 
 
@@ -291,7 +291,7 @@ class Pmf(Distribution):
     def __repr__(self):
         return 'Pmf'
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return random_choice(self.values, self.probs)
 
 
@@ -302,5 +302,5 @@ class NoArrivals(Distribution):
     def __repr__(self):
         return 'NoArrivals'
 
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return float('Inf')

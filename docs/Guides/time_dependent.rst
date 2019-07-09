@@ -14,7 +14,7 @@ For example, say we wish to have arrivals once every 30 minutes in the morning, 
 
     >>> import ciw
     >>> class TimeDependentDist(ciw.dists.Distribution):
-    ...     def sample(self, t):
+    ...     def sample(self, t, ind=None):
     ...         if t % 24 < 12.0:
     ...             return 0.5
     ...         if t % 24 < 14.0:

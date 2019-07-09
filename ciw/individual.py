@@ -25,6 +25,7 @@ class Individual(object):
         self.queue_size_at_departure = False
         self.destination = False
         self.interrupted = False
+        self.node = False
 
     def __repr__(self):
         """

@@ -75,6 +75,7 @@ class ArrivalNode(object):
             next_individual = Individual(self.number_of_individuals,
                                          self.next_class,
                                          priority_class)
+            next_individual.simulation = self.simulation
             if self.simulation.network.process_based:
                 next_individual.route = self.simulation.network.customer_classes[
                 next_individual.customer_class].routing[self.next_node - 1](next_individual)

@@ -21,12 +21,11 @@ class ExactNode(Node):
         """
         return Decimal(str(original)) + Decimal(str(increment))
 
-    def get_service_time(self, clss):
+    def get_service_time(self, ind):
         """
         Returns a service time for the given customer class
         """
-        return Decimal(str(self.simulation.service_times[self.id_number][clss]._sample(self.simulation.current_time)))
-
+        return Decimal(str(self.simulation.service_times[self.id_number][ind.customer_class]._sample(self.simulation.current_time, ind=ind)))
 
     def get_now(self):
         """

@@ -62,7 +62,7 @@ Let's show an example, we wish to have batch sizes of 2 for the first 10 time un
 Define a time dependent batching distribution by inheriting from the generic :code:`Distribution` object::
 
     >>> class TimeDependentBatches(ciw.dists.Distribution):
-    ...     def sample(self, t):
+    ...     def sample(self, t, ind=None):
     ...         if t < 10.0:
     ...             return 2
     ...         return 1

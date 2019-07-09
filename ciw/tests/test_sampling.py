@@ -25,7 +25,7 @@ class CustomDist(ciw.dists.Distribution):
     """
     A custom distribution to test user defined functionality.
     """
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         val = random()
         if int(str(val*10)[0]) % 2 == 0:
             return 2 * val
@@ -35,7 +35,7 @@ class TimeDependentDist1(ciw.dists.Distribution):
     """
     A customer time-dependent distribution to test time-dependent functionality.
     """
-    def sample(self, t):
+    def sample(self, t, ind=None):
         if t < 10.0:
             return 3.0
         return 5.0
@@ -44,7 +44,7 @@ class TimeDependentDist2(ciw.dists.Distribution):
     """
     A customer time-dependent distribution to test time-dependent functionality.
     """
-    def sample(self, t):
+    def sample(self, t, ind=None):
         if t < 20.0:
             return t / 2.0
         return 8.0
@@ -53,7 +53,7 @@ class BrokenDist(ciw.dists.Distribution):
     """
     Broken distribution that should raise an error.
     """
-    def sample(self, t=None):
+    def sample(self, t=None, ind=None):
         return -4.0
 
 
@@ -646,6 +646,7 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
+        ind = ciw.Individual(0)
         ciw.seed(5)
 
         samples = []
@@ -663,14 +664,14 @@ class TestSampling(unittest.TestCase):
         samples = []
         for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
             Q.current_time = t
-            samples.append(round(N1.get_service_time(0), 2))
+            samples.append(round(N1.get_service_time(ind), 2))
         expected = [3.0, 3.0, 3.0, 5.0, 5.0]
         self.assertEqual(samples, expected)
 
         samples = []
         for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
             Q.current_time = t
-            samples.append(round(N2.get_service_time(0), 2))
+            samples.append(round(N2.get_service_time(ind), 2))
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 
@@ -706,19 +707,20 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params), exact=26)
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
+        ind = ciw.Individual(0)
         ciw.seed(5)
 
         samples = []
         for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
             Q.current_time = t
-            samples.append(round(N1.get_service_time(0), 2))
+            samples.append(round(N1.get_service_time(ind), 2))
         expected = [3.0, 3.0, 3.0, 5.0, 5.0]
         self.assertEqual(samples, expected)
 
         samples = []
         for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
             Q.current_time = t
-            samples.append(round(N2.get_service_time(0), 2))
+            samples.append(round(N2.get_service_time(ind), 2))
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 

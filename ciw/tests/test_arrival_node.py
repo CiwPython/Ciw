@@ -2,7 +2,7 @@ import unittest
 import ciw
 
 class TimeDependentBatches(ciw.dists.Distribution):
-    def sample(self, t):
+    def sample(self, t, ind=None):
         if t < 11.0:
             return 5
         return 1

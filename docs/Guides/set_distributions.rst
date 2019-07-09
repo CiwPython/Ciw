@@ -106,7 +106,7 @@ Consider a distribution that samples the value `3.0` 50% of the time, and sample
 
     >>> import random
     >>> class CustomDistribution(ciw.dists.Distribution):
-    ...     def sample(t=None):
+    ...     def sample(t=None, ind=None):
     ...         if random.random() < 0.5:
     ...             return 3.0
     ...         return random.random()

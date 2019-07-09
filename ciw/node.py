@@ -85,6 +85,7 @@ class Node(object):
           - record all other information at arrival point
           - update state tracker
         """
+        next_individual.node = self.id_number
         next_individual.exit_date = False
         next_individual.is_blocked = False
         self.begin_service_if_possible_accept(next_individual)
@@ -122,8 +123,7 @@ class Node(object):
           - attach server to individual
         """
         next_individual.arrival_date = self.get_now()
-        next_individual.service_time = self.get_service_time(
-            next_individual.customer_class)
+        next_individual.service_time = self.get_service_time(next_individual)
         if self.free_server():
             next_individual.service_start_date = self.get_now()
             next_individual.service_end_date = self.increment_time(
@@ -143,7 +143,7 @@ class Node(object):
             node_blocked_to.blocked_queue.remove((self.id_number, ind.id_number))
             node_blocked_to.len_blocked_queue -= 1
             ind.is_blocked = False
-        ind.service_time = self.get_service_time(ind.customer_class)
+        ind.service_time = self.get_service_time(ind)
         ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
         ind.interrupted = False
         self.attach_server(srvr, ind)
@@ -443,11 +443,11 @@ class Node(object):
                 node_to_receive_from.number_interrupted_individuals -= 1
             node_to_receive_from.release(individual_to_receive_index, self)
 
-    def get_service_time(self, clss):
+    def get_service_time(self, ind):
         """
         Returns a service time for the given customer class.
         """
-        return self.simulation.service_times[self.id_number][clss]._sample(t=self.simulation.current_time)
+        return self.simulation.service_times[self.id_number][ind.customer_class]._sample(t=self.simulation.current_time, ind=ind)
 
     def take_servers_off_duty(self):
         """
