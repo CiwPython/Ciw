@@ -19,10 +19,10 @@ Consider an :ref:`M/M/1/3 <kendall-notation>` queue::
 
 	>>> import ciw
 	>>> N = ciw.create_network(
-	...     Arrival_distributions=[ciw.dists.Exponential(10)],
-	...     Service_distributions=[ciw.dists.Exponential(5)],
-	...     Number_of_servers=[1],
-	...     Queue_capacities=[3]
+	...     arrival_distributions=[ciw.dists.Exponential(10)],
+	...     service_distributions=[ciw.dists.Exponential(5)],
+	...     number_of_servers=[1],
+	...     queue_capacities=[3]
 	... )
 
 To simulate until 30 customers have finished service::

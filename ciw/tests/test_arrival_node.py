@@ -131,10 +131,10 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_no_arrivals_example(self):
         N = ciw.create_network(
-            Arrival_distributions=[ciw.dists.NoArrivals(), ciw.dists.Exponential(1)],
-            Service_distributions=[ciw.dists.Exponential(4), ciw.dists.Exponential(4)],
-            Routing=[[0.5, 0.1], [0.1, 0.1]],
-            Number_of_servers=[1, 2])
+            arrival_distributions=[ciw.dists.NoArrivals(), ciw.dists.Exponential(1)],
+            service_distributions=[ciw.dists.Exponential(4), ciw.dists.Exponential(4)],
+            routing=[[0.5, 0.1], [0.1, 0.1]],
+            number_of_servers=[1, 2])
         Q = ciw.Simulation(N)
         AN = Q.nodes[0]
         self.assertEqual(
@@ -143,13 +143,13 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(AN.inter_arrival(1, 0), float('Inf'))
 
     def test_rejection_dict(self):
-        params = {'Arrival_distributions':[ciw.dists.Deterministic(3.0),
+        params = {'arrival_distributions':[ciw.dists.Deterministic(3.0),
                                            ciw.dists.Deterministic(4.0)],
-                  'Service_distributions':[ciw.dists.Deterministic(10.0),
+                  'service_distributions':[ciw.dists.Deterministic(10.0),
                                            ciw.dists.Deterministic(10.0)],
-                  'Routing':[[0.0, 1.0], [0.0, 0.0]],
-                  'Number_of_servers':[1, 1],
-                  'Queue_capacities':[1, 1]}
+                  'routing':[[0.0, 1.0], [0.0, 0.0]],
+                  'number_of_servers':[1, 1],
+                  'queue_capacities':[1, 1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
         Q.simulate_until_max_time(20)
@@ -157,10 +157,10 @@ class TestArrivalNode(unittest.TestCase):
             {1: {0: [9.0, 12.0, 18.0]}, 2: {0: [12.0, 16.0]}})
 
     def test_send_individual(self):
-        params = {'Arrival_distributions':[ciw.dists.Exponential(3.0)],
-                  'Service_distributions':[ciw.dists.Exponential(10.0)],
-                  'Routing':[[0.5]],
-                  'Number_of_servers':[1]}
+        params = {'arrival_distributions':[ciw.dists.Exponential(3.0)],
+                  'service_distributions':[ciw.dists.Exponential(10.0)],
+                  'routing':[[0.5]],
+                  'number_of_servers':[1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
         ind1 = ciw.Individual(555)
@@ -175,10 +175,10 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(Q.nodes[1].individuals, [[ind1, ind2]])
 
     def test_report_rejection(self):
-        params = {'Arrival_distributions':[ciw.dists.Exponential(3.0)],
-                  'Service_distributions':[ciw.dists.Exponential(10.0)],
-                  'Routing':[[0.5]],
-                  'Number_of_servers':[1]}
+        params = {'arrival_distributions':[ciw.dists.Exponential(3.0)],
+                  'service_distributions':[ciw.dists.Exponential(10.0)],
+                  'routing':[[0.5]],
+                  'number_of_servers':[1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
         AN.next_event_date = 3.33
@@ -190,10 +190,10 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(AN.rejection_dict, {1: {0: [3.33, 4.44]}})
 
     def test_update_next_event_date_passes(self):
-        params = {'Arrival_distributions':[ciw.dists.Exponential(3.0)],
-                  'Service_distributions':[ciw.dists.Exponential(10.0)],
-                  'Routing':[[0.5]],
-                  'Number_of_servers':[1]}
+        params = {'arrival_distributions':[ciw.dists.Exponential(3.0)],
+                  'service_distributions':[ciw.dists.Exponential(10.0)],
+                  'routing':[[0.5]],
+                  'number_of_servers':[1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
         AN.next_event_date = 3.33
@@ -205,10 +205,10 @@ class TestArrivalNode(unittest.TestCase):
     def test_batching(self):
         # Test that 2 arrivals occur at a time
         N = ciw.create_network(
-            Arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 100.0])],
-            Service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
-            Number_of_servers=[1],
-            Batching_distributions=[ciw.dists.Deterministic(2)]
+            arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
+            number_of_servers=[1],
+            batching_distributions=[ciw.dists.Deterministic(2)]
         )
         Q = ciw.Simulation(N)
         N = Q.transitive_nodes[0]
@@ -223,10 +223,10 @@ class TestArrivalNode(unittest.TestCase):
 
         # Test that batched individuals have same arrival date
         N = ciw.create_network(
-            Arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 2.0, 1.0, 5.0, 100.0])],
-            Service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
-            Number_of_servers=[1],
-            Batching_distributions=[ciw.dists.Deterministic(2)]
+            arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 2.0, 1.0, 5.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
+            number_of_servers=[1],
+            batching_distributions=[ciw.dists.Deterministic(2)]
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(70.0)
@@ -251,10 +251,10 @@ class TestArrivalNode(unittest.TestCase):
     def test_batching_sequential(self):
         # Test sequential batches
         N = ciw.create_network(
-            Arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 100.0])],
-            Service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
-            Number_of_servers=[1],
-            Batching_distributions=[ciw.dists.Sequential([1, 1, 4, 2, 1, 5])]
+            arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
+            number_of_servers=[1],
+            batching_distributions=[ciw.dists.Sequential([1, 1, 4, 2, 1, 5])]
         )
         Q = ciw.Simulation(N)
         N = Q.transitive_nodes[0]
@@ -282,10 +282,10 @@ class TestArrivalNode(unittest.TestCase):
     def test_batching_custom(self):
         # Test custom batches
         N = ciw.create_network(
-            Arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 100.0])],
-            Service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
-            Number_of_servers=[1],
-            Batching_distributions=[ciw.dists.Pmf([1, 5], [0.5, 0.5])]
+            arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
+            number_of_servers=[1],
+            batching_distributions=[ciw.dists.Pmf([1, 5], [0.5, 0.5])]
         )
         ciw.seed(12)
         Q = ciw.Simulation(N)
@@ -302,17 +302,17 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_batching_multi_node(self):
         N = ciw.create_network(
-            Arrival_distributions=[ciw.dists.Deterministic(20),
+            arrival_distributions=[ciw.dists.Deterministic(20),
                                    ciw.dists.Deterministic(23),
                                    ciw.dists.Deterministic(25)],
-            Service_distributions=[ciw.dists.Deterministic(1),
+            service_distributions=[ciw.dists.Deterministic(1),
                                    ciw.dists.Deterministic(1),
                                    ciw.dists.Deterministic(1)],
-            Number_of_servers=[10, 10, 10],
-            Batching_distributions=[ciw.dists.Deterministic(3),
+            number_of_servers=[10, 10, 10],
+            batching_distributions=[ciw.dists.Deterministic(3),
                                     ciw.dists.Deterministic(2),
                                     ciw.dists.Deterministic(1)],
-            Routing=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+            routing=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
         )
         ciw.seed(12)
         Q = ciw.Simulation(N)
@@ -328,14 +328,14 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_batching_multi_classes(self):
         N = ciw.create_network(
-            Arrival_distributions={'Class 0': [ciw.dists.Deterministic(20)],
+            arrival_distributions={'Class 0': [ciw.dists.Deterministic(20)],
                                    'Class 1': [ciw.dists.Deterministic(23)],
                                    'Class 2': [ciw.dists.Deterministic(25)]},
-            Service_distributions={'Class 0': [ciw.dists.Deterministic(1)],
+            service_distributions={'Class 0': [ciw.dists.Deterministic(1)],
                                    'Class 1': [ciw.dists.Deterministic(1)],
                                    'Class 2': [ciw.dists.Deterministic(1)]},
-            Number_of_servers=[10],
-            Batching_distributions={'Class 0': [ciw.dists.Deterministic(3)],
+            number_of_servers=[10],
+            batching_distributions={'Class 0': [ciw.dists.Deterministic(3)],
                                     'Class 1': [ciw.dists.Deterministic(2)],
                                     'Class 2': [ciw.dists.Deterministic(1)]}
         )
@@ -353,10 +353,10 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_batching_time_dependent(self):
         N = ciw.create_network(
-            Arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 2.0, 1.0, 1000.0])],
-            Service_distributions=[ciw.dists.Deterministic(2)],
-            Number_of_servers=[1],
-            Batching_distributions=[TimeDependentBatches()]
+            arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 2.0, 1.0, 1000.0])],
+            service_distributions=[ciw.dists.Deterministic(2)],
+            number_of_servers=[1],
+            batching_distributions=[TimeDependentBatches()]
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(30.0)
@@ -368,13 +368,3 @@ class TestArrivalNode(unittest.TestCase):
         recs = Q.get_all_records()
         self.assertEqual([r.arrival_date for r in recs], [5.0, 5.0, 5.0, 5.0, 5.0, 10.0, 10.0, 10.0, 10.0, 10.0, 12.0, 13.0])
         self.assertEqual([r.exit_date for r in recs], [7.0, 9.0, 11.0, 13.0, 15.0, 17.0, 19.0, 21.0, 23.0, 25.0, 27.0, 29.0])
-
-    # def test_error_batching_time_dependent(self):
-    #     params = {
-    #         'Arrival_distributions': [ciw.dists.Sequential([5.0, 5.0, 2.0, 1.0, 1000.0])],
-    #         'Service_distributions': [ciw.dists.Deterministic(2)],
-    #         'Number_of_servers': [1],
-    #         'Batching_distributions': [['TimeDependent', lambda t: 1.5]]
-    #     }
-    #     N = ciw.create_network(**params)
-    #     self.assertRaises(ValueError, ciw.Simulation, N)

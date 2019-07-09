@@ -1,4 +1,4 @@
-Arrival_distributions:
+arrival_distributions:
   Class 0:
   - - Uniform
     - 1.4
@@ -16,15 +16,15 @@ Arrival_distributions:
     - 8.8
     - 9.9
   - - NoArrivals
-Number_of_servers:
+number_of_servers:
 - 4
 - 3
 - 4
-Queue_capacities:
+queue_capacities:
 - "Inf"
 - 10
 - "Inf"
-Service_distributions:
+service_distributions:
   Class 0:
   - - Lognormal
     - 5.5
@@ -43,7 +43,7 @@ Service_distributions:
   - - Normal
     - 5.0
     - 0.6
-Routing:
+routing:
   Class 0:
   - - 0.8
     - 0.1

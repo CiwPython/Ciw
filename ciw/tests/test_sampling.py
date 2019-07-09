@@ -103,9 +103,9 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_uniform_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Uniform(2.2, 3.3)],
-            'Service_distributions': [ciw.dists.Uniform(2.2, 3.3)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Uniform(2.2, 3.3)],
+            'service_distributions': [ciw.dists.Uniform(2.2, 3.3)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nu = Q.transitive_nodes[0]
@@ -128,9 +128,9 @@ class TestSampling(unittest.TestCase):
     def test_sampling_uniform_dist_hypothesis(self, u, rm):
         ul, uh = u[0], u[1]
         params = {
-            'Arrival_distributions': [ciw.dists.Uniform(ul, uh)],
-            'Service_distributions': [ciw.dists.Uniform(ul, uh)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Uniform(ul, uh)],
+            'service_distributions': [ciw.dists.Uniform(ul, uh)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nu = Q.transitive_nodes[0]
@@ -151,9 +151,9 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_deterministic_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Deterministic(4.4)],
-            'Service_distributions': [ciw.dists.Deterministic(4.4)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Deterministic(4.4)],
+            'service_distributions': [ciw.dists.Deterministic(4.4)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nd = Q.transitive_nodes[0]
@@ -172,9 +172,9 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_sampling_deterministic_dist_hypothesis(self, d, rm):
         params = {
-            'Arrival_distributions': [ciw.dists.Deterministic(d)],
-            'Service_distributions': [ciw.dists.Deterministic(d)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Deterministic(d)],
+            'service_distributions': [ciw.dists.Deterministic(d)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nd = Q.transitive_nodes[0]
@@ -196,9 +196,9 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_triangular_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Triangular(1.1, 1.5, 6.6)],
-            'Service_distributions': [ciw.dists.Triangular(1.1, 1.5, 6.6)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Triangular(1.1, 1.5, 6.6)],
+            'service_distributions': [ciw.dists.Triangular(1.1, 1.5, 6.6)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nt = Q.transitive_nodes[0]
@@ -221,9 +221,9 @@ class TestSampling(unittest.TestCase):
     def test_sampling_triangular_dist_hypothesis(self, t, rm):
         tl, tm, th = t[0], t[1], t[2]
         params = {
-            'Arrival_distributions': [ciw.dists.Triangular(tl, tm, th)],
-            'Service_distributions': [ciw.dists.Triangular(tl, tm, th)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Triangular(tl, tm, th)],
+            'service_distributions': [ciw.dists.Triangular(tl, tm, th)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nt = Q.transitive_nodes[0]
@@ -245,9 +245,9 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_exponential_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Exponential(4.4)],
-            'Service_distributions': [ciw.dists.Exponential(4.4)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Exponential(4.4)],
+            'service_distributions': [ciw.dists.Exponential(4.4)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ne = Q.transitive_nodes[0]
@@ -266,9 +266,9 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_sampling_exponential_dist_hypothesis(self, e, rm):
         params = {
-            'Arrival_distributions': [ciw.dists.Exponential(e)],
-            'Service_distributions': [ciw.dists.Exponential(e)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Exponential(e)],
+            'service_distributions': [ciw.dists.Exponential(e)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ne = Q.transitive_nodes[0]
@@ -287,9 +287,9 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_gamma_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Gamma(0.6, 1.2)],
-            'Service_distributions': [ciw.dists.Gamma(0.6, 1.2)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Gamma(0.6, 1.2)],
+            'service_distributions': [ciw.dists.Gamma(0.6, 1.2)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ng = Q.transitive_nodes[0]
@@ -309,9 +309,9 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_sampling_gamma_dist_hypothesis(self, ga, gb, rm):
         params = {
-            'Arrival_distributions': [ciw.dists.Gamma(ga, gb)],
-            'Service_distributions': [ciw.dists.Gamma(ga, gb)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Gamma(ga, gb)],
+            'service_distributions': [ciw.dists.Gamma(ga, gb)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ng = Q.transitive_nodes[0]
@@ -330,9 +330,9 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_lognormal_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Lognormal(0.8, 0.2)],
-            'Service_distributions': [ciw.dists.Lognormal(0.8, 0.2)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Lognormal(0.8, 0.2)],
+            'service_distributions': [ciw.dists.Lognormal(0.8, 0.2)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nl = Q.transitive_nodes[0]
@@ -352,9 +352,9 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_sampling_lognormal_dist_hypothesis(self, lm, lsd, rm):
         params = {
-            'Arrival_distributions': [ciw.dists.Lognormal(lm, lsd)],
-            'Service_distributions': [ciw.dists.Lognormal(lm, lsd)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Lognormal(lm, lsd)],
+            'service_distributions': [ciw.dists.Lognormal(lm, lsd)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nl = Q.transitive_nodes[0]
@@ -373,9 +373,9 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_weibull_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Weibull(0.9, 0.8)],
-            'Service_distributions': [ciw.dists.Weibull(0.9, 0.8)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Weibull(0.9, 0.8)],
+            'service_distributions': [ciw.dists.Weibull(0.9, 0.8)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
@@ -395,9 +395,9 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_sampling_weibull_dist_hypothesis(self, wa, wb, rm):
         params = {
-            'Arrival_distributions': [ciw.dists.Weibull(wa, wb)],
-            'Service_distributions': [ciw.dists.Weibull(wa, wb)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Weibull(wa, wb)],
+            'service_distributions': [ciw.dists.Weibull(wa, wb)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
@@ -416,10 +416,10 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_normal_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Normal(0.5, 0.1)],
-            'Service_distributions': [ciw.dists.Normal(0.5, 0.1)],
-            'Number_of_servers': [1],
-            'Routing': [[0.1]]
+            'arrival_distributions': [ciw.dists.Normal(0.5, 0.1)],
+            'service_distributions': [ciw.dists.Normal(0.5, 0.1)],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nn = Q.transitive_nodes[0]
@@ -439,10 +439,10 @@ class TestSampling(unittest.TestCase):
            rm=random_module())
     def test_sampling_normal_dist_hypothesis(self, nm, ns, rm):
         params = {
-            'Arrival_distributions': [ciw.dists.Normal(nm, ns)],
-            'Service_distributions': [ciw.dists.Normal(nm, ns)],
-            'Number_of_servers': [1],
-            'Routing': [[0.1]]
+            'arrival_distributions': [ciw.dists.Normal(nm, ns)],
+            'service_distributions': [ciw.dists.Normal(nm, ns)],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nw = Q.transitive_nodes[0]
@@ -464,10 +464,10 @@ class TestSampling(unittest.TestCase):
     def test_sampling_empirical_dist(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
         params = {
-            'Arrival_distributions': [ciw.dists.Empirical(import_empirical(
+            'arrival_distributions': [ciw.dists.Empirical(import_empirical(
                 'ciw/tests/testing_parameters/sample_empirical_dist.csv'))],
-            'Service_distributions': [ciw.dists.Empirical(my_empirical_dist)],
-            'Number_of_servers': [1]
+            'service_distributions': [ciw.dists.Empirical(my_empirical_dist)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nem = Q.transitive_nodes[0]
@@ -489,10 +489,10 @@ class TestSampling(unittest.TestCase):
     def test_sampling_empirical_dist_hypothesis(self, dist, rm):
         my_empirical_dist = dist
         params = {
-            'Arrival_distributions': [ciw.dists.Empirical(my_empirical_dist)],
-            'Service_distributions': [ciw.dists.Empirical(import_empirical(
+            'arrival_distributions': [ciw.dists.Empirical(my_empirical_dist)],
+            'service_distributions': [ciw.dists.Empirical(import_empirical(
                 'ciw/tests/testing_parameters/sample_empirical_dist.csv'))],
-            'Number_of_servers': [1]
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nem = Q.transitive_nodes[0]
@@ -518,9 +518,9 @@ class TestSampling(unittest.TestCase):
         my_custom_dist_values =  [3.7, 3.8, 4.1]
         my_custom_dist_probs = [0.2, 0.5, 0.3]
         params = {
-            'Arrival_distributions': [ciw.dists.Pmf(my_custom_dist_values, my_custom_dist_probs)],
-            'Service_distributions': [ciw.dists.Pmf(my_custom_dist_values, my_custom_dist_probs)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Pmf(my_custom_dist_values, my_custom_dist_probs)],
+            'service_distributions': [ciw.dists.Pmf(my_custom_dist_values, my_custom_dist_probs)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nc = Q.transitive_nodes[0]
@@ -545,9 +545,9 @@ class TestSampling(unittest.TestCase):
         probs = [1.0/(numprobs+1) for i in range(numprobs-1)]
         probs.append(1.0 - sum(probs))
         params = {
-            'Arrival_distributions': [ciw.dists.Pmf(cust_vals, probs)],
-            'Service_distributions': [ciw.dists.Pmf(cust_vals, probs)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.Pmf(cust_vals, probs)],
+            'service_distributions': [ciw.dists.Pmf(cust_vals, probs)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nc = Q.transitive_nodes[0]
@@ -566,12 +566,12 @@ class TestSampling(unittest.TestCase):
 
     def test_custom_dist(self):
         params = {
-            'Arrival_distributions': [
+            'arrival_distributions': [
                 CustomDist(), CustomDist()],
-            'Service_distributions': [
+            'service_distributions': [
                 CustomDist(), CustomDist()],
-            'Number_of_servers': [1, 1],
-            'Routing': [[0.1, 0.1],
+            'number_of_servers': [1, 1],
+            'routing': [[0.1, 0.1],
                         [0.1, 0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -604,9 +604,9 @@ class TestSampling(unittest.TestCase):
 
     def test_no_arrivals_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.NoArrivals()],
-            'Service_distributions': [ciw.dists.Deterministic(6.6)],
-            'Number_of_servers': [1]
+            'arrival_distributions': [ciw.dists.NoArrivals()],
+            'service_distributions': [ciw.dists.Deterministic(6.6)],
+            'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Na = Q.transitive_nodes[0]
@@ -633,14 +633,14 @@ class TestSampling(unittest.TestCase):
 
     def test_timedependent_function_dist(self):
         params = {
-            'Arrival_distributions': [
+            'arrival_distributions': [
                 TimeDependentDist1(),
                 TimeDependentDist2()],
-            'Service_distributions': [
+            'service_distributions': [
                 TimeDependentDist1(),
                 TimeDependentDist2()],
-            'Number_of_servers': [1, 1],
-            'Routing': [[0.1, 0.1],
+            'number_of_servers': [1, 1],
+            'routing': [[0.1, 0.1],
                         [0.1, 0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -693,14 +693,14 @@ class TestSampling(unittest.TestCase):
 
     def test_timedependent_exact(self):
         params = {
-            'Arrival_distributions': [
+            'arrival_distributions': [
                 TimeDependentDist1(),
                 TimeDependentDist2()],
-            'Service_distributions': [
+            'service_distributions': [
                 TimeDependentDist1(),
                 TimeDependentDist2()],
-            'Number_of_servers': [1, 1],
-            'Routing': [[0.1, 0.1],
+            'number_of_servers': [1, 1],
+            'routing': [[0.1, 0.1],
                         [0.1, 0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params), exact=26)
@@ -739,10 +739,10 @@ class TestSampling(unittest.TestCase):
 
     def test_sampling_sequential_dist(self):
         params = {
-            'Arrival_distributions': [ciw.dists.Sequential([0.2, 0.4, 0.6, 0.8])],
-            'Service_distributions': [ciw.dists.Sequential([0.9, 0.7, 0.5, 0.3, 0.1])],
-            'Number_of_servers': [1],
-            'Routing': [[0.1]]
+            'arrival_distributions': [ciw.dists.Sequential([0.2, 0.4, 0.6, 0.8])],
+            'service_distributions': [ciw.dists.Sequential([0.9, 0.7, 0.5, 0.3, 0.1])],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ns = Q.transitive_nodes[0]
@@ -768,10 +768,10 @@ class TestSampling(unittest.TestCase):
         my_sequential_dist_1 = dist1
         my_sequential_dist_2 = dist2
         params = {
-            'Arrival_distributions': [ciw.dists.Sequential(my_sequential_dist_1)],
-            'Service_distributions': [ciw.dists.Sequential(my_sequential_dist_2)],
-            'Number_of_servers': [1],
-            'Routing': [[0.1]]
+            'arrival_distributions': [ciw.dists.Sequential(my_sequential_dist_1)],
+            'service_distributions': [ciw.dists.Sequential(my_sequential_dist_2)],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Ns = Q.transitive_nodes[0]

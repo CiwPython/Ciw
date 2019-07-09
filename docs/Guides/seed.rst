@@ -15,9 +15,9 @@ Note that due to sampling on initialisation, the seed will need to be set **befo
 As an example, take the following network::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(5)],
-    ...     Service_distributions=[ciw.dists.Exponential(10)],
-    ...     Number_of_servers=[1]
+    ...     arrival_distributions=[ciw.dists.Exponential(5)],
+    ...     service_distributions=[ciw.dists.Exponential(10)],
+    ...     number_of_servers=[1]
     ... )
 
 Now let's run the system for 20 time units, using a seed of 1, and get the average waiting time::

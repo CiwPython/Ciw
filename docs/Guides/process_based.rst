@@ -22,10 +22,10 @@ In order to utilise this, we replace the routing matrix with a list of these rou
     ...     return [1, 1, 1]
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(1)],
-    ...     Service_distributions=[ciw.dists.Exponential(2)],
-    ...     Number_of_servers=[1], 
-    ...     Routing=[repeating_route]
+    ...     arrival_distributions=[ciw.dists.Exponential(1)],
+    ...     service_distributions=[ciw.dists.Exponential(2)],
+    ...     number_of_servers=[1], 
+    ...     routing=[repeating_route]
     ... )
 
 Here, customers arrive at Node 1, and have service there and then repeat this two more times before exiting the system. 
@@ -45,7 +45,7 @@ Now we can see that all individuals who have left the system, that is they have 
 Important Notice
 ----------------
 
-**How it works:** You can think of this as, when an individual arrives at their first node, based on their :code:`Arrival_distributions`, it is assigned a route that should start at this Node. This will ensure that the first Node which an individual arrives at is the same as the first Node in their assigned route. 
+**How it works:** You can think of this as, when an individual arrives at their first node, based on their :code:`arrival_distributions`, it is assigned a route that should start at this Node. This will ensure that the first Node which an individual arrives at is the same as the first Node in their assigned route. 
 
 If this is not the case then the error :code:`'Individual process route sent to wrong node'` will occur. 
 
@@ -88,14 +88,14 @@ For this we will require two routing functions: :code:`routing_function_Node_1`,
 As there are no arrivals at Node 3, no customer will need routing assigned here. However, we need to use the placeholder function :code:`ciw.no_routing` to account for this::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(1),
+    ...     arrival_distributions=[ciw.dists.Exponential(1),
     ...                            ciw.dists.Deterministic(1),
     ...                            ciw.dists.NoArrivals()],
-    ...     Service_distributions=[ciw.dists.Exponential(2),
+    ...     service_distributions=[ciw.dists.Exponential(2),
     ...                            ciw.dists.Exponential(2),
     ...                            ciw.dists.Exponential(2)],
-    ...     Number_of_servers=[1,1,1],
-    ...     Routing=[routing_function_Node_1,
+    ...     number_of_servers=[1,1,1],
+    ...     routing=[routing_function_Node_1,
     ...              routing_function_Node_2,
     ...              ciw.no_routing]
     ... )

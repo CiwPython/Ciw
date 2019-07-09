@@ -2,7 +2,6 @@ import unittest
 import ciw
 
 class TestStateTracker(unittest.TestCase):
-
     def test_base_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
@@ -84,7 +83,6 @@ class TestStateTracker(unittest.TestCase):
 
 
 class TestNaiveTracker(unittest.TestCase):
-
     def test_naive_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
@@ -171,7 +169,6 @@ class TestNaiveTracker(unittest.TestCase):
 
 
 class TestMatrixTracker(unittest.TestCase):
-
     def test_matrix_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))

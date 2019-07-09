@@ -24,24 +24,24 @@ Now we need to tell Ciw what our system looks like and how it behaves.
 We do this by creating a Network object.
 It takes in keywords containing the following information about the system:
 
-+ Number of servers (:code:`Number_of_servers`)
++ Number of servers (:code:`number_of_servers`)
    + How many servers are on duty at the bank.
    + In this case, 3 servers.
 
-+ Distribution of inter-arrival times (:code:`Arrival_distributions`)
++ Distribution of inter-arrival times (:code:`arrival_distributions`)
    + The distribution of times between arrivals.
    + In this case 12 per hour would mean an average of 5 mins between arrivals.
 
-+ Distribution of service times (:code:`Service_distributions`)
++ Distribution of service times (:code:`service_distributions`)
    + The distribution of times spent in service with a server.
    + In this case an average of 10 mins.
 
 For our bank system, create the Network::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
-    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
-    ...     Number_of_servers=[3]
+    ...     arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     service_distributions=[ciw.dists.Exponential(0.1)],
+    ...     number_of_servers=[3]
     ... )
 
 This fully defines our bank.

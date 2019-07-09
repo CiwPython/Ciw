@@ -48,27 +48,27 @@ The routing matrix for the café system looks like this:
 
 
 That is 30% of cold food customers then go to hot food, while the remaining 70% go to the till, and 100% of hot food customers go to the till.
-This is included when creating a network, with the keyword :code:`Routing`.
+This is included when creating a network, with the keyword :code:`routing`.
 So, our Network for the café looks like this::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(0.3),
+    ...     arrival_distributions=[ciw.dists.Exponential(0.3),
     ...                            ciw.dists.Exponential(0.2),
     ...                            ciw.dists.NoArrivals()],
-    ...     Service_distributions=[ciw.dists.Exponential(1.0),
+    ...     service_distributions=[ciw.dists.Exponential(1.0),
     ...                            ciw.dists.Exponential(0.4),
     ...                            ciw.dists.Exponential(0.5)],
-    ...     Routing=[[0.0, 0.3, 0.7],
+    ...     routing=[[0.0, 0.3, 0.7],
     ...              [0.0, 0.0, 1.0],
     ...              [0.0, 0.0, 0.0]],
-    ...     Number_of_servers=[1, 2, 2]
+    ...     number_of_servers=[1, 2, 2]
     ... )
 
-Notice the Arrival distributions:
+Notice the arrival distributions:
 18 cold food arrivals per hour is equivalent to :code:`0.3` per minute; 12 hot food arrivals per hour is equivalent to :code:`0.2` per minute; and we want no arrivals to occur at the Till.
 
-Notice the Service distributions:
+Notice the service distributions:
 an average cold food service time of 1 minute is equivalent to a rate of 1/1 = :code:`1` service per minute; an average hot food service time of 2.5 minutes is equivalent to 1/2.5 = :code:`0.4` services per minute; and an average till service time of 2 minutes is equivalent to :code:`0.5` services per minute.
 
 Let's simulate this for one shift of lunchtime of 3 hours (180 mins).

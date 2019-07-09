@@ -21,17 +21,17 @@ A restricted network such as this is represented by nearly the same Network obje
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Deterministic(4.0),
+    ...     arrival_distributions=[ciw.dists.Deterministic(4.0),
     ...                            ciw.dists.NoArrivals(),
     ...                            ciw.dists.NoArrivals()],
-    ...     Service_distributions=[ciw.dists.Uniform(3, 5),
+    ...     service_distributions=[ciw.dists.Uniform(3, 5),
     ...                            ciw.dists.Uniform(3, 5),
     ...                            ciw.dists.Uniform(3, 5)],
-    ...     Routing=[[0.0, 1.0, 0.0],
+    ...     routing=[[0.0, 1.0, 0.0],
     ...              [0.0, 0.0, 1.0],
     ...              [0.0, 0.0, 0.0]],
-    ...     Number_of_servers=[1, 1, 1],
-    ...     Queue_capacities=[3, 3, 3]
+    ...     number_of_servers=[1, 1, 1],
+    ...     queue_capacities=[3, 3, 3]
     ... )
 
 The time taken to attach a leg to the stool (service time) is sampled using the uniform distribution.
@@ -80,7 +80,7 @@ A cool-down will be unnecessary as we are recording rejections, which happen at 
     >>> broken_stools
     [7, 4, 7, 8, 5, 8, 9, 6]
 
-    >>> sum(broken_stools)/len(broken_stools)
+    >>> sum(broken_stools) / len(broken_stools)
     6.75
 
 On average the system gets 6.75 broken stools per hour; costing and average of 67.5p per hour of operation.
@@ -91,17 +91,17 @@ How many hours of operation will the manufacturing plant need to run for so that
 First, under the new system how many broken stools per hour do we expect?::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Deterministic(4.0),
+    ...     arrival_distributions=[ciw.dists.Deterministic(4.0),
     ...                            ciw.dists.NoArrivals(),
     ...                            ciw.dists.NoArrivals()],
-    ...     Service_distributions=[ciw.dists.Uniform(3.5, 4.5),
+    ...     service_distributions=[ciw.dists.Uniform(3.5, 4.5),
     ...                            ciw.dists.Uniform(3.5, 4.5),
     ...                            ciw.dists.Uniform(3.5, 4.5)],
-    ...     Routing=[[0.0, 1.0, 0.0],
+    ...     routing=[[0.0, 1.0, 0.0],
     ...              [0.0, 0.0, 1.0],
     ...              [0.0, 0.0, 0.0]],
-    ...     Number_of_servers=[1, 1, 1],
-    ...     Queue_capacities=[3, 3, 3]
+    ...     number_of_servers=[1, 1, 1],
+    ...     queue_capacities=[3, 3, 3]
     ... )
 
     >>> broken_stools = []
