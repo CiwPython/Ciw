@@ -1,6 +1,6 @@
 import networkx as nx
 
-class NoDeadlockDetection(object):
+class NoDetection(object):
     """
     A generic class for all deadlock detector classes to inherit from.
     Using this class is equivalent to having no deadlock detection
@@ -43,7 +43,7 @@ class NoDeadlockDetection(object):
         pass
 
 
-class StateDigraphMethod(NoDeadlockDetection):
+class StateDigraph(NoDetection):
     """
     The state digraph method keeps track of a directed graph of the
     simulation state, where:

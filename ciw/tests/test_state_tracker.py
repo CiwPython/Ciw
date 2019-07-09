@@ -5,14 +5,16 @@ class TestStateTracker(unittest.TestCase):
     def test_base_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.StateTracker(Q)
+        B = ciw.trackers.StateTracker()
+        B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, None)
 
     def test_base_change_state_accept_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.StateTracker(Q)
+        B = ciw.trackers.StateTracker()
+        B.initialise(Q)
         self.assertEqual(B.state, None)
         B.change_state_accept(1, 1)
         self.assertEqual(B.state, None)
@@ -20,7 +22,8 @@ class TestStateTracker(unittest.TestCase):
     def test_base_change_state_block_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.StateTracker(Q)
+        B = ciw.trackers.StateTracker()
+        B.initialise(Q)
         self.assertEqual(B.state, None)
         B.change_state_block(1, 1, 1)
         self.assertEqual(B.state, None)
@@ -28,7 +31,8 @@ class TestStateTracker(unittest.TestCase):
     def test_base_change_state_release_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.StateTracker(Q)
+        B = ciw.trackers.StateTracker()
+        B.initialise(Q)
         self.assertEqual(B.state, None)
         B.change_state_release(1, 1, 1, True)
         self.assertEqual(B.state, None)
@@ -36,7 +40,8 @@ class TestStateTracker(unittest.TestCase):
     def test_base_hash_state_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.StateTracker(Q)
+        B = ciw.trackers.StateTracker()
+        B.initialise(Q)
         self.assertEqual(B.hash_state(), None)
 
     def test_base_release_method_within_simulation(self):
@@ -86,14 +91,16 @@ class TestNaiveTracker(unittest.TestCase):
     def test_naive_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.NaiveTracker(Q)
+        B = ciw.trackers.NaiveTracker()
+        B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
 
     def test_naive_change_state_accept_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.NaiveTracker(Q)
+        B = ciw.trackers.NaiveTracker()
+        B.initialise(Q)
         self.assertEqual(B.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
         B.change_state_accept(1, 1)
         self.assertEqual(B.state, [[1, 0], [0, 0], [0, 0], [0, 0]])
@@ -101,7 +108,8 @@ class TestNaiveTracker(unittest.TestCase):
     def test_naive_change_state_block_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.NaiveTracker(Q)
+        B = ciw.trackers.NaiveTracker()
+        B.initialise(Q)
         B.state = [[1, 0], [0, 0], [0, 0], [0, 0]]
         B.change_state_block(1, 1, 2)
         self.assertEqual(B.state, [[0, 1], [0, 0], [0, 0], [0, 0]])
@@ -109,7 +117,8 @@ class TestNaiveTracker(unittest.TestCase):
     def test_naive_change_state_release_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.NaiveTracker(Q)
+        B = ciw.trackers.NaiveTracker()
+        B.initialise(Q)
         B.state = [[2, 1], [3, 0], [1, 0], [4, 4]]
         B.change_state_release(1, 1, 2, False)
         self.assertEqual(B.state, [[1, 1], [3, 0], [1, 0], [4, 4]])
@@ -119,14 +128,15 @@ class TestNaiveTracker(unittest.TestCase):
     def test_naive_hash_state_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.NaiveTracker(Q)
+        B = ciw.trackers.NaiveTracker()
+        B.initialise(Q)
         B.state = [[3, 4], [1, 2], [0, 1], [0, 0]]
         self.assertEqual(B.hash_state(), ((3, 4), (1, 2), (0, 1), (0, 0)))
 
     def test_naive_release_method_within_simulation(self):
         params = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker='Naive')
+        Q = ciw.Simulation(params, tracker=ciw.trackers.NaiveTracker())
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -148,7 +158,7 @@ class TestNaiveTracker(unittest.TestCase):
     def test_naive_block_method_within_simulation(self):
         params = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker='Naive')
+        Q = ciw.Simulation(params, tracker=ciw.trackers.NaiveTracker())
         N = Q.transitive_nodes[2]
         Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
         self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
@@ -158,7 +168,7 @@ class TestNaiveTracker(unittest.TestCase):
     def test_naive_accept_method_within_simulation(self):
         params = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker='Naive')
+        Q = ciw.Simulation(params, tracker=ciw.trackers.NaiveTracker())
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
         Q.current_time = 45.6
@@ -172,7 +182,8 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.MatrixTracker(Q)
+        B = ciw.trackers.MatrixTracker()
+        B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, [[[[], [], [], []],
                                     [[], [], [], []],
@@ -183,7 +194,8 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_change_state_accept_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.MatrixTracker(Q)
+        B = ciw.trackers.MatrixTracker()
+        B.initialise(Q)
         self.assertEqual(B.state, [[[[], [], [], []],
                                     [[], [], [], []],
                                     [[], [], [], []],
@@ -199,7 +211,8 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_change_state_block_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.MatrixTracker(Q)
+        B = ciw.trackers.MatrixTracker()
+        B.initialise(Q)
         B.state = [[[[], [], [], []],
                     [[], [], [], []],
                     [[], [], [], []],
@@ -227,7 +240,8 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_change_state_release_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.MatrixTracker(Q)
+        B = ciw.trackers.MatrixTracker()
+        B.initialise(Q)
         B.state = [[[[],  [], [1, 3], []],
                     [[2], [], [],     []],
                     [[],  [], [],     []],
@@ -249,7 +263,8 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_hash_state_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
-        B = ciw.MatrixTracker(Q)
+        B = ciw.trackers.MatrixTracker()
+        B.initialise(Q)
         B.state = [[[[],  [], [1, 3], []],
                     [[2], [], [],     []],
                     [[],  [], [],     []],
@@ -264,7 +279,7 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_release_method_within_simulation(self):
         params = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker='Matrix')
+        Q = ciw.Simulation(params, tracker=ciw.trackers.MatrixTracker())
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -308,7 +323,7 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_block_method_within_simulation(self):
         params = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker='Matrix')
+        Q = ciw.Simulation(params, tracker=ciw.trackers.MatrixTracker())
         N = Q.transitive_nodes[2]
         Q.statetracker.state = [[[[],  [2], [], []],
                                  [[],  [],  [], []],
@@ -331,7 +346,7 @@ class TestMatrixTracker(unittest.TestCase):
     def test_matrix_accept_method_within_simulation(self):
         params = ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker='Matrix')
+        Q = ciw.Simulation(params, tracker=ciw.trackers.MatrixTracker())
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [[[[], [], [], []],
                                                  [[], [], [], []],

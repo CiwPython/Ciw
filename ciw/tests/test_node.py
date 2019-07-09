@@ -169,7 +169,7 @@ class TestNode(unittest.TestCase):
         ciw.seed(4)
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-            deadlock_detector='StateDigraph')
+            deadlock_detector=ciw.deadlock.StateDigraph())
         inds = [ciw.Individual(i + 1) for i in range(7)]
         N1 = Q.transitive_nodes[0]
         N1.individuals = [inds[:6]]
@@ -231,7 +231,7 @@ class TestNode(unittest.TestCase):
         ciw.seed(50)
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-            deadlock_detector='StateDigraph')
+            deadlock_detector=ciw.deadlock.StateDigraph())
         inds = [[ciw.Individual(i) for i in range(30)]]
         Q.transitive_nodes[0].individuals = inds
         ind = Q.transitive_nodes[0].individuals[0][0]
@@ -262,7 +262,7 @@ class TestNode(unittest.TestCase):
     def test_release_blocked_individual_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-            deadlock_detector='StateDigraph')
+            deadlock_detector=ciw.deadlock.StateDigraph())
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         N1.individuals = [[ciw.Individual(i) for i in range(N1.c + 3)]]
@@ -413,7 +413,7 @@ class TestNode(unittest.TestCase):
         ciw.seed(50)
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-            deadlock_detector='StateDigraph')
+            deadlock_detector=ciw.deadlock.StateDigraph())
         ind = ciw.Individual(1)
         self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
             set(['Server 5 at Node 2',

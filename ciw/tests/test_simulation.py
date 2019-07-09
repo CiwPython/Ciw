@@ -202,14 +202,15 @@ class TestSimulation(unittest.TestCase):
         ciw.seed(3)
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-             deadlock_detector='StateDigraph')
+             deadlock_detector=ciw.deadlock.StateDigraph(),
+             tracker=ciw.trackers.NaiveTracker())
         Q.simulate_until_deadlock()
         self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 7.09795845)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-             deadlock_detector='StateDigraph')
+             deadlock_detector=ciw.deadlock.StateDigraph())
         nodes = ['A', 'B', 'C', 'D', 'E']
         connections = [('A', 'D'), ('A', 'B'), ('B', 'E'), ('C', 'B'), ('E', 'C')]
         Q.deadlock_detector.statedigraph = nx.DiGraph()
@@ -221,7 +222,7 @@ class TestSimulation(unittest.TestCase):
 
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-             deadlock_detector='StateDigraph')
+             deadlock_detector=ciw.deadlock.StateDigraph())
         nodes = ['A', 'B', 'C', 'D']
         connections = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D')]
         Q.deadlock_detector.statedigraph = nx.DiGraph()
@@ -233,7 +234,7 @@ class TestSimulation(unittest.TestCase):
 
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
-             deadlock_detector='StateDigraph')
+             deadlock_detector=ciw.deadlock.StateDigraph())
         nodes = ['A', 'B']
         Q.deadlock_detector.statedigraph = nx.DiGraph()
         for nd in nodes:
@@ -732,11 +733,11 @@ class TestSimulation(unittest.TestCase):
         )
 
         ciw.seed(6)
-        Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
+        Q = ciw.Simulation(N, deadlock_detector=ciw.deadlock.StateDigraph(),tracker=ciw.trackers.NaiveTracker())
         Q.simulate_until_deadlock()
         ttd = Q.times_to_deadlock[((0, 0), (0, 0))]
         self.assertEqual(round(ttd, 5), 92.49468)
 
     def test_generic_deadlock_detector(self):
-        DD = ciw.NoDeadlockDetection()
+        DD = ciw.deadlock.NoDetection()
         self.assertEqual(DD.detect_deadlock(), False)
