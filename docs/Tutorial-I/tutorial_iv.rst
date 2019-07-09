@@ -22,9 +22,9 @@ Let's define our bank by creating our Network object::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
-    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
-    ...     Number_of_servers=[3]
+    ...     arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     service_distributions=[ciw.dists.Exponential(0.1)],
+    ...     number_of_servers=[3]
     ... )
 
 For simplicity, we will be concerned with finding the mean waiting time only.
@@ -59,9 +59,9 @@ What would happen if we added an extra server?
 Let's repeat the analysis with 4 servers::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
-    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
-    ...     Number_of_servers=[4]
+    ...     arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     service_distributions=[ciw.dists.Exponential(0.1)],
+    ...     number_of_servers=[4]
     ... )
 
     >>> average_waits = []

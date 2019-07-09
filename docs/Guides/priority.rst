@@ -8,7 +8,7 @@ Ciw has the capability to assign priorities to the customer classes.
 This is done by mapping customer classes to priority classes, included as a keyword when creating the Network object.
 An example is shown::
 
-    Priority_classes={'Class 0': 0,
+    priority_classes={'Class 0': 0,
                       'Class 1': 1,
                       'Class 2': 1}
 
@@ -23,16 +23,16 @@ Note:
 * The priority discipline used is non-preemptive. Customers always finish their service and are not interrupted by higher priority customers.
 
 
-To implement this, create the Network object with the :code:`Priority_classes` option included with the mapping::
+To implement this, create the Network object with the :code:`priority_classes` option included with the mapping::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions={'Class 0': [ciw.dists.Exponential(5)],
+    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(5)],
     ...                            'Class 1': [ciw.dists.Exponential(5)]},
-    ...     Service_distributions={'Class 0': [ciw.dists.Exponential(10)],
+    ...     service_distributions={'Class 0': [ciw.dists.Exponential(10)],
     ...                            'Class 1': [ciw.dists.Exponential(10)]},
-    ...     Priority_classes={'Class 0': 0, 'Class 1': 1},
-    ...     Number_of_servers=[1]
+    ...     priority_classes={'Class 0': 0, 'Class 1': 1},
+    ...     number_of_servers=[1]
     ... )
 
 Now let's run the simulation, comparing the waiting times for Class 0 and Class 1 customers, those with higher priority should have lower average wait than those with lower priority::

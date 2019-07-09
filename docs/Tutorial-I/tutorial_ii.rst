@@ -8,16 +8,16 @@ In the previous tutorial, we defined and simulated our bank for a week::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(0.2)],
-    ...     Service_distributions=[ciw.dists.Exponential(0.1)],
-    ...     Number_of_servers=[3]
+    ...     arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     service_distributions=[ciw.dists.Exponential(0.1)],
+    ...     number_of_servers=[3]
     ... )
     >>> ciw.seed(1)
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(1440)
 
 Let's explore the Simulation object :code:`Q`.
-Although out queueing system consisted of one node (the bank), the object :code:`Q` is made up of three, accessed using::
+Although our queueing system consisted of one node (the bank), the object :code:`Q` is made up of three, accessed using::
 
     >>> Q.nodes
     [Arrival Node, Node 1, Exit Node]

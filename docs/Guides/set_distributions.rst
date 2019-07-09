@@ -6,26 +6,26 @@ How to Set Arrival & Service Distributions
 
 Ciw offeres a variety of inter-arrival and service time distributions.
 A full list can be found :ref:`here <refs-dists>`.
-They are objects, that are defined in the :code:`Network` with the :code:`'Arrival_distributions'` and :code:`'Service_distributions'` keywords.
+They are objects, that are defined in the :code:`Network` with the :code:`'arrival_distributions'` and :code:`'service_distributions'` keywords.
 
-+ :code:`'Arrival_distributions'`: This is the distribution that inter-arrival times are drawn from. That is the time between two consecutive arrivals. It is particular to specific nodes and customer classes.
-+ :code:`'Service_distributions'`: This is the distribution that service times are drawn from. That is the amount of time a customer spends with a server (independent of how many servers there are). It is particular for to specific node and customer classes.
++ :code:`'Aarival_distributions'`: This is the distribution that inter-arrival times are drawn from. That is the time between two consecutive arrivals. It is particular to specific nodes and customer classes.
++ :code:`'service_distributions'`: This is the distribution that service times are drawn from. That is the amount of time a customer spends with a server (independent of how many servers there are). It is particular for to specific node and customer classes.
 
 The following example, with two nodes and two customer classes, uses eight different arrival and service rate distributions::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions={'Class 0': [ciw.dists.Deterministic(0.4),
+    ...     arrival_distributions={'Class 0': [ciw.dists.Deterministic(0.4),
     ...                                        ciw.dists.Empirical([0.1, 0.1, 0.1, 0.2])],
     ...                            'Class 1': [ciw.dists.Deterministic(0.2),
     ...                                        ciw.dists.Pmf([0.2, 0.4], [0.5, 0.5])]},
-    ...     Service_distributions={'Class 0': [ciw.dists.Exponential(6.0),
+    ...     service_distributions={'Class 0': [ciw.dists.Exponential(6.0),
     ...                                        ciw.dists.Lognormal(-1, 0.5)],
     ...                            'Class 1': [ciw.dists.Uniform(0.1, 0.7),
     ...                                        ciw.dists.Triangular(0.2, 0.3, 0.7)]},
-    ...     Routing={'Class 0': [[0.0, 0.0], [0.0, 0.0]],
+    ...     routing={'Class 0': [[0.0, 0.0], [0.0, 0.0]],
     ...              'Class 1': [[0.0, 0.0], [0.0, 0.0]]},
-    ...     Number_of_servers=[1, 1]
+    ...     number_of_servers=[1, 1]
     ... )
 
 We'll run this (in :ref:`exact <exact-arithmetic>` mode) for 25 time units::
@@ -41,7 +41,7 @@ The system uses the following eight distribution objects:
    + Always sample 0.4.
 + :code:`ciw.dists.Deterministic(0.2)`:
    + Always sample 0.2.
-+ :code:`ciw.dists.Empirical([0.1, 0.1, 0.1, 0.2]):
++ :code:`ciw.dists.Empirical([0.1, 0.1, 0.1, 0.2])`:
    + Randomly sample from the numbers 0.1, 0.1, 0.1 and 0.2.
 + :code:`ciw.dists.Pmf([0.2, 0.4], [0.5, 0.5])`:
    + Sample 0.2 half the time, and 0.4 half the time.

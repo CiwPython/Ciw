@@ -22,14 +22,14 @@ We can define the following baulking function::
     ...         return 0.5
     ...     return 1.0
 
-When creating the Network object we tell Ciw which node and customer class this function applies to with the :code:`Baulking_functions` keyword::
+When creating the Network object we tell Ciw which node and customer class this function applies to with the :code:`baulking_functions` keyword::
 	
 	>>> import ciw
 	>>> N = ciw.create_network(
-	...      Arrival_distributions={'Class 0': [ciw.dists.Exponential(5)]},
-	...      Service_distributions={'Class 0': [ciw.dists.Exponential(10)]},
-	...      Baulking_functions={'Class 0': [probability_of_baulking]},
-	...      Number_of_servers=[1]
+	...      arrival_distributions={'Class 0': [ciw.dists.Exponential(5)]},
+	...      service_distributions={'Class 0': [ciw.dists.Exponential(10)]},
+	...      baulking_functions={'Class 0': [probability_of_baulking]},
+	...      number_of_servers=[1]
 	... )
 
 When the system is simulated, the baulked customers are recorded in the Simulation object's :code:`baulked_dict`.

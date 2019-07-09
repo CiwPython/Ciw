@@ -6,11 +6,11 @@ How to Set Dynamic Customer Classes
 
 Ciw allows customers to probabilistically change their class after service.
 That is after service at node `k` a customer of class `i` will become class `j` with probability :math:`P(J=j \; | \; I=i, K=k)`.
-These probabilities are input into the system through the :code:`Class_change_matrices` keyword.
+These probabilities are input into the system through the :code:`class_change_matrices` keyword.
 
 Consider a one node system with three classes of customer.
 After service (at Node 1) customers always change customer class, equally likely between the two other customer classes.
-The :code:`Class_change_matrices` for this system are shown below:
+The :code:`xlass_change_matrices` for this system are shown below:
 
 .. math::
 
@@ -21,23 +21,23 @@ The :code:`Class_change_matrices` for this system are shown below:
     \end{pmatrix}
 
 
-This is input into the simulation model by including :code:`Class_change_matrices` keyword when creating a Network object::
+This is input into the simulation model by including :code:`xlass_change_matrices` keyword when creating a Network object::
     
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions={'Class 0': [ciw.dists.Exponential(5)],
+    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(5)],
     ...                            'Class 1': [ciw.dists.NoArrivals()],
     ...                            'Class 2': [ciw.dists.NoArrivals()]},
-    ...     Service_distributions={'Class 0': [ciw.dists.Exponential(10)],
+    ...     service_distributions={'Class 0': [ciw.dists.Exponential(10)],
     ...                            'Class 1': [ciw.dists.Exponential(10)],
     ...                            'Class 2': [ciw.dists.Exponential(10)]},
-    ...     Routing={'Class 0': [[1.0]],
+    ...     routing={'Class 0': [[1.0]],
     ...              'Class 1': [[1.0]],
     ...              'Class 2': [[1.0]]},
-    ...     Class_change_matrices={'Node 1': [[0.0, 0.5, 0.5],
+    ...     class_change_matrices={'Node 1': [[0.0, 0.5, 0.5],
     ...                                       [0.5, 0.0, 0.5],
     ...                                       [0.5, 0.5, 0.0]]},
-    ...     Number_of_servers=[1]
+    ...     number_of_servers=[1]
     ... )
 
 Notice in this network only arrivals from Class 0 customer occur.

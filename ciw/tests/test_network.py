@@ -120,11 +120,11 @@ class TestNetwork(unittest.TestCase):
 
 
     def test_create_network_from_dictionary(self):
-        params = {'Arrival_distributions': {'Class 0': [ciw.dists.Exponential(3.0)]},
-                  'Service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)]},
-                  'Number_of_servers': [9],
-                  'Routing': {'Class 0': [[0.5]]},
-                  'Queue_capacities': ['Inf']}
+        params = {'arrival_distributions': {'Class 0': [ciw.dists.Exponential(3.0)]},
+                  'service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)]},
+                  'number_of_servers': [9],
+                  'routing': {'Class 0': [[0.5]]},
+                  'queue_capacities': ['Inf']}
         N = ciw.create_network_from_dictionary(params)
         
         self.assertEqual(N.number_of_nodes, 1)
@@ -141,14 +141,14 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.priority_class_mapping, {0:0})
 
 
-        params = {'Arrival_distributions': [ciw.dists.Exponential(3.0),
+        params = {'arrival_distributions': [ciw.dists.Exponential(3.0),
                                             ciw.dists.Uniform(0.2, 0.6)],
-                  'Service_distributions': [ciw.dists.Exponential(7.0),
+                  'service_distributions': [ciw.dists.Exponential(7.0),
                                             ciw.dists.Deterministic(0.7)],
-                  'Number_of_servers': [[[1, 20], [4, 50]], 3],
-                  'Routing': [[0.5, 0.2],
+                  'number_of_servers': [[[1, 20], [4, 50]], 3],
+                  'routing': [[0.5, 0.2],
                               [0.0, 0.0]],
-                  'Queue_capacities': [10, 'Inf']
+                  'queue_capacities': [10, 'Inf']
                   }
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 2)
@@ -170,15 +170,15 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.priority_class_mapping, {0:0})
 
 
-        params = {'Arrival_distributions': {'Class 0': [ciw.dists.Exponential(3.0)],
+        params = {'arrival_distributions': {'Class 0': [ciw.dists.Exponential(3.0)],
                                             'Class 1': [ciw.dists.Exponential(4.0)]},
-                  'Service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)],
+                  'service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)],
                                             'Class 1': [ciw.dists.Uniform(0.4, 1.2)]},
-                  'Number_of_servers': [9],
-                  'Routing': {'Class 0': [[0.5]],
+                  'number_of_servers': [9],
+                  'routing': {'Class 0': [[0.5]],
                               'Class 1': [[0.0]]},
-                  'Queue_capacities': ['Inf'],
-                  'Class_change_matrices': {'Node 1': [[0.0, 1.0],
+                  'queue_capacities': ['Inf'],
+                  'class_change_matrices': {'Node 1': [[0.0, 1.0],
                                                        [0.2, 0.8]]}}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 1)
@@ -198,15 +198,15 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.priority_class_mapping, {0:0, 1:0})
 
 
-        params = {'Arrival_distributions': {'Class 0': [ciw.dists.Exponential(3.0)],
+        params = {'arrival_distributions': {'Class 0': [ciw.dists.Exponential(3.0)],
                                             'Class 1': [ciw.dists.Exponential(4.0)]},
-                  'Service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)],
+                  'service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)],
                                             'Class 1': [ciw.dists.Uniform(0.4, 1.2)]},
-                  'Number_of_servers': [9],
-                  'Routing': {'Class 0': [[0.5]],
+                  'number_of_servers': [9],
+                  'routing': {'Class 0': [[0.5]],
                               'Class 1': [[0.0]]},
-                  'Queue_capacities': ['Inf'],
-                  'Priority_classes': {'Class 0': 1,
+                  'queue_capacities': ['Inf'],
+                  'priority_classes': {'Class 0': 1,
                                        'Class 1': 0}}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 1)
@@ -227,14 +227,14 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.priority_class_mapping, {0:1, 1:0})
 
 
-        params = {'Arrival_distributions': [ciw.dists.Exponential(3.0), ciw.dists.Exponential(4.0), ciw.dists.Exponential(2.0)],
-                  'Service_distributions': [ciw.dists.Exponential(7.0), ciw.dists.Uniform(0.4, 1.2), ciw.dists.Deterministic(5.33)],
-                  'Number_of_servers': [9, 2, 4],
-                  'Routing': [[0.5, 0.0, 0.1],
+        params = {'arrival_distributions': [ciw.dists.Exponential(3.0), ciw.dists.Exponential(4.0), ciw.dists.Exponential(2.0)],
+                  'service_distributions': [ciw.dists.Exponential(7.0), ciw.dists.Uniform(0.4, 1.2), ciw.dists.Deterministic(5.33)],
+                  'number_of_servers': [9, 2, 4],
+                  'routing': [[0.5, 0.0, 0.1],
                               [0.2, 0.1, 0.0],
                               [0.0, 0.0, 0.0]],
-                  'Queue_capacities': ['Inf', 'Inf', 'Inf'],
-                  'Baulking_functions': [None, None, example_baulking_function]}
+                  'queue_capacities': ['Inf', 'Inf', 'Inf'],
+                  'baulking_functions': [None, None, example_baulking_function]}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 3)
         self.assertEqual(N.number_of_classes, 1)
@@ -295,103 +295,103 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.customer_classes[2].routing, [[0.0, 0.0, 0.4, 0.3], [0.1, 0.1, 0.1, 0.1], [0.1, 0.3, 0.2, 0.2], [0.0, 0.0, 0.0, 0.3]])
 
     def test_raising_errors(self):
-        params = {'Arrival_distributions': {'Class 0':[['Exponential', 3.0]]},
-                  'Service_distributions': {'Class 0':[['Exponential', 7.0]]},
-                  'Number_of_servers': [9],
-                  'Number_of_classes': 1,
-                  'Routing': {'Class 0': [[0.5]]},
-                  'Number_of_nodes': 1,
-                  'Queue_capacities': ['Inf'],
-                  'Detect_deadlock': False}
+        params = {'arrival_distributions': {'Class 0':[['Exponential', 3.0]]},
+                  'service_distributions': {'Class 0':[['Exponential', 7.0]]},
+                  'number_of_servers': [9],
+                  'number_of_classes': 1,
+                  'routing': {'Class 0': [[0.5]]},
+                  'number_of_nodes': 1,
+                  'queue_capacities': ['Inf'],
+                  'detect_deadlock': False}
         params_list = [copy.deepcopy(params) for i in range(23)]
 
-        params_list[0]['Number_of_classes'] = -2
+        params_list[0]['number_of_classes'] = -2
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[0])
-        params_list[1]['Number_of_nodes'] = -2
+        params_list[1]['number_of_nodes'] = -2
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[1])
-        params_list[2]['Number_of_servers'] = [5, 6, 7]
+        params_list[2]['number_of_servers'] = [5, 6, 7]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[2])
-        params_list[3]['Number_of_servers'] = [-3]
+        params_list[3]['number_of_servers'] = [-3]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[3])
-        params_list[4]['Number_of_servers'] = ['my_missing_schedule']
+        params_list[4]['number_of_servers'] = ['my_missing_schedule']
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[4])
-        params_list[5]['Queue_capacities'] = ['Inf', 1, 2]
+        params_list[5]['queue_capacities'] = ['Inf', 1, 2]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[5])
-        params_list[6]['Queue_capacities'] = [-2]
+        params_list[6]['queue_capacities'] = [-2]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[6])
-        params_list[7]['Arrival_distributions'] = {'Class 0':[['Exponential', 3.2]],
+        params_list[7]['arrival_distributions'] = {'Class 0':[['Exponential', 3.2]],
                                                    'Class 1':[['Exponential', 2.1]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[7])
-        params_list[8]['Arrival_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
+        params_list[8]['arrival_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[8])
-        params_list[9]['Arrival_distributions']['Class 0'] = [['Exponential', 3.1],
-                                                               ['Exponential', 2.4]]
+        params_list[9]['arrival_distributions']['Class 0'] = [['Exponential', 3.1],
+                                                              ['Exponential', 2.4]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[9])
-        params_list[10]['Service_distributions'] = {'Class 0':[['Exponential', 3.2]],
+        params_list[10]['service_distributions'] = {'Class 0':[['Exponential', 3.2]],
                                                     'Class 1':[['Exponential', 2.1]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[10])
-        params_list[11]['Service_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
+        params_list[11]['service_distributions'] = {'Patient 0':[['Exponential', 11.5]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[11])
-        params_list[12]['Service_distributions']['Class 0'] = [['Exponential', 3.1],
+        params_list[12]['service_distributions']['Class 0'] = [['Exponential', 3.1],
                                                                ['Exponential', 2.4]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[12])
-        params_list[13]['Routing'] = {'Class 0':[[0.2]],
+        params_list[13]['routing'] = {'Class 0':[[0.2]],
                                       'Class 1':[[0.3]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[13])
-        params_list[14]['Routing'] = {'Patient 0':[[0.5]]}
+        params_list[14]['routing'] = {'Patient 0':[[0.5]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[14])
-        params_list[15]['Routing']['Class 0'] = [[0.2], [0.1]]
+        params_list[15]['routing']['Class 0'] = [[0.2], [0.1]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[15])
-        params_list[16]['Routing']['Class 0'] = [[0.2, 0.1]]
+        params_list[16]['routing']['Class 0'] = [[0.2, 0.1]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[16])
-        params_list[17]['Routing']['Class 0'] = [[-0.6]]
+        params_list[17]['routing']['Class 0'] = [[-0.6]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[17])
-        params_list[18]['Routing']['Class 0'] = [[1.4]]
+        params_list[18]['routing']['Class 0'] = [[1.4]]
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[18])
-        params_list[19]['Class_change_matrices'] = {'Node 1':[[0.0]],
+        params_list[19]['class_change_matrices'] = {'Node 1':[[0.0]],
                                                     'Node 2':[[0.0]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[19])
-        params_list[20]['Class_change_matrices'] = {'Patient 0':[[0.0]]}
+        params_list[20]['class_change_matrices'] = {'Patient 0':[[0.0]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[20])
-        params_list[21]['Class_change_matrices'] = {'Node 1':[[-0.4]]}
+        params_list[21]['class_change_matrices'] = {'Node 1':[[-0.4]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[21])
-        params_list[22]['Class_change_matrices'] = {'Node 1':[[1.5]]}
+        params_list[22]['class_change_matrices'] = {'Node 1':[[1.5]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[22])
 
 
 class TestImportNoMatrix(unittest.TestCase):
 
     def test_optional_transition_matrix(self):
-        params = {'Arrival_distributions': [ciw.dists.Exponential(1.0)],
-                  'Service_distributions': [ciw.dists.Exponential(2.0)],
-                  'Number_of_servers': [1]}
+        params = {'arrival_distributions': [ciw.dists.Exponential(1.0)],
+                  'service_distributions': [ciw.dists.Exponential(2.0)],
+                  'number_of_servers': [1]}
         N = ciw.create_network(**params)
         self.assertEqual([c.routing for c in N.customer_classes], [[[0.0]]])
 
         N = ciw.create_network(
-                Arrival_distributions={'Class 0': [ciw.dists.Exponential(1.0)],
+                arrival_distributions={'Class 0': [ciw.dists.Exponential(1.0)],
                                        'Class 1': [ciw.dists.Exponential(1.0)]},
-                Service_distributions={'Class 0': [ciw.dists.Exponential(2.0)],
+                service_distributions={'Class 0': [ciw.dists.Exponential(2.0)],
                                        'Class 1': [ciw.dists.Exponential(1.0)]},
-                Number_of_servers=[1]
+                number_of_servers=[1]
             )
 
         self.assertEqual([c.routing for c in N.customer_classes], [[[0.0]], [[0.0]]])
 
-        params = {'Arrival_distributions': [ciw.dists.Exponential(1.0), ciw.dists.Exponential(1.0)],
-                  'Service_distributions': [ciw.dists.Exponential(2.0), ciw.dists.Exponential(2.0)],
-                  'Number_of_servers': [1, 2]}
+        params = {'arrival_distributions': [ciw.dists.Exponential(1.0), ciw.dists.Exponential(1.0)],
+                  'service_distributions': [ciw.dists.Exponential(2.0), ciw.dists.Exponential(2.0)],
+                  'number_of_servers': [1, 2]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params)
 
 
 class TestCreateNetworkKwargs(unittest.TestCase):
     def test_network_from_kwargs(self):
         N = ciw.create_network(
-                Arrival_distributions={'Class 0': [ciw.dists.Exponential(3.0)]},
-                Service_distributions={'Class 0': [ciw.dists.Exponential(7.0)]},
-                Number_of_servers=[9],
-                Routing={'Class 0': [[0.5]]},
-                Queue_capacities=['Inf']
+                arrival_distributions={'Class 0': [ciw.dists.Exponential(3.0)]},
+                service_distributions={'Class 0': [ciw.dists.Exponential(7.0)]},
+                number_of_servers=[9],
+                routing={'Class 0': [[0.5]]},
+                queue_capacities=['Inf']
             )
         
         self.assertEqual(N.number_of_nodes, 1)
@@ -409,14 +409,14 @@ class TestCreateNetworkKwargs(unittest.TestCase):
 
 
         N = ciw.create_network(
-                Arrival_distributions=[ciw.dists.Exponential(3.0),
+                arrival_distributions=[ciw.dists.Exponential(3.0),
                                        ciw.dists.Uniform(0.2, 0.6)],
-                Service_distributions=[ciw.dists.Exponential(7.0),
+                service_distributions=[ciw.dists.Exponential(7.0),
                                        ciw.dists.Deterministic(0.7)],
-                Number_of_servers=[[[1, 20], [4, 50]], 3],
-                Routing=[[0.5, 0.2],
+                number_of_servers=[[[1, 20], [4, 50]], 3],
+                routing=[[0.5, 0.2],
                          [0.0, 0.0]],
-                Queue_capacities=[10, 'Inf']
+                queue_capacities=[10, 'Inf']
             )
 
         self.assertEqual(N.number_of_nodes, 2)
@@ -439,15 +439,15 @@ class TestCreateNetworkKwargs(unittest.TestCase):
 
 
         N = ciw.create_network(
-                Arrival_distributions={'Class 0': [ciw.dists.Exponential(3.0)],
+                arrival_distributions={'Class 0': [ciw.dists.Exponential(3.0)],
                                        'Class 1': [ciw.dists.Exponential(4.0)]},
-                Service_distributions={'Class 0': [ciw.dists.Exponential(7.0)],
+                service_distributions={'Class 0': [ciw.dists.Exponential(7.0)],
                                        'Class 1': [ciw.dists.Uniform(0.4, 1.2)]},
-                Number_of_servers=[9],
-                Routing={'Class 0': [[0.5]],
+                number_of_servers=[9],
+                routing={'Class 0': [[0.5]],
                          'Class 1': [[0.0]]},
-                Queue_capacities=['Inf'],
-                Class_change_matrices={'Node 1': [[0.0, 1.0],
+                queue_capacities=['Inf'],
+                class_change_matrices={'Node 1': [[0.0, 1.0],
                                                   [0.2, 0.8]]}
             )
 
@@ -469,15 +469,15 @@ class TestCreateNetworkKwargs(unittest.TestCase):
 
 
         N = ciw.create_network(
-                Arrival_distributions={'Class 0': [ciw.dists.Exponential(3.0)],
+                arrival_distributions={'Class 0': [ciw.dists.Exponential(3.0)],
                                        'Class 1': [ciw.dists.Exponential(4.0)]},
-                Service_distributions={'Class 0': [ciw.dists.Exponential(7.0)],
+                service_distributions={'Class 0': [ciw.dists.Exponential(7.0)],
                                        'Class 1': [ciw.dists.Uniform(0.4, 1.2)]},
-                Number_of_servers=[9],
-                Routing={'Class 0': [[0.5]],
+                number_of_servers=[9],
+                routing={'Class 0': [[0.5]],
                          'Class 1': [[0.0]]},
-                Queue_capacities=['Inf'],
-                Priority_classes={'Class 0': 1,
+                queue_capacities=['Inf'],
+                priority_classes={'Class 0': 1,
                                   'Class 1': 0}
             )
 
@@ -500,18 +500,18 @@ class TestCreateNetworkKwargs(unittest.TestCase):
 
 
         N = ciw.create_network(
-                Arrival_distributions=[ciw.dists.Exponential(3.0),
+                arrival_distributions=[ciw.dists.Exponential(3.0),
                                        ciw.dists.Exponential(4.0),
                                        ciw.dists.Exponential(2.0)],
-                Service_distributions=[ciw.dists.Exponential(7.0),
+                service_distributions=[ciw.dists.Exponential(7.0),
                                        ciw.dists.Uniform(0.4, 1.2),
                                        ciw.dists.Deterministic(5.33)],
-                Number_of_servers=[9, 2, 4],
-                Routing=[[0.5, 0.0, 0.1],
+                number_of_servers=[9, 2, 4],
+                routing=[[0.5, 0.0, 0.1],
                          [0.2, 0.1, 0.0],
                          [0.0, 0.0, 0.0]],
-                Queue_capacities=['Inf', 'Inf', 'Inf'],
-                Baulking_functions=[None, None, example_baulking_function]
+                queue_capacities=['Inf', 'Inf', 'Inf'],
+                baulking_functions=[None, None, example_baulking_function]
             )
 
         self.assertEqual(N.number_of_nodes, 3)
@@ -542,32 +542,32 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         with self.assertRaises(ValueError):
             ciw.create_network()
         with self.assertRaises(ValueError):
-            ciw.create_network(Arrival_distributions=[ciw.dists.Exponential(0.2)])
+            ciw.create_network(arrival_distributions=[ciw.dists.Exponential(0.2)])
         with self.assertRaises(ValueError):
-            ciw.create_network(Service_distributions=[ciw.dists.Exponential(0.2)])
+            ciw.create_network(service_distributions=[ciw.dists.Exponential(0.2)])
         with self.assertRaises(ValueError):
-            ciw.create_network(Number_of_servers=[1])
+            ciw.create_network(number_of_servers=[1])
         with self.assertRaises(ValueError):
-            ciw.create_network(Arrival_distributions=[ciw.dists.Exponential(0.2)], Number_of_servers=[1])
+            ciw.create_network(arrival_distributions=[ciw.dists.Exponential(0.2)], number_of_servers=[1])
         with self.assertRaises(ValueError):
-            ciw.create_network(Arrival_distributions=[ciw.dists.Exponential(0.2)], Service_distributions=[ciw.dists.Exponential(0.2)])
+            ciw.create_network(arrival_distributions=[ciw.dists.Exponential(0.2)], service_distributions=[ciw.dists.Exponential(0.2)])
         with self.assertRaises(ValueError):
-            ciw.create_network(Service_distributions=[ciw.dists.Exponential(0.2)], Number_of_servers=[1])
+            ciw.create_network(service_distributions=[ciw.dists.Exponential(0.2)], number_of_servers=[1])
 
     def test_error_extra_args(self):
-        params = {'Arrival_distributions': [ciw.dists.Exponential(3.0)],
-                  'Service_distributions': [ciw.dists.Exponential(7.0)],
-                  'Number_of_servers': [4],
-                  'Something_else': 56
+        params = {'arrival_distributions': [ciw.dists.Exponential(3.0)],
+                  'service_distributions': [ciw.dists.Exponential(7.0)],
+                  'number_of_servers': [4],
+                  'something_else': 56
                   }
         with self.assertRaises(TypeError):
             ciw.create_network(**params)
 
     def test_raise_error_wrong_batch_dist(self):
-        params = {'Arrival_distributions': [ciw.dists.Exponential(3.0)],
-                  'Service_distributions': [ciw.dists.Exponential(7.0)],
-                  'Number_of_servers': [4],
-                  'Batching_distributions': [ciw.dists.Exponential(1.3)]
+        params = {'arrival_distributions': [ciw.dists.Exponential(3.0)],
+                  'service_distributions': [ciw.dists.Exponential(7.0)],
+                  'number_of_servers': [4],
+                  'batching_distributions': [ciw.dists.Exponential(1.3)]
                   }
         N = ciw.create_network(**params)
         with self.assertRaises(ValueError):

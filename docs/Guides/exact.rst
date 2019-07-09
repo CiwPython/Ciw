@@ -18,9 +18,9 @@ Let's look at an example::
     
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Exponential(5)],
-    ...     Service_distributions=[ciw.dists.Exponential(10)],
-    ...     Number_of_servers=[1]
+    ...     arrival_distributions=[ciw.dists.Exponential(5)],
+    ...     service_distributions=[ciw.dists.Exponential(10)],
+    ...     number_of_servers=[1]
     ... )
 
 Without envoking exact arithmetic, we see that floats are used throughout::

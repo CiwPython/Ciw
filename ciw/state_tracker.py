@@ -2,11 +2,11 @@ from __future__ import division
 
 class StateTracker(object):
     """
-    A generic class to record system's state
+    A generic class to record system's state.
     """
     def __init__(self, simulation):
         """
-        Initialises the state tracker class
+        Initialises the state tracker class.
         """
         self.simulation = simulation
         self.state = None
@@ -23,8 +23,7 @@ class StateTracker(object):
         """
         pass
 
-    def change_state_release(self, node_id, destination,
-        cust_clss, blocked):
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -32,7 +31,7 @@ class StateTracker(object):
 
     def hash_state(self):
         """
-        Returns a hashable state
+        Returns a hashable state.
         """
         return None
 
@@ -50,7 +49,7 @@ class NaiveTracker(StateTracker):
     """
     def __init__(self, simulation):
         """
-        Initialises the naive tracker class
+        Initialises the naive tracker class.
         """
         self.simulation = simulation
         self.state = [[0, 0] for i in range(
@@ -69,8 +68,7 @@ class NaiveTracker(StateTracker):
         self.state[node_id-1][1] += 1
         self.state[node_id-1][0] -= 1
 
-    def change_state_release(self, node_id, destination,
-        cust_clss, blocked):
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -81,7 +79,7 @@ class NaiveTracker(StateTracker):
 
     def hash_state(self):
         """
-        Returns a hashable state
+        Returns a hashable state.
         """
         return tuple(tuple(obs) for obs in self.state)
 
@@ -104,7 +102,7 @@ class MatrixTracker(StateTracker):
     """
     def __init__(self, simulation):
         """
-        Initialises the naive tracker class
+        Initialises the naive tracker class.
         """
         self.simulation = simulation
         self.state = [[[[] for i in range(
@@ -126,8 +124,7 @@ class MatrixTracker(StateTracker):
         self.state[0][node_id-1][destination-1].append(self.increment)
         self.increment += 1
 
-    def change_state_release(self, node_id, destination,
-        cust_clss, blocked):
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -142,7 +139,7 @@ class MatrixTracker(StateTracker):
 
     def find_blocked_position_and_pop(self, node_id, destination):
         """
-        Finds the position of the next customer to unblock
+        Finds the position of the next customer to unblock.
         """
         position = self.state[0][node_id-1][destination-1].pop(0)
         return position
@@ -150,7 +147,7 @@ class MatrixTracker(StateTracker):
     def adjust_positions(self, position):
         """
         Loops through whole matrix, reducing any
-        positions > position by 1
+        positions > position by 1.
         """
         for r in range(len(self.state[0])):
             for c in range(len(self.state[0][r])):
@@ -160,7 +157,7 @@ class MatrixTracker(StateTracker):
 
     def hash_state(self):
         """
-        Returns a hashable state
+        Returns a hashable state.
         """
         naive = tuple(self.state[-1])
         matrix = tuple(tuple(tuple(obs for obs in col)

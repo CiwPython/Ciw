@@ -18,16 +18,17 @@ from .deadlock_detector import *
 
 class Simulation(object):
     """
-    Overall simulation class
+    The Simulation class, that is the engine of the simulation.
     """
     def __init__(self, network,
                  exact=False,
                  name='Simulation',
                  tracker=False,
                  deadlock_detector=False,
-        node_class=None, arrival_node_class=None):
+                 node_class=None,
+                 arrival_node_class=None):
         """
-        Initialise a queue instance.
+        Initialise an instance of the simualation.
         """
         self.current_time = 0.0
         self.network = network
@@ -39,16 +40,12 @@ class Simulation(object):
 
         self.name = name
         self.deadlock_detector = self.choose_deadlock_detection(deadlock_detector)
-        # self.generators = self.find_generators()
         self.inter_arrival_times = self.find_arrival_dists()
         self.service_times = self.find_service_dists()
         self.batch_sizes = self.find_batching_dists()
         self.number_of_priority_classes = self.network.number_of_priority_classes
-        self.transitive_nodes = [self.NodeType(i + 1, self)
-            for i in range(network.number_of_nodes)]
-        self.nodes = ([self.ArrivalNodeType(self)] +
-                      self.transitive_nodes +
-                      [ExitNode()])
+        self.transitive_nodes = [self.NodeType(i + 1, self) for i in range(network.number_of_nodes)]
+        self.nodes = ([self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()])
         self.statetracker = self.choose_tracker(tracker, deadlock_detector)
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
@@ -58,7 +55,7 @@ class Simulation(object):
 
     def __repr__(self):
         """
-        Represents the simulation
+        Representation of the simulation.
         """
         return self.name
 
@@ -69,11 +66,10 @@ class Simulation(object):
         used, unless Detect_deadlock is on, then NaiveTracker
         is the default.
         """
-        if tracker:
-            if tracker == 'Naive':
-                return NaiveTracker(self)
-            if tracker == 'Matrix':
-                return MatrixTracker(self)
+        if tracker == 'Naive':
+            return NaiveTracker(self)
+        if tracker == 'Matrix':
+            return MatrixTracker(self)
         elif deadlock_detector:
             return NaiveTracker(self)
         return StateTracker(self)
@@ -90,8 +86,8 @@ class Simulation(object):
 
     def find_arrival_dists(self):
         """
-        Create the dictionary of arrival time dist
-        object for each node for each class
+        Create the dictionary of arrival time distribution
+        objects for each node for each customer class.
         """
         return {node + 1: {
             clss: copy.deepcopy(
@@ -102,8 +98,8 @@ class Simulation(object):
 
     def find_service_dists(self):
         """
-        Create the dictionary of service time dist
-        object for each node for each class
+        Create the dictionary of service time distribution
+        objects for each node for each customer class.
         """
         return {node + 1: {
             clss: copy.deepcopy(
@@ -114,8 +110,8 @@ class Simulation(object):
 
     def find_batching_dists(self):
         """
-        Create the dictionary of batch size dist
-        object for each node for each class
+        Create the dictionary of batch size distribution
+        objects for each node for each class.
         """
         return {node + 1: {
             clss: copy.deepcopy(
@@ -126,7 +122,7 @@ class Simulation(object):
 
     def find_next_active_node(self):
         """
-        Returns the next active node:
+        Returns the next active node, the node whose next_event_date is next:
         """
         next_event_date = min([nd.next_event_date for nd in self.nodes])
         next_active_node_indices = [i for i, nd in enumerate(
@@ -137,15 +133,14 @@ class Simulation(object):
 
     def get_all_individuals(self):
         """
-        Returns list of all individuals with at least one record
+        Returns list of all individuals with at least one data record.
         """
-        return [individual for node in self.nodes[1:]
-            for individual in node.all_individuals
-            if len(individual.data_records) > 0]
+        return [individual for node in self.nodes[1:] for individual in
+        node.all_individuals if len(individual.data_records) > 0]
 
     def get_all_records(self):
         """
-        Gets all records from all individuals
+        Gets all data records from all individuals.
         """
         records = []
         for individual in self.get_all_individuals():
@@ -156,7 +151,8 @@ class Simulation(object):
 
     def set_classes(self, node_class, arrival_node_class):
         """
-        Sets the type of classes being used in the Simulation model
+        Sets the type of ArrivalNode and Node classes being used
+        in the Simulation model (if customer classes are used.)
         """
         if arrival_node_class is not None:
             self.ArrivalNodeType = arrival_node_class
@@ -170,8 +166,8 @@ class Simulation(object):
 
     def event_and_return_nextnode(self, next_active_node):
         """
-        Carries out the event of current next_active_node, and return the next
-        next_active_node
+        Carries out the event of current next_active_node,
+        and returns the next next_active_node
         """
         next_active_node.have_event()
         for node in self.transitive_nodes:
@@ -229,8 +225,10 @@ class Simulation(object):
             self.progress_bar.update(remaining_time)
             self.progress_bar.close()
 
-    def simulate_until_max_customers(self, max_customers,
-                                     progress_bar=False, method='Finish'):
+    def simulate_until_max_customers(self,
+                                     max_customers,
+                                     progress_bar=False,
+                                     method='Finish'):
         """
         Runs the simulation until max_customers is reached:
 

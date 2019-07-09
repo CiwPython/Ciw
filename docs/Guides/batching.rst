@@ -5,18 +5,18 @@ How to Set Batch Arrivals
 =========================
 
 Ciw allows batch arrivals, that is more than one customer arriving at the same time.
-This is implemented using the :code:`Batching_distributions`.
-Similar to :code:`Arrival_distributions` and :code:`Service_distributions`, this takes in distribution objects for each node and customer class that will sample the size of the batch.
+This is implemented using the :code:`batching_distributions`.
+Similar to :code:`arrival_distributions` and :code:`service_distributions`, this takes in distribution objects for each node and customer class that will sample the size of the batch.
 Only discrete distributions are allowed, that is distributions that sample integers.
 
 Let's show an example::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Deterministic(18.5)],
-    ...     Service_distributions=[ciw.dists.Deterministic(3.0)],
-    ...     Batching_distributions=[ciw.dists.Deterministic(3)],
-    ...     Number_of_servers=[1]
+    ...     arrival_distributions=[ciw.dists.Deterministic(18.5)],
+    ...     service_distributions=[ciw.dists.Deterministic(3.0)],
+    ...     batching_distributions=[ciw.dists.Deterministic(3)],
+    ...     number_of_servers=[1]
     ... )
 
 If this system is simulated for 30 time units, only one arrival event will occur.
@@ -34,7 +34,7 @@ As there is only one server, two of those customers will have to wait::
 
 Just like arrival and service distributions, batching distributions can be defined for multiple nodes and multiple customer classes, using lists and dictionaries::
 
-    Batching_distributions={
+    batching_distributions={
         'Class 0': [ciw.dists.Deterministic(3),
                     ciw.dists.Deterministic(1)],
         'Class 1': [ciw.dists.Deterministic(2),
@@ -46,7 +46,7 @@ Note:
      + :code:`Empirical`
      + :code:`Pmf`
      + :code:`Sequential`
-  + If the keyword :code:`Batching_distributions` is omitted, then no batching is assumed. That is only one customer arrives at a time. Equivalent to :code:`ciw.dists.Deterministic(1)`.
+  + If the keyword :code:`batching_distributions` is omitted, then no batching is assumed. That is only one customer arrives at a time. Equivalent to :code:`ciw.dists.Deterministic(1)`.
   + If some nodes/customer classes require no batching, but others do, please use :code:`ciw.dists.Deterministic(1)`.
   + Batch arrivals may lead to :ref:`simultaneous events <simultaneous_events>`, please take care.
 
@@ -73,10 +73,10 @@ Now use this when defining a network:
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[ciw.dists.Deterministic(3.0)],
-    ...     Service_distributions=[ciw.dists.Deterministic(0.5)],
-    ...     Batching_distributions=[TimeDependentBatches()],
-    ...     Number_of_servers=[1]
+    ...     arrival_distributions=[ciw.dists.Deterministic(3.0)],
+    ...     service_distributions=[ciw.dists.Deterministic(0.5)],
+    ...     batching_distributions=[TimeDependentBatches()],
+    ...     number_of_servers=[1]
     ... )
 
 We'll simulate this for 16 time units.

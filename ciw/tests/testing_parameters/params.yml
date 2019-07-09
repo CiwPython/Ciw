@@ -1,4 +1,4 @@
-Arrival_distributions:
+arrival_distributions:
   Class 0:
   - - Exponential
     - 3.0
@@ -26,17 +26,17 @@ Arrival_distributions:
     - 2.0
   - - Exponential
     - 0.5
-Number_of_servers:
+number_of_servers:
 - 9
 - 10
 - 8
 - 8
-Queue_capacities:
+queue_capacities:
 - 20
 - "Inf"
 - 30
 - "Inf"
-Service_distributions:
+service_distributions:
   Class 0:
   - - Exponential
     - 7.0
@@ -67,7 +67,7 @@ Service_distributions:
     - 8.0
   - - Exponential
     - 9.0
-Routing:
+routing:
   Class 0:
   - - 0.1
     - 0.2

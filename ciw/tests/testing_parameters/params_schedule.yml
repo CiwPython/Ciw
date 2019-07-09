@@ -1,4 +1,4 @@
-Arrival_distributions:
+arrival_distributions:
   Class 0:
   - - Exponential
     - 0.05
@@ -9,15 +9,15 @@ Arrival_distributions:
     - 0.04
   - - Exponential
     - 0.06
-Number_of_classes: 2
-Number_of_nodes: 2
-Number_of_servers:
+number_of_classes: 2
+number_of_nodes: 2
+number_of_servers:
 - [[1, 30], [2, 60], [1, 90], [3, 100]]
 - 3
-Queue_capacities:
+queue_capacities:
 - "Inf"
 - 10
-Service_distributions:
+service_distributions:
   Class 0:
   - - Deterministic
     - 5.0
@@ -28,8 +28,7 @@ Service_distributions:
     - 10.0
   - - Exponential
     - 0.1
-Simulation_time: 210
-Routing:
+routing:
   Class 0:
   - - 0.8
     - 0.1

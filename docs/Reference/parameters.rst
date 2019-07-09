@@ -7,7 +7,7 @@ List of Parameters
 Below is a full list of the parameters that the :code:`create_network` function can take, along with a description of the values required.
 If using a parameters file then here are the arguments and values of the required :code:`.yml` file.
 
-Arrival_distributions
+arrival_distributions
 ~~~~~~~~~~~~~~~~~~~~~
 
 *Required*
@@ -19,18 +19,18 @@ For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    Arrival_distributions={'Class 0': [ciw.dists.Exponential(2.4),
+    arrival_distributions={'Class 0': [ciw.dists.Exponential(2.4),
                                        ciw.dists.Uniform(0.3, 0.5)],
                            'Class 1': [ciw.dists.Exponential(3.0),
                                        ciw.dists.Deterministic(0.8)]}
 
 An example where only one class of customer is required::
 
-    Arrival_distributions=[ciw.dists.Exponential(2.4),
+    arrival_distributions=[ciw.dists.Exponential(2.4),
                            ciw.dists.Exponential(2.0)]
 
 
-Batching_distributions
+batching_distributions
 ~~~~~~~~~~~~~~~~~~~~~~
 
 *Optional*
@@ -42,19 +42,19 @@ For more details on batching, see :ref:`batch-arrivals`.
 
 An example is shown::
 
-    Batching_distributions={'Class 0': [ciw.dists.Deterministic(1),
+    batching_distributions={'Class 0': [ciw.dists.Deterministic(1),
                                         ciw.dists.Sequential([1, 1, 2])],
                             'Class 1': [ciw.dists.Deterministic(3),
                                         ciw.dists.Deterministic(2)]}
 
 An example where only one class of customer is required::
 
-    Batching_distributions=[ciw.dists.Deterministic(2),
+    batching_distributions=[ciw.dists.Deterministic(2),
                             ciw.dists.Deterministic(1)]
 
 
 
-Baulking_functions
+baulking_functions
 ~~~~~~~~~~~~~~~~~~
 
 *Optional*
@@ -66,11 +66,11 @@ If left out, then no baulking occurs.
 
 Example::
 
-    Baulking_functions={'Class 0': [probability_of_baulking]}
+    baulking_functions={'Class 0': [probability_of_baulking]}
 
 
 
-Class_change_matrices
+class_change_matrices
 ~~~~~~~~~~~~~~~~~~~~~
 
 *Optional*
@@ -80,7 +80,7 @@ For more details see :ref:`dynamic-classes`.
 
 An example for a two node network with two classes of customer::
 
-    Class_change_matrices={'Node 0': [[0.3, 0.4, 0.3],
+    class_change_matrices={'Node 0': [[0.3, 0.4, 0.3],
                                       [0.1, 0.9, 0.0],
                                       [0.5, 0.1, 0.4]],
                            'Node 1': [[1.0, 0.0, 0.0],
@@ -89,7 +89,7 @@ An example for a two node network with two classes of customer::
 
 
 
-Number_of_servers
+number_of_servers
 ~~~~~~~~~~~~~~~~~
 
 *Required*
@@ -101,10 +101,10 @@ A value of 'Inf' may be given is infinite servers are required.
 
 Example::
 
-    Number_of_servers=[1, 2, 'Inf', 1, 'schedule']
+    number_of_servers=[1, 2, 'Inf', 1, 'schedule']
 
 
-Priority_classes
+priority_classes
 ~~~~~~~~~~~~~~~~
 
 *Optional*
@@ -115,13 +115,13 @@ If left out, no priorities are used, that is all customers have equal priorities
 
 Example::
 
-    Priority_classes={'Class 0': 0,
+    priority_classes={'Class 0': 0,
                       'CLass 1': 1,
                       'Class 2': 1}
 
 
 
-Queue_capacities
+queue_capacities
 ~~~~~~~~~~~~~~~~
 
 *Optional*
@@ -131,40 +131,46 @@ If ommitted, default values of 'Inf' for every node are given.
 
 Example::
 
-    Queue_capacities=[5, 'Inf', 'Inf', 10]
+    queue_capacities=[5, 'Inf', 'Inf', 10]
 
 
 
-Routing
-~~~~~~~~~~~~~~~~~~~
+routing
+~~~~~~~
 
 *Required for more than 1 node*
 
 *Optional for 1 node*
 
-Describes the routing matrix for each customer class.
+Describes how each customer class  routes around the system.
+This may be a routing matrix for each customer class, or a list routing function for process-based simulations, see :ref:`process-based`.
+
 This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the routing probabilities.
 If only one class of customer is required it is sufficient to simply enter single routing matrix (a list of lists).
 
 An example is shown::
 
-    Routing={'Class 0': [[0.1, 0.3],
+    routing={'Class 0': [[0.1, 0.3],
                          [0.0, 0.8]],
              'Class 1': [[0.0, 1.0],
                          [0.0, 0.0]]}
 
 An example where only one class of customer is required::
 
-    Routing=[[0.5, 0.3],
-            [0.2, 0.6]]
+    routing=[[0.5, 0.3],
+             [0.2, 0.6]]
 
 If using only one node, the default value is::
 
-    Routing={'Class 0': [[0.0]]}
+    routing={'Class 0': [[0.0]]}
+
+Otherwise a process-based routing function::
+
+    routing=[routing_function]
 
 
 
-Service_distributions
+service_distributions
 ~~~~~~~~~~~~~~~~~~~~~
 
 *Required*
@@ -176,13 +182,13 @@ For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    Service_distributions={'Class 0': [ciw.dists.Exponential(4.4),
+    service_distributions={'Class 0': [ciw.dists.Exponential(4.4),
                                        ciw.dists.Uniform(0.1, 0.9)],
                            'Class 1': [ciw.dists.Exponential(6.0),
                                        ciw.dists.Lognormal(0.5, 0.6)]}
 
 An example where only one class of customer is required::
 
-    Service_distributions=[ciw.dists.Exponential(4.8),
+    service_distributions=[ciw.dists.Exponential(4.8),
                            ciw.dists.Exponential(5.2)]
 
