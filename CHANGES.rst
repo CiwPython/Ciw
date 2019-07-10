@@ -1,6 +1,24 @@
 History
 -------
 
+v2.0.0 (2019-07-10)
+~~~~~~~~~~~~~~~~~~~
+- Large refactor:
+- Drop support for Python 2.7, Python 3.4.
+- Update networkx and pyyaml requirements.
+- Refactor time so that `Simulation` has `current_time` attribute.
+- Change Transition_matrices keyword to routing.
+- routing can take a process-based routing function.
+- Refactor distributions to be objects: ['Exponential', 0.5] -> ciw.dists.Exponential(0.5).
+- Distribution objects can be manipulated with +, -, * and /.
+- All keywords lower case to conform to Pep8.
+- deadlock_detector keyword takes object, not string.
+- tracker keyword takes object, not string.
+- Add tests and docs to show how objects can be used for state-dependent distributions.
+- All user facing api now takes float('inf') not 'Inf', expect for .yml files.
+- Reference Ciw paper in docs.
+- Add AUTHORS.rst to docs.
+
 v1.1.6 (2018-10-22)
 ~~~~~~~~~~~~~~~~~~~
 - Fixed bug in which preemptively iterrupted individuals remained blocked once service resampled.
