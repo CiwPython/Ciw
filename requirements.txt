@@ -1,4 +1,4 @@
-PyYAML==3.12
-networkx==1.11
+PyYAML>=5.1
+networkx>=2.3
 hypothesis==3.8.5
 tqdm==4.14.0

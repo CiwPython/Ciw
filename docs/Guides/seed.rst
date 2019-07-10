@@ -15,9 +15,9 @@ Note that due to sampling on initialisation, the seed will need to be set **befo
 As an example, take the following network::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 5]],
-    ...     Service_distributions=[['Exponential', 10]],
-    ...     Number_of_servers=[1]
+    ...     arrival_distributions=[ciw.dists.Exponential(5)],
+    ...     service_distributions=[ciw.dists.Exponential(10)],
+    ...     number_of_servers=[1]
     ... )
 
 Now let's run the system for 20 time units, using a seed of 1, and get the average waiting time::
@@ -27,7 +27,7 @@ Now let's run the system for 20 time units, using a seed of 1, and get the avera
     >>> Q.simulate_until_max_time(20)
     >>> waits = [r.waiting_time for r in Q.get_all_records()]
     >>> sum(waits)/len(waits)
-    0.0544115013161...
+    0.0824058654563...
 
 Using the same seed again, the exact same average waiting time result will occur::
 
@@ -36,7 +36,7 @@ Using the same seed again, the exact same average waiting time result will occur
     >>> Q.simulate_until_max_time(20)
     >>> waits = [r.waiting_time for r in Q.get_all_records()]
     >>> sum(waits)/len(waits)
-    0.0544115013161...
+    0.0824058654563...
 
 Now using a different seed, a different result will occur::
 
@@ -45,4 +45,4 @@ Now using a different seed, a different result will occur::
     >>> Q.simulate_until_max_time(20)
     >>> waits = [r.waiting_time for r in Q.get_all_records()]
     >>> sum(waits)/len(waits)
-    0.0832990490158...
+    0.1691349404558...

@@ -3,7 +3,7 @@ import random
 def seed(z):
 	"""
 	Sets all seeds used to generate random number streams.
-	Currently conrains:
+	Currently contains:
 		- random library
 	Previously contained:
 		- numpy
@@ -37,7 +37,7 @@ def random_choice(array, probs=None):
 def truncated_normal(mean, sd):
 	"""
 	Sample from a Normal distribution, with mean and standard
-	deviation (sd). This truncated the distribution at 0 (lower bound
+	deviation (sd). This truncates the distribution at 0 (lower bound
 	of 0). If samples less than 0 are sampled, they are resampled
     until a positive value is sampled.
 	"""
@@ -51,3 +51,10 @@ def flatten_list(list_of_lists):
 	for a_list in list_of_lists:
 		flat += a_list
 	return flat
+
+def no_routing(ind):
+	"""
+	Process-based routing fucntion that sends the customer straight
+	to exit node. It is a placeholder for when NoArrivals is used. 
+	"""
+	return []

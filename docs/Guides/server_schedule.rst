@@ -22,13 +22,13 @@ This is defines by a list of lists indicating the number of servers that should 
 Here we are saying that there will be 2 servers scheduled between times 0 and 10, 0 between 10 and 30, etc.
 This fully defines the cyclic work schedule.
 
-To tell Ciw to use this schedule for a given node, in the :code:`Number_of_servers` keyword we replace an integer with the schedule::
+To tell Ciw to use this schedule for a given node, in the :code:`number_of_servers` keyword we replace an integer with the schedule::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 5]],
-    ...     Service_distributions=[['Exponential', 10]],
-    ...     Number_of_servers=[[[2, 10], [0, 30], [1, 100]]]
+    ...     arrival_distributions=[ciw.dists.Exponential(5)],
+    ...     service_distributions=[ciw.dists.Exponential(10)],
+    ...     number_of_servers=[[[2, 10], [0, 30], [1, 100]]]
     ... )
 
 Simulating this system, we'll see that no services begin between dates 10 and 30, nor between dates 110 and 130::
@@ -58,15 +58,15 @@ When a server is due to go off duty during a customer's service, there are two o
 
 In order to implement pre-emptive or non-pre-emptive schedules, put the schedule in a tuple with a :code:`True` or a :code:`False` as the second term, indicating pre-emptive or non-pre-emptive interruptions. For example::
 
-    Number_of_servers=[([[2, 10], [0, 30], [1, 100]], True)] # preemptive
+    number_of_servers=[([[2, 10], [0, 30], [1, 100]], True)] # preemptive
 
 And::
 
-    Number_of_servers=[([[2, 10], [0, 30], [1, 100]], False)] # non-preemptive
+    number_of_servers=[([[2, 10], [0, 30], [1, 100]], False)] # non-preemptive
 
 Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
 
-    Number_of_servers=[[[2, 10], [0, 30], [1, 100]]] # non-preemptive
+    number_of_servers=[[[2, 10], [0, 30], [1, 100]]] # non-preemptive
 
 
 
@@ -79,9 +79,9 @@ Consider the following example::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Deterministic', 3.0]],
-    ...     Service_distributions=[['Deterministic', 5.0]],
-    ...     Number_of_servers=[[[1, 4.0], [2, 10.0], [0, 100.0]]]
+    ...     arrival_distributions=[ciw.dists.Deterministic(3.0)],
+    ...     service_distributions=[ciw.dists.Deterministic(5.0)],
+    ...     number_of_servers=[[[1, 4.0], [2, 10.0], [0, 100.0]]]
     ... )
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(20.0)

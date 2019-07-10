@@ -19,11 +19,11 @@ The second node is redundent in this scenario::
 	>>> from collections import Counter
 
 	>>> N = ciw.create_network(
-	...     Arrival_distributions=[['Exponential', 6.0], 'NoArrivals'],
-	...     Service_distributions=[['Exponential', 5.0], ['Exponential', 5.0]],
-	...     Transition_matrices=[[0.0, 0.0], [0.0, 0.0]],
-	...     Number_of_servers=[1, 1],
-	...     Queue_capacities=[10, 'Inf']
+	...     arrival_distributions=[ciw.dists.Exponential(6.0), ciw.dists.NoArrivals()],
+	...     service_distributions=[ciw.dists.Exponential(5.0), ciw.dists.Exponential(5.0)],
+	...     routing=[[0.0, 0.0], [0.0, 0.0]],
+	...     number_of_servers=[1, 1],
+	...     queue_capacities=[10, float('inf')]
 	... )
 
 Now we run the system for 100 time units, and see that we get 484 services at the first node, and none at the second node::
@@ -34,7 +34,7 @@ Now we run the system for 100 time units, and see that we get 484 services at th
 
 	>>> service_nodes = [r.node for r in Q.get_all_records()]
 	>>> Counter(service_nodes)
-	Counter({1: 484})
+	Counter({1: 494})
 
 We will now create a new :code:`CustomArrivalNode` such that any customers who arrive when the first node has 10 or more customers present will be sent to the second node.
 First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.ArrivalNode`, and overwrites the :code:`send_individual` method::
@@ -46,17 +46,17 @@ First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.Arrival
 	...         """
 	...         self.number_accepted_individuals += 1
 	...         if len(next_node.all_individuals) <= 10:
-	...             next_node.accept(next_individual, self.next_event_date)
+	...             next_node.accept(next_individual)
 	...         else:
-	...             self.simulation.nodes[2].accept(next_individual, self.next_event_date)
+	...             self.simulation.nodes[2].accept(next_individual)
 
 To run the same system, we need to remove the keyword :code:`'Queue_capacities'` when creating a network, so that customers are not rejected before reaching the :code:`send_individual` method::
 
 	>>> N = ciw.create_network(
-	...     Arrival_distributions=[['Exponential', 6.0], 'NoArrivals'],
-	...     Service_distributions=[['Exponential', 5.0], ['Exponential', 5.0]],
-	...     Transition_matrices=[[0.0, 0.0], [0.0, 0.0]],
-	...     Number_of_servers=[1, 1]
+	...     arrival_distributions=[ciw.dists.Exponential(6.0), ciw.dists.NoArrivals()],
+	...     service_distributions=[ciw.dists.Exponential(5.0), ciw.dists.Exponential(5.0)],
+	...     routing=[[0.0, 0.0], [0.0, 0.0]],
+	...     number_of_servers=[1, 1]
 	... )
 
 Now rerun the same system, telling Ciw to use the new :code:`arrival_node_class` to use.
@@ -68,4 +68,4 @@ We'll see that the same amount of services take place at Node 1, however rejecte
 
 	>>> service_nodes = [r.node for r in Q.get_all_records()]
 	>>> Counter(service_nodes)
-	Counter({1: 484, 2: 85})
+	Counter({1: 503, 2: 84})

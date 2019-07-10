@@ -3,8 +3,8 @@ import ciw
 from hypothesis import given
 from hypothesis.strategies import integers
 
-class TestServer(unittest.TestCase):
 
+class TestServer(unittest.TestCase):
     def test_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
@@ -27,9 +27,9 @@ class TestServer(unittest.TestCase):
     def test_busy_total_times(self):
         # Single server
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [1.0, 6.0, 100.0]]],
-            Number_of_servers=[1],
+            arrival_distributions=[ciw.dists.Sequential([2.0, 3.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([1.0, 6.0, 100.0])],
+            number_of_servers=[1],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(14.0)
@@ -40,9 +40,9 @@ class TestServer(unittest.TestCase):
 
         # Multi server
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [10.0, 6.0, 100.0]]],
-            Number_of_servers=[3],
+            arrival_distributions=[ciw.dists.Sequential([2.0, 3.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([10.0, 6.0, 100.0])],
+            number_of_servers=[3],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20.0)
@@ -59,13 +59,13 @@ class TestServer(unittest.TestCase):
 
         # Until deadlock
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [3.0, 3.0, 100.0]]],
-            Service_distributions=[['Sequential', [1.0, 6.0, 100.0]]],
-            Number_of_servers=[1],
-            Queue_capacities=[0],
-            Transition_matrices=[[1.0]]
+            arrival_distributions=[ciw.dists.Sequential([3.0, 3.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([1.0, 6.0, 100.0])],
+            number_of_servers=[1],
+            queue_capacities=[0],
+            routing=[[1.0]]
         )
-        Q = ciw.Simulation(N, deadlock_detector='StateDigraph')
+        Q = ciw.Simulation(N, deadlock_detector=ciw.deadlock.StateDigraph())
         Q.simulate_until_deadlock()
         s = Q.nodes[1].servers[0]
         self.assertEqual(s.total_time, 4.0)
@@ -74,9 +74,9 @@ class TestServer(unittest.TestCase):
 
         # Until max customers
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [2.0, 1.0, 7.0, 100.0]]],
-            Service_distributions=[['Sequential', [5.0, 2.0, 2.0, 100.0]]],
-            Number_of_servers=[1],
+            arrival_distributions=[ciw.dists.Sequential([2.0, 1.0, 7.0, 100.0])],
+            service_distributions=[ciw.dists.Sequential([5.0, 2.0, 2.0, 100.0])],
+            number_of_servers=[1],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(3, method='Arrive')

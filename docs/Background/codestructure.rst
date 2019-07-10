@@ -28,6 +28,7 @@ Input:
 - Network
 - Service Centre
 - Customer Classe
+- Distributions
 
 Optional:
 

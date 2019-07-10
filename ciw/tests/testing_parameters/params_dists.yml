@@ -1,0 +1,66 @@
+arrival_distributions:
+  Class 0:
+  - - Uniform
+    - 1.4
+    - 2.3
+  - - Deterministic
+    - 3.0
+  - - Triangular
+    - 0.5
+    - 0.9
+    - 1.4
+  Class 1:
+  - - Exponential
+    - 0.4
+  - - Gamma
+    - 8.8
+    - 9.9
+  - - NoArrivals
+number_of_servers:
+- 4
+- 3
+- 4
+queue_capacities:
+- "Inf"
+- 10
+- "Inf"
+service_distributions:
+  Class 0:
+  - - Lognormal
+    - 5.5
+    - 3.6
+  - - Weibull
+    - 5.0
+    - 8.4
+  - - Nonsense
+    - 8.0
+  Class 1:
+  - - Exponential
+    - 0.5
+  - - Pmf
+    - [10.0, 9.5]
+    - [0.5, 0.5]
+  - - Normal
+    - 5.0
+    - 0.6
+routing:
+  Class 0:
+  - - 0.8
+    - 0.1
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 0.4
+  - - 0.0
+    - 0.3
+    - 0.3
+  Class 1:
+  - - 0.8
+    - 0.1
+    - 0.0
+  - - 0.2
+    - 0.0
+    - 0.2
+  - - 0.1
+    - 0.4
+    - 0.1

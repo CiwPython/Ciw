@@ -41,11 +41,9 @@ Install with :code:`pip install ciw`.
 
 Current supported version of Python:
 
-- Python 2.7
-- Python 3.4
 - Python 3.5
 - Python 3.6
-- PyPy 5.3.1
+- PyPy3.5
 
 Usage
 -----
@@ -57,9 +55,9 @@ Import Ciw::
 To define an M/M/3 queue, with λ = 0.2 and μ = 0.1::
 
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.2]],
-    ...     Service_distributions=[['Exponential', 0.1]],
-    ...     Number_of_servers=[3]
+    ...     arrival_distributions=[ciw.dists.Exponential(0.2)],
+    ...     service_distributions=[ciw.dists.Exponential(0.1)],
+    ...     number_of_servers=[3]
     ... )
 
 Now set a seed, create a Simulation object, and simulate for 1440 time units::
@@ -76,4 +74,4 @@ Manipulate results to get useful statistics, e.g. average waiting time::
 
     >>> waits = [r.waiting_time for r in recs]
     >>> sum(waits) / len(waits)
-    1.6885...
+    4.2305...

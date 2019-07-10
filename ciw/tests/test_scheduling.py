@@ -4,7 +4,6 @@ from decimal import Decimal
 
 
 class TestScheduling(unittest.TestCase):
-
     def test_change_shift_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
@@ -187,10 +186,10 @@ class TestScheduling(unittest.TestCase):
     def test_full_preemptive_simulation(self):
         # Run until an individal gets interrupted
         params = {
-            'Arrival_distributions': [['Deterministic', 7.0]],
-            'Service_distributions': [['Deterministic', 5.0]],
-            'Transition_matrices': [[0.0]],
-            'Number_of_servers': [([[1, 15], [0, 17], [2, 100]], True)]
+            'arrival_distributions': [ciw.dists.Deterministic(7.0)],
+            'service_distributions': [ciw.dists.Deterministic(5.0)],
+            'routing': [[0.0]],
+            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], True)]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -211,10 +210,10 @@ class TestScheduling(unittest.TestCase):
 
         # Run until interrupted individual finishes service
         params = {
-            'Arrival_distributions': [['Deterministic', 7.0]],
-            'Service_distributions': [['Deterministic', 5.0]],
-            'Transition_matrices': [[0.0]],
-            'Number_of_servers': [([[1, 15], [0, 17], [2, 100]], True)]
+            'arrival_distributions': [ciw.dists.Deterministic(7.0)],
+            'service_distributions': [ciw.dists.Deterministic(5.0)],
+            'routing': [[0.0]],
+            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], True)]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -232,13 +231,12 @@ class TestScheduling(unittest.TestCase):
         # interruption, and then resampling 5 time units for rest of service.
 
 
-
         # Example where more customers are interrupted than can restart service
         params = {
-            'Arrival_distributions': [['Deterministic', 3.0]],
-            'Service_distributions': [['Deterministic', 10.0]],
-            'Transition_matrices': [[0.0]],
-            'Number_of_servers': [([[4, 12.5], [0, 17], [1, 100]], True)]
+            'arrival_distributions': [ciw.dists.Deterministic(3.0)],
+            'service_distributions': [ciw.dists.Deterministic(10.0)],
+            'routing': [[0.0]],
+            'number_of_servers': [([[4, 12.5], [0, 17], [1, 100]], True)]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -257,9 +255,9 @@ class TestScheduling(unittest.TestCase):
 
     def test_overtime(self):
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [1.0, 0.0, 0.0, 8.0, 0.0, 3.0, 10000.0]]],
-            Service_distributions=[['Sequential', [5.0, 7.0, 9.0, 4.0, 5.0, 5.0]]],
-            Number_of_servers=[([[3, 7.0], [2, 11.0], [1, 20.0]], False)]
+            arrival_distributions=[ciw.dists.Sequential([1.0, 0.0, 0.0, 8.0, 0.0, 3.0, 10000.0])],
+            service_distributions=[ciw.dists.Sequential([5.0, 7.0, 9.0, 4.0, 5.0, 5.0])],
+            number_of_servers=[([[3, 7.0], [2, 11.0], [1, 20.0]], False)]
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(19.0)
@@ -270,9 +268,9 @@ class TestScheduling(unittest.TestCase):
 
     def test_overtime_exact(self):
         N = ciw.create_network(
-            Arrival_distributions=[['Sequential', [1.0, 0.0, 0.0, 8.0, 0.0, 3.0, 10000.0]]],
-            Service_distributions=[['Sequential', [5.0, 7.0, 9.0, 4.0, 5.0, 5.0]]],
-            Number_of_servers=[([[3, 7.0], [2, 11.0], [1, 20.0]], False)]
+            arrival_distributions=[ciw.dists.Sequential([1.0, 0.0, 0.0, 8.0, 0.0, 3.0, 10000.0])],
+            service_distributions=[ciw.dists.Sequential([5.0, 7.0, 9.0, 4.0, 5.0, 5.0])],
+            number_of_servers=[([[3, 7.0], [2, 11.0], [1, 20.0]], False)]
         )
         Q = ciw.Simulation(N, exact=26)
         Q.simulate_until_max_time(19.0)

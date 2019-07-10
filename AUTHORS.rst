@@ -11,3 +11,5 @@ Ciw has been developed by the following contributors:
 + `Adam Johnson <https://github.com/adamchainz/>`_
 + `Nikoleta Glynatsi <https://github.com/Nikoleta-v3/>`_
 + `caipirginka <https://github.com/caipirginka>`_
++ `Emma Aspland <https://github.com/EmmaAspland>`_
++ `Henry Wilde <https://github.com/daffidwilde>`_

@@ -32,11 +32,11 @@ A diagram of the system is shown below:
 This system can be described in one Network object.
 Arrival and Service distributions are listed in the order of the nodes.
 So are number of servers.
-We do however require a *transition matrix*.
+We do however require a *routing matrix*.
 
-A transition matrix is an :math:`n \times n` matrix (where :math:`n` is the number of nodes in the network) such that the :math:`(i,j)\text{th}` element corresponds to the probability of transitioning to node :math:`j` after service at node :math:`i`.
+A routing matrix is an :math:`n \times n` matrix (where :math:`n` is the number of nodes in the network) such that the :math:`(i,j)\text{th}` element corresponds to the probability of transitioning to node :math:`j` after service at node :math:`i`.
 In Python, we write this matrix as a list of lists.
-The transition matrix for the café system looks like this:
+The routing matrix for the café system looks like this:
 
 .. math::
 
@@ -48,27 +48,27 @@ The transition matrix for the café system looks like this:
 
 
 That is 30% of cold food customers then go to hot food, while the remaining 70% go to the till, and 100% of hot food customers go to the till.
-This is included when creating a network, with the keyword :code:`Transition_matrices`.
+This is included when creating a network, with the keyword :code:`routing`.
 So, our Network for the café looks like this::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions=[['Exponential', 0.3],
-    ...                            ['Exponential', 0.2],
-    ...                            'NoArrivals'],
-    ...     Service_distributions=[['Exponential', 1.0],
-    ...                            ['Exponential', 0.4],
-    ...                            ['Exponential', 0.5]],
-    ...     Transition_matrices=[[0.0, 0.3, 0.7],
-    ...                          [0.0, 0.0, 1.0],
-    ...                          [0.0, 0.0, 0.0]],
-    ...     Number_of_servers=[1, 2, 2]
+    ...     arrival_distributions=[ciw.dists.Exponential(0.3),
+    ...                            ciw.dists.Exponential(0.2),
+    ...                            ciw.dists.NoArrivals()],
+    ...     service_distributions=[ciw.dists.Exponential(1.0),
+    ...                            ciw.dists.Exponential(0.4),
+    ...                            ciw.dists.Exponential(0.5)],
+    ...     routing=[[0.0, 0.3, 0.7],
+    ...              [0.0, 0.0, 1.0],
+    ...              [0.0, 0.0, 0.0]],
+    ...     number_of_servers=[1, 2, 2]
     ... )
 
-Notice the Arrival distributions:
+Notice the arrival distributions:
 18 cold food arrivals per hour is equivalent to :code:`0.3` per minute; 12 hot food arrivals per hour is equivalent to :code:`0.2` per minute; and we want no arrivals to occur at the Till.
 
-Notice the Service distributions:
+Notice the service distributions:
 an average cold food service time of 1 minute is equivalent to a rate of 1/1 = :code:`1` service per minute; an average hot food service time of 2.5 minutes is equivalent to 1/2.5 = :code:`0.4` services per minute; and an average till service time of 2 minutes is equivalent to :code:`0.5` services per minute.
 
 Let's simulate this for one shift of lunchtime of 3 hours (180 mins).
@@ -90,6 +90,6 @@ To find the average number of customers that pass through the system, we can cou
 We can now get the average number of customers that have passed through the system::
 
     >>> sum(completed_custs) / len(completed_custs)
-    83.0
+    81.9
 
-So we've now used Ciw to find out that this café can serve an average 83 customers in a three hour lunchtime.
+So we've now used Ciw to find out that this café can serve an average 81.9 customers in a three hour lunchtime.

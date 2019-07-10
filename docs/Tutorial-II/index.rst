@@ -2,7 +2,7 @@ Tutorials - Part 2
 ==================
 
 Part 2 of the Ciw tutorial will cover some of the other core features of the library.
-It covers networks of queues, the transition matrix, blocking, and multiple classes of customer.
+It covers networks of queues, the routing matrix, blocking, and multiple classes of customer.
 
 Contents:
 

@@ -28,28 +28,28 @@ We assign different behaviour for different customer classes by replacing the va
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     Arrival_distributions={'Class 0': [['Exponential', 1.0],
-    ...                                        'NoArrivals',
-    ...                                        'NoArrivals'],
-    ...                            'Class 1': [['Exponential', 2.0],
-    ...                                        'NoArrivals',
-    ...                                        'NoArrivals']},
-    ...     Service_distributions={'Class 0': [['Exponential', 4.0],
-    ...                                        ['Exponential', 1.0],
-    ...                                        ['Deterministic', 0.0]],
-    ...                            'Class 1': [['Exponential', 6.0],
-    ...                                        ['Deterministic', 0.0],
-    ...                                        ['Exponential', 1.0]]},
-    ...     Transition_matrices={'Class 0': [[0.0, 1.0, 0.0],
-    ...                                      [0.0, 0.0, 0.0],
-    ...                                      [0.0, 0.0, 0.0]],
-    ...                          'Class 1': [[0.0, 0.0, 1.0],
-    ...                                      [0.0, 0.0, 0.0],
-    ...                                      [0.0, 0.0, 0.0]]}, 
-    ...     Number_of_servers=[1, 2, 3],
+    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(1.0),
+    ...                                        ciw.dists.NoArrivals(),
+    ...                                        ciw.dists.NoArrivals()],
+    ...                            'Class 1': [ciw.dists.Exponential(2.0),
+    ...                                        ciw.dists.NoArrivals(),
+    ...                                        ciw.dists.NoArrivals()]},
+    ...     service_distributions={'Class 0': [ciw.dists.Exponential(4.0),
+    ...                                        ciw.dists.Exponential(1.0),
+    ...                                        ciw.dists.Deterministic(0.0)],
+    ...                            'Class 1': [ciw.dists.Exponential(6.0),
+    ...                                        ciw.dists.Deterministic(0.0),
+    ...                                        ciw.dists.Exponential(1.0)]},
+    ...     routing={'Class 0': [[0.0, 1.0, 0.0],
+    ...                          [0.0, 0.0, 0.0],
+    ...                          [0.0, 0.0, 0.0]],
+    ...              'Class 1': [[0.0, 0.0, 1.0],
+    ...                          [0.0, 0.0, 0.0],
+    ...                          [0.0, 0.0, 0.0]]}, 
+    ...     number_of_servers=[1, 2, 3],
     ... )
 
-Notice that where we know certain customer classes will not require a service (for example babies will never require service at the children's specialist: Class 0 customers will never require service at Node 3) we are still required to input a service distribution. We choose the dummy distribution :code:`['Deterministic', 0.0]`.
+Notice that where we know certain customer classes will not require a service (for example babies will never require service at the children's specialist: Class 0 customers will never require service at Node 3) we are still required to input a service distribution. We choose the dummy distribution :code:`ciw.dists.Deterministic(0.0)`.
 
 Let's simulate this clinic for 9 hours::
 
@@ -87,13 +87,13 @@ Now say we'd like to find the average waiting time at the reception, baby specia
 Now we can find the average wait over the trials::
 
 	>>> sum(average_waits_1) / len(average_waits_1)
-	0.244591...
+	0.274301...
 
 	>>> sum(average_waits_2) / len(average_waits_2)
-	0.604267...
+	0.268752...
 
 	>>> sum(average_waits_3) / len(average_waits_3)
-	0.252556...
+	0.284763...
 
 These results imply that on average babies wait 0.6 of an hour, around 36 minutes for an appointment.
 This could then be used as a baseline measure against which to compare potential reconfigurations of the clinic.

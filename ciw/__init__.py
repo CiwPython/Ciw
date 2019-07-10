@@ -9,7 +9,9 @@ from .individual import Individual
 from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
 from .node import Node
-from .state_tracker import *
 from .exactnode import *
 from .import_params import *
 from .network import *
+import ciw.dists
+import ciw.deadlock
+import ciw.trackers

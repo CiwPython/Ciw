@@ -1,0 +1,13 @@
+arrival_distributions:
+  Class 0:
+  - - Exponential
+    - 7.0
+number_of_nodes: 1
+number_of_servers:
+- "Inf"
+queue_capacities:
+- "Inf"
+service_distributions:
+  Class 0:
+  - - Exponential
+    - 14.0

@@ -1,26 +1,25 @@
-Arrival_distributions:
+arrival_distributions:
   Class 0:
   - - Exponential
     - 35.0
   - - Exponential
     - 35.0
-Detect_deadlock: 'StateDigraph'
-Number_of_classes: 1
-Number_of_nodes: 2
-Number_of_servers:
+detect_deadlock: 'StateDigraph'
+number_of_classes: 1
+number_of_nodes: 2
+number_of_servers:
 - 5
 - 5
-Queue_capacities:
+queue_capacities:
 - 5
 - 5
-Service_distributions:
+service_distributions:
   Class 0:
   - - Exponential
     - 30.0
   - - Exponential
     - 30.0
-Simulation_time: 2500
-Transition_matrices:
+routing:
   Class 0:
   - - 0.3
     - 0.4

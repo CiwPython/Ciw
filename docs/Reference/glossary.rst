@@ -71,8 +71,8 @@ Glossary
    traffic intensity
       The traffic intensity is a measure of how busy the system becomes. For a given node it is defined as the ratio of the mean service time of the mean inter arrival time.
 
-   transition matrix
-      A matrix of transition probabilities. The entry in row `i` of column `j`, :math:`r_{ij}`, is the probability of transitioning to node `j` after service at node `i`.
+   routing matrix
+      A matrix of routing probabilities. The entry in row `i` of column `j`, :math:`r_{ij}`, is the probability of transitioning to node `j` after service at node `i`.
 
    warm-up time
       A period of time at the beginning of a simulation where the data records do not count towards any analysis. This is due to the bias of beginning the simulation from an empty system. Results are only analysed after the system has reached some form of steady-state.

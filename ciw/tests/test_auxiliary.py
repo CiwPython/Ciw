@@ -6,7 +6,6 @@ from hypothesis import given
 from hypothesis.strategies import (floats, integers, lists, random_module)
 
 class TestAuxiliary(unittest.TestCase):
-
     def test_seed(self):
         ciw.seed(5)
         a1 = random.expovariate(5)
@@ -84,3 +83,7 @@ class TestAuxiliary(unittest.TestCase):
             A = [i for priority in all_classes for i in priority]
             B = ciw.flatten_list(all_classes)
             self.assertEqual(A, B)
+
+    def test_no_routing(self):
+        ind = ciw.Individual(22)
+        self.assertEqual(ciw.no_routing(ind), [])
