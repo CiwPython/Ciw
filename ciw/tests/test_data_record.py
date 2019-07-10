@@ -4,7 +4,6 @@ from hypothesis import given
 from hypothesis.strategies import floats, integers
 
 class TestDataRecord(unittest.TestCase):
-
     def test_init_method(self):
         r = ciw.DataRecord(2, 2, 1, 2, 0, 2, 3, 5, 3, 8, 1, 0, 3)
         self.assertEqual(r.id_number, 2)

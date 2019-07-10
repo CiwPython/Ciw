@@ -20,7 +20,7 @@ Consider the following Network::
 	...     service_distributions={'Class 0': [ciw.dists.Exponential(8.5), ciw.dists.Exponential(5.5)]},
 	...     routing={'Class 0': [[0.0, 0.2], [0.1, 0.0]]},
 	...     number_of_servers=[1, 1],
-	...     queue_capacities=['Inf', 4]
+	...     queue_capacities=[float('inf'), 4]
 	... )
 
 This can be represented by the :code:`.yml` file below::

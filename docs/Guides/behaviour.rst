@@ -23,7 +23,7 @@ The second node is redundent in this scenario::
 	...     service_distributions=[ciw.dists.Exponential(5.0), ciw.dists.Exponential(5.0)],
 	...     routing=[[0.0, 0.0], [0.0, 0.0]],
 	...     number_of_servers=[1, 1],
-	...     queue_capacities=[10, 'Inf']
+	...     queue_capacities=[10, float('inf')]
 	... )
 
 Now we run the system for 100 time units, and see that we get 484 services at the first node, and none at the second node::

@@ -613,7 +613,7 @@ class TestSampling(unittest.TestCase):
         Na = ciw.dists.NoArrivals()
         ciw.seed(5)
         samples = [Na._sample() for _ in range(10)]
-        expected = [float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf'), float('Inf')]
+        expected = [float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf')]
         self.assertEqual(samples, expected)
 
     def test_no_arrivals_dist(self):
@@ -626,7 +626,7 @@ class TestSampling(unittest.TestCase):
         Na = Q.transitive_nodes[0]
         ciw.seed(5)
         self.assertEqual(
-            Na.simulation.inter_arrival_times[Na.id_number][0]._sample(), float('Inf'))
+            Na.simulation.inter_arrival_times[Na.id_number][0]._sample(), float('inf'))
 
     def test_timedependent_dist_object(self):
         TD1 = TimeDependentDist1()

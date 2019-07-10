@@ -3,8 +3,8 @@ import ciw
 from hypothesis import given
 from hypothesis.strategies import integers
 
-class TestServer(unittest.TestCase):
 
+class TestServer(unittest.TestCase):
     def test_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))

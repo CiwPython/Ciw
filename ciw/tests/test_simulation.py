@@ -10,7 +10,6 @@ from itertools import cycle
 
 
 class TestSimulation(unittest.TestCase):
-
     def test_repr_method(self):
         N1 = ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml')
@@ -256,7 +255,7 @@ class TestSimulation(unittest.TestCase):
     def test_mminf_node(self, arrival_rate, service_rate, rm):
         params = {'arrival_distributions': [ciw.dists.Exponential(arrival_rate)],
                   'service_distributions': [ciw.dists.Exponential(service_rate)],
-                  'number_of_servers': ['Inf'],
+                  'number_of_servers': [float('inf')],
                   'routing': [[0.0]]}
 
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -742,7 +741,7 @@ class TestSimulation(unittest.TestCase):
             arrival_distributions=[ciw.dists.Deterministic(1.0), ciw.dists.NoArrivals()],
             service_distributions=[ciw.dists.Deterministic(0.1), ciw.dists.Deterministic(3.0)],
             number_of_servers=[([[1, 2.5], [0, 2.8]], True), 1],
-            queue_capacities=['Inf', 0],
+            queue_capacities=[float('inf'), 0],
             routing=[[0.0, 1.0], [0.0, 0.0]]
         )
         Q = ciw.Simulation(N)
@@ -754,3 +753,11 @@ class TestSimulation(unittest.TestCase):
     def test_generic_deadlock_detector(self):
         DD = ciw.deadlock.NoDetection()
         self.assertEqual(DD.detect_deadlock(), False)
+
+    def test_infinite_servers_from_file(self):
+        N = ciw.create_network_from_yml('ciw/tests/testing_parameters/params_infservers.yml')
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(100, method='Finish')
+        recs = Q.get_all_records()
+        waits = [r.waiting_time for r in recs]
+        self.assertEqual(waits, [0.0 for _ in range(100)])

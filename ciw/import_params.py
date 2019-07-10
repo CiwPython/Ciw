@@ -213,7 +213,7 @@ def fill_out_dictionary(params_input):
             for i in range(len(params['arrival_distributions']))},
         'number_of_nodes': len(params['number_of_servers']),
         'number_of_classes': len(params['arrival_distributions']),
-        'queue_capacities': ['Inf' for _ in range(len(
+        'queue_capacities': [float('inf') for _ in range(len(
             params['number_of_servers']))],
         'priority_classes': {'Class ' + str(i): 0
             for i in range(len(params['arrival_distributions']))},
@@ -293,7 +293,7 @@ def validify_dictionary(params):
                 if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
                     raise ValueError('Ensure that routing matrix is valid.')
     neg_numservers = any([(isinstance(obs, int) and obs < 0) for obs in params['number_of_servers']])
-    valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs=='Inf') for obs in params['queue_capacities']])
+    valid_capacities = all([((isinstance(obs, int) and obs >= 0) or obs==float('inf') or obs=='Inf') for obs in params['queue_capacities']])
     if neg_numservers:
         raise ValueError('Number of servers must be positive integers.')
     if not valid_capacities:

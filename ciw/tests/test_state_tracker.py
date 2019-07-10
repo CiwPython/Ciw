@@ -177,7 +177,6 @@ class TestNaiveTracker(unittest.TestCase):
 
 
 
-
 class TestMatrixTracker(unittest.TestCase):
     def test_matrix_init_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(

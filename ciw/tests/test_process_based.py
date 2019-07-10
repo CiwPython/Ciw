@@ -38,7 +38,6 @@ def generator_function_8(ind):
     return [1, 1, 1]
 
 class TestProcessBased(unittest.TestCase):
-
     def test_network_takes_routing_function(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1)],
@@ -100,7 +99,7 @@ class TestProcessBased(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.NoArrivals(), ciw.dists.NoArrivals()],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
-            number_of_servers=[1,1,1],
+            number_of_servers=[1, 1, 1],
             routing=[generator_function_3, ciw.no_routing, ciw.no_routing]
         )
         ciw.seed(0)
@@ -133,7 +132,7 @@ class TestProcessBased(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.NoArrivals()],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
-            number_of_servers=[1,1,1],
+            number_of_servers=[1, 1, 1],
             routing=[generator_function_2, generator_function_4, ciw.no_routing]
         )
         ciw.seed(0)
@@ -159,7 +158,7 @@ class TestProcessBased(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
-            number_of_servers=[1,1,1],
+            number_of_servers=[1, 1, 1],
             routing=[generator_function_2, generator_function_4, generator_function_5]
         )
         ciw.seed(0)
@@ -172,7 +171,7 @@ class TestProcessBased(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
-            number_of_servers=[1,1,1],
+            number_of_servers=[1, 1, 1],
             routing=[generator_function_2, generator_function_4, generator_function_6]
         )
         ciw.seed(0)

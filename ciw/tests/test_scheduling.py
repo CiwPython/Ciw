@@ -4,7 +4,6 @@ from decimal import Decimal
 
 
 class TestScheduling(unittest.TestCase):
-
     def test_change_shift_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))

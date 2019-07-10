@@ -97,11 +97,11 @@ number_of_servers
 A list of the number of parallel servers at each node.
 If a server schedule is used, the schedule is given instead of a number.
 For more details on server schedules, see :ref:`server-schedule`.
-A value of 'Inf' may be given is infinite servers are required.
+A value of :code:`float('inf')` may be given is infinite servers are required.
 
 Example::
 
-    number_of_servers=[1, 2, 'Inf', 1, 'schedule']
+    number_of_servers=[1, 2, float('inf'), 1, [[1, 10], [2, 15]]]
 
 
 priority_classes
@@ -127,11 +127,11 @@ queue_capacities
 *Optional*
 
 A list of maximum queue capacities at each node.
-If ommitted, default values of 'Inf' for every node are given.
+If ommitted, default values of :code:`float('inf')` for every node are given.
 
 Example::
 
-    queue_capacities=[5, 'Inf', 'Inf', 10]
+    queue_capacities=[5, float('inf'), float('inf'), 10]
 
 
 

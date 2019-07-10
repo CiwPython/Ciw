@@ -6,7 +6,6 @@ from hypothesis import given
 from hypothesis.strategies import (floats, integers, lists, random_module)
 
 class TestAuxiliary(unittest.TestCase):
-
     def test_seed(self):
         ciw.seed(5)
         a1 = random.expovariate(5)

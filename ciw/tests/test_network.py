@@ -11,10 +11,9 @@ def example_baulking_function(n):
     return 1.0
 
 class TestServiceCentre(unittest.TestCase):
-
     def test_init_method(self):
         number_of_servers = 2
-        queueing_capacity = 'Inf'
+        queueing_capacity = float('inf')
         class_change_matrix = [[0.2, 0.8],
                                [1.0, 0.0]]
         schedule = None
@@ -44,7 +43,6 @@ class TestServiceCentre(unittest.TestCase):
 
 
 class TestCustomerClass(unittest.TestCase):
-
     def test_init_method(self):
         arrival_distributions = [ciw.dists.Uniform(4.0, 9.0),
                                  ciw.dists.Exponential(5),
@@ -79,10 +77,9 @@ class TestCustomerClass(unittest.TestCase):
 
 
 class TestNetwork(unittest.TestCase):
-
     def test_init_method(self):
         number_of_servers = 2
-        queueing_capacity = 'Inf'
+        queueing_capacity = float('inf')
         schedule = None
         class_change_matrix = [[0.2, 0.8],
                                [1.0, 0.0]]
@@ -124,12 +121,12 @@ class TestNetwork(unittest.TestCase):
                   'service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)]},
                   'number_of_servers': [9],
                   'routing': {'Class 0': [[0.5]]},
-                  'queue_capacities': ['Inf']}
+                  'queue_capacities': [float('inf')]}
         N = ciw.create_network_from_dictionary(params)
         
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 1)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
         self.assertEqual(N.service_centres[0].schedule, None)
@@ -148,7 +145,7 @@ class TestNetwork(unittest.TestCase):
                   'number_of_servers': [[[1, 20], [4, 50]], 3],
                   'routing': [[0.5, 0.2],
                               [0.0, 0.0]],
-                  'queue_capacities': [10, 'Inf']
+                  'queue_capacities': [10, float('inf')]
                   }
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 2)
@@ -158,7 +155,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
         self.assertEqual(N.service_centres[0].schedule, [[1, 20], [4, 50]])
         self.assertFalse(N.service_centres[0].preempt)
-        self.assertEqual(N.service_centres[1].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[1].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[1].number_of_servers, 3)
         self.assertEqual(N.service_centres[1].class_change_matrix, None)
         self.assertEqual(N.service_centres[1].schedule, None)
@@ -177,13 +174,13 @@ class TestNetwork(unittest.TestCase):
                   'number_of_servers': [9],
                   'routing': {'Class 0': [[0.5]],
                               'Class 1': [[0.0]]},
-                  'queue_capacities': ['Inf'],
+                  'queue_capacities': [float('inf')],
                   'class_change_matrices': {'Node 1': [[0.0, 1.0],
                                                        [0.2, 0.8]]}}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 2)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].class_change_matrix, [[0.0, 1.0], [0.2, 0.8]])
         self.assertEqual(N.service_centres[0].schedule, None)
@@ -205,13 +202,13 @@ class TestNetwork(unittest.TestCase):
                   'number_of_servers': [9],
                   'routing': {'Class 0': [[0.5]],
                               'Class 1': [[0.0]]},
-                  'queue_capacities': ['Inf'],
+                  'queue_capacities': [float('inf')],
                   'priority_classes': {'Class 0': 1,
                                        'Class 1': 0}}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 2)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].schedule, None)
         self.assertFalse(N.service_centres[0].preempt)
@@ -233,20 +230,20 @@ class TestNetwork(unittest.TestCase):
                   'routing': [[0.5, 0.0, 0.1],
                               [0.2, 0.1, 0.0],
                               [0.0, 0.0, 0.0]],
-                  'queue_capacities': ['Inf', 'Inf', 'Inf'],
+                  'queue_capacities': [float('inf'), float('inf'), float('inf')],
                   'baulking_functions': [None, None, example_baulking_function]}
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 3)
         self.assertEqual(N.number_of_classes, 1)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].schedule, None)
         self.assertFalse(N.service_centres[0].preempt)
-        self.assertEqual(N.service_centres[1].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[1].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[1].number_of_servers, 2)
         self.assertEqual(N.service_centres[1].schedule, None)
         self.assertFalse(N.service_centres[1].preempt)
-        self.assertEqual(N.service_centres[2].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[2].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[2].number_of_servers, 4)
         self.assertEqual(N.service_centres[2].schedule, None)
         self.assertFalse(N.service_centres[2].preempt)
@@ -265,9 +262,9 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.number_of_nodes, 4)
         self.assertEqual(N.number_of_classes, 3)
         self.assertEqual(N.service_centres[0].queueing_capacity, 20)
-        self.assertEqual(N.service_centres[1].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[1].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[2].queueing_capacity, 30)
-        self.assertEqual(N.service_centres[3].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[3].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[1].number_of_servers, 10)
         self.assertEqual(N.service_centres[2].number_of_servers, 8)
@@ -301,7 +298,7 @@ class TestNetwork(unittest.TestCase):
                   'number_of_classes': 1,
                   'routing': {'Class 0': [[0.5]]},
                   'number_of_nodes': 1,
-                  'queue_capacities': ['Inf'],
+                  'queue_capacities': [float('inf')],
                   'detect_deadlock': False}
         params_list = [copy.deepcopy(params) for i in range(23)]
 
@@ -391,12 +388,12 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 service_distributions={'Class 0': [ciw.dists.Exponential(7.0)]},
                 number_of_servers=[9],
                 routing={'Class 0': [[0.5]]},
-                queue_capacities=['Inf']
+                queue_capacities=[float('inf')]
             )
         
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 1)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
         self.assertEqual(N.service_centres[0].schedule, None)
@@ -416,7 +413,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 number_of_servers=[[[1, 20], [4, 50]], 3],
                 routing=[[0.5, 0.2],
                          [0.0, 0.0]],
-                queue_capacities=[10, 'Inf']
+                queue_capacities=[10, float('inf')]
             )
 
         self.assertEqual(N.number_of_nodes, 2)
@@ -426,7 +423,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
         self.assertEqual(N.service_centres[0].schedule, [[1, 20], [4, 50]])
         self.assertFalse(N.service_centres[0].preempt)
-        self.assertEqual(N.service_centres[1].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[1].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[1].number_of_servers, 3)
         self.assertEqual(N.service_centres[1].class_change_matrix, None)
         self.assertEqual(N.service_centres[1].schedule, None)
@@ -446,14 +443,14 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 number_of_servers=[9],
                 routing={'Class 0': [[0.5]],
                          'Class 1': [[0.0]]},
-                queue_capacities=['Inf'],
+                queue_capacities=[float('inf')],
                 class_change_matrices={'Node 1': [[0.0, 1.0],
                                                   [0.2, 0.8]]}
             )
 
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 2)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].class_change_matrix, [[0.0, 1.0], [0.2, 0.8]])
         self.assertEqual(N.service_centres[0].schedule, None)
@@ -483,7 +480,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
 
         self.assertEqual(N.number_of_nodes, 1)
         self.assertEqual(N.number_of_classes, 2)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].schedule, None)
         self.assertFalse(N.service_centres[0].preempt)
@@ -510,21 +507,21 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 routing=[[0.5, 0.0, 0.1],
                          [0.2, 0.1, 0.0],
                          [0.0, 0.0, 0.0]],
-                queue_capacities=['Inf', 'Inf', 'Inf'],
+                queue_capacities=[float('inf'), float('inf'), float('inf')],
                 baulking_functions=[None, None, example_baulking_function]
             )
 
         self.assertEqual(N.number_of_nodes, 3)
         self.assertEqual(N.number_of_classes, 1)
-        self.assertEqual(N.service_centres[0].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].schedule, None)
         self.assertFalse(N.service_centres[0].preempt)
-        self.assertEqual(N.service_centres[1].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[1].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[1].number_of_servers, 2)
         self.assertEqual(N.service_centres[1].schedule, None)
         self.assertFalse(N.service_centres[1].preempt)
-        self.assertEqual(N.service_centres[2].queueing_capacity, float('Inf'))
+        self.assertEqual(N.service_centres[2].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[2].number_of_servers, 4)
         self.assertEqual(N.service_centres[2].schedule, None)
         self.assertFalse(N.service_centres[2].preempt)

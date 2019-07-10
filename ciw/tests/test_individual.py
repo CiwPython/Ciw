@@ -5,7 +5,6 @@ from hypothesis.strategies import integers
 
 
 class TestIndividual(unittest.TestCase):
-
     def test_init_method_1(self):
         i = ciw.Individual(22, 3)
         self.assertEqual(i.customer_class, 3)
