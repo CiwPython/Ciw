@@ -30,7 +30,7 @@ Without envoking exact arithmetic, we see that floats are used throughout::
     >>> Q.simulate_until_max_time(100.0)
     >>> waits = [r.waiting_time for r in Q.get_all_records()]
     >>> waits[-1]
-    0.202518877171...
+    0.060299051779...
     >>> type(waits[-1])
     <class 'float'>
 
@@ -41,6 +41,6 @@ When envoking exact arithmetic, :code:`decimal.Decimal` types are used throughou
     >>> Q.simulate_until_max_time(100.0)
     >>> waits = [r.waiting_time for r in Q.get_all_records()]
     >>> waits[-1]
-    Decimal('0.2025188771714382860')
+    Decimal('0.0602990517795655030')
     >>> type(waits[-1])
     <class 'decimal.Decimal'>

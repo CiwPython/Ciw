@@ -108,7 +108,7 @@ class TestProcessBased(unittest.TestCase):
         Q.simulate_until_max_customers(1000, method='Finish')
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter,  Counter({(1, 3, 2, 3): 522, (1, 2, 2, 3, 2): 368, (1, 1): 110}))
+        self.assertEqual(routes_counter,  Counter({(1, 3, 2, 3): 503, (1, 2, 2, 3, 2): 397, (1, 1): 100}))
 
     def test_error_when_ind_sent_wrong_place(self):
         N = ciw.create_network(
@@ -141,7 +141,7 @@ class TestProcessBased(unittest.TestCase):
         Q.simulate_until_max_customers(1000, method='Finish')
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(1, 1, 2, 1, 3): 507, (2, 1, 3, 1, 1): 493}))
+        self.assertEqual(routes_counter, Counter({(1, 1, 2, 1, 3): 503, (2, 1, 3, 1, 1): 497}))
 
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
@@ -154,7 +154,7 @@ class TestProcessBased(unittest.TestCase):
         Q.simulate_until_max_customers(1000, method='Finish')
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(3, 2, 3, 2, 3): 483, (1, 1, 1): 290, (2, 1, 3, 1, 1): 227}))
+        self.assertEqual(routes_counter, Counter({(3, 2, 3, 2, 3): 510, (1, 1, 1): 303, (2, 1, 3, 1, 1): 187}))
 
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
@@ -167,7 +167,7 @@ class TestProcessBased(unittest.TestCase):
         Q.simulate_until_max_customers(1000, method='Finish')
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(3, 2, 3, 2, 3): 515, (1, 1, 2, 1, 3): 259, (2, 1, 3, 1, 1): 226}))
+        self.assertEqual(routes_counter, Counter({(3, 2, 3, 2, 3): 494, (1, 1, 2, 1, 3): 262, (2, 1, 3, 1, 1): 244}))
 
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
@@ -180,7 +180,7 @@ class TestProcessBased(unittest.TestCase):
         Q.simulate_until_max_customers(1000, method='Finish')
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(3,): 759, (1, 1, 2, 1, 3): 132, (2, 1, 3, 1, 1): 109}))
+        self.assertEqual(routes_counter, Counter({(3,): 779, (1, 1, 2, 1, 3): 106, (2, 1, 3, 1, 1): 115}))
 
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.NoArrivals()],
@@ -193,7 +193,7 @@ class TestProcessBased(unittest.TestCase):
         Q.simulate_until_max_customers(1000, method='Finish')
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(2, 1, 1, 2): 350, (2, 1, 2): 335, (1, 1, 1): 315}))
+        self.assertEqual(routes_counter, Counter({(2, 1, 1, 2): 343, (2, 1, 2): 336, (1, 1, 1): 321}))
 
     def test_customer_class_based_routing(self):
         N = ciw.create_network(

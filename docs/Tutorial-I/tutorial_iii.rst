@@ -43,22 +43,22 @@ Using list comprehension, we can get lists on whichever statistic we like::
     >>> # A list of service times
     >>> servicetimes = [r.service_time for r in recs]
     >>> servicetimes
-    [2.94463..., 5.96912..., 0.28757..., ..., 10.46244...]
+    [2.94463..., 5.96912..., 18.80156..., ..., 33.18376...]
 
     >>> # A list of waits
     >>> waits = [r.waiting_time for r in recs]
     >>> waits
-    [0.0, 0.0, 0.20439..., ..., 5.63781...]
+    [0.0, 0.0, 0.0, 0.20439..., ..., 0.0]
 
 Now we can get summary statistics simply by manipulating these lists::
 
     >>> mean_service_time = sum(servicetimes) / len(servicetimes)
     >>> mean_service_time
-    9.543928...
+    10.647482...
 
     >>> mean_waiting_time = sum(waits) / len(waits)
     >>> mean_waiting_time
-    1.688541...
+    4.230543...
 
 We now know the mean waiting time of the customers!
 In next tutorial we will show how to get more representative results (as we have only simulated one given day here).
@@ -80,8 +80,8 @@ If we'd like to see how busy or idle the servers have been throughout the simula
 This is the average utilisation of each server, which is the amount of time a server was busy (with a customer), divided by the total amount of time the server was on duty::
 
     >>> Q.transitive_nodes[0].server_utilisation
-    0.60517...
+    0.75288...
 
-Thus in our bank, on average the servers were busy 60.5% of the time.
+Thus in our bank, on average the servers were busy 75.3% of the time.
 
 The next tutorial will show how to use Ciw to get trustworthy results, and finally find out the average waiting time at the bank.

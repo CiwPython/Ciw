@@ -70,16 +70,16 @@ Now let's see if the mean service time and inter-arrival times of the simulation
     >>> from decimal import Decimal
 
     >>> sum(servicetimes_n1c0) / len(servicetimes_n1c0) # Expected 0.1666...
-    Decimal('0.1650563448')
+    Decimal('0.1600313200')
 
     >>> sum(servicetimes_n2c0) / len(servicetimes_n2c0) # Expected 0.4724...
-    Decimal('0.4228601677')
+    Decimal('0.4250531396')
 
     >>> sum(servicetimes_n1c1) / len(servicetimes_n1c1) # Expected 0.4
-    Decimal('0.4352210564')
+    Decimal('0.4108660556')
 
     >>> sum(servicetimes_n2c1) / len(servicetimes_n2c1) # Expected 0.4
-    Decimal('0.4100529676')
+    Decimal('0.3942034906')
 
     >>> set([r2-r1 for r1, r2 in zip(arrivals_n1c0, arrivals_n1c0[1:])]) # Should only sample 0.4
     {Decimal('0.4')}

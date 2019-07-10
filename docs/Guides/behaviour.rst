@@ -34,7 +34,7 @@ Now we run the system for 100 time units, and see that we get 484 services at th
 
 	>>> service_nodes = [r.node for r in Q.get_all_records()]
 	>>> Counter(service_nodes)
-	Counter({1: 484})
+	Counter({1: 494})
 
 We will now create a new :code:`CustomArrivalNode` such that any customers who arrive when the first node has 10 or more customers present will be sent to the second node.
 First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.ArrivalNode`, and overwrites the :code:`send_individual` method::
@@ -68,4 +68,4 @@ We'll see that the same amount of services take place at Node 1, however rejecte
 
 	>>> service_nodes = [r.node for r in Q.get_all_records()]
 	>>> Counter(service_nodes)
-	Counter({1: 484, 2: 85})
+	Counter({1: 503, 2: 84})

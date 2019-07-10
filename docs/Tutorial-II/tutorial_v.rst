@@ -90,6 +90,6 @@ To find the average number of customers that pass through the system, we can cou
 We can now get the average number of customers that have passed through the system::
 
     >>> sum(completed_custs) / len(completed_custs)
-    83.0
+    81.9
 
-So we've now used Ciw to find out that this café can serve an average 83 customers in a three hour lunchtime.
+So we've now used Ciw to find out that this café can serve an average 81.9 customers in a three hour lunchtime.

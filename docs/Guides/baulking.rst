@@ -36,11 +36,11 @@ When the system is simulated, the baulked customers are recorded in the Simulati
 This is a dictionary, that maps node numbers to dictionaries.
 These dictionaries map customer class numbers to a list of dates at which customers baulked::
 
-	>>> ciw.seed(1)
+	>>> ciw.seed(0)
 	>>> Q = ciw.Simulation(N)
 	>>> Q.simulate_until_max_time(45.0)
 	>>> Q.baulked_dict
-	{1: {0: [21.1040..., 42.2023..., 43.7558..., 43.7837..., 44.2266...]}}
+	{1: {0: [9.4589..., 12.8633..., 16.3374..., 18.7384..., 37.8363..., 38.2962...]}}
 
 Note that baulking works and behaves differently to simply setting a queue capacity.
 Filling a queue's capacity results in arriving customers being *rejected* (and recorded in the :code:`rejection_dict`), and transitioning customers to be blocked.

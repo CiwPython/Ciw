@@ -90,7 +90,7 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(150)
         L = Q.get_all_records()
         self.assertEqual(round(
-            L[300].service_start_date, 8), 2.35688581)
+            L[300].service_start_date, 8), 1.92388895)
 
         ciw.seed(60)
         Q = ciw.Simulation(ciw.create_network_from_yml(
@@ -147,7 +147,7 @@ class TestSimulation(unittest.TestCase):
             range(1, Q3.network.number_of_nodes + 1) for cls in
             range(Q3.network.number_of_classes)])
         self.assertEqual(all_inds + number_of_losses, 10)
-        self.assertEqual(number_of_losses, 4)
+        self.assertEqual(number_of_losses, 5)
 
         next_active_node = Q3.find_next_active_node()
         end_time_arrive = next_active_node.next_event_date
@@ -205,7 +205,7 @@ class TestSimulation(unittest.TestCase):
              deadlock_detector=ciw.deadlock.StateDigraph(),
              tracker=ciw.trackers.NaiveTracker())
         Q.simulate_until_deadlock()
-        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 7.09795845)
+        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 53.88526441)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
@@ -572,8 +572,8 @@ class TestSimulation(unittest.TestCase):
             throughput_class0.append(sum(throughput_c0)/len(throughput_c0))
             throughput_class1.append(sum(throughput_c1)/len(throughput_c1))
 
-        self.assertEqual(round(sum(throughput_class0)/80.0, 5), 1.94852)
-        self.assertEqual(round(sum(throughput_class1)/80.0, 5), 5.92823)
+        self.assertEqual(round(sum(throughput_class0)/80.0, 5), 2.02767)
+        self.assertEqual(round(sum(throughput_class1)/80.0, 5), 5.39739)
 
     def test_baulking(self):
         def my_baulking_function(n):
@@ -659,16 +659,16 @@ class TestSimulation(unittest.TestCase):
         recs_cust3 = sorted([r for r in recs if r.id_number==3],
             key=lambda r: r.arrival_date)
 
-        self.assertEqual([0, 1, 0, 1, 0],
+        self.assertEqual([0, 1, 0, 1, 0, 1],
             [r.customer_class for r in recs_cust1])
         self.assertEqual([1, 0, 1, 0, 1],
             [r.customer_class for r in recs_cust2])
-        self.assertEqual([0, 1, 0, 1, 0],
+        self.assertEqual([0, 1, 0, 1],
             [r.customer_class for r in recs_cust3])
 
-        self.assertEqual([1, 2, 1, 2, 1], [r.node for r in recs_cust1])
+        self.assertEqual([1, 2, 1, 2, 1, 2], [r.node for r in recs_cust1])
         self.assertEqual([2, 1, 2, 1, 2], [r.node for r in recs_cust2])
-        self.assertEqual([1, 2, 1, 2, 1], [r.node for r in recs_cust3])
+        self.assertEqual([1, 2, 1, 2], [r.node for r in recs_cust3])
 
         self.assertEqual(set([r.customer_class for r
             in Q.nodes[1].individuals[0]]), set([1]))
@@ -731,12 +731,25 @@ class TestSimulation(unittest.TestCase):
                            [0.1, 0.9]]},
             queue_capacities=[2, 2]
         )
-
-        ciw.seed(6)
+        ciw.seed(11)
         Q = ciw.Simulation(N, deadlock_detector=ciw.deadlock.StateDigraph(),tracker=ciw.trackers.NaiveTracker())
         Q.simulate_until_deadlock()
         ttd = Q.times_to_deadlock[((0, 0), (0, 0))]
-        self.assertEqual(round(ttd, 5), 92.49468)
+        self.assertEqual(round(ttd, 5), 119.65819)
+
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(1.0), ciw.dists.NoArrivals()],
+            service_distributions=[ciw.dists.Deterministic(0.1), ciw.dists.Deterministic(3.0)],
+            number_of_servers=[([[1, 2.5], [0, 2.8]], True), 1],
+            queue_capacities=['Inf', 0],
+            routing=[[0.0, 1.0], [0.0, 0.0]]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(3, method='Finish')
+        inds = Q.nodes[-1].all_individuals
+        service_times = [round(dr.service_time, 1) for ind in inds for dr in ind.data_records]
+        self.assertEqual(service_times, [0.1, 3.0, 0.9, 3.0, 1.6, 3.0])
 
     def test_generic_deadlock_detector(self):
         DD = ciw.deadlock.NoDetection()

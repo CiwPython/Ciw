@@ -49,7 +49,7 @@ Running this system, we'll see that the count of the number of records with cust
     >>> Q.simulate_until_max_time(50.0)
     >>> recs = Q.get_all_records()
     >>> Counter([r.customer_class for r in recs])
-    Counter({0: 255, 2: 125, 1: 105})
+    Counter({0: 251, 2: 115, 1: 107})
 
 
 Note that when more than one node is used, each node requires a class change matrix.

@@ -123,9 +123,9 @@ class Node(object):
           - attach server to individual
         """
         next_individual.arrival_date = self.get_now()
-        next_individual.service_time = self.get_service_time(next_individual)
         if self.free_server():
             next_individual.service_start_date = self.get_now()
+            next_individual.service_time = self.get_service_time(next_individual)
             next_individual.service_end_date = self.increment_time(
                 self.get_now(), next_individual.service_time)
             if not isinf(self.c):
@@ -167,6 +167,7 @@ class Node(object):
                 if len(inds_without_server) > 0:
                     ind = inds_without_server[0]
                     ind.service_start_date = self.get_now()
+                    ind.service_time = self.get_service_time(ind)
                     ind.service_end_date = self.increment_time(
                         ind.service_start_date, ind.service_time)
                     self.attach_server(srvr, ind)
@@ -190,6 +191,7 @@ class Node(object):
                 if len(inds_without_server) > 0:
                     ind = inds_without_server[0]
                     ind.service_start_date = self.get_now()
+                    ind.service_time = self.get_service_time(ind)
                     ind.service_end_date = self.increment_time(
                         ind.service_start_date, ind.service_time)
                     self.attach_server(srvr, ind)

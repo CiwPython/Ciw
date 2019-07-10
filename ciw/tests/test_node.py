@@ -235,7 +235,6 @@ class TestNode(unittest.TestCase):
         inds = [[ciw.Individual(i) for i in range(30)]]
         Q.transitive_nodes[0].individuals = inds
         ind = Q.transitive_nodes[0].individuals[0][0]
-        ind.service_time = 3.14
         ind.arrival_date = 100.0
         self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
             set(['Server 5 at Node 2',
@@ -249,15 +248,15 @@ class TestNode(unittest.TestCase):
                  'Server 4 at Node 1',
                  'Server 4 at Node 2']))
         self.assertEqual(ind.arrival_date, 100.0)
-        self.assertEqual(ind.service_time, 3.14)
+        self.assertEqual(ind.service_time, False)
         self.assertEqual(ind.service_start_date, False)
         self.assertEqual(ind.service_end_date, False)
         Q.current_time = 200.0
         Q.transitive_nodes[0].begin_service_if_possible_release()
         self.assertEqual(ind.arrival_date, 100.0)
-        self.assertEqual(round(ind.service_time ,5), 3.14)
+        self.assertEqual(round(ind.service_time, 5), 0.03382)
         self.assertEqual(ind.service_start_date, 200.0)
-        self.assertEqual(round(ind.service_end_date, 5), 203.14)
+        self.assertEqual(round(ind.service_end_date, 5), 200.03382)
 
     def test_release_blocked_individual_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
@@ -407,7 +406,7 @@ class TestNode(unittest.TestCase):
              'Individual 10'])
         self.assertEqual(round(ind10.arrival_date, 5), 0.1)
         self.assertEqual(ind10.service_start_date, False)
-        self.assertEqual(round(ind10.service_time, 5), 0.16534)
+        self.assertEqual(ind10.service_time, False)
 
     def test_begin_service_if_possible_accept_method(self):
         ciw.seed(50)

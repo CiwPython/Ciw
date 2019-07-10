@@ -45,13 +45,13 @@ Therefore, the simulation object itself can give some information about what wen
 The :code:`Exit Node` contains all customers who had completed service in the bank, in order of when they left the system::
 
     >>> Q.nodes[-1].all_individuals
-    [Individual 2, Individual 3, Individual 5, ..., Individual 272]
+    [Individual 2, Individual 3, Individual 1, ..., Individual 300]
 
 The service node will also contain customers, those who were still waiting or still receiving service at the time the simulation run ended.
-During this run, there was one customer left in the bank at the end of the day::
+During this run, there were three customers left in the bank at the end of the day::
 
     >>> Q.nodes[1].all_individuals
-    [Individual 274]
+    [Individual 304, Individual 306, Individual 307]
 
 Let's look at the first individual to finish service, :code:`Individual 2`.
 Individuals carry data records, that contain information such as arrival date, waiting time, and exit date::

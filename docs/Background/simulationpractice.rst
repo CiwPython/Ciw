@@ -76,5 +76,5 @@ It shows how to find the average waiting time in an :ref:`M/M/1 <kendall-notatio
     >>>
     >>> average_wait = sum(average_waits) / len(average_waits)
     >>> average_wait
-    0.204764...
+    0.201313...
 

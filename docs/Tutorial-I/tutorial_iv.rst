@@ -45,16 +45,16 @@ The list :code:`average_waits` will now contain ten numbers, the mean waiting ti
 Notice that we set a different seed every time, so each trial will yield different results::
 
     >>> average_waits
-    [3.23439..., 1.67172..., 3.81397..., 2.49197..., 4.53303..., 5.08311..., 3.64789..., 7.46596..., 7.12032..., 3.28304...]
+    [3.91950..., 4.34163..., 4.61779..., 5.33537..., 5.06224..., 2.90274..., 4.93209..., 17.95093128538666, 4.06136..., 3.14126...]
 
 We can see that the range of waits are quite high, between 1.6 and 7.5.
 This shows that running a single trial wouldn't have given us a very confident answer.
 We can take the mean result over the trials to get a more confident answer::
 
     >>> sum(average_waits) / len(average_waits)
-    4.23454...
+    5.62649...
 
-Using Ciw, we have found that on average customers wait 4.23 minutes in the queue at the bank.
+Using Ciw, we have found that on average customers wait 5.62 minutes in the queue at the bank.
 What would happen if we added an extra server?
 Let's repeat the analysis with 4 servers::
 
@@ -75,8 +75,8 @@ Let's repeat the analysis with 4 servers::
     ...     average_waits.append(mean_wait)
 
     >>> sum(average_waits) / len(average_waits)
-    0.87878...
+    0.79868...
 
-By adding an extra server, we can reduce waits from an average 4.23 minutes to 0.88 minutes!
+By adding an extra server, we can reduce waits from an average 5.62 minutes to 0.79 minutes!
 Well done, you have just run your first what-if scenario!
 What-if scenarios allow us to use simulation to see if expensive changes to the system are beneficial, without actually implementing those expensive changes.
