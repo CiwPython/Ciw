@@ -14,3 +14,4 @@ Contents:
    contributing.rst
    glossary.rst
    changelog.rst
+   authors.rst
