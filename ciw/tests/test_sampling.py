@@ -56,6 +56,20 @@ class BrokenDist(ciw.dists.Distribution):
     def sample(self, t=None, ind=None):
         return -4.0
 
+class StateDependent(ciw.dists.Distribution):
+    """
+    Samples different values based on simulation state:
+    n = number of individuals at the node
+      - 0.2 if n = 0
+      - 0.15 if n = 1
+      - 0.1 if n = 2
+      - 0.05 if n = 3
+      - 0.0 otherwise
+    """
+    def sample(self, t=None, ind=None):
+        n = ind.simulation.nodes[ind.node].number_of_individuals
+        return max((-0.05*n) + 0.2, 0)
+
 
 class TestSampling(unittest.TestCase):
     def test_dists_repr(self):
@@ -904,3 +918,24 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Sq_div_Ex), 'CombinedDistribution')
         self.assertEqual(str(Ex_div_Dt), 'CombinedDistribution')
         self.assertEqual(str(Ex_div_Sq), 'CombinedDistribution')
+
+    def test_state_dependent_distribution(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(4)],
+            service_distributions=[StateDependent()],
+            number_of_servers=[1])
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(500)
+        recs = Q.get_all_records()
+
+        # Only samples 0.2, 0.15, 0.1, 0.05, or 0.0
+        services = [round(r.service_time, 7) for r in recs if r.arrival_date > 100]
+        self.assertLessEqual(set(services), {0.2, 0.15, 0.1, 0.05, 0.0})
+
+        # Check average service time correct transformation of average queue size
+        queue_sizes = [r.queue_size_at_arrival for r in recs if r.arrival_date > 100] + [r.queue_size_at_departure for r in recs if r.arrival_date > 100]
+        average_queue_size = sum(queue_sizes) / len(queue_sizes)
+        self.assertEqual(round(average_queue_size, 7), 0.9051833)
+        self.assertEqual(round((-0.05*average_queue_size) + 0.2, 7), 0.1547408)
+        self.assertEqual(round(sum(services) / len(services), 7), 0.1549305)

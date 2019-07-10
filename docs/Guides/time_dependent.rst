@@ -1,14 +1,21 @@
 .. _timedependent-dists:
 
-==========================================
-How to Define Time Dependent Distributions
-==========================================
+====================================================
+How to Define Time and State Dependent Distributions
+====================================================
+
+By defining custom distribution obejcts, both time-dependent and state-dependent distributions can be defined.
+They could be combined to create time-and-state-dependent distributions too.
+
+This custom distribution object must inherit from the gerenic :code:`ciw.dists.Distribution` object, and define a :code:`.sample` method that returns a sampled time.
+This method needs to take in a time variable :code:`t`, and also the concerned individual :code:`ind`.
+
+
+Time Dependent Distributions
+----------------------------
 
 In Ciw we can get a time dependent distribution, that is a service time, inter-arrival time, or batching distribution that changes as the simulation time progresses.
 In order to do this a time dependent distribution object, that has a :code:`sample` method to sample the time, must be defined.
-
-This distribution object must inherit from the gerenic :code:`ciw.dists.
-This method needs to take in a time variable `t`.
 
 For example, say we wish to have arrivals once every 30 minutes in the morning, every 15 minutes over lunch, every 45 minutes in the afternoon, and every 90 minutes throughout the night::
 
@@ -58,3 +65,57 @@ Therefore a total of 42 customers passed through the system::
    >>> Q.simulate_until_max_time(24.0)
    >>> len(Q.nodes[-1].all_individuals)
    42
+
+
+
+
+State Dependent Distributions
+-----------------------------
+
+In adddition to the time parameter :code:`t`, the sample method takes in the concerned individual :code:`ind`.
+Therefore individuals can use this individual's attributes when sampling a service time (*note it does not make sense to use this to sample inter-arrival times as that individual has not been created yet!*).
+This individual has a :code:`ind.simulation` attribute, which points to the :code:`Simulation` object, meaning it has access to the whole state of the system.
+
+Now we can take advantage of this to define state dependent distributions.
+
+As an example, let's define a distribution for a one node system that returns:
+    + :code:`0.20` if there are 0 people at that node,
+    + :code:`0.15` if there is 1 person at that node,
+    + :code:`0.10` if there are 2 people at that node,
+    + :code:`0.05` if there are 3 people at that node,
+    + :code:`0.00` otherwise.
+ 
+This corresponds the the function:
+    
+    $$\max(-0.05n + 0.2, 0)$$
+ 
+where :math:`n` is the number of customers at that node.
+Write a distribution class to use::
+
+    >>> class StateDependentDist(ciw.dists.Distribution):
+    ...     def sample(self, t=None, ind=None):
+    ...         n = ind.simulation.nodes[ind.node].number_of_individuals
+    ...         return max((-0.05*n) + 0.2, 0)
+
+Now to test if this is working, the average service time should be roughly equal to the above function applied to the average queue size::
+
+    >>> N = ciw.create_network(
+    ...     arrival_distributions=[ciw.dists.Exponential(4)],
+    ...     service_distributions=[StateDependentDist()],
+    ...     number_of_servers=[1]
+    ... )
+
+    >>> ciw.seed(0)
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(500)
+    >>> recs = Q.get_all_records()
+
+    >>> services = [r.service_time for r in recs if r.arrival_date > 100]
+    >>> sum(services) / len(services)
+    0.1549304...
+
+    >>> queue_sizes = [r.queue_size_at_arrival for r in recs if r.arrival_date > 100] + [r.queue_size_at_departure for r in recs if r.arrival_date > 100]
+    >>> average_queue_size = sum(queue_sizes) / len(queue_sizes)
+    >>> (-0.05 * average_queue_size) + 0.2
+    0.1547408...
+
