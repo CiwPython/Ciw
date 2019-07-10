@@ -37,10 +37,10 @@ Without envoking exact arithmetic, we see that floats are used throughout::
 When envoking exact arithmetic, :code:`decimal.Decimal` types are used throughout::
 
     >>> ciw.seed(2)
-    >>> Q = ciw.Simulation(N, exact=26)
+    >>> Q = ciw.Simulation(N, exact=12)
     >>> Q.simulate_until_max_time(100.0)
     >>> waits = [r.waiting_time for r in Q.get_all_records()]
     >>> waits[-1]
-    Decimal('0.0602990517795655030')
+    Decimal('0.0602990518')
     >>> type(waits[-1])
     <class 'decimal.Decimal'>
