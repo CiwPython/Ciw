@@ -1,6 +1,10 @@
 History
 -------
 
+v2.0.1 (2019-07-17)
+~~~~~~~~~~~~~~~~~~~
+- setup.py now finds packages to fix pip install bug
+
 v2.0.0 (2019-07-10)
 ~~~~~~~~~~~~~~~~~~~
 - Large refactor:
