@@ -680,8 +680,8 @@ class TestNode(unittest.TestCase):
         for srvr in Q.transitive_nodes[0].servers:
             self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
 
-    @given(lmbda=floats(min_value=0.01, max_value=10),
-           mu=floats(min_value=0.01, max_value=10),
+    @given(lmbda=floats(min_value=0.01, max_value=5),
+           mu=floats(min_value=0.01, max_value=5),
            c=integers(min_value=1, max_value=10),
            rm=random_module())
     def test_utilisation_always_1_or_less(self, lmbda, mu, c, rm):
