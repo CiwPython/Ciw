@@ -95,7 +95,8 @@ Now let's see if the mean service time and inter-arrival times of the simulation
     >>> set([r2-r1 for r1, r2 in zip(arrivals_n2c1, arrivals_n2c1[1:])]) == expected_samples
     True
 
-​
+​ 
+
 Custom Distributions
 --------------------
 
@@ -106,7 +107,7 @@ Consider a distribution that samples the value `3.0` 50% of the time, and sample
 
     >>> import random
     >>> class CustomDistribution(ciw.dists.Distribution):
-    ...     def sample(t=None, ind=None):
+    ...     def sample(self, t=None, ind=None):
     ...         if random.random() < 0.5:
     ...             return 3.0
     ...         return random.random()
