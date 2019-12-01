@@ -101,11 +101,11 @@ class Simulation(object):
         Returns the next active node, the node whose next_event_date is next:
         """
         next_event_date = min([nd.next_event_date for nd in self.nodes])
-        next_active_node_indices = [i for i, nd in enumerate(
-            self.nodes) if nd.next_event_date == next_event_date]
-        if len(next_active_node_indices) > 1:
-            return self.nodes[random_choice(next_active_node_indices)]
-        return self.nodes[next_active_node_indices[0]]
+        next_active_nodes = [nd for nd in self.nodes
+            if nd.next_event_date == next_event_date]
+        if len(next_active_nodes) > 1:
+            return random_choice(next_active_nodes)
+        return next_active_nodes[0]
 
     def get_all_individuals(self):
         """
