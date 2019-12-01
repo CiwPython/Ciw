@@ -100,9 +100,14 @@ class Simulation(object):
         """
         Returns the next active node, the node whose next_event_date is next:
         """
-        next_event_date = min([nd.next_event_date for nd in self.nodes])
-        next_active_nodes = [nd for nd in self.nodes
-            if nd.next_event_date == next_event_date]
+        mindate = float("Inf")
+        next_active_nodes = []
+        for nd in self.nodes:
+            if nd.next_event_date < mindate:
+                mindate = nd.next_event_date
+                next_active_nodes = [nd]
+            elif nd.next_event_date == mindate:
+                next_active_nodes.append(nd)
         if len(next_active_nodes) > 1:
             return random_choice(next_active_nodes)
         return next_active_nodes[0]
