@@ -489,13 +489,16 @@ class Node(object):
           - otherwise return minimum of next shift change, and time for
             next individual (who isn't blocked) to end service, or Inf
         """
+        next_end_service = float("Inf")
         if not isinf(self.c):
-            next_end_service = min([s.next_end_service_date
-                for s in self.servers] + [float("Inf")])
+            for s in self.servers:
+                if s.next_end_service_date < next_end_service:
+                    next_end_service = s.next_end_service_date
         else:
-            next_end_service = min([ind.service_end_date
-                for ind in self.all_individuals if not ind.is_blocked
-                if ind.service_end_date >= self.get_now()] + [float("Inf")])
+            for ind in self.all_individuals:
+                if not ind.is_blocked and ind.service_end_date >= self.get_now():
+                    if ind.service_end_date < next_end_service:
+                        next_end_service = ind.service_end_date
         if self.schedule:
             next_shift_change = self.next_shift_change
             self.next_event_date = min(next_end_service, next_shift_change)
