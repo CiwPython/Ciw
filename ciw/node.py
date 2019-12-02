@@ -69,6 +69,8 @@ class Node(object):
 
     @property
     def all_individuals(self):
+        if self.simulation.number_of_priority_classes == 1:
+            return self.individuals[0]
         return flatten_list(self.individuals)
 
     def __repr__(self):
