@@ -166,14 +166,14 @@ class Node(object):
             if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(srvr)
             else:
-                inds_without_server = [i for i in self.all_individuals if not i.server]
-                if len(inds_without_server) > 0:
-                    ind = inds_without_server[0]
-                    ind.service_start_date = self.get_now()
-                    ind.service_time = self.get_service_time(ind)
-                    ind.service_end_date = self.increment_time(
-                        ind.service_start_date, ind.service_time)
-                    self.attach_server(srvr, ind)
+                for ind in self.all_individuals:
+                    if not ind.server:
+                        ind.service_start_date = self.get_now()
+                        ind.service_time = self.get_service_time(ind)
+                        ind.service_end_date = self.increment_time(
+                            ind.service_start_date, ind.service_time)
+                        self.attach_server(srvr, ind)
+                        break
 
     def begin_service_if_possible_release(self):
         """
@@ -190,14 +190,14 @@ class Node(object):
             if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(srvr)
             else:
-                inds_without_server = [i for i in self.all_individuals if not i.server]
-                if len(inds_without_server) > 0:
-                    ind = inds_without_server[0]
-                    ind.service_start_date = self.get_now()
-                    ind.service_time = self.get_service_time(ind)
-                    ind.service_end_date = self.increment_time(
-                        ind.service_start_date, ind.service_time)
-                    self.attach_server(srvr, ind)
+                for ind in self.all_individuals:
+                    if not ind.server:
+                        ind.service_start_date = self.get_now()
+                        ind.service_time = self.get_service_time(ind)
+                        ind.service_end_date = self.increment_time(
+                            ind.service_start_date, ind.service_time)
+                        self.attach_server(srvr, ind)
+                        break
 
     def block_individual(self, individual, next_node):
         """
