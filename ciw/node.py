@@ -283,12 +283,6 @@ class Node(object):
         if server.offduty:
             self.kill_server(server)
 
-    def free_server(self):
-        """
-        Returns True if a server is available, False otherwise.
-        """
-        return isinf(self.c) or self.find_free_server() is not None
-
     def find_free_server(self):
         """
         Finds a free server.
