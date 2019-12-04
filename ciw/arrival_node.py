@@ -51,16 +51,18 @@ class ArrivalNode(object):
         """
         Finds the time of the next arrival.
         """
-        times = [[self.event_dates_dict[nd + 1][clss]
-            for clss in range(len(self.event_dates_dict[1]))]
-            for nd in range(len(self.event_dates_dict))]
-
-        mintimes = [min(obs) for obs in times]
-        nd = mintimes.index(min(mintimes))
-        clss = times[nd].index(min(times[nd]))
-        self.next_node = nd + 1
-        self.next_class = clss
-        self.next_event_date = self.event_dates_dict[self.next_node][self.next_class]
+        minnd = None
+        minclss = None
+        mindate = float("Inf")
+        for nd in self.event_dates_dict:
+            for clss in self.event_dates_dict[nd]:
+                if self.event_dates_dict[nd][clss] < mindate:
+                    minnd = nd
+                    minclss = clss
+                    mindate = self.event_dates_dict[nd][clss]
+        self.next_node = minnd
+        self.next_class = minclss
+        self.next_event_date = mindate
 
     def have_event(self):
         """

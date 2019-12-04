@@ -69,6 +69,8 @@ class Node(object):
 
     @property
     def all_individuals(self):
+        if self.simulation.number_of_priority_classes == 1:
+            return self.individuals[0]
         return flatten_list(self.individuals)
 
     def __repr__(self):
@@ -123,13 +125,14 @@ class Node(object):
           - attach server to individual
         """
         next_individual.arrival_date = self.get_now()
-        if self.free_server():
+        free_server = self.find_free_server()
+        if free_server is not None or isinf(self.c):
             next_individual.service_start_date = self.get_now()
             next_individual.service_time = self.get_service_time(next_individual)
             next_individual.service_end_date = self.increment_time(
                 self.get_now(), next_individual.service_time)
-            if not isinf(self.c):
-                self.attach_server(self.find_free_server(), next_individual)
+            if free_server is not None:
+                self.attach_server(free_server, next_individual)
 
     def begin_interrupted_individuals_service(self, srvr):
         """
@@ -163,14 +166,14 @@ class Node(object):
             if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(srvr)
             else:
-                inds_without_server = [i for i in self.all_individuals if not i.server]
-                if len(inds_without_server) > 0:
-                    ind = inds_without_server[0]
-                    ind.service_start_date = self.get_now()
-                    ind.service_time = self.get_service_time(ind)
-                    ind.service_end_date = self.increment_time(
-                        ind.service_start_date, ind.service_time)
-                    self.attach_server(srvr, ind)
+                for ind in self.all_individuals:
+                    if not ind.server:
+                        ind.service_start_date = self.get_now()
+                        ind.service_time = self.get_service_time(ind)
+                        ind.service_end_date = self.increment_time(
+                            ind.service_start_date, ind.service_time)
+                        self.attach_server(srvr, ind)
+                        break
 
     def begin_service_if_possible_release(self):
         """
@@ -182,19 +185,19 @@ class Node(object):
           - give a start date and end date
           - attach server to individual
         """
-        if self.free_server() and (not isinf(self.c)):
-            srvr = self.find_free_server()
+        srvr = self.find_free_server()
+        if srvr is not None:
             if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(srvr)
             else:
-                inds_without_server = [i for i in self.all_individuals if not i.server]
-                if len(inds_without_server) > 0:
-                    ind = inds_without_server[0]
-                    ind.service_start_date = self.get_now()
-                    ind.service_time = self.get_service_time(ind)
-                    ind.service_end_date = self.increment_time(
-                        ind.service_start_date, ind.service_time)
-                    self.attach_server(srvr, ind)
+                for ind in self.all_individuals:
+                    if not ind.server:
+                        ind.service_start_date = self.get_now()
+                        ind.service_time = self.get_service_time(ind)
+                        ind.service_end_date = self.increment_time(
+                            ind.service_start_date, ind.service_time)
+                        self.attach_server(srvr, ind)
+                        break
 
     def block_individual(self, individual, next_node):
         """
@@ -284,17 +287,18 @@ class Node(object):
         """
         Returns True if a server is available, False otherwise.
         """
-        if isinf(self.c):
-            return True
-        return len([svr for svr in self.servers if not svr.busy]) > 0
+        return isinf(self.c) or self.find_free_server() is not None
 
     def find_free_server(self):
         """
         Finds a free server.
         """
+        if isinf(self.c):
+            return None
         for svr in self.servers:
             if not svr.busy:
                 return svr
+        return None
 
     def find_next_individual(self):
         """
@@ -487,13 +491,16 @@ class Node(object):
           - otherwise return minimum of next shift change, and time for
             next individual (who isn't blocked) to end service, or Inf
         """
+        next_end_service = float("Inf")
         if not isinf(self.c):
-            next_end_service = min([s.next_end_service_date
-                for s in self.servers] + [float("Inf")])
+            for s in self.servers:
+                if s.next_end_service_date < next_end_service:
+                    next_end_service = s.next_end_service_date
         else:
-            next_end_service = min([ind.service_end_date
-                for ind in self.all_individuals if not ind.is_blocked
-                if ind.service_end_date >= self.get_now()] + [float("Inf")])
+            for ind in self.all_individuals:
+                if not ind.is_blocked and ind.service_end_date >= self.get_now():
+                    if ind.service_end_date < next_end_service:
+                        next_end_service = ind.service_end_date
         if self.schedule:
             next_shift_change = self.next_shift_change
             self.next_event_date = min(next_end_service, next_shift_change)
