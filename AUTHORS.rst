@@ -13,3 +13,4 @@ Ciw has been developed by the following contributors:
 + `caipirginka <https://github.com/caipirginka>`_
 + `Emma Aspland <https://github.com/EmmaAspland>`_
 + `Henry Wilde <https://github.com/daffidwilde>`_
++ `timlathy <https://github.com/timlathy>`_
