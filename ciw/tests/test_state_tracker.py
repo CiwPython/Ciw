@@ -1,5 +1,6 @@
 import unittest
 import ciw
+from decimal import Decimal
 
 class TestStateTracker(unittest.TestCase):
     def test_base_init_method(self):
@@ -359,3 +360,41 @@ class TestMatrixBlocking(unittest.TestCase):
                                                  [[], [], [], []],
                                                  [[], [], [], []]],
                                                  [0, 0, 1, 0]])
+
+
+class TestTrackHistory(unittest.TestCase):
+    def test_one_node_deterministic_(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.NaiveBlocking()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_history = [
+        [Decimal('0.0'), ((0, 0),)],
+        [Decimal('1.5'), ((1, 0),)],
+        [Decimal('1.8'), ((2, 0),)],
+        [Decimal('3.3'), ((1, 0),)],
+        [Decimal('4.2'), ((2, 0),)],
+        [Decimal('5.3'), ((3, 0),)],
+        [Decimal('5.5'), ((2, 0),)],
+        [Decimal('5.7'), ((1, 0),)],
+        [Decimal('5.9'), ((0, 0),)],
+        [Decimal('6.8'), ((1, 0),)],
+        [Decimal('7.0'), ((0, 0),)],
+        [Decimal('7.1'), ((1, 0),)],
+        [Decimal('7.3'), ((0, 0),)],
+        [Decimal('9.5'), ((1, 0),)],
+        [Decimal('10.6'), ((2, 0),)],
+        [Decimal('11.3'), ((1, 0),)],
+        [Decimal('12.1'), ((2, 0),)],
+        [Decimal('12.4'), ((3, 0),)],
+        [Decimal('13.5'), ((2, 0),)],
+        [Decimal('13.7'), ((1, 0),)],
+        [Decimal('13.9'), ((0, 0),)],
+        [Decimal('14.8'), ((1, 0),)],
+        [Decimal('15.0'), ((0, 0),)]
+        ]
+        self.assertEqual(Q.statetracker.history, expected_history)

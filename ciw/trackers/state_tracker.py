@@ -10,6 +10,7 @@ class StateTracker(object):
         """
         self.simulation = simulation
         self.state = None
+        self.history = [[0.0, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
@@ -35,6 +36,9 @@ class StateTracker(object):
         """
         return None
 
+    def timestamp(self):
+        self.history.append([self.simulation.current_time, self.hash_state()])
+
 
 class NaiveBlocking(StateTracker):
     """
@@ -54,12 +58,14 @@ class NaiveBlocking(StateTracker):
         self.simulation = simulation
         self.state = [[0, 0] for i in range(
             self.simulation.network.number_of_nodes)]
+        self.history = [[0.0, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
         Changes the state of the system when a customer is accepted.
         """
         self.state[node_id-1][0] += 1
+        self.timestamp()
 
     def change_state_block(self, node_id, destination, cust_clss):
         """
@@ -67,6 +73,7 @@ class NaiveBlocking(StateTracker):
         """
         self.state[node_id-1][1] += 1
         self.state[node_id-1][0] -= 1
+        self.timestamp()
 
     def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
@@ -76,6 +83,7 @@ class NaiveBlocking(StateTracker):
             self.state[node_id-1][1] -= 1
         else:
             self.state[node_id-1][0] -= 1
+        self.timestamp()
 
     def hash_state(self):
         """
@@ -110,12 +118,14 @@ class MatrixBlocking(StateTracker):
             self.simulation.network.number_of_nodes)], [0 for i in range(
             self.simulation.network.number_of_nodes)]]
         self.increment = 1
+        self.history = [[0.0, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
         Changes the state of the system when a customer is accepted.
         """
         self.state[-1][node_id-1] += 1
+        self.timestamp()
 
     def change_state_block(self, node_id, destination, cust_clss):
         """
@@ -123,6 +133,7 @@ class MatrixBlocking(StateTracker):
         """
         self.state[0][node_id-1][destination-1].append(self.increment)
         self.increment += 1
+        self.timestamp()
 
     def change_state_release(self, node_id, destination, cust_clss, blocked):
         """
@@ -136,6 +147,7 @@ class MatrixBlocking(StateTracker):
             self.adjust_positions(position)
         else:
             self.state[-1][node_id-1] -= 1
+        self.timestamp()
 
     def find_blocked_position_and_pop(self, node_id, destination):
         """
