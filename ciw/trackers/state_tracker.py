@@ -36,10 +36,10 @@ class StateTracker(object):
         return None
 
 
-class NaiveTracker(StateTracker):
+class NaiveBlocking(StateTracker):
     """
-    The naive tracker simple records the number of customers at each
-    node, and how many of those customers are currently blocked.
+    The naive blocking tracker simple records the number of customers
+    at each node, and how many of those customers are currently blocked.
 
     Example:
         ((3, 0), (1, 4))
@@ -49,7 +49,7 @@ class NaiveTracker(StateTracker):
     """
     def initialise(self, simulation):
         """
-        Initialises the naive tracker class.
+        Initialises the naive blocking tracker class.
         """
         self.simulation = simulation
         self.state = [[0, 0] for i in range(
@@ -84,9 +84,9 @@ class NaiveTracker(StateTracker):
         return tuple(tuple(obs) for obs in self.state)
 
 
-class MatrixTracker(StateTracker):
+class MatrixBlocking(StateTracker):
     """
-    The matrix tracker records the order and destination of
+    The matrix blocking tracker records the order and destination of
     blockages in the form of a matrix. Alongside this the number
     of customers at each node is tracked.
 
@@ -102,7 +102,7 @@ class MatrixTracker(StateTracker):
     """
     def initialise(self, simulation):
         """
-        Initialises the naive tracker class.
+        Initialises the matrix blocking tracker class.
         """
         self.simulation = simulation
         self.state = [[[[] for i in range(

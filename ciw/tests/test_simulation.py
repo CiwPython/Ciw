@@ -202,7 +202,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
              deadlock_detector=ciw.deadlock.StateDigraph(),
-             tracker=ciw.trackers.NaiveTracker())
+             tracker=ciw.trackers.NaiveBlocking())
         Q.simulate_until_deadlock()
         self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 53.88526441)
 
@@ -731,7 +731,7 @@ class TestSimulation(unittest.TestCase):
             queue_capacities=[2, 2]
         )
         ciw.seed(11)
-        Q = ciw.Simulation(N, deadlock_detector=ciw.deadlock.StateDigraph(),tracker=ciw.trackers.NaiveTracker())
+        Q = ciw.Simulation(N, deadlock_detector=ciw.deadlock.StateDigraph(),tracker=ciw.trackers.NaiveBlocking())
         Q.simulate_until_deadlock()
         ttd = Q.times_to_deadlock[((0, 0), (0, 0))]
         self.assertEqual(round(ttd, 5), 119.65819)

@@ -12,11 +12,11 @@ Currently Ciw has the following state trackers:
 
 .. _naive:
 
------------------
-The Naive Tracker
------------------
+-------------------------
+The NaiveBlocking Tracker
+-------------------------
 
-The Naive Tracker records the number of customers at each node, and how many of those customers are currently blocked.
+The NaiveBlocking Tracker records the number of customers at each node, and how many of those customers are currently blocked.
 An example for a four node queueing network is shown below::
 
     ((3, 0), (1, 4), (10, 0), (8, 1))
@@ -25,16 +25,16 @@ This denotes 3 customers at the first node, 0 of which are blocked; 5 customers 
 
 The Simulation object takes in the optional argument :code:`tracker` used as follows::
 
-    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NaiveTracker()) # doctest:+SKIP
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NaiveBlocking()) # doctest:+SKIP
 
 
 .. _matrix:
 
-------------------
-The Matrix Tracker
-------------------
+--------------------------
+The MatrixBlocking Tracker
+--------------------------
 
-The Matrix Tracker records the order and destination of blockages in the form of a matrix.
+The MatrixBlocking Tracker records the order and destination of blockages in the form of a matrix.
 Alongside this the number of customers at each node is tracked.
 The first component, a matrix, lists the blockages from row node to column node.
 The entries are lists of all blockages of this type, and the numbers within denote the order at which these become blocked.
@@ -62,4 +62,4 @@ It also tells us the order and destination of the blockages:
 
 The Simulation object takes in the optional argument :code:`tracker` used as follows::
 
-    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.MatrixTracker()) # doctest:+SKIP
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.MatrixBlocking()) # doctest:+SKIP
