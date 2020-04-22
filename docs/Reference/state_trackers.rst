@@ -8,8 +8,9 @@ Currently Ciw has the following state trackers:
 
 - :ref:`population`
 - :ref:`nodepop`
-- :ref:`naive`
-- :ref:`matrix`
+- :ref:`nodeclssmatrix`
+- :ref:`naiveblock`
+- :ref:`matrixblock`
 
 
 .. _population:
@@ -32,9 +33,9 @@ The Simulation object takes in the optional argument :code:`tracker` used as fol
 
 .. _nodepop:
 
-----------------------------
+--------------------------
 The NodePopulation Tracker
-----------------------------
+--------------------------
 
 The NodePopulation Tracker records the number of customers at each node.
 States take the form of list of numbers. An example for a three node queueing network is shown below::
@@ -48,8 +49,30 @@ The Simulation object takes in the optional argument :code:`tracker` used as fol
     >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulation()) # doctest:+SKIP
 
 
+.. _nodeclssmatrix:
 
-.. _naive:
+---------------------------
+The NodeClassMatrix Tracker
+---------------------------
+
+The NodeClassPopulation Tracker records the number of customers at each node, split by customer class.
+States take the form of matrix, that is a list of lists, where the rows denote the nodes and the columns denote the customer classes. An example for a three node queueing network with two customer classes is shown below::
+
+    [[3, 0],
+     [0, 1],
+     [4, 1]]
+
+This denotes that there are:
+  + Three customers at the first node - three of Class 0, and none of Class 1
+  + One customer at the second node - none of Class 0, and one of Class 1
+  + Five customers at the third node - four of Class 0, and one of Class 1.
+
+The Simulation object takes in the optional argument :code:`tracker` used as follows::
+
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix()) # doctest:+SKIP
+
+
+.. _naiveblock:
 
 -------------------------
 The NaiveBlocking Tracker
@@ -67,7 +90,7 @@ The Simulation object takes in the optional argument :code:`tracker` used as fol
     >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NaiveBlocking()) # doctest:+SKIP
 
 
-.. _matrix:
+.. _matrixblock:
 
 --------------------------
 The MatrixBlocking Tracker

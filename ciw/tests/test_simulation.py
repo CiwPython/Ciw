@@ -225,6 +225,16 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_deadlock()
         self.assertEqual(round(Q.times_to_deadlock[(0, 0)], 8), 53.88526441)
 
+        # NodeClassMatrix tracker
+        ciw.seed(3)
+        Q = ciw.Simulation(ciw.create_network_from_yml(
+            'ciw/tests/testing_parameters/params_deadlock.yml'),
+             deadlock_detector=ciw.deadlock.StateDigraph(),
+             tracker=ciw.trackers.NodeClassMatrix())
+        Q.simulate_until_deadlock()
+        self.assertEqual(round(Q.times_to_deadlock[((0,), (0,))], 8), 53.88526441)
+
+
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),

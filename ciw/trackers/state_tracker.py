@@ -128,6 +128,54 @@ class NodePopulation(StateTracker):
         return tuple(self.state)
 
 
+class NodeClassMatrix(StateTracker):
+    """
+    The node-class matrix tracker records the number of customers of each
+    class at each node.
+
+    Example:
+        ((3, 1),
+         (0, 1))
+        This denotes 4 customers at the first node (3 of Class 0, 1 of
+        Class 0), and 1 customer at the second node (0 of Class 0, 1 of
+        Class 1).
+    """
+    def initialise(self, simulation):
+        """
+        Initialises the state tracker class.
+        """
+        self.simulation = simulation
+        self.state = [[0 for cls in range(
+            self.simulation.network.number_of_classes)] for i in range(
+            self.simulation.network.number_of_nodes)]
+        self.history = []
+        self.timestamp()
+
+    def change_state_accept(self, node_id, cust_clss):
+        """
+        Changes the state of the system when a customer is accepted.
+        """
+        self.state[node_id-1][cust_clss] += 1
+
+    def change_state_block(self, node_id, destination, cust_clss):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        pass
+
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
+        """
+        Changes the state of the system when a customer is released.
+        """
+        self.state[node_id-1][cust_clss] -= 1
+
+    def hash_state(self):
+        """
+        Returns a hashable state.
+        """
+        return tuple(tuple(obs) for obs in self.state)
+
+
 class NaiveBlocking(StateTracker):
     """
     The naive blocking tracker records the number of customers at each node,
