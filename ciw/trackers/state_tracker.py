@@ -41,10 +41,53 @@ class StateTracker(object):
         self.history.append([self.simulation.current_time, self.hash_state()])
 
 
+class SystemPopulation(StateTracker):
+    """
+    The system population tracker records the number of customers in the
+    system, regaerdless of node.
+
+    Example:
+        3
+        This denotes 3 customers at in the whole system.
+    """
+    def initialise(self, simulation):
+        """
+        Initialises the state tracker class.
+        """
+        self.simulation = simulation
+        self.state = 0
+        self.history = []
+        self.timestamp()
+
+    def change_state_accept(self, node_id, cust_clss):
+        """
+        Changes the state of the system when a customer is accepted.
+        """
+        self.state += 1
+
+    def change_state_block(self, node_id, destination, cust_clss):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        pass
+
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
+        """
+        Changes the state of the system when a customer is released.
+        """
+        self.state -= 1
+
+    def hash_state(self):
+        """
+        Returns a hashable state.
+        """
+        return self.state
+
+
 class NaiveBlocking(StateTracker):
     """
-    The naive blocking tracker simple records the number of customers
-    at each node, and how many of those customers are currently blocked.
+    The naive blocking tracker records the number of customers at each node,
+    and how many of those customers are currently blocked.
 
     Example:
         ((3, 0), (1, 4))

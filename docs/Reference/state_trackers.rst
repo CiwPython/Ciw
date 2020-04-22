@@ -6,8 +6,28 @@ List of Implemented State Trackers for Deadlock Detection
 
 Currently Ciw has the following state trackers:
 
+- :ref:`population`
 - :ref:`naive`
 - :ref:`matrix`
+
+
+.. _population:
+
+----------------------------
+The SystemPopulation Tracker
+----------------------------
+
+The SystemPopulation Tracker records the number of customers in the whole system, regardless of which node they are at.
+States take the form of a number:
+
+    4
+
+This denotes that there are four customers in the system.
+
+The Simulation object takes in the optional argument :code:`tracker` used as follows::
+
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation()) # doctest:+SKIP
+
 
 
 .. _naive:

@@ -197,7 +197,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q3.progress_bar.total, max_custs)
         self.assertEqual(Q3.progress_bar.n, max_custs)
 
-    def test_simulate_until_deadlock_method(self):
+    def test_simulate_until_deadlock_method_naiveblocking(self):
         ciw.seed(3)
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_deadlock.yml'),
@@ -205,6 +205,15 @@ class TestSimulation(unittest.TestCase):
              tracker=ciw.trackers.NaiveBlocking())
         Q.simulate_until_deadlock()
         self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 53.88526441)
+
+    def test_simulate_until_deadlock_method_systempopulation(self):
+        ciw.seed(3)
+        Q = ciw.Simulation(ciw.create_network_from_yml(
+            'ciw/tests/testing_parameters/params_deadlock.yml'),
+             deadlock_detector=ciw.deadlock.StateDigraph(),
+             tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_deadlock()
+        self.assertEqual(round(Q.times_to_deadlock[0], 8), 53.88526441)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
