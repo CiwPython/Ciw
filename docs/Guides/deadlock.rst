@@ -9,7 +9,6 @@ The diagram below shows an example, where the customer at the top node is blocke
 This circular blockage results is no more natural movement happening.
 
 .. image:: ../_static/2nodesindeadlock.svg
-   :scale: 100 %
    :alt: A 2 node queueing network in deadlock.
    :align: center
 

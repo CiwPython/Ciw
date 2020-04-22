@@ -20,7 +20,7 @@ The SystemPopulation Tracker
 ----------------------------
 
 The SystemPopulation Tracker records the number of customers in the whole system, regardless of which node they are at.
-States take the form of a number:
+States take the form of a number::
 
     4
 
@@ -40,7 +40,7 @@ The NodePopulation Tracker
 The NodePopulation Tracker records the number of customers at each node.
 States take the form of list of numbers. An example for a three node queueing network is shown below::
 
-    [2, 0, 5]
+    (2, 0, 5)
 
 This denotes that there are two customers at the first node, no customers at the second node, and five customers at the third node.
 
@@ -58,9 +58,9 @@ The NodeClassMatrix Tracker
 The NodeClassPopulation Tracker records the number of customers at each node, split by customer class.
 States take the form of matrix, that is a list of lists, where the rows denote the nodes and the columns denote the customer classes. An example for a three node queueing network with two customer classes is shown below::
 
-    [[3, 0],
-     [0, 1],
-     [4, 1]]
+    ((3, 0),
+     (0, 1),
+     (4, 1))
 
 This denotes that there are:
   + Three customers at the first node - three of Class 0, and none of Class 1
