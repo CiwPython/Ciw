@@ -771,3 +771,98 @@ class TestTrackHistory(unittest.TestCase):
         [Decimal('15.0'), ((0,),)]
         ]
         self.assertEqual(Q.statetracker.history, expected_history)
+
+    def test_track_history_two_node_two_class(self):
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Exponential(0.5), ciw.dists.Exponential(0.5)],
+                'Class 1': [ciw.dists.Exponential(0.5), ciw.dists.Exponential(0.5)]},
+            service_distributions={
+                'Class 0': [ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
+                'Class 1': [ciw.dists.Exponential(1), ciw.dists.Exponential(1)]},
+            number_of_servers=[1, 1],
+            routing={
+                'Class 0': [[0.2, 0.2], [0.2, 0.2]],
+                'Class 1': [[0.2, 0.2], [0.2, 0.2]]}
+        )
+        
+        # System Population
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(5)
+        observed_history = Q.statetracker.history
+        expected_history = [
+            [0.00, 0],
+            [0.60, 1],
+            [1.09, 2],
+            [1.32, 2],
+            [1.64, 3],
+            [1.96, 2],
+            [2.67, 2],
+            [2.84, 3],
+            [3.39, 4],
+            [3.41, 5],
+            [3.72, 6],
+            [3.80, 5],
+            [4.07, 4],
+            [4.15, 5],
+            [4.17, 4],
+            [4.28, 3]
+        ]
+        self.assertEqual(len(observed_history), len(expected_history))
+        for obs, exp in zip(observed_history, expected_history):
+            self.assertEqual([round(obs[0], 2), obs[1]], exp)
+
+        # Node Population
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulation())
+        Q.simulate_until_max_time(5)
+        observed_history = Q.statetracker.history
+        expected_history = [
+            [0.00, (0, 0)],
+            [0.60, (0, 1)],
+            [1.09, (0, 2)],
+            [1.32, (0, 2)],
+            [1.64, (0, 3)],
+            [1.96, (0, 2)],
+            [2.67, (0, 2)],
+            [2.84, (1, 2)],
+            [3.39, (1, 3)],
+            [3.41, (2, 3)],
+            [3.72, (3, 3)],
+            [3.80, (2, 3)],
+            [4.07, (2, 2)],
+            [4.15, (2, 3)],
+            [4.17, (1, 3)],
+            [4.28, (0, 3)]
+        ]
+        self.assertEqual(len(observed_history), len(expected_history))
+        for obs, exp in zip(observed_history, expected_history):
+            self.assertEqual([round(obs[0], 2), obs[1]], exp)
+
+        # Node Class Matrix
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix())
+        Q.simulate_until_max_time(5)
+        observed_history = Q.statetracker.history
+        expected_history = [
+            [0.00, ((0, 0), (0, 0))],
+            [0.60, ((0, 0), (0, 1))],
+            [1.09, ((0, 0), (1, 1))],
+            [1.32, ((0, 0), (1, 1))],
+            [1.64, ((0, 0), (1, 2))],
+            [1.96, ((0, 0), (0, 2))],
+            [2.67, ((0, 0), (0, 2))],
+            [2.84, ((0, 1), (0, 2))],
+            [3.39, ((0, 1), (0, 3))],
+            [3.41, ((0, 2), (0, 3))],
+            [3.72, ((1, 2), (0, 3))],
+            [3.80, ((1, 1), (0, 3))],
+            [4.07, ((1, 1), (0, 2))],
+            [4.15, ((1, 1), (1, 2))],
+            [4.17, ((1, 0), (1, 2))],
+            [4.28, ((0, 0), (1, 2))]
+        ]
+        self.assertEqual(len(observed_history), len(expected_history))
+        for obs, exp in zip(observed_history, expected_history):
+            self.assertEqual([round(obs[0], 2), obs[1]], exp)
