@@ -48,7 +48,7 @@ class SystemPopulation(StateTracker):
 
     Example:
         3
-        This denotes 3 customers at in the whole system.
+        This denotes 3 customers in the whole system.
     """
     def initialise(self, simulation):
         """
@@ -82,6 +82,50 @@ class SystemPopulation(StateTracker):
         Returns a hashable state.
         """
         return self.state
+
+
+class NodePopulation(StateTracker):
+    """
+    The node population tracker records the number of customers at each node.
+
+    Example:
+        (3, 1)
+        This denotes 3 customers at the first node, and 1 customer at the
+        second node.
+    """
+    def initialise(self, simulation):
+        """
+        Initialises the state tracker class.
+        """
+        self.simulation = simulation
+        self.state = [0 for i in range(
+            self.simulation.network.number_of_nodes)]
+        self.history = []
+        self.timestamp()
+
+    def change_state_accept(self, node_id, cust_clss):
+        """
+        Changes the state of the system when a customer is accepted.
+        """
+        self.state[node_id-1] += 1
+
+    def change_state_block(self, node_id, destination, cust_clss):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        pass
+
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
+        """
+        Changes the state of the system when a customer is released.
+        """
+        self.state[node_id-1] -= 1
+
+    def hash_state(self):
+        """
+        Returns a hashable state.
+        """
+        return tuple(self.state)
 
 
 class NaiveBlocking(StateTracker):
