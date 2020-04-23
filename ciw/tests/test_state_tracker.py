@@ -866,3 +866,188 @@ class TestTrackHistory(unittest.TestCase):
         self.assertEqual(len(observed_history), len(expected_history))
         for obs, exp in zip(observed_history, expected_history):
             self.assertEqual([round(obs[0], 2), obs[1]], exp)
+
+
+class TestStateProbabilities(unittest.TestCase):
+    def test_prob_one_node_deterministic_naiveblocking(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.NaiveBlocking()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            ((0, 0),): Decimal('0.3815789473684210526315789474'),
+            ((1, 0),): Decimal('0.2697368421052631578947368421'),
+            ((2, 0),): Decimal('0.2631578947368421052631578947'),
+            ((3, 0),): Decimal('0.08552631578947368421052631579')
+            }
+        
+        expected_probabilities_with_time_period = {
+            ((2, 0),): Decimal('0.1'),
+            ((3, 0),): Decimal('0.04'),
+            ((1, 0),): Decimal('0.22'),
+            ((0, 0),): Decimal('0.64')
+            }
+
+        self.assertEqual(Q.statetracker.state_probabilities(), expected_probabilities)
+        self.assertEqual(Q.statetracker.state_probabilities(observation_period=(5,10)), expected_probabilities_with_time_period)
+
+    def test_prob_one_node_deterministic_systempopulation(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.SystemPopulation()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            0: Decimal('0.3815789473684210526315789474'),
+            1: Decimal('0.2697368421052631578947368421'),
+            2: Decimal('0.2631578947368421052631578947'),
+            3: Decimal('0.08552631578947368421052631579')
+            }
+        expected_probabilities_with_time_period = {
+            2: Decimal('0.1'), 
+            3: Decimal('0.04'), 
+            1: Decimal('0.22'), 
+            0: Decimal('0.64')
+            }
+        self.assertEqual(Q.statetracker.state_probabilities(), expected_probabilities)
+        self.assertEqual(Q.statetracker.state_probabilities(observation_period=(5,10)), expected_probabilities_with_time_period)
+
+
+    def test_prob_one_node_deterministic_nodepopulation(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.NodePopulation()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            (0,): Decimal('0.3815789473684210526315789474'),
+            (1,): Decimal('0.2697368421052631578947368421'),
+            (2,): Decimal('0.2631578947368421052631578947'),
+            (3,): Decimal('0.08552631578947368421052631579')
+            }
+        expected_probabilities_with_time_period = {
+            (2,): Decimal('0.1'),
+            (3,): Decimal('0.04'),
+            (1,): Decimal('0.22'),
+            (0,): Decimal('0.64')
+            }
+        self.assertEqual(Q.statetracker.state_probabilities(), expected_probabilities)
+        self.assertEqual(Q.statetracker.state_probabilities(observation_period=(5,10)), expected_probabilities_with_time_period)
+
+    def test_prob_one_node_deterministic_nodeclassmatrix(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.NodeClassMatrix()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            ((0,),): Decimal('0.3815789473684210526315789474'),
+            ((1,),): Decimal('0.2697368421052631578947368421'),
+            ((2,),): Decimal('0.2631578947368421052631578947'),
+            ((3,),): Decimal('0.08552631578947368421052631579')
+            }
+        expected_probabilities_with_time_period = {
+            ((2,),): Decimal('0.1'),
+            ((3,),): Decimal('0.04'),
+            ((1,),): Decimal('0.22'),
+            ((0,),): Decimal('0.64')
+            }
+        self.assertEqual(Q.statetracker.state_probabilities(), expected_probabilities)
+        self.assertEqual(Q.statetracker.state_probabilities(observation_period=(5,10)), expected_probabilities_with_time_period)
+
+    def test_prob_track_history_two_node_two_class(self):
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Exponential(0.5), ciw.dists.Exponential(0.5)],
+                'Class 1': [ciw.dists.Exponential(0.5), ciw.dists.Exponential(0.5)]},
+            service_distributions={
+                'Class 0': [ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
+                'Class 1': [ciw.dists.Exponential(1), ciw.dists.Exponential(1)]},
+            number_of_servers=[1, 1],
+            routing={
+                'Class 0': [[0.2, 0.2], [0.2, 0.2]],
+                'Class 1': [[0.2, 0.2], [0.2, 0.2]]}
+        )
+        
+        # System Population
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(5)
+        expected_probabilities = {
+            0: 0.13667425968109337,
+            1: 0.11161731207289295,
+            2: 0.3257403189066058,
+            3: 0.223234624145786,
+            4: 0.04783599088838277,
+            5: 0.1366742596810934,
+            6: 0.0182232346241457
+            }
+        expected_probabilities_with_time_period = {
+            1: 0.030000000000000027,
+            2: 0.47666666666666657,
+            3: 0.2900000000000001,
+            4: 0.006666666666666672,
+            5: 0.17000000000000007,
+            6: 0.026666666666666543
+            }
+        
+        self.assertEqual(Q.statetracker.state_probabilities(), expected_probabilities)
+        self.assertEqual(Q.statetracker.state_probabilities(observation_period=(1, 4)), expected_probabilities_with_time_period)
+
+        # Node Population
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulation())
+        Q.simulate_until_max_time(5)
+        expected_probabilities = {(0, 0): 0.13667425968109337,
+            (0, 1): 0.11161731207289295,
+            (0, 2): 0.3257403189066058,
+            (0, 3): 0.09794988610478367,
+            (1, 2): 0.12528473804100232,
+            (1, 3): 0.029612756264236977,
+            (2, 3): 0.1366742596810934,
+            (3, 3): 0.0182232346241457,
+            (2, 2): 0.0182232346241458
+            }
+        expected_probabilities_with_time_period = {
+            (0, 1): 0.030000000000000027,
+            (0, 2): 0.47666666666666657,
+            (0, 3): 0.10666666666666669,
+            (1, 2): 0.18333333333333343,
+            (1, 3): 0.006666666666666672,
+            (2, 3): 0.17000000000000007,
+            (3, 3): 0.026666666666666543
+            }
+        self.assertEqual(Q.statetracker.state_probabilities(), expected_probabilities)
+        self.assertEqual(Q.statetracker.state_probabilities(observation_period=(1, 4)), expected_probabilities_with_time_period)
+
+        # Node Class Matrix
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix())
+        Q.simulate_until_max_time(5)
+        expected_probabilities_with_time_period = {
+            ((0, 0), (0, 1)): 0.030000000000000027,
+            ((0, 0), (1, 1)): 0.18333333333333326,
+            ((0, 0), (1, 2)): 0.10666666666666669,
+            ((0, 0), (0, 2)): 0.2933333333333333,
+            ((0, 1), (0, 2)): 0.18333333333333343,
+            ((0, 1), (0, 3)): 0.006666666666666672,
+            ((0, 2), (0, 3)): 0.10333333333333335,
+            ((1, 2), (0, 3)): 0.026666666666666543,
+            ((1, 1), (0, 3)): 0.06666666666666672
+            }
+        
+        self.assertEqual(Q.statetracker.state_probabilities(), expected_probabilities)
+        self.assertEqual(Q.statetracker.state_probabilities(observation_period=(1, 4)), expected_probabilities_with_time_period)
