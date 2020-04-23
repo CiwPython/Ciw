@@ -192,6 +192,7 @@ class Simulation(object):
 
         while self.current_time < max_simulation_time:
             next_active_node = self.event_and_return_nextnode(next_active_node)
+            self.statetracker.timestamp()
 
             if progress_bar:
                 remaining_time = max_simulation_time - self.progress_bar.n

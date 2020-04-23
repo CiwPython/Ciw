@@ -19,6 +19,7 @@ Contents:
    baulking.rst
    server_schedule.rst
    dynamic_customerclasses.rst
+   state_trackers.rst
    deadlock.rst
    process_based.rst
    behaviour.rst

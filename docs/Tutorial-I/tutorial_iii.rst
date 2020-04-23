@@ -72,7 +72,6 @@ The histogram of waits below was created using matplotlib, using the following c
     >>> plt.hist(waits); # doctest:+SKIP
 
 .. image:: ../_static/tutorial_iii_waitshist.svg
-   :scale: 100 %
    :alt: Histogram of waits for Tutorial III.
    :align: center
 
