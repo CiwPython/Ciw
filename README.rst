@@ -43,7 +43,8 @@ Current supported version of Python:
 
 - Python 3.5
 - Python 3.6
-- PyPy3.5
+- Python 3.7
+- PyPy3
 
 Usage
 -----
