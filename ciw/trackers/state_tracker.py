@@ -59,6 +59,9 @@ class StateTracker(object):
         prev_date = self.history[0][0]    
         prev_state = self.history[0][1]
 
+        if start < 0 or end <= start:
+            raise ValueError('Observation period need to be a positive interval above zero')
+
         for event in self.history:
             date = event[0]
             state = event[1]

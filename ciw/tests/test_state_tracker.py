@@ -1200,3 +1200,18 @@ class TestStateProbabilities(unittest.TestCase):
 
         error_squared = sum([(state_probs[i] - expected_probs[i])**2 for i in sorted(state_probs.keys())])
         self.assertEqual(round(error_squared, 4), 0)
+
+    def test_error_checking_for_state_probabilities(self):
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(1)],
+            service_distributions=[ciw.dists.Exponential(2)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(10)
+
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (-1, 5))
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (4, 2))
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (-1, -4))
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (3, 3))
