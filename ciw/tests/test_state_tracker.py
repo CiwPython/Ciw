@@ -866,3 +866,352 @@ class TestTrackHistory(unittest.TestCase):
         self.assertEqual(len(observed_history), len(expected_history))
         for obs, exp in zip(observed_history, expected_history):
             self.assertEqual([round(obs[0], 2), obs[1]], exp)
+
+
+class TestStateProbabilities(unittest.TestCase):
+    def test_prob_one_node_deterministic_naiveblocking(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.NaiveBlocking()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            ((0, 0),): Decimal('0.38157894736842105263157895'),
+            ((1, 0),): Decimal('0.26973684210526315789473684'),
+            ((2, 0),): Decimal('0.26315789473684210526315789'),
+            ((3, 0),): Decimal('0.085526315789473684210526316')
+            }
+        
+        expected_probabilities_with_time_period = {
+            ((2, 0),): Decimal('0.1'),
+            ((3, 0),): Decimal('0.04'),
+            ((1, 0),): Decimal('0.22'),
+            ((0, 0),): Decimal('0.64')
+            }
+
+        for state in expected_probabilities:
+            self.assertEqual(
+                Q.statetracker.state_probabilities()[state], 
+                expected_probabilities[state]
+                )
+        
+        for state in expected_probabilities_with_time_period:
+            self.assertEqual(
+                Q.statetracker.state_probabilities(observation_period=(5,10))[state], 
+                expected_probabilities_with_time_period[state]
+                )
+
+    def test_prob_one_node_deterministic_systempopulation(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.SystemPopulation()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            0: Decimal('0.38157894736842105263157895'),
+            1: Decimal('0.26973684210526315789473684'),
+            2: Decimal('0.26315789473684210526315789'),
+            3: Decimal('0.085526315789473684210526316')
+            }
+        expected_probabilities_with_time_period = {
+            2: Decimal('0.1'), 
+            3: Decimal('0.04'), 
+            1: Decimal('0.22'), 
+            0: Decimal('0.64')
+            }
+            
+        for state in expected_probabilities:
+            self.assertEqual(
+                Q.statetracker.state_probabilities()[state], 
+                expected_probabilities[state]
+                )
+        
+        for state in expected_probabilities_with_time_period:
+            self.assertEqual(
+                Q.statetracker.state_probabilities(observation_period=(5,10))[state], 
+                expected_probabilities_with_time_period[state]
+                )
+
+    def test_prob_one_node_deterministic_nodepopulation(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.NodePopulation()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            (0,): Decimal('0.38157894736842105263157895'),
+            (1,): Decimal('0.26973684210526315789473684'),
+            (2,): Decimal('0.26315789473684210526315789'),
+            (3,): Decimal('0.085526315789473684210526316')
+            }
+        expected_probabilities_with_time_period = {
+            (2,): Decimal('0.1'),
+            (3,): Decimal('0.04'),
+            (1,): Decimal('0.22'),
+            (0,): Decimal('0.64')
+            }
+        for state in expected_probabilities:
+            self.assertEqual(
+                Q.statetracker.state_probabilities()[state], 
+                expected_probabilities[state]
+                )
+        
+        for state in expected_probabilities_with_time_period:
+            self.assertEqual(
+                Q.statetracker.state_probabilities(observation_period=(5,10))[state], 
+                expected_probabilities_with_time_period[state]
+                )
+
+    def test_prob_one_node_deterministic_nodeclassmatrix(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
+            service_distributions=[ciw.dists.Sequential([1.8, 2.2, 0.2, 0.2, 0.2, 0.2])],
+            number_of_servers=[1]
+        )
+        B = ciw.trackers.NodeClassMatrix()
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_probabilities = {
+            ((0,),): Decimal('0.38157894736842105263157895'),
+            ((1,),): Decimal('0.26973684210526315789473684'),
+            ((2,),): Decimal('0.26315789473684210526315789'),
+            ((3,),): Decimal('0.085526315789473684210526316')
+            }
+        expected_probabilities_with_time_period = {
+            ((2,),): Decimal('0.1'),
+            ((3,),): Decimal('0.04'),
+            ((1,),): Decimal('0.22'),
+            ((0,),): Decimal('0.64')
+            }
+        for state in expected_probabilities:
+            self.assertEqual(
+                Q.statetracker.state_probabilities()[state], 
+                expected_probabilities[state]
+                )
+        
+        for state in expected_probabilities_with_time_period:
+            self.assertEqual(
+                Q.statetracker.state_probabilities(observation_period=(5,10))[state], 
+                expected_probabilities_with_time_period[state]
+                )
+
+    def test_prob_track_history_two_node_two_class(self):
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Exponential(0.5), ciw.dists.Exponential(0.5)],
+                'Class 1': [ciw.dists.Exponential(0.5), ciw.dists.Exponential(0.5)]},
+            service_distributions={
+                'Class 0': [ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
+                'Class 1': [ciw.dists.Exponential(1), ciw.dists.Exponential(1)]},
+            number_of_servers=[1, 1],
+            routing={
+                'Class 0': [[0.2, 0.2], [0.2, 0.2]],
+                'Class 1': [[0.2, 0.2], [0.2, 0.2]]}
+        )
+        
+        # System Population
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(5)
+        expected_probabilities = {
+            0: 0.1366944915680613,
+            1: 0.11225559969470539,
+            2: 0.3240424959070235,
+            3: 0.22414907894503974,
+            4: 0.04813145483931205,
+            5: 0.13662855193885537,
+            6: 0.018098327107002654
+            }
+        expected_probabilities_with_time_period = {
+            1: 0.030475430361061855,
+            2: 0.47354672264790626,
+            3: 0.2921852718539804,
+            4: 0.008450291962042685,
+            5: 0.16889388953780524,
+            6: 0.026448393637203527
+            }
+        
+        for state in expected_probabilities:
+            self.assertEqual(
+                Q.statetracker.state_probabilities()[state], 
+                expected_probabilities[state]
+                )
+        
+        for state in expected_probabilities_with_time_period:
+            self.assertEqual(
+                Q.statetracker.state_probabilities(observation_period=(1, 4))[state], 
+                expected_probabilities_with_time_period[state]
+                )
+
+        # Node Population
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulation())
+        Q.simulate_until_max_time(5)
+        expected_probabilities = {
+            (0, 0): 0.1366944915680613,
+            (0, 1): 0.11225559969470539,
+            (0, 2): 0.3240424959070235,
+            (0, 3): 0.0983851025458379,
+            (1, 2): 0.12576397639920184,
+            (1, 3): 0.02999254345852149,
+            (2, 3): 0.13662855193885537,
+            (3, 3): 0.018098327107002654,
+            (2, 2): 0.018138911380790552
+            }
+        expected_probabilities_with_time_period = {
+            (0, 1): 0.030475430361061855,
+            (0, 2): 0.47354672264790626,
+            (0, 3): 0.10839728230553976,
+            (1, 2): 0.18378798954844067,
+            (1, 3): 0.008450291962042685,
+            (2, 3): 0.16889388953780524,
+            (3, 3): 0.026448393637203527
+            }
+
+        for state in expected_probabilities:
+            self.assertEqual(
+                Q.statetracker.state_probabilities()[state], 
+                expected_probabilities[state]
+                )
+        
+        for state in expected_probabilities_with_time_period:
+            self.assertEqual(
+                Q.statetracker.state_probabilities(observation_period=(1,4))[state], 
+                expected_probabilities_with_time_period[state]
+                )
+
+        # Node Class Matrix
+        ciw.seed(0)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix())
+        Q.simulate_until_max_time(5)
+
+        expected_probabilities = {((0, 0), (0, 0)): 0.1366944915680613,
+            ((0, 0), (0, 1)): 0.11225559969470539,
+            ((0, 0), (1, 1)): 0.12454611130253443,
+            ((0, 0), (1, 2)): 0.0983851025458379,
+            ((0, 0), (0, 2)): 0.19949638460448907,
+            ((0, 1), (0, 2)): 0.12576397639920184,
+            ((0, 1), (0, 3)): 0.005782436172743465,
+            ((0, 2), (0, 3)): 0.07008049325290676,
+            ((1, 2), (0, 3)): 0.018098327107002654,
+            ((1, 1), (0, 3)): 0.06259720833539882,
+            ((1, 1), (0, 2)): 0.018138911380790552,
+            ((1, 1), (1, 2)): 0.003950850350549779,
+            ((1, 0), (1, 2)): 0.024210107285778028
+            }
+        expected_probabilities_with_time_period = {
+            ((0, 0), (0, 1)): 0.030475430361061855,
+            ((0, 0), (1, 1)): 0.18200823524942553,
+            ((0, 0), (1, 2)): 0.10839728230553976,
+            ((0, 0), (0, 2)): 0.29153848739848076,
+            ((0, 1), (0, 2)): 0.18378798954844067,
+            ((0, 1), (0, 3)): 0.008450291962042685,
+            ((0, 2), (0, 3)): 0.10241369055182432,
+            ((1, 2), (0, 3)): 0.026448393637203527,
+            ((1, 1), (0, 3)): 0.0664801989859809
+            }
+
+        for state in expected_probabilities:
+            self.assertEqual(
+                Q.statetracker.state_probabilities()[state], 
+                expected_probabilities[state]
+                )
+        
+        for state in expected_probabilities_with_time_period:
+            self.assertEqual(
+                Q.statetracker.state_probabilities(observation_period=(1,4))[state], 
+                expected_probabilities_with_time_period[state]
+                )
+
+    def test_compare_state_probabilities_to_analytical(self):
+        #Example: λ = 1, μ = 3
+        lamda = 1
+        mu = 3
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            service_distributions=[ciw.dists.Exponential(mu)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(20000)
+        state_probs = Q.statetracker.state_probabilities(observation_period=(500, 20000))
+
+        vec = [(lamda/mu)**i for i in sorted(state_probs.keys())]
+        expected_probs = [v / sum(vec) for v in vec]
+
+        for state in state_probs:
+            self.assertEqual(round(state_probs[state], 2), round(expected_probs[state], 2))
+
+        error_squared = sum([(state_probs[i] - expected_probs[i])**2 for i in sorted(state_probs.keys())])
+        self.assertEqual(round(error_squared, 4), 0)
+
+
+         #Example: λ = 1, μ = 4
+        lamda = 1
+        mu = 4
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            service_distributions=[ciw.dists.Exponential(mu)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(20000)
+        state_probs = Q.statetracker.state_probabilities(observation_period=(500, 20000))
+
+        vec = [(lamda/mu)**i for i in sorted(state_probs.keys())]
+        expected_probs = [v / sum(vec) for v in vec]
+
+        for state in state_probs:
+            self.assertEqual(round(state_probs[state], 2), round(expected_probs[state], 2))
+
+        error_squared = sum([(state_probs[i] - expected_probs[i])**2 for i in sorted(state_probs.keys())])
+        self.assertEqual(round(error_squared, 4), 0)
+
+
+         #Example: λ = 1, μ = 5
+        lamda = 1
+        mu = 5
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            service_distributions=[ciw.dists.Exponential(mu)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(20000)
+        state_probs = Q.statetracker.state_probabilities(observation_period=(500, 20000))
+
+        vec = [(lamda/mu)**i for i in sorted(state_probs.keys())]
+        expected_probs = [v / sum(vec) for v in vec]
+
+        for state in state_probs:
+            self.assertEqual(round(state_probs[state], 2), round(expected_probs[state], 2))
+
+        error_squared = sum([(state_probs[i] - expected_probs[i])**2 for i in sorted(state_probs.keys())])
+        self.assertEqual(round(error_squared, 4), 0)
+
+    def test_error_checking_for_state_probabilities(self):
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(1)],
+            service_distributions=[ciw.dists.Exponential(2)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(10)
+
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (-1, 5))
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (4, 2))
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (-1, -4))
+        self.assertRaises(ValueError, Q.statetracker.state_probabilities, (3, 3))
