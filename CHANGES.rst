@@ -1,6 +1,14 @@
 History
 -------
 
+v2.1.0 (2020-04-23)
+~~~~~~~~~~~~~~~~~~~
+- State Trackers now track history
+- State Trackers give state probabilities
+- A number of performance improvements
+- Fix some documentation
+- Test on PyPy3.6 and Python 3.7 too
+
 v2.0.1 (2019-07-17)
 ~~~~~~~~~~~~~~~~~~~
 - setup.py now finds packages to fix pip install bug
