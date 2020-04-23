@@ -1131,3 +1131,72 @@ class TestStateProbabilities(unittest.TestCase):
                 Q.statetracker.state_probabilities(observation_period=(1,4))[state], 
                 expected_probabilities_with_time_period[state]
                 )
+
+    def test_compare_state_probabilities_to_analytical(self):
+        #Example: λ = 1, μ = 3
+        lamda = 1
+        mu = 3
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            service_distributions=[ciw.dists.Exponential(mu)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(20000)
+        state_probs = Q.statetracker.state_probabilities(observation_period=(500, 20000))
+
+        vec = [(lamda/mu)**i for i in sorted(state_probs.keys())]
+        expected_probs = [v / sum(vec) for v in vec]
+
+        for state in state_probs:
+            self.assertEqual(round(state_probs[state], 2), round(expected_probs[state], 2))
+
+        error_squared = sum([(state_probs[i] - expected_probs[i])**2 for i in sorted(state_probs.keys())])
+        self.assertEqual(round(error_squared, 4), 0)
+
+
+         #Example: λ = 1, μ = 4
+        lamda = 1
+        mu = 4
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            service_distributions=[ciw.dists.Exponential(mu)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(20000)
+        state_probs = Q.statetracker.state_probabilities(observation_period=(500, 20000))
+
+        vec = [(lamda/mu)**i for i in sorted(state_probs.keys())]
+        expected_probs = [v / sum(vec) for v in vec]
+
+        for state in state_probs:
+            self.assertEqual(round(state_probs[state], 2), round(expected_probs[state], 2))
+
+        error_squared = sum([(state_probs[i] - expected_probs[i])**2 for i in sorted(state_probs.keys())])
+        self.assertEqual(round(error_squared, 4), 0)
+
+
+         #Example: λ = 1, μ = 5
+        lamda = 1
+        mu = 5
+        ciw.seed(0)
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            service_distributions=[ciw.dists.Exponential(mu)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(20000)
+        state_probs = Q.statetracker.state_probabilities(observation_period=(500, 20000))
+
+        vec = [(lamda/mu)**i for i in sorted(state_probs.keys())]
+        expected_probs = [v / sum(vec) for v in vec]
+
+        for state in state_probs:
+            self.assertEqual(round(state_probs[state], 2), round(expected_probs[state], 2))
+
+        error_squared = sum([(state_probs[i] - expected_probs[i])**2 for i in sorted(state_probs.keys())])
+        self.assertEqual(round(error_squared, 4), 0)
