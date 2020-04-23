@@ -40,6 +40,52 @@ class StateTracker(object):
     def timestamp(self):
         self.history.append([self.simulation.current_time, self.hash_state()])
 
+    def state_probabilities(self, observation_period=(0, float("Inf"))):
+        """
+        Get the state probabilities from the history
+
+        Input:
+            observation_period: tuple
+                A tuple given by the user to identify the observation period 
+                that the probabilities will be computed on, by default is from
+                0 to infinity
+            
+        Returns:
+            Dictionary of states as keys and probabilities as values
+        """
+        start = observation_period[0]
+        end = observation_period[1]
+        steady_state_dictionary = {}
+        prev_date = self.history[0][0]    
+        prev_state = self.history[0][1]
+
+        for event in self.history:
+            date = event[0]
+            state = event[1]
+            if date > end:
+                break
+            date_diff = self.simulation.nodes[1].increment_time(date, -max(prev_date, start))
+            if start < date < end:
+                if (prev_state not in steady_state_dictionary): 
+                    steady_state_dictionary[prev_state] = date_diff
+                else:
+                    steady_state_dictionary[prev_state] += date_diff           
+            prev_date = date
+            prev_state = state
+
+        if end != float("Inf"):
+            date_diff = self.simulation.nodes[1].increment_time(end, -prev_date)
+        if (prev_state not in steady_state_dictionary): 
+            steady_state_dictionary[prev_state] = date_diff
+        else:
+            steady_state_dictionary[prev_state] += date_diff  
+
+        tot = sum(steady_state_dictionary.values())
+        for state in steady_state_dictionary:
+            steady_state_dictionary[state] /= tot
+            
+        return steady_state_dictionary
+
 
 class SystemPopulation(StateTracker):
     """
