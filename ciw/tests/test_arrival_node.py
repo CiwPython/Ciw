@@ -15,6 +15,9 @@ class TestArrivalNode(unittest.TestCase):
         N = ciw.ArrivalNode(Q)
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
         self.assertEqual(N.number_of_individuals, 0)
+        self.assertEqual(N.number_of_individuals_per_class, [0, 0, 0])
+        self.assertEqual(N.number_accepted_individuals, 0)
+        self.assertEqual(N.number_accepted_individuals_per_class, [0, 0, 0])
         dates_dict = {1: {0: 0.2110410999, 1: 0.1415614623, 2: 0.3923690877},
                       2: {0: 0.1218825551, 1: 0.0044003133, 2: 0.2442775601},
                       3: {0: 0.0819463473, 1: 0.4135097542, 2: 0.7256307839},
@@ -71,6 +74,10 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
+        self.assertEqual(N.number_of_individuals, 0)
+        self.assertEqual(N.number_of_individuals_per_class, [0, 0, 0])
+        self.assertEqual(N.number_accepted_individuals, 0)
+        self.assertEqual(N.number_accepted_individuals_per_class, [0, 0, 0])
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[0].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
@@ -83,6 +90,10 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_node, 1)
 
         N.have_event()
+        self.assertEqual(N.number_of_individuals, 1)
+        self.assertEqual(N.number_of_individuals_per_class, [0, 1, 0])
+        self.assertEqual(N.number_accepted_individuals, 1)
+        self.assertEqual(N.number_accepted_individuals_per_class, [0, 1, 0])
         self.assertEqual([str(obj) for obj
             in Q.transitive_nodes[0].all_individuals],
             ['Individual 1'])
@@ -102,6 +113,10 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
+        self.assertEqual(N.number_of_individuals, 0)
+        self.assertEqual(N.number_of_individuals_per_class, [0, 0, 0])
+        self.assertEqual(N.number_accepted_individuals, 0)
+        self.assertEqual(N.number_accepted_individuals_per_class, [0, 0, 0])
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[0].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
@@ -114,6 +129,10 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_node, 3)
 
         N.have_event()
+        self.assertEqual(N.number_of_individuals, 1)
+        self.assertEqual(N.number_of_individuals_per_class, [1, 0, 0])
+        self.assertEqual(N.number_accepted_individuals, 1)
+        self.assertEqual(N.number_accepted_individuals_per_class, [1, 0, 0])
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[0].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])

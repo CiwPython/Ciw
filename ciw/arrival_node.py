@@ -13,7 +13,10 @@ class ArrivalNode(object):
         """
         self.simulation = simulation
         self.number_of_individuals = 0
+        self.number_of_individuals_per_class = [0] * self.simulation.network.number_of_classes
         self.number_accepted_individuals = 0
+        self.number_accepted_individuals_per_class = [0] * self.simulation.network.number_of_classes
+
         self.event_dates_dict = {nd + 1: {clss: False for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
@@ -23,6 +26,7 @@ class ArrivalNode(object):
         self.baulked_dict = {nd + 1: {clss:[] for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
+
         self.initialise_event_dates_dict()
         self.find_next_event_date()
 
@@ -72,6 +76,7 @@ class ArrivalNode(object):
         batch = self.batch_size(self.next_node, self.next_class)
         for _ in range(batch):
             self.number_of_individuals += 1
+            self.number_of_individuals_per_class[self.next_class] += 1
             priority_class = self.simulation.network.priority_class_mapping[
                 self.next_class]
             next_individual = Individual(self.number_of_individuals,
@@ -149,6 +154,7 @@ class ArrivalNode(object):
         Sends the next_individual to the next_node.
         """
         self.number_accepted_individuals += 1
+        self.number_accepted_individuals_per_class[next_individual.customer_class] += 1
         next_node.accept(next_individual)
 
     def update_next_event_date(self):
