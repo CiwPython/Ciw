@@ -1,6 +1,12 @@
 History
 -------
 
+v.2.1.1 (2020-05-27)
+~~~~~~~~~~~~~~~~~~~~
+- State Trackers slightly more efficent, they do not record any state changes that result in the same state as before.
+- Add the NodePopulationSubset tracker.
+- Distribution objects can now see the Simulation object, for true state dependent distributions.
+
 v2.1.0 (2020-04-23)
 ~~~~~~~~~~~~~~~~~~~
 - State Trackers now track history
