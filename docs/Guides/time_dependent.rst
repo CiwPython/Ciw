@@ -119,3 +119,30 @@ Now to test if this is working, the average service time should be roughly equal
     >>> (-0.05 * average_queue_size) + 0.2
     0.1547408...
 
+For arrival distributions - when creating the :code:`Simulation` object, the distribution objects are given a :code:`.simulation` attribute, so something similar can happen. For example, the following distribution will sample form an Exponential distribution unil :code:`limit` number of individuals has been sampled::
+
+    >>> class LimitedExponential(ciw.dists.Exponential):
+    ...     def __init__(self, rate, limit):
+    ...         super().__init__(rate)
+    ...         self.limit = limit
+    ...         
+    ...     def sample(self, t=None, ind=None):
+    ...         if self.simulation.nodes[0].number_of_individuals < self.limit:
+    ...             return super().sample()
+    ...         else:
+    ...             return float('Inf')
+
+And to see it working, a limit of 44 individuals::
+
+    >>> N = ciw.create_network(
+    ...     arrival_distributions=[LimitedExponential(1, 44)],
+    ...     service_distributions=[ciw.dists.Exponential(3)],
+    ...     number_of_servers=[2]
+    ... )
+
+    >>> ciw.seed(0)
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(3000)
+    >>> recs = Q.get_all_records()
+    >>> len(recs)
+    44
