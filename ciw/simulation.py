@@ -43,9 +43,11 @@ class Simulation(object):
         self.inter_arrival_times = self.find_arrival_dists()
         self.service_times = self.find_service_dists()
         self.batch_sizes = self.find_batching_dists()
+        self.show_simulation_to_distributions()
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [self.NodeType(i + 1, self) for i in range(network.number_of_nodes)]
         self.nodes = ([self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()])
+        self.nodes[0].initialise()
         self.statetracker = tracker
         self.statetracker.initialise(self)
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
@@ -95,6 +97,16 @@ class Simulation(object):
             )
             for clss in range(self.network.number_of_classes)}
             for node in range(self.network.number_of_nodes)}
+
+    def show_simulation_to_distributions(self):
+        """
+        Adds the simulation object as an attribute of the distribution objects
+        """
+        for clss in range(self.network.number_of_classes):
+            for nd in range(self.network.number_of_nodes):
+                self.inter_arrival_times[nd + 1][clss].simulation = self
+                self.service_times[nd + 1][clss].simulation = self
+                self.batch_sizes[nd + 1][clss].simulation = self
 
     def find_next_active_node(self):
         """

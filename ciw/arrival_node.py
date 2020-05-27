@@ -27,6 +27,7 @@ class ArrivalNode(object):
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
 
+    def initialise(self):
         self.initialise_event_dates_dict()
         self.find_next_event_date()
 

@@ -13,6 +13,7 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
+        N.initialise()
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
         self.assertEqual(N.number_of_individuals, 0)
         self.assertEqual(N.number_of_individuals_per_class, [0, 0, 0])
@@ -31,6 +32,7 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
+        N.initialise()
         dates_dict_1 = {1: {0: 0.4362282541, 1: 0.2672232406, 2: 0.3864256273},
                         2: {0: 0.1636952311, 1: 0.0714709565, 2: 0.8065738414},
                         3: {0: 0.4088480190, 1: 0.0514323248, 2: 0.8132038176},
@@ -58,6 +60,7 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
+        N.initialise()
         self.assertEqual(round(N.next_event_date, 5), 0.00105)
         N.find_next_event_date()
         self.assertEqual(round(N.next_event_date, 5), 0.00105)
@@ -74,6 +77,7 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
+        N.initialise()
         self.assertEqual(N.number_of_individuals, 0)
         self.assertEqual(N.number_of_individuals_per_class, [0, 0, 0])
         self.assertEqual(N.number_accepted_individuals, 0)
@@ -113,6 +117,7 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         N = ciw.ArrivalNode(Q)
+        N.initialise()
         self.assertEqual(N.number_of_individuals, 0)
         self.assertEqual(N.number_of_individuals_per_class, [0, 0, 0])
         self.assertEqual(N.number_accepted_individuals, 0)
