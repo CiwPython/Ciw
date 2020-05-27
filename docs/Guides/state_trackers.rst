@@ -50,5 +50,9 @@ From this we can obtain the proportion of time the system spend in each state::
 
 So the system was in state :code:`0` (no individuals in the system) 55.4% of the time, in state :code:`1` (one individual in the system) 24.7% of the time, state :code:`2` (two individuals in the system) 13.1% of the time, and state :code:`3` (three individuals in the system) 6.8% of the time.
 
+If a warm up and cool down time is required when calculating the state probabilities, we can put in an observation period. For example, if we with to find the proportion of time the system spend in each state, between dates :code:`50` and :code:`200`, then we can use the following::
+
+    >>> Q.statetracker.state_probabilities(observation_period=(50, 200)) # doctest:+SKIP
 
 Note that different trackers represent different states in different ways, see :ref:`refs-statetrackers` for a list of implemented trackers.
+
