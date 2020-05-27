@@ -8,6 +8,7 @@ Currently Ciw has the following state trackers:
 
 - :ref:`population`
 - :ref:`nodepop`
+- :ref:`nodepopsubset`
 - :ref:`nodeclssmatrix`
 - :ref:`naiveblock`
 - :ref:`matrixblock`
@@ -47,6 +48,24 @@ This denotes that there are two customers at the first node, no customers at the
 The Simulation object takes in the optional argument :code:`tracker` used as follows::
 
     >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulation()) # doctest:+SKIP
+
+
+.. _nodepopsubset:
+
+--------------------------------
+The NodePopulationSubset Tracker
+--------------------------------
+
+The NodePopulationSubset Tracker, similar to the NodePopulation Tracker, records the number of customers at each node. However this allows users to only track a subset of the nodes in the system.
+States take the form of list of numbers. An example of tracking a three node queueing network is shown below::
+
+    (2, 0, 5)
+
+This denotes that there are two customers at the first observed node, no customers at the second observed node, and five customers at the third observed node.
+
+The Simulation object takes in the optional argument :code:`tracker`, which takes an argument :code:`observed_nodes` a list of node numbers to observe, used as follows (observing the first, second, and fifth nodes)::
+
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulationSubset([0, 1, 4])) # doctest:+SKIP
 
 
 .. _nodeclssmatrix:

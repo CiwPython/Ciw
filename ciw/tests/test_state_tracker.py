@@ -736,6 +736,118 @@ class TestTrackHistory(unittest.TestCase):
         ]
         self.assertEqual(Q.statetracker.history, expected_history)
 
+
+    def test_two_node_deterministic_nodepopulationsubset(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(0.31), ciw.dists.Deterministic(0.71)],
+            service_distributions=[ciw.dists.Deterministic(1), ciw.dists.Deterministic(1)],
+            routing=[[0.0, 1.0], [0.0, 0.0]],
+            number_of_servers=[1, 1]
+        )
+
+        # First with Both nodes
+        B = ciw.trackers.NodePopulationSubset([0, 1])
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(4.5)
+        expected_history = [
+        [Decimal('0.0'), (0, 0)],
+        [Decimal('0.31'), (1, 0)],
+        [Decimal('0.62'), (2, 0)],
+        [Decimal('0.71'), (2, 1)],
+        [Decimal('0.93'), (3, 1)],
+        [Decimal('1.24'), (4, 1)],
+        [Decimal('1.31'), (3, 2)],
+        [Decimal('1.42'), (3, 3)],
+        [Decimal('1.55'), (4, 3)],
+        [Decimal('1.71'), (4, 2)],
+        [Decimal('1.86'), (5, 2)],
+        [Decimal('2.13'), (5, 3)],
+        [Decimal('2.17'), (6, 3)],
+        [Decimal('2.31'), (5, 4)],
+        [Decimal('2.48'), (6, 4)],
+        [Decimal('2.71'), (6, 3)],
+        [Decimal('2.79'), (7, 3)],
+        [Decimal('2.84'), (7, 4)],
+        [Decimal('3.10'), (8, 4)],
+        [Decimal('3.31'), (7, 5)],
+        [Decimal('3.41'), (8, 5)],
+        [Decimal('3.55'), (8, 6)],
+        [Decimal('3.71'), (8, 5)],
+        [Decimal('3.72'), (9, 5)],
+        [Decimal('4.03'), (10, 5)],
+        [Decimal('4.26'), (10, 6)],
+        [Decimal('4.31'), (9, 7)],
+        [Decimal('4.34'), (10, 7)]
+        ]
+        self.assertEqual(Q.statetracker.history, expected_history)
+
+        # First with then 1st only
+        B = ciw.trackers.NodePopulationSubset([0])
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(4.5)
+        expected_history = [
+        [Decimal('0.0'), (0,)],
+        [Decimal('0.31'), (1,)],
+        [Decimal('0.62'), (2,)],
+        [Decimal('0.93'), (3,)],
+        [Decimal('1.24'), (4,)],
+        [Decimal('1.31'), (3,)],
+        [Decimal('1.55'), (4,)],
+        [Decimal('1.86'), (5,)],
+        [Decimal('2.17'), (6,)],
+        [Decimal('2.31'), (5,)],
+        [Decimal('2.48'), (6,)],
+        [Decimal('2.79'), (7,)],
+        [Decimal('3.10'), (8,)],
+        [Decimal('3.31'), (7,)],
+        [Decimal('3.41'), (8,)],
+        [Decimal('3.72'), (9,)],
+        [Decimal('4.03'), (10,)],
+        [Decimal('4.31'), (9,)],
+        [Decimal('4.34'), (10,)]
+        ]
+        self.assertEqual(Q.statetracker.history, expected_history)
+
+        # Then 2nd only
+        B = ciw.trackers.NodePopulationSubset([1])
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(4.5)
+        expected_history = [
+        [Decimal('0.0'), (0,)],
+        [Decimal('0.71'), (1,)],
+        [Decimal('1.31'), (2,)],
+        [Decimal('1.42'), (3,)],
+        [Decimal('1.71'), (2,)],
+        [Decimal('2.13'), (3,)],
+        [Decimal('2.31'), (4,)],
+        [Decimal('2.71'), (3,)],
+        [Decimal('2.84'), (4,)],
+        [Decimal('3.31'), (5,)],
+        [Decimal('3.55'), (6,)],
+        [Decimal('3.71'), (5,)],
+        [Decimal('4.26'), (6,)],
+        [Decimal('4.31'), (7,)]
+        ]
+        self.assertEqual(Q.statetracker.history, expected_history)
+
+    def test_no_state_change_when_blocking_subset(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(1), ciw.dists.NoArrivals()],
+            service_distributions=[ciw.dists.Deterministic(0.1), ciw.dists.Deterministic(1.2)],
+            number_of_servers=[1, 1],
+            routing=[[0.0, 1.0], [0.0, 0.0]],
+            queue_capacities=[float('Inf'), 0]
+        )
+        B = ciw.trackers.NodePopulationSubset([1])
+        Q = ciw.Simulation(N, tracker=B, exact=26)
+        Q.simulate_until_max_time(15.5)
+        expected_history = [
+        [Decimal('0.0'), (0,)],
+        [Decimal('1.1'), (1,)]
+        ]
+        self.assertEqual(Q.statetracker.history, expected_history)
+
+
     def test_one_node_deterministic_nodeclassmatrix(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Sequential([1.5, 0.3, 2.4, 1.1])],
@@ -795,10 +907,8 @@ class TestTrackHistory(unittest.TestCase):
             [0.00, 0],
             [0.60, 1],
             [1.09, 2],
-            [1.32, 2],
             [1.64, 3],
             [1.96, 2],
-            [2.67, 2],
             [2.84, 3],
             [3.39, 4],
             [3.41, 5],
@@ -822,10 +932,8 @@ class TestTrackHistory(unittest.TestCase):
             [0.00, (0, 0)],
             [0.60, (0, 1)],
             [1.09, (0, 2)],
-            [1.32, (0, 2)],
             [1.64, (0, 3)],
             [1.96, (0, 2)],
-            [2.67, (0, 2)],
             [2.84, (1, 2)],
             [3.39, (1, 3)],
             [3.41, (2, 3)],
@@ -849,10 +957,8 @@ class TestTrackHistory(unittest.TestCase):
             [0.00, ((0, 0), (0, 0))],
             [0.60, ((0, 0), (0, 1))],
             [1.09, ((0, 0), (1, 1))],
-            [1.32, ((0, 0), (1, 1))],
             [1.64, ((0, 0), (1, 2))],
             [1.96, ((0, 0), (0, 2))],
-            [2.67, ((0, 0), (0, 2))],
             [2.84, ((0, 1), (0, 2))],
             [3.39, ((0, 1), (0, 3))],
             [3.41, ((0, 2), (0, 3))],

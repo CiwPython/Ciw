@@ -10,8 +10,7 @@ class StateTracker(object):
         """
         self.simulation = simulation
         self.state = None
-        self.history = []
-        self.timestamp()
+        self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
@@ -38,7 +37,9 @@ class StateTracker(object):
         return None
 
     def timestamp(self):
-        self.history.append([self.simulation.current_time, self.hash_state()])
+        current_hash_state = self.hash_state()
+        if current_hash_state != self.history[-1][1]:
+            self.history.append([self.simulation.current_time, current_hash_state])
 
     def state_probabilities(self, observation_period=(0, float("Inf"))):
         """
@@ -105,8 +106,7 @@ class SystemPopulation(StateTracker):
         """
         self.simulation = simulation
         self.state = 0
-        self.history = []
-        self.timestamp()
+        self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
@@ -149,8 +149,7 @@ class NodePopulation(StateTracker):
         self.simulation = simulation
         self.state = [0 for i in range(
             self.simulation.network.number_of_nodes)]
-        self.history = []
-        self.timestamp()
+        self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
@@ -177,6 +176,62 @@ class NodePopulation(StateTracker):
         return tuple(self.state)
 
 
+class NodePopulationSubset(StateTracker):
+    """
+    The node population tracker records the number of customers at each node
+    from a given set of observed nodes.
+
+    Example:
+        (3, 1)
+        This denotes 3 customers at the first node, and 1 customer at the
+        second node.
+    """
+    def __init__(self, observed_nodes):
+        """
+        Pre-initialises the object with keyward `observed_nodes`
+        """
+        self.observed_nodes = observed_nodes
+
+    def initialise(self, simulation):
+        """
+        Initialises the state tracker class.
+        """
+        self.simulation = simulation
+        self.state = [0 for i in self.observed_nodes]
+        self.history = [[self.simulation.current_time, self.hash_state()]]
+
+    def change_state_accept(self, node_id, cust_clss):
+        """
+        Changes the state of the system when a customer is accepted.
+        """
+        if node_id-1 in self.observed_nodes:
+            state_index = self.observed_nodes.index(node_id-1)
+            self.state[state_index] += 1
+
+    def change_state_block(self, node_id, destination, cust_clss):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        pass
+
+    def change_state_release(self, node_id, destination, cust_clss, blocked):
+        """
+        Changes the state of the system when a customer is released.
+        """
+        if node_id-1 in self.observed_nodes:
+            state_index = self.observed_nodes.index(node_id-1)
+            self.state[state_index] -= 1
+
+    def hash_state(self):
+        """
+        Returns a hashable state.
+        """
+        return tuple(self.state)
+
+
+
+
+
 class NodeClassMatrix(StateTracker):
     """
     The node-class matrix tracker records the number of customers of each
@@ -197,8 +252,7 @@ class NodeClassMatrix(StateTracker):
         self.state = [[0 for cls in range(
             self.simulation.network.number_of_classes)] for i in range(
             self.simulation.network.number_of_nodes)]
-        self.history = []
-        self.timestamp()
+        self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
@@ -243,8 +297,7 @@ class NaiveBlocking(StateTracker):
         self.simulation = simulation
         self.state = [[0, 0] for i in range(
             self.simulation.network.number_of_nodes)]
-        self.history = []
-        self.timestamp()
+        self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
@@ -301,8 +354,7 @@ class MatrixBlocking(StateTracker):
             self.simulation.network.number_of_nodes)], [0 for i in range(
             self.simulation.network.number_of_nodes)]]
         self.increment = 1
-        self.history = []
-        self.timestamp()
+        self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node_id, cust_clss):
         """
