@@ -504,6 +504,69 @@ class TestSimulation(unittest.TestCase):
         self.assertIsInstance(Q.nodes[1], DummyNode)
         self.assertIsInstance(Q.nodes[0], DummyArrivalNode)
 
+
+    def test_setting_individual_and_server_classes_in_init(self):
+        class DummyIndividual(ciw.Individual):
+            def __repr__(self):
+                return 'DummyIndividual %s' % self.id_number
+        class DummyServer(ciw.Server):
+            def __repr__(self):
+                return 'DummyServer %s at Node %s' % (self.id_number, self.node.id_number)
+
+        params = {'arrival_distributions': [ciw.dists.Deterministic(5)],
+                  'service_distributions': [ciw.dists.Deterministic(100)],
+                  'routing': [[0.0]],
+                  'number_of_servers': [2]
+                  }
+        Q = ciw.Simulation(ciw.create_network(**params),
+            individual_class=None, server_class=None)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, ciw.Server)
+        self.assertIsInstance(Q.nodes[1].servers[0], ciw.Server)
+        self.assertIsInstance(Q.nodes[1].servers[1], ciw.Server)
+        self.assertEqual(Q.nodes[1],servers[0], 'Server 0 at Node 1')
+        self.assertEqual(Q.nodes[1],servers[1], 'Server 0 at Node 1')
+        Q.simulate_until_max_time(6)
+        self.assertIsInstance(Q.nodes[1].all_individuals[0], ciw.Individual)
+        self.assertEqual(Q.nodes[1].all_individuals[0], 'Individual 0')
+
+        Q = ciw.Simulation(ciw.create_network(**params),
+            individual_class=DummyIndividual, server_class=None)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, ciw.Server)
+        self.assertIsInstance(Q.nodes[1].servers[0], ciw.Server)
+        self.assertIsInstance(Q.nodes[1].servers[1], ciw.Server)
+        self.assertEqual(Q.nodes[1],servers[0], 'Server 0 at Node 1')
+        self.assertEqual(Q.nodes[1],servers[1], 'Server 0 at Node 1')
+        Q.simulate_until_max_time(6)
+        self.assertIsInstance(Q.nodes[1].all_individuals[0], DummyIndividual)
+        self.assertEqual(Q.nodes[1].all_individuals[0], 'DummyIndividual 0')
+
+        Q = ciw.Simulation(ciw.create_network(**params),
+            individual_class=None, server_class=DummyServer)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, DummyServer)
+        self.assertIsInstance(Q.nodes[1].servers[0], DummyServer)
+        self.assertIsInstance(Q.nodes[1].servers[1], DummyServer)
+        self.assertEqual(Q.nodes[1],servers[0], 'DummyServer 0 at Node 1')
+        self.assertEqual(Q.nodes[1],servers[1], 'DummyServer 0 at Node 1')
+        Q.simulate_until_max_time(6)
+        self.assertIsInstance(Q.nodes[1].all_individuals[0], ciw.Individual)
+        self.assertEqual(Q.nodes[1].all_individuals[0], 'Individual 0')
+
+        Q = ciw.Simulation(ciw.create_network(**params),
+            individual_class=DummyIndividual, server_class=DummyServer)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, DummyServer)
+        self.assertIsInstance(Q.nodes[1].servers[0], DummyServer)
+        self.assertIsInstance(Q.nodes[1].servers[1], DummyServer)
+        self.assertEqual(Q.nodes[1],servers[0], 'DummyServer 0 at Node 1')
+        self.assertEqual(Q.nodes[1],servers[1], 'DummyServer 0 at Node 1')
+        Q.simulate_until_max_time(6)
+        self.assertIsInstance(Q.nodes[1].all_individuals[0], DummyIndividual)
+        self.assertEqual(Q.nodes[1].all_individuals[0], 'DummyIndividual 0')
+
+
     def test_get_all_records(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
