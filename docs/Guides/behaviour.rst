@@ -4,13 +4,18 @@
 How to Get More Custom Behaviour
 ================================
 
-Custom behaviour can be obtained by writing new :code:`Node` and :code:`ArrivalNode` classes, that inherit from the original :code:`ciw.Node` and :code:`ciw.ArrivalNode` classes, that introduce new beahviour into the system.
+Custom behaviour can be obtained by writing new :code:`Node`, :code:`ArrivalNode`, :code:`Individual`, and/or :code:`Server` classes, that inherit from the original :code:`ciw.Node`, :code:`ciw.ArrivalNode`, :code:`ciw.Individual` and :code:`ciw.Server` classes respectively, that introduce new beahviour into the system.
 The classes that can be overwitten are:
 
 - :code:`Node`: the main node class used to represent a service centre.
 - :code:`ArrivalNode`: the node class used to generate individuals and route them to a specific :code:`Node`.
+- :code:`Individual`: the individual class used to represent the individual entities.
+- :code:`Server`: the class used to represent the servers that sit at a service centre.
 
-These new Node and Arrival Node classes can be used with the Simulation class by using the keyword arugments :code:`node_class` and :code:`arrival_node_class`.
+These new classes can be used with the Simulation class by using the keyword arugments :code:`node_class`, :code:`arrival_node_class`, :code:`individual_class`, and :code:`server_class`.
+
+Example
+-------
 
 Consider the following two node network, where arrivals only occur at the first node, and there is a queueing capacity of 10.
 The second node is redundent in this scenario::

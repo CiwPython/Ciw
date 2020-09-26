@@ -104,7 +104,7 @@ class Node(object):
         num_servers = self.schedule[shift_indx][1]
         for i in range(num_servers):
             self.highest_id += 1
-            self.servers.append(Server(self, self.highest_id, self.next_event_date))
+            self.servers.append(self.simulation.ServerType(self, self.highest_id, self.next_event_date))
 
     def attach_server(self, server, individual):
         """
@@ -265,7 +265,7 @@ class Node(object):
         """
         Initialise the servers.
         """
-        return [Server(self, i + 1, 0.0) for i in range(self.c)]
+        return [self.simulation.ServerType(self, i + 1, 0.0) for i in range(self.c)]
 
     def detatch_server(self, server, individual):
         """
