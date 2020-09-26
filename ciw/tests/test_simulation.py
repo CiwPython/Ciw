@@ -435,30 +435,116 @@ class TestSimulation(unittest.TestCase):
         class DummyArrivalNode(ciw.ArrivalNode):
             pass
 
+        class DummyIndividual(ciw.Individual):
+            pass
+
+        class DummyServer(ciw.Server):
+            pass
+
         params = {'arrival_distributions': [ciw.dists.Exponential(20)],
                   'service_distributions': [ciw.dists.Deterministic(0.01)],
                   'routing': [[0.0]],
-                  'number_of_servers': [[[0, 0.5], [1, 0.55], [0, 3.0]]]
+                  'number_of_servers': [1]
                   }
         Q = ciw.Simulation(ciw.create_network(**params))
         self.assertEqual(Q.NodeType, ciw.Node)
         self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
 
-        Q.set_classes(None, None)
+        Q.set_classes(None, None, None, None)
         self.assertEqual(Q.NodeType, ciw.Node)
         self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, ciw.Server)
 
-        Q.set_classes(DummyNode, None)
+        Q.set_classes(DummyNode, None, None, None)
         self.assertEqual(Q.NodeType, DummyNode)
         self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, ciw.Server)
 
-        Q.set_classes(None, DummyArrivalNode)
+        Q.set_classes(None, DummyArrivalNode, None, None)
         self.assertEqual(Q.NodeType, ciw.Node)
         self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, ciw.Server)
 
-        Q.set_classes(DummyNode, DummyArrivalNode)
+        Q.set_classes(None, None, DummyIndividual, None)
+        self.assertEqual(Q.NodeType, ciw.Node)
+        self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, ciw.Server)
+
+        Q.set_classes(None, None, None, DummyServer)
+        self.assertEqual(Q.NodeType, ciw.Node)
+        self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, DummyServer)
+
+        Q.set_classes(DummyNode, DummyArrivalNode, None, None)
         self.assertEqual(Q.NodeType, DummyNode)
         self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, ciw.Server)
+
+        Q.set_classes(DummyNode, None, DummyIndividual, None)
+        self.assertEqual(Q.NodeType, DummyNode)
+        self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, ciw.Server)
+
+        Q.set_classes(DummyNode, None, None, DummyServer)
+        self.assertEqual(Q.NodeType, DummyNode)
+        self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, DummyServer)
+
+        Q.set_classes(None, DummyArrivalNode, DummyIndividual, None)
+        self.assertEqual(Q.NodeType, ciw.Node)
+        self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, ciw.Server)
+
+        Q.set_classes(None, DummyArrivalNode, None, DummyServer)
+        self.assertEqual(Q.NodeType, ciw.Node)
+        self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, DummyServer)
+
+        Q.set_classes(None, None, DummyIndividual, DummyServer)
+        self.assertEqual(Q.NodeType, ciw.Node)
+        self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, DummyServer)
+
+        Q.set_classes(DummyNode, DummyArrivalNode, DummyIndividual, None)
+        self.assertEqual(Q.NodeType, DummyNode)
+        self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, ciw.Server)
+
+        Q.set_classes(DummyNode, DummyArrivalNode, None, DummyServer)
+        self.assertEqual(Q.NodeType, DummyNode)
+        self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, ciw.Individual)
+        self.assertEqual(Q.ServerType, DummyServer)
+
+        Q.set_classes(DummyNode, None, DummyIndividual, DummyServer)
+        self.assertEqual(Q.NodeType, DummyNode)
+        self.assertEqual(Q.ArrivalNodeType, ciw.ArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, DummyServer)
+
+        Q.set_classes(None, DummyArrivalNode, DummyIndividual, DummyServer)
+        self.assertEqual(Q.NodeType, ciw.Node)
+        self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, DummyServer)
+
+        Q.set_classes(DummyNode, DummyArrivalNode, DummyIndividual, DummyServer)
+        self.assertEqual(Q.NodeType, DummyNode)
+        self.assertEqual(Q.ArrivalNodeType, DummyArrivalNode)
+        self.assertEqual(Q.IndividualType, DummyIndividual)
+        self.assertEqual(Q.ServerType, DummyServer)
 
     def test_setting_classes_in_init(self):
         class DummyNode(ciw.Node):
@@ -524,11 +610,11 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.ServerType, ciw.Server)
         self.assertIsInstance(Q.nodes[1].servers[0], ciw.Server)
         self.assertIsInstance(Q.nodes[1].servers[1], ciw.Server)
-        self.assertEqual(Q.nodes[1],servers[0], 'Server 0 at Node 1')
-        self.assertEqual(Q.nodes[1],servers[1], 'Server 0 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[0]), 'Server 1 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[1]), 'Server 2 at Node 1')
         Q.simulate_until_max_time(6)
         self.assertIsInstance(Q.nodes[1].all_individuals[0], ciw.Individual)
-        self.assertEqual(Q.nodes[1].all_individuals[0], 'Individual 0')
+        self.assertEqual(str(Q.nodes[1].all_individuals[0]), 'Individual 1')
 
         Q = ciw.Simulation(ciw.create_network(**params),
             individual_class=DummyIndividual, server_class=None)
@@ -536,11 +622,11 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.ServerType, ciw.Server)
         self.assertIsInstance(Q.nodes[1].servers[0], ciw.Server)
         self.assertIsInstance(Q.nodes[1].servers[1], ciw.Server)
-        self.assertEqual(Q.nodes[1],servers[0], 'Server 0 at Node 1')
-        self.assertEqual(Q.nodes[1],servers[1], 'Server 0 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[0]), 'Server 1 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[1]), 'Server 2 at Node 1')
         Q.simulate_until_max_time(6)
         self.assertIsInstance(Q.nodes[1].all_individuals[0], DummyIndividual)
-        self.assertEqual(Q.nodes[1].all_individuals[0], 'DummyIndividual 0')
+        self.assertEqual(str(Q.nodes[1].all_individuals[0]), 'DummyIndividual 1')
 
         Q = ciw.Simulation(ciw.create_network(**params),
             individual_class=None, server_class=DummyServer)
@@ -548,11 +634,11 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.ServerType, DummyServer)
         self.assertIsInstance(Q.nodes[1].servers[0], DummyServer)
         self.assertIsInstance(Q.nodes[1].servers[1], DummyServer)
-        self.assertEqual(Q.nodes[1],servers[0], 'DummyServer 0 at Node 1')
-        self.assertEqual(Q.nodes[1],servers[1], 'DummyServer 0 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[0]), 'DummyServer 1 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[1]), 'DummyServer 2 at Node 1')
         Q.simulate_until_max_time(6)
         self.assertIsInstance(Q.nodes[1].all_individuals[0], ciw.Individual)
-        self.assertEqual(Q.nodes[1].all_individuals[0], 'Individual 0')
+        self.assertEqual(str(Q.nodes[1].all_individuals[0]), 'Individual 1')
 
         Q = ciw.Simulation(ciw.create_network(**params),
             individual_class=DummyIndividual, server_class=DummyServer)
@@ -560,11 +646,11 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.ServerType, DummyServer)
         self.assertIsInstance(Q.nodes[1].servers[0], DummyServer)
         self.assertIsInstance(Q.nodes[1].servers[1], DummyServer)
-        self.assertEqual(Q.nodes[1],servers[0], 'DummyServer 0 at Node 1')
-        self.assertEqual(Q.nodes[1],servers[1], 'DummyServer 0 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[0]), 'DummyServer 1 at Node 1')
+        self.assertEqual(str(Q.nodes[1].servers[1]), 'DummyServer 2 at Node 1')
         Q.simulate_until_max_time(6)
         self.assertIsInstance(Q.nodes[1].all_individuals[0], DummyIndividual)
-        self.assertEqual(Q.nodes[1].all_individuals[0], 'DummyIndividual 0')
+        self.assertEqual(str(Q.nodes[1].all_individuals[0]), 'DummyIndividual 1')
 
 
     def test_get_all_records(self):

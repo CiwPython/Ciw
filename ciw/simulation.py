@@ -13,6 +13,8 @@ from .node import Node
 from .exactnode import ExactNode, ExactArrivalNode
 from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
+from .individual import Individual
+from .server import Server
 from ciw import trackers
 from ciw import deadlock
 
@@ -26,13 +28,15 @@ class Simulation(object):
                  tracker=trackers.StateTracker(),
                  deadlock_detector=deadlock.NoDetection(),
                  node_class=None,
-                 arrival_node_class=None):
+                 arrival_node_class=None,
+                 individual_class=None,
+                 server_class=None):
         """
         Initialise an instance of the simualation.
         """
         self.current_time = 0.0
         self.network = network
-        self.set_classes(node_class, arrival_node_class)
+        self.set_classes(node_class, arrival_node_class, individual_class, server_class)
         if exact:
             self.NodeType = ExactNode
             self.ArrivalNodeType = ExactArrivalNode
@@ -142,7 +146,7 @@ class Simulation(object):
         self.all_records = records
         return records
 
-    def set_classes(self, node_class, arrival_node_class):
+    def set_classes(self, node_class, arrival_node_class, individual_class, server_class):
         """
         Sets the type of ArrivalNode and Node classes being used
         in the Simulation model (if customer classes are used.)
@@ -156,6 +160,16 @@ class Simulation(object):
             self.NodeType = node_class
         else:
             self.NodeType = Node
+
+        if individual_class is not None:
+            self.IndividualType = individual_class
+        else:
+            self.IndividualType = Individual
+
+        if server_class is not None:
+            self.ServerType = server_class
+        else:
+            self.ServerType = Server
 
     def event_and_return_nextnode(self, next_active_node):
         """

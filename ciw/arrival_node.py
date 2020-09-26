@@ -80,9 +80,10 @@ class ArrivalNode(object):
             self.number_of_individuals_per_class[self.next_class] += 1
             priority_class = self.simulation.network.priority_class_mapping[
                 self.next_class]
-            next_individual = Individual(self.number_of_individuals,
-                                         self.next_class,
-                                         priority_class)
+            next_individual = self.simulation.IndividualType(
+                self.number_of_individuals,
+                self.next_class,
+                priority_class)
             next_individual.simulation = self.simulation
             if self.simulation.network.process_based:
                 next_individual.route = self.simulation.network.customer_classes[
