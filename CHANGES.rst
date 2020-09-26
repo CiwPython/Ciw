@@ -1,7 +1,11 @@
 History
 -------
 
-v.2.1.1 (2020-05-27)
+v2.1.2 (2020-09-26)
+~~~~~~~~~~~~~~~~~~~
+- Ability to incorporate customer behaviour Server and Individual classes.
+
+v2.1.1 (2020-05-27)
 ~~~~~~~~~~~~~~~~~~~~
 - State Trackers slightly more efficent, they do not record any state changes that result in the same state as before.
 - Add the NodePopulationSubset tracker.
