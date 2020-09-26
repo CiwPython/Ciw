@@ -10,7 +10,7 @@ These probabilities are input into the system through the :code:`class_change_ma
 
 Consider a one node system with three classes of customer.
 After service (at Node 1) customers always change customer class, equally likely between the two other customer classes.
-The :code:`xlass_change_matrices` for this system are shown below:
+The :code:`class_change_matrices` for this system are shown below:
 
 .. math::
 
