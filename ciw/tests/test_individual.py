@@ -19,6 +19,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.queue_size_at_arrival, False)
         self.assertEqual(i.queue_size_at_departure, False)
         self.assertEqual(i.data_records, [])
+        self.assertEqual(i.simulation, False)
 
     def test_init_method_2(self):
         i = ciw.Individual(5)
@@ -34,6 +35,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.queue_size_at_arrival, False)
         self.assertEqual(i.queue_size_at_departure, False)
         self.assertEqual(i.data_records, [])
+        self.assertEqual(i.simulation, False)
 
     def test_init_method_3(self):
         i = ciw.Individual(5, 0, 2)
@@ -49,6 +51,25 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.queue_size_at_arrival, False)
         self.assertEqual(i.queue_size_at_departure, False)
         self.assertEqual(i.data_records, [])
+        self.assertEqual(i.simulation, False)
+
+    def test_init_method_4(self):
+        Q = ciw.Simulation(ciw.create_network_from_yml(
+            'ciw/tests/testing_parameters/params_mm1.yml'))
+        i = ciw.Individual(5, 0, 2, simulation=Q)
+        self.assertEqual(i.customer_class, 0)
+        self.assertEqual(i.previous_class, 0)
+        self.assertEqual(i.priority_class, 2)
+        self.assertEqual(i.id_number, 5)
+        self.assertEqual(i.service_start_date, False)
+        self.assertEqual(i.service_time, False)
+        self.assertEqual(i.service_end_date, False)
+        self.assertEqual(i.arrival_date, False)
+        self.assertEqual(i.destination, False)
+        self.assertEqual(i.queue_size_at_arrival, False)
+        self.assertEqual(i.queue_size_at_departure, False)
+        self.assertEqual(i.data_records, [])
+        self.assertEqual(i.simulation, Q)
 
     def test_repr_method(self):
         i = ciw.Individual(3, 6)

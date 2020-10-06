@@ -4,7 +4,7 @@ class Individual(object):
     """
     Class for an individual.
     """
-    def __init__(self, id_number, customer_class=0, priority_class=0):
+    def __init__(self, id_number, customer_class=0, priority_class=0, simulation=False):
         """
         Initialise an individual.
         """
@@ -26,6 +26,7 @@ class Individual(object):
         self.destination = False
         self.interrupted = False
         self.node = False
+        self.simulation = simulation
 
     def __repr__(self):
         """
