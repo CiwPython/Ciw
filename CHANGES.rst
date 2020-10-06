@@ -1,6 +1,12 @@
 History
 -------
 
+v2.1.3 (2020-10-06)
+~~~~~~~~~~~~~~~~~~~
+- Small refactor to Node adding new servers, and to Individuals receiving the Simulation object.
+- Add a library of custom behaviour to docs
+- Support Python 3.8, update hypothesis
+
 v2.1.2 (2020-09-26)
 ~~~~~~~~~~~~~~~~~~~
 - Ability to incorporate customer behaviour Server and Individual classes.
