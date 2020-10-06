@@ -1,24 +1,14 @@
-.. _behaviour-nodes:
+State-dependent Routing
+=======================
 
-================================
-How to Get More Custom Behaviour
-================================
+In this example we will consider a network where customers are routed differently depending on the system state. We will look at a system without this behaviour first, and then the system with the desired behaviour, for comparison.
 
-Custom behaviour can be obtained by writing new :code:`Node`, :code:`ArrivalNode`, :code:`Individual`, and/or :code:`Server` classes, that inherit from the original :code:`ciw.Node`, :code:`ciw.ArrivalNode`, :code:`ciw.Individual` and :code:`ciw.Server` classes respectively, that introduce new beahviour into the system.
-The classes that can be overwitten are:
 
-- :code:`Node`: the main node class used to represent a service centre.
-- :code:`ArrivalNode`: the node class used to generate individuals and route them to a specific :code:`Node`.
-- :code:`Individual`: the individual class used to represent the individual entities.
-- :code:`Server`: the class used to represent the servers that sit at a service centre.
-
-These new classes can be used with the Simulation class by using the keyword arugments :code:`node_class`, :code:`arrival_node_class`, :code:`individual_class`, and :code:`server_class`.
-
-Example
--------
+Without desired behaviour
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Consider the following two node network, where arrivals only occur at the first node, and there is a queueing capacity of 10.
-The second node is redundent in this scenario::
+The second node is redundant in this scenario::
 
 	>>> import ciw
 	>>> from collections import Counter
@@ -40,6 +30,11 @@ Now we run the system for 100 time units, and see that we get 484 services at th
 	>>> service_nodes = [r.node for r in Q.get_all_records()]
 	>>> Counter(service_nodes)
 	Counter({1: 494})
+
+
+
+With desired behaviour
+~~~~~~~~~~~~~~~~~~~~~~
 
 We will now create a new :code:`CustomArrivalNode` such that any customers who arrive when the first node has 10 or more customers present will be sent to the second node.
 First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.ArrivalNode`, and overwrites the :code:`send_individual` method::

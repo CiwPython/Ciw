@@ -22,5 +22,5 @@ Contents:
    state_trackers.rst
    deadlock.rst
    process_based.rst
-   behaviour.rst
    from_file.rst
+   behaviour/index.rst
