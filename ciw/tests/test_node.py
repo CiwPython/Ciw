@@ -2,6 +2,7 @@ import unittest
 import ciw
 from hypothesis import given, settings
 from hypothesis.strategies import floats, integers, random_module
+settings(deadline=None)
 
 class TestNode(unittest.TestCase):
     def test_init_method(self):
