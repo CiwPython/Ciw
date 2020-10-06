@@ -7,7 +7,7 @@ A number of other features are also implemented, including priorities, baulking,
 
 The name **Ciw** is the Welsh word for a queue.
 
-Ciw is currently supported for and regularly tested on Python versions 3.5, 3.6 and 3.7.
+Ciw is currently supported for and regularly tested on Python versions 3.5, 3.6, 3.7 and 3.8.
 
 Contents:
 

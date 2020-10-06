@@ -15,5 +15,5 @@ def load_tests(loader, tests, ignorex):
 
 
 if __name__ == '__main__':
-    if sys.version_info >= (3,0):
+    if sys.version_info >= (3, 6):
         unittest.main()

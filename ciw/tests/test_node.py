@@ -684,6 +684,7 @@ class TestNode(unittest.TestCase):
            mu=floats(min_value=0.01, max_value=5),
            c=integers(min_value=1, max_value=10),
            rm=random_module())
+    @settings(deadline=None)
     def test_utilisation_always_1_or_less(self, lmbda, mu, c, rm):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(lmbda)],
