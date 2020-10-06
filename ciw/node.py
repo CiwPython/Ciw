@@ -50,9 +50,9 @@ class Node(object):
             self.simulation.network.customer_classes[clss
             ].baulking_functions[id_ - 1] for clss in range(
             self.simulation.network.number_of_classes)]
+        self.overtime = []
         if self.schedule:
             self.next_event_date = self.next_shift_change
-            self.overtime = []
         else:
             self.next_event_date = float("Inf")
         self.blocked_queue = []
@@ -97,11 +97,10 @@ class Node(object):
         self.simulation.statetracker.change_state_accept(
             self.id_number, next_individual.customer_class)
 
-    def add_new_servers(self, shift_indx):
+    def add_new_servers(self, num_servers):
         """
         Add appropriate amount of servers for the given shift.
         """
-        num_servers = self.schedule[shift_indx][1]
         for i in range(num_servers):
             self.highest_id += 1
             self.servers.append(self.simulation.ServerType(self, self.highest_id, self.next_event_date))
@@ -246,8 +245,9 @@ class Node(object):
             diffs = [abs(x - float(shift)) for x in tms]
             indx = diffs.index(min(diffs))
 
+        num_servers = self.schedule[indx][1]
         self.take_servers_off_duty()
-        self.add_new_servers(indx)
+        self.add_new_servers(num_servers)
 
         self.c = self.schedule[indx][1]
         self.next_shift_change = next(self.date_generator)

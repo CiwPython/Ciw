@@ -123,13 +123,38 @@ class TestScheduling(unittest.TestCase):
         N = Q.transitive_nodes[0]
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1'])
-        s_indx = 3
-        N.add_new_servers(s_indx)
+        N.add_new_servers(3)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
              'Server 2 at Node 1',
              'Server 3 at Node 1',
              'Server 4 at Node 1'])
+        N.add_new_servers(2)
+        self.assertEqual([str(obs) for obs in N.servers],
+            ['Server 1 at Node 1',
+             'Server 2 at Node 1',
+             'Server 3 at Node 1',
+             'Server 4 at Node 1',
+             'Server 5 at Node 1',
+             'Server 6 at Node 1'])
+        N.add_new_servers(10)
+        self.assertEqual([str(obs) for obs in N.servers],
+            ['Server 1 at Node 1',
+             'Server 2 at Node 1',
+             'Server 3 at Node 1',
+             'Server 4 at Node 1',
+             'Server 5 at Node 1',
+             'Server 6 at Node 1',
+             'Server 7 at Node 1',
+             'Server 8 at Node 1',
+             'Server 9 at Node 1',
+             'Server 10 at Node 1',
+             'Server 11 at Node 1',
+             'Server 12 at Node 1',
+             'Server 13 at Node 1',
+             'Server 14 at Node 1',
+             'Server 15 at Node 1',
+             'Server 16 at Node 1'])
 
 
     def test_take_servers_off_duty_preempt_method(self):
