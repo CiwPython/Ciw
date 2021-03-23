@@ -83,7 +83,7 @@ A cool-down will be unnecessary as we are recording rejections, which happen at 
     >>> sum(broken_stools) / len(broken_stools)
     7.25
 
-On average the system gets 7.25 broken stools per hour; costing and average of 67.5p per hour of operation.
+On average the system gets 7.25 broken stools per hour; costing and average of 72.5p per hour of operation.
 
 A new stool assembly system, costing £2500, can reduce the variance in the leg assembly time, such that it takes between 3.5 and 4.5 seconds to attach a leg.
 How many hours of operation will the manufacturing plant need to run for so that the new system has saved the plant as much money as it costed?
@@ -115,5 +115,5 @@ First, under the new system how many broken stools per hour do we expect?::
     >>> sum(broken_stools) / len(broken_stools)
     0.875
 
-Thus the new system saves an average of 5.875 stools per hour, around 58.75p per hour.
-Therefore it would take :math:`2500/0.5875 \approx 4255.32` hours of operation for the system to begin paying off.
+Thus the new system saves an average of 6.375 stools per hour, around 63.75p per hour.
+Therefore it would take :math:`2500/0.6375 \approx 3921.57` hours of operation for the system to begin paying off.
