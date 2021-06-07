@@ -271,10 +271,10 @@ class Node(object):
         """
         Detatches a server from an individual, and vice versa.
         """
+        self.simulation.deadlock_detector.action_at_detatch_server(server)
         server.cust = False
         server.busy = False
         individual.server = False
-        self.simulation.deadlock_detector.action_at_detatch_server(server)
         if not server.busy_time:
             server.busy_time = (individual.exit_date - individual.service_start_date)
         else:
