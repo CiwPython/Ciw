@@ -41,9 +41,9 @@ Install with :code:`pip install ciw`.
 
 Current supported version of Python:
 
-- Python 3.5
 - Python 3.6
 - Python 3.7
+- Python 3.8
 - PyPy3
 
 Usage
