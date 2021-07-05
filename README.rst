@@ -5,8 +5,8 @@ A discrete event simulation library for queueing networks
 ---------------------------------------------------------
 
 
-.. image:: https://travis-ci.org/CiwPython/Ciw.svg?branch=master
-    :target: https://travis-ci.org/CiwPython/Ciw
+.. image:: https://travis-ci.com/CiwPython/Ciw.svg?branch=master
+    :target: https://travis-ci.com/CiwPython/Ciw
 
 .. image:: https://img.shields.io/pypi/v/ciw.svg
     :target: https://pypi.python.org/pypi/Ciw
