@@ -20,7 +20,7 @@ The argument :code:`node_class` can also take a list of classes, indicating whic
 Library of Examples
 -------------------
 
-Here's a library of example of this functionality:
+Here's a library of examples of this functionality:
 
 .. toctree::
    :maxdepth: 1
