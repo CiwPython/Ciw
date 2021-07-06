@@ -19,7 +19,12 @@ We encourage the use of coverage, enusring all aspects of the code are tested::
     coverage report -m
 
 Add tests for your change. Make your change and make the tests pass.
+
 Please update the documentation too, and ensure doctests pass.
+To build the documentation (`Sphinx <https://www.sphinx-doc.org/en/master/>`_ required)::
+    
+    cd docs
+    make html
 
 Push to your fork and submit a pull request!
 
