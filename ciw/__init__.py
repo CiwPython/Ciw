@@ -9,6 +9,7 @@ from .individual import Individual
 from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
 from .node import Node
+from .processor_sharing import PSNode
 from .exactnode import *
 from .import_params import *
 from .network import *
