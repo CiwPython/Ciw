@@ -269,7 +269,8 @@ class Simulation(object):
         while check() < max_customers:
             old_check = check()
             next_active_node = self.event_and_return_nextnode(next_active_node)
-
+            self.statetracker.timestamp()
+            
             if progress_bar:
                 remaining_time = max_customers - self.progress_bar.n
                 time_increment = check() - old_check
