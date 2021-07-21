@@ -22,6 +22,7 @@ class PSNode(Node):
         """
         self.last_occupancy = 0
         super().__init__(id_, simulation)
+        self.ps_threshold = self.simulation.network.service_centres[id_ - 1].ps_threshold
         self.ps_capacity = self.c
         self.c = float('inf')
         
@@ -35,11 +36,11 @@ class PSNode(Node):
         for ind in inds_in_service:
             current_period = self.simulation.current_time - ind.date_last_update
             if self.last_occupancy > 0:
-                share_completed = current_period / self.last_occupancy
+                share_completed = (self.ps_threshold * current_period) / max(self.last_occupancy, self.ps_threshold)
             else:
                 share_completed = 0
             ind.time_left -= share_completed
-            ind.service_end_date = self.simulation.current_time + (ind.time_left * next_occupancy)
+            ind.service_end_date = self.simulation.current_time + ((ind.time_left * max(next_occupancy, self.ps_threshold)) / self.ps_threshold)
             ind.date_last_update = self.simulation.current_time
 
         self.last_occupancy = next_occupancy

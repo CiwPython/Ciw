@@ -1,10 +1,10 @@
 .. _ps-routing:
 
-==============================================
-Routing Decisions in Processor Sharing Systems
-==============================================
+================================================
+Join Shortest Queue in Processor Sharing Systems
+================================================
 
-In this example we will consider multiple parallel processor sharing queues, where customers are routed to the least busy node.
+In this example we will consider multiple parallel processor sharing queues, where customers are routed to the least busy node. This is calles a Join Shortest Queue, or JSQ system.
 
 Consider three independent parallel processor sharing nodes. Customers arrive and are sent to the least busy node.
 This can be modelled as a 4 node system: the first node is a dummy node where customers arrive, and routes the customer to one of the thee remaining processor sharing nodes.
@@ -65,26 +65,3 @@ We can look at the state probabilities, that is, the proportion of time the syst
      4: 0.01124224242623659,
      5: 0.002061285633093934,
      6: 0.0012265294328765105}
-
-In [XL09]_ theoretical results are given for these probabilities by:
-
-.. math::
-    p(j) = \begin{cases}
-            \frac{(1-\rho)\frac{R!}{j!}(R\rho)^{j-R}E_2(R,R\rho)}{1-E_2(R,R\rho) \rho^{N-R}\rho}, & j <R\\
-            \frac{E_2(R,R\rho)\rho^{j-R}(1-\rho)}{1-E_2(R,R\rho)\rho^{N-R}\rho}, & N\ge j \ge R
-        \end{cases}
-
-where :math:`R` is the process sharing capacity, :math:`\rho = \frac{\lambda}{R\mu}` is the traffic intensity, and :math:`E_2` is the Erlang function is given by:
-
-.. math::
-    E_2(R, A) = \frac{
-    \frac{A^R}{R!} \cdot \frac{R}{R-A}
-    }{
-    \left(\frac{A^R}{R!} \cdot \frac{R}{R-A}\right) + \sum_{i=0}^{R-1}\frac{A^i}{i!}
-    }
-
-Plotting these theoretical results against a single run of our simulation shows a good alignment:
-
-.. image:: ../../_static/ps_routing_verification.svg
-   :alt: Alignment of theoretical and simulation results for PS queue with routing decisions.
-   :align: center

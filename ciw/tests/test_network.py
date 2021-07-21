@@ -121,7 +121,8 @@ class TestNetwork(unittest.TestCase):
                   'service_distributions': {'Class 0': [ciw.dists.Exponential(7.0)]},
                   'number_of_servers': [9],
                   'routing': {'Class 0': [[0.5]]},
-                  'queue_capacities': [float('inf')]}
+                  'queue_capacities': [float('inf')],
+                  'ps_thresholds': [4]}
         N = ciw.create_network_from_dictionary(params)
         
         self.assertEqual(N.number_of_nodes, 1)
@@ -130,6 +131,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
         self.assertEqual(N.service_centres[0].schedule, None)
+        self.assertEqual(N.service_centres[0].ps_threshold, 4)
         self.assertFalse(N.service_centres[0].preempt)
         self.assertEqual([str(d) for d in N.customer_classes[0].arrival_distributions], ['Exponential: 3.0'])
         self.assertEqual([str(d) for d in N.customer_classes[0].service_distributions], ['Exponential: 7.0'])
@@ -185,6 +187,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.service_centres[0].class_change_matrix, [[0.0, 1.0], [0.2, 0.8]])
         self.assertEqual(N.service_centres[0].schedule, None)
         self.assertFalse(N.service_centres[0].preempt)
+        self.assertEqual(N.service_centres[0].ps_threshold, 1)
         self.assertEqual([str(d) for d in N.customer_classes[0].arrival_distributions], ['Exponential: 3.0'])
         self.assertEqual([str(d) for d in N.customer_classes[0].service_distributions], ['Exponential: 7.0'])
         self.assertEqual(N.customer_classes[0].routing, [[0.5]])
@@ -211,6 +214,7 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(N.service_centres[0].schedule, None)
+        self.assertEqual(N.service_centres[0].ps_threshold, 1)
         self.assertFalse(N.service_centres[0].preempt)
         self.assertEqual([str(d) for d in N.customer_classes[0].arrival_distributions], ['Exponential: 3.0'])
         self.assertEqual([str(d) for d in N.customer_classes[0].service_distributions], ['Exponential: 7.0'])

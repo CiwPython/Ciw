@@ -41,7 +41,8 @@ def create_network(arrival_distributions=None,
                    queue_capacities=None,
                    service_distributions=None,
                    routing=None,
-                   batching_distributions=None):
+                   batching_distributions=None,
+                   ps_thresholds=None):
     """
     Takes in kwargs, creates dictionary.
     """
@@ -66,6 +67,8 @@ def create_network(arrival_distributions=None,
         params['routing'] = routing
     if batching_distributions != None:
         params['batching_distributions'] = batching_distributions
+    if ps_thresholds != None:
+        params['ps_thresholds'] = ps_thresholds
 
     return create_network_from_dictionary(params)
 
@@ -156,7 +159,8 @@ def create_network_from_dictionary(params_input):
             queueing_capacities[nd],
             class_change_matrices['Node ' + str(nd + 1)],
             schedules[nd],
-            preempts[nd]))
+            preempts[nd],
+            params['ps_thresholds'][nd]))
     for clss in range(number_of_classes):
         if all(isinstance(f, types.FunctionType) for f in params['routing']):
             classes.append(CustomerClass(
@@ -223,7 +227,9 @@ def fill_out_dictionary(params_input):
         'batching_distributions': {'Class ' + str(i): [
             ciw.dists.Deterministic(1) for _ in range(
             len(params['number_of_servers']))] for i in range(
-            len(params['arrival_distributions']))}
+            len(params['arrival_distributions']))},
+        'ps_thresholds': [1 for _ in range(len(
+            params['number_of_servers']))]
         }
 
     for a in default_dict:

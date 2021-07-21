@@ -504,3 +504,35 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind4.date_last_update, 10), 6.5)
         self.assertEqual(round(ind4.service_start_date, 10), 3.5)
         self.assertEqual(round(ind4.service_end_date, 10), 12.5)
+
+    def test_capacitated_ps(self):
+        # Compare to theory
+        # Expected:
+        # {0: 0.4321329639889196,
+        #  1: 0.3601108033240997,
+        #  2: 0.1500461680517082,
+        #  3: 0.041679491125474505,
+        #  4: 0.011577636423742918,
+        #  5: 0.003216010117706367,
+        #  6: 0.0008933361438073241,
+        #  7: 0.0002481489288353678,
+        #  8: 6.89302580098244e-05}
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(10)],
+            service_distributions=[ciw.dists.Exponential(12)],
+            number_of_servers=[float('inf')],
+            ps_thresholds=[3]
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N, node_class=ciw.PSNode, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(1000)
+        probs = Q.statetracker.state_probabilities()
+        self.assertEqual(round(probs[0], 7), 0.4418991)
+        self.assertEqual(round(probs[1], 7), 0.3615230)
+        self.assertEqual(round(probs[2], 7), 0.1458424)
+        self.assertEqual(round(probs[3], 7), 0.0390748)
+        self.assertEqual(round(probs[4], 7), 0.0089170)
+        self.assertEqual(round(probs[5], 7), 0.0018729)
+        self.assertEqual(round(probs[6], 7), 0.0006893)
+        self.assertEqual(round(probs[7], 7), 0.0000758)
+        self.assertEqual(round(probs[8], 7), 0.0001057)
