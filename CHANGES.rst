@@ -1,6 +1,13 @@
 History
 -------
 
+v2.2.0 (2021-07-22)
+~~~~~~~~~~~~~~~~~~~
+- Processor sharing implemented (limited and capacitated)
+- Ability to use a different node_class per node of the network
+- State tracking now works with simulate_until_max_customers
+- Remove testing on Python 3.5
+
 v2.1.3 (2020-10-06)
 ~~~~~~~~~~~~~~~~~~~
 - Small refactor to Node adding new servers, and to Individuals receiving the Simulation object.
