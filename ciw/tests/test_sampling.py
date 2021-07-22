@@ -59,7 +59,7 @@ class BrokenDist(ciw.dists.Distribution):
 class StateDependent(ciw.dists.Distribution):
     """
     Samples different values based on simulation state:
-    n = number of individuals at the node
+    n = number of individuals at the node (not including self)
       - 0.2 if n = 0
       - 0.15 if n = 1
       - 0.1 if n = 2
@@ -67,7 +67,7 @@ class StateDependent(ciw.dists.Distribution):
       - 0.0 otherwise
     """
     def sample(self, t=None, ind=None):
-        n = ind.simulation.nodes[ind.node].number_of_individuals
+        n = ind.queue_size_at_arrival
         return max((-0.05*n) + 0.2, 0)
 
 
@@ -925,7 +925,7 @@ class TestSampling(unittest.TestCase):
             service_distributions=[StateDependent()],
             number_of_servers=[1])
         ciw.seed(0)
-        Q = ciw.Simulation(N)
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
         Q.simulate_until_max_time(500)
         recs = Q.get_all_records()
 
@@ -934,8 +934,7 @@ class TestSampling(unittest.TestCase):
         self.assertLessEqual(set(services), {0.2, 0.15, 0.1, 0.05, 0.0})
 
         # Check average service time correct transformation of average queue size
-        queue_sizes = [r.queue_size_at_arrival for r in recs if r.arrival_date > 100] + [r.queue_size_at_departure for r in recs if r.arrival_date > 100]
-        average_queue_size = sum(queue_sizes) / len(queue_sizes)
-        self.assertEqual(round(average_queue_size, 7), 0.9051833)
-        self.assertEqual(round((-0.05*average_queue_size) + 0.2, 7), 0.1547408)
-        self.assertEqual(round(sum(services) / len(services), 7), 0.1549305)
+        average_queue_size = sum(s*p for s, p in Q.statetracker.state_probabilities().items())
+        self.assertEqual(round(average_queue_size, 7), 0.9468383)
+        self.assertEqual(round((-0.05*average_queue_size) + 0.2, 7), 0.1526581)
+        self.assertEqual(round(sum(services) / len(services), 7), 0.1529728)

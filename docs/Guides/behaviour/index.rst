@@ -13,15 +13,19 @@ The classes that can be overwitten are:
 - :code:`Server`: the class used to represent the servers that sit at a service centre.
 
 These new classes can be used with the Simulation class by using the keyword arugments :code:`node_class`, :code:`arrival_node_class`, :code:`individual_class`, and :code:`server_class`.
+These arguments take a class (not an instance of a class), to use throughout the whole simulation.
+The argument :code:`node_class` can also take a list of classes, indicating which node class to use on each node of the network. This allows for different nodes to exhibit very different behaviours to one another.
 
 
 Library of Examples
 -------------------
 
-Here's a library of example of this functionality:
+Here's a library of examples of this functionality:
 
 .. toctree::
    :maxdepth: 1
    
    custom_routing.rst
+   custom_arrivals.rst
    custom_number_servers.rst
+   ps_routing.rst

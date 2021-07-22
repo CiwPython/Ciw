@@ -94,9 +94,10 @@ Write a distribution class to use::
 
     >>> class StateDependentDist(ciw.dists.Distribution):
     ...     def sample(self, t=None, ind=None):
-    ...         n = ind.simulation.nodes[ind.node].number_of_individuals
+    ...         n = ind.simulation.statetracker.state
     ...         return max((-0.05*n) + 0.2, 0)
 
+where we access the system's state by considering the :ref:`state tracker <state-trackers>`.
 Now to test if this is working, the average service time should be roughly equal to the above function applied to the average queue size::
 
     >>> N = ciw.create_network(
@@ -106,7 +107,7 @@ Now to test if this is working, the average service time should be roughly equal
     ... )
 
     >>> ciw.seed(0)
-    >>> Q = ciw.Simulation(N)
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
     >>> Q.simulate_until_max_time(500)
     >>> recs = Q.get_all_records()
 
@@ -114,10 +115,9 @@ Now to test if this is working, the average service time should be roughly equal
     >>> sum(services) / len(services)
     0.1549304...
 
-    >>> queue_sizes = [r.queue_size_at_arrival for r in recs if r.arrival_date > 100] + [r.queue_size_at_departure for r in recs if r.arrival_date > 100]
-    >>> average_queue_size = sum(queue_sizes) / len(queue_sizes)
+    >>> average_queue_size = sum(s*p for s, p in Q.statetracker.state_probabilities().items())
     >>> (-0.05 * average_queue_size) + 0.2
-    0.1547408...
+    0.1552347...
 
 For arrival distributions - when creating the :code:`Simulation` object, the distribution objects are given a :code:`.simulation` attribute, so something similar can happen. For example, the following distribution will sample form an Exponential distribution unil :code:`limit` number of individuals has been sampled::
 

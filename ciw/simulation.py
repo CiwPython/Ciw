@@ -38,7 +38,7 @@ class Simulation(object):
         self.network = network
         self.set_classes(node_class, arrival_node_class, individual_class, server_class)
         if exact:
-            self.NodeType = ExactNode
+            self.NodeTypes = [ExactNode for _ in range(network.number_of_nodes)]
             self.ArrivalNodeType = ExactArrivalNode
             getcontext().prec = exact
 
@@ -49,7 +49,7 @@ class Simulation(object):
         self.batch_sizes = self.find_batching_dists()
         self.show_simulation_to_distributions()
         self.number_of_priority_classes = self.network.number_of_priority_classes
-        self.transitive_nodes = [self.NodeType(i + 1, self) for i in range(network.number_of_nodes)]
+        self.transitive_nodes = [node_type(i + 1, self) for i, node_type in enumerate(self.NodeTypes)]
         self.nodes = ([self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()])
         self.nodes[0].initialise()
         self.statetracker = tracker
@@ -157,9 +157,12 @@ class Simulation(object):
             self.ArrivalNodeType = ArrivalNode
 
         if node_class is not None:
-            self.NodeType = node_class
+            if not isinstance(node_class, list):
+                self.NodeTypes = [node_class for _ in range(self.network.number_of_nodes)]
+            else:
+                self.NodeTypes = node_class
         else:
-            self.NodeType = Node
+            self.NodeTypes = [Node for _ in range(self.network.number_of_nodes)]
 
         if individual_class is not None:
             self.IndividualType = individual_class
@@ -266,7 +269,8 @@ class Simulation(object):
         while check() < max_customers:
             old_check = check()
             next_active_node = self.event_and_return_nextnode(next_active_node)
-
+            self.statetracker.timestamp()
+            
             if progress_bar:
                 remaining_time = max_customers - self.progress_bar.n
                 time_increment = check() - old_check

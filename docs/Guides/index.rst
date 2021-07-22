@@ -14,6 +14,7 @@ Contents:
    sim_numcusts.rst
    set_distributions.rst
    time_dependent.rst
+   processor-sharing.rst
    priority.rst
    batching.rst
    baulking.rst

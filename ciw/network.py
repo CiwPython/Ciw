@@ -12,7 +12,8 @@ class ServiceCentre(object):
                  queueing_capacity,
                  class_change_matrix=None,
                  schedule=None,
-                 preempt=False):
+                 preempt=False,
+                 ps_threshold=1):
         """
         Initialises the ServiceCentre object.
         """
@@ -21,6 +22,7 @@ class ServiceCentre(object):
         self.class_change_matrix = class_change_matrix
         self.schedule = schedule
         self.preempt = preempt
+        self.ps_threshold = ps_threshold
 
 
 class CustomerClass(object):
