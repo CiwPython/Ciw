@@ -1,8 +1,8 @@
 .. _process-based:
 
-================================
-How to Run Process-Based Routing
-================================
+===================================
+How to Define Process-Based Routing
+===================================
 
 Ciw has the capability to run simulations with process-based routing. This means a customer's entire route is determined at the start and not determined probablistically as they progress through the network.
 This allows routes to account for an individuals history, for example, repeating nodes a certain number of times.

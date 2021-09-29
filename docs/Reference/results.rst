@@ -19,7 +19,7 @@ The records should look something like the table below:
     | ...    | ...   | ...  | ...          | ...       | ...                | ...          | ...              | ...          | ...       | ...   | ...                   | ...                   |
     +--------+-------+------+--------------+-----------+--------------------+--------------+------------------+--------------+-----------+-------+-----------------------+-----------------------+
 
-You may access these records as a list of named tuples, using the Simulation's :code:`get_all_records` method:
+You may access these records as a list of named tuples, using the Simulation's :code:`get_all_records` method::
 
     >>> recs = Q.get_all_records() # doctest:+SKIP
 

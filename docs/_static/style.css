@@ -9,4 +9,9 @@ pre {
 
 th {
     background-color: #FFE085;
+    font-size: 65%;
+}
+
+td {
+    font-size: 65%;
 }

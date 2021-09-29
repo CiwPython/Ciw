@@ -55,7 +55,7 @@ We'll run this for 100 time units::
 
     >>> Q.simulate_until_max_time(100)
 
-We can look at the state probabilities, that is, the proportion of time the system spent in each state, where a state represents the number of customers present in the system:
+We can look at the state probabilities, that is, the proportion of time the system spent in each state, where a state represents the number of customers present in the system::
 
     >>> Q.statetracker.state_probabilities(observation_period=(10, 90)) # doctest:+SKIP
     {0: 0.425095024227593,

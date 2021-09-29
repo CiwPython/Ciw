@@ -70,7 +70,7 @@ First create the :code:`CustomRouting` that inherits from :code:`ciw.Node`, and 
 
 Now rerun the same system, using the same network object :code:`N` (notice the transition matrix will be unused now).
 We tell Ciw which node class to use for each node of the network, by giving the :code:`node_class` argumument a list of classes.
-We'll use the new :code:`CustomRouting` class for Node 1, and the regular :code:`ciw.Node` class for Nodes 2 and 3.
+We'll use the new :code:`CustomRouting` class for Node 1, and the regular :code:`ciw.Node` class for Nodes 2 and 3::
 
     >>> ciw.seed(0)
     >>> Q = ciw.Simulation(

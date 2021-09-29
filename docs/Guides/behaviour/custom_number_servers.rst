@@ -53,7 +53,7 @@ First create the :code:`AdaptiveNode` that inherits from the :code:`ciw.Node` cl
 
 Here print statements have also been added to record when the changes in the numbers of servers occur.
 
-Now rerun the same system, telling Ciw to use the new :code:`node_class` to use.
+Now rerun the same system, telling Ciw to use the new :code:`node_class`.
 We'll still begin with just one server::
 
     >>> ciw.seed(0)
@@ -71,8 +71,8 @@ Now let's plot the system population over time::
     ... ); # doctest:+SKIP
 
 .. image:: ../../_static/custom_number_servers_with.svg
-   :alt: Plot of system population increasing over time.
+   :alt: Plot of system population over time.
    :align: center
 
 We see the system population is now better under control.
-Furthermore, large changes in the system population trends occur at the times where servers were added and removed.
+Furthermore, large changes in the system population tends occur at the times where servers were added and removed.

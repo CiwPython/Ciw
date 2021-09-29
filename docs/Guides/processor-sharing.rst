@@ -23,12 +23,12 @@ Now we create a simulation object using :code:`ciw.PSNode` rather than :code:`ci
     >>> Q = ciw.Simulation(N, node_class=ciw.PSNode)
 
 Note that this applies the process sharing node to every node of the network.
-Alternatively we could provide a list of different node classes, for use on each different node of the network (see :ref:`this example <ps-routing>`. for an in depth example of this)::
+Alternatively we could provide a list of different node classes, for use on each different node of the network (see :ref:`this example <ps-routing>` for an in depth example of this)::
 
     >>> ciw.seed(0)
     >>> Q = ciw.Simulation(N, node_class=[ciw.PSNode])
 
-Now let's run the simulation untill 1000 customers have passed though::
+Now let's run the simulation until 1000 customers have passed though::
 
     >>> Q.simulate_until_max_customers(1000)
 
@@ -39,7 +39,7 @@ Let's look at the average service time. Now, rather than an average service time
     >>> sum(services) / len(services)
     0.1935655...
 
-Though it looks like service times are much longer than in a regular FIFO queue, waiting times are non-existant here. It will have taken the exact same amount of time to process all 1000 customers in process sharing or in FIFO, as the process sharing discipline is work-conserving. Let's see::
+Though it looks like service times are much longer than in a regular FIFO queue, waiting times are non-existent here. It will have taken the exact same amount of time to process all 1000 customers in process sharing or in FIFO, as the process sharing discipline is work-conserving. Let's see::
 
     >>> ps_time_to_process_1000 = Q.current_time
     >>> ps_time_to_process_1000
@@ -57,7 +57,7 @@ In Ciw two different generalisations of processor sharing are available: limited
 Limited Process Sharing
 -----------------------
 
-A *limited processor sharing queue* ([JZ09]_) is a generalisation of a processor sharing queue, in which only a given number of customers may share the service load at any one time. This means that if there are more than that number of customers already present at the node, a newly arriving customer must wait in line in a FIFO until the number of customers sharing the service load drops below the given capacity.
+A *limited processor sharing queue* ([JZ09]_) is a generalisation of a processor sharing queue, in which only a given number of customers may share the service load at any one time. This means that if there are more than that number of customers already present at the node, a newly arriving customer must wait in line in a FIFO manner until the number of customers sharing the service load drops below the given capacity.
 
 With limited processor sharing queues, we can limit the sharing capacity.
 This is done by setting a :code:`number_of_servers` in the network object.
@@ -138,6 +138,6 @@ where :math:`R` is the process sharing capacity, :math:`\rho = \frac{\lambda}{R\
 Plotting these theoretical results against a single run of our simulation shows a good alignment:
 
 .. image:: ../_static/ps_capacitated_verification.svg
-   :alt: Alignment of theoretical and simulation results for PS queue with routing decisions.
+   :alt: Alignment of theoretical and simulation results for a capacitated PS queue.
    :align: center
 

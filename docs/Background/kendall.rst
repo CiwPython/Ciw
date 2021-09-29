@@ -30,7 +30,7 @@ For the parameters :math:`A` and :math:`B`, a number of shorthand notation is av
 + :math:`G` / :math:`GI`: General / General independent distribution
 
 The parameters :math:`X`, :math:`Y` and :math:`Z` are optional, and are assumed to be :math:`\infty`, :math:`\infty`, and First In First Out (FIFO) respectively.
-Other options for the queueing schedule :math:`Z` may be SIRO (Service In Random Order), LIFO (Last In First Out), and PS (Process Sharing).
+Other options for the queueing schedule :math:`Z` may be SIRO (Service In Random Order), LIFO (Last In First Out), and PS (Processor Sharing).
 
 Some examples:
 

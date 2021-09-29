@@ -21,7 +21,7 @@ The second node is redundant in this scenario::
 	...     queue_capacities=[10, float('inf')]
 	... )
 
-Now we run the system for 100 time units, and see that we get 484 services at the first node, and none at the second node::
+Now we run the system for 100 time units, and see that we get 494 services at the first node, and none at the second node::
 
 	>>> ciw.seed(1)
 	>>> Q = ciw.Simulation(N)
@@ -50,7 +50,7 @@ First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.Arrival
 	...         else:
 	...             self.simulation.nodes[2].accept(next_individual)
 
-To run the same system, we need to remove the keyword :code:`'Queue_capacities'` when creating a network, so that customers are not rejected before reaching the :code:`send_individual` method::
+To run the same system, we need to remove the keyword :code:`queue_capacities` when creating a network, so that customers are not rejected before reaching the :code:`send_individual` method::
 
 	>>> N = ciw.create_network(
 	...     arrival_distributions=[ciw.dists.Exponential(6.0), ciw.dists.NoArrivals()],
@@ -60,7 +60,7 @@ To run the same system, we need to remove the keyword :code:`'Queue_capacities'`
 	... )
 
 Now rerun the same system, telling Ciw to use the new :code:`arrival_node_class` to use.
-We'll see that the same amount of services take place at Node 1, however rejected customers now have services taking place at Node 2::
+We'll see nearly that the same amount of services take place at Node 1, however rejected customers now have services taking place at Node 2::
 
 	>>> ciw.seed(1)
 	>>> Q = ciw.Simulation(N, arrival_node_class=CustomArrivalNode)
