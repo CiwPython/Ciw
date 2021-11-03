@@ -295,6 +295,173 @@ class Pmf(Distribution):
         return random_choice(self.values, self.probs)
 
 
+class PhaseType(Distribution):
+    """
+    A distribution defined by an initial vector and an absorbing Markov chain
+
+    Takes:
+      - `initial_state` the intial probabilities of being in each state
+      - `absorbing_matrix` the martix representation of the absorbing Markov
+        chain, with the final state the absorbing state
+    """
+    def __init__(self, initial_state, absorbing_matrix):
+        if any(p < 0 or p > 1.0 for p in initial_state):
+            raise ValueError('Initial state vector must have valid probabilities.')
+        if sum(initial_state) != 1.0:
+            raise ValueError('Initial state vector probabilities must sum to 1.0.')
+        if any(len(absorbing_matrix) != len(row) for row in absorbing_matrix):
+            raise ValueError('Matrix of the absorbing Markov chain must be square.')
+        if len(initial_state) != len(absorbing_matrix):
+            raise ValueError('Initial state vector must have same number of states as absorbing Markov chain matrix.')
+        if any(row[j] < 0 for i, row in enumerate(absorbing_matrix) for j in range(len(absorbing_matrix)) if i != j):
+            raise ValueError('Transition rates must be positive.')
+        if not all(-(10**(-10)) < sum(row) < 10**(-10) for i, row in enumerate(absorbing_matrix)):
+            raise ValueError('Matrix rows must sum to 0.')
+        self.initial_state = initial_state
+        self.states = tuple(range(len(initial_state)))
+        self.absorbing_matrix = absorbing_matrix
+
+    def __repr__(self):
+        return 'PhaseType'
+
+    def sample_transition(self, rate):
+        if rate <= 0.0:
+            return float('Inf')
+        return expovariate(rate)
+
+    def sample(self, t=None, ind=None):
+        cumulative_time = 0
+        current_state = random_choice(self.states, probs=self.initial_state)
+        while current_state != self.states[-1]:
+            potential_transitions = [self.sample_transition(r) for r in self.absorbing_matrix[current_state]]
+            time, idx = min((time, idx) for (idx, time) in enumerate(potential_transitions))
+            cumulative_time += time
+            current_state = idx
+        return cumulative_time
+
+
+class Erlang(PhaseType):
+    """
+    An shortcut for the Erlang distribution, using the PhaseType distribution
+
+    Takes:
+      - `rate` the rate spent in each phase
+      - `num_phases` the number of phases in series
+    """
+    def __init__(self, rate, num_phases):
+        if rate <= 0.0:
+            raise ValueError('Rate must be positive.')
+        if num_phases < 1:
+            raise ValueError('At least one phase is required.')
+        self.rate = rate
+        self.num_phases = num_phases
+        initial_state = [1] + [0] * num_phases
+        absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]
+        for phase in range(num_phases):
+            absorbing_matrix[phase][phase] = -self.rate
+            absorbing_matrix[phase][phase + 1] = self.rate
+        super().__init__(initial_state, absorbing_matrix)
+
+    def __repr__(self):
+        return f'Erlang ({self.rate}, {self.num_phases})'
+
+
+class HyperExponential(PhaseType):
+    """
+    A shortcut for the HyperExponential distribution, using the PhaseType distribution
+
+    Takes:
+      - `rates` a vector of rates for each phase
+      - `probs` a probability vector for starting in each phase
+    """
+    def __init__(self, rates, probs):
+        if any(r <= 0.0 for r in rates):
+            raise ValueError('Rates must be positive.')
+        if any(p < 0 or p > 1.0 for p in probs):
+            raise ValueError('Initial state vector must have valid probabilities.')
+        if sum(probs) != 1.0:
+            raise ValueError('Initial state vector probabilities must sum to 1.0.')
+        initial_state = probs + [0]
+        num_phases = len(probs)
+        absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]
+        for phase in range(num_phases):
+            absorbing_matrix[phase][phase] = -rates[phase]
+            absorbing_matrix[phase][num_phases] = rates[phase]
+        super().__init__(initial_state, absorbing_matrix)
+
+    def __repr__(self):
+        return "HyperExponential"
+
+
+class HyperErlang(PhaseType):
+    """
+    A shortcut for the HyperErlang distribution, using the PhaseType distribution
+
+    Takes:
+      - `rates` a vector of rates for each phase
+      - `probs` a probability vector for starting in each phase
+      - `phase_lengths` the number of sub-phases in each phase
+    """
+    def __init__(self, rates, probs, phase_lengths):
+        if any(r <= 0.0 for r in rates):
+            raise ValueError('Rates must be positive.')
+        if any(p < 0 or p > 1.0 for p in probs):
+            raise ValueError('Initial state vector must have valid probabilities.')
+        if sum(probs) != 1.0:
+            raise ValueError('Initial state vector probabilities must sum to 1.0.')
+        if any(n < 1 for n in num_phases):
+            raise ValueError('At least one phase is required for each sub-phase.')
+        initial_state = []
+        for p, n in zip(probs, phase_lengths):
+            initial_state += [p]
+            initial_state += [0] * (n - 1)
+        initial_state += [0]
+
+        num_phases = sum(phase_lengths)
+        absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]
+        for i, r in enumerate(rates):
+            for subphase in range(phase_lengths[i]):
+                offset = sum(phase_lengths[:i])
+                absorbing_matrix[offset + subphase][offset + subphase] = -r
+                if subphase < phase_lengths[i] - 1:
+                    absorbing_matrix[offset + subphase][offset + subphase + 1] = r
+                else:
+                    absorbing_matrix[offset + subphase][-1] = r
+
+        super().__init__(initial_state, absorbing_matrix)
+
+    def __repr__(self):
+        return "HyperErlang"
+
+
+class Coxian(PhaseType):
+    """
+    A shortcut for the Coxian distribuion, using the PhaseType distribution
+
+    Takes:
+      - `rates` a vector of rates for each phase
+      - `probs` a vector of the probability of absorption at each phase
+    """
+    def __init__(self, rates, probs):
+        if any(r <= 0.0 for r in rates):
+            raise ValueError('Rates must be positive.')
+        if any(p < 0 or p > 1.0 for p in probs):
+            raise ValueError('Initial state vector must have valid probabilities.')
+        if sum(probs) != 1.0:
+            raise ValueError('Initial state vector probabilities must sum to 1.0.')
+        num_phases = len(rates)
+        initial_state = [1] + [0] * num_phases
+        absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]
+        for i, (p, r) in enumerate(zip(probs, rates)):
+            absorbing_matrix[i][i] = -r
+            absorbing_matrix[i][i + 1] = (1 - p) * r
+            absorbing_matrix[i][-1] = p * r
+        super().__init__(initial_state, absorbing_matrix)
+
+    def __repr__(self):
+        return "Coxian"
+
+
 class NoArrivals(Distribution):
     """
     A placeholder distribution if there are no arrivals.
