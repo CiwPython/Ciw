@@ -29,7 +29,6 @@ A discrete event simulation library for queueing networks
 
 Ciw is a discrete event simulation library for open queueing networks.
 It’s core features include the capability to simulate networks of queues, multiple customer classes, and implementation of Type I blocking for restricted networks.
-A number of other features are also implemented, including priorities, baulking, schedules, and deadlock detection.
 
 
 - `Read the documentation <https://ciw.readthedocs.io>`_
@@ -76,3 +75,25 @@ Manipulate results to get useful statistics, e.g. average waiting time::
     >>> waits = [r.waiting_time for r in recs]
     >>> sum(waits) / len(waits)
     4.2305...
+
+
+Features
+--------
+
+A number of other features are also implemented, including:
+
++ `Type I blocking <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vi.html>`_
++ `A large range of sampling distributions <https://ciw.readthedocs.io/en/latest/Reference/distributions.html>`_
++ `Phase-Type distributions <https://ciw.readthedocs.io/en/latest/Guides/server_schedule.html>`_
++ `Time-dependent and state-dependent distributions <https://ciw.readthedocs.io/en/latest/Guides/time_dependent.html>`_
++ `Batch arrivals <https://ciw.readthedocs.io/en/latest/Guides/batching.html>`_
++ `Processor sharing <https://ciw.readthedocs.io/en/latest/Guides/processor-sharing.html>`_
++ `Multiple customer classes <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vii.html>`_
++ `Priorities <https://ciw.readthedocs.io/en/latest/Guides/priority.html>`_
++ `Customers changing classes <https://ciw.readthedocs.io/en/latest/Guides/dynamic_customerclasses.html>`_
++ `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/phasetype.html>`_
++ `State tracking <https://ciw.readthedocs.io/en/latest/Guides/state_trackers.html>`_
++ `Stopping the simulation after a certain amount of customers <https://ciw.readthedocs.io/en/latest/Guides/sim_numcusts.html>`_
++ `Process-based routing <https://ciw.readthedocs.io/en/latest/Guides/process_based.html>`_
++ `Deadlock detection <https://ciw.readthedocs.io/en/latest/Guides/deadlock.html>`_
+
