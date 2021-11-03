@@ -363,7 +363,7 @@ class Erlang(PhaseType):
         super().__init__(initial_state, absorbing_matrix)
 
     def __repr__(self):
-        return f'Erlang ({self.rate}, {self.num_phases})'
+        return f'Erlang: {self.rate}, {self.num_phases}'
 
 
 class HyperExponential(PhaseType):
@@ -409,7 +409,7 @@ class HyperErlang(PhaseType):
             raise ValueError('Initial state vector must have valid probabilities.')
         if sum(probs) != 1.0:
             raise ValueError('Initial state vector probabilities must sum to 1.0.')
-        if any(n < 1 for n in num_phases):
+        if any(n < 1 for n in phase_lengths):
             raise ValueError('At least one phase is required for each sub-phase.')
         initial_state = []
         for p, n in zip(probs, phase_lengths):
@@ -447,8 +447,6 @@ class Coxian(PhaseType):
             raise ValueError('Rates must be positive.')
         if any(p < 0 or p > 1.0 for p in probs):
             raise ValueError('Initial state vector must have valid probabilities.')
-        if sum(probs) != 1.0:
-            raise ValueError('Initial state vector probabilities must sum to 1.0.')
         num_phases = len(rates)
         initial_state = [1] + [0] * num_phases
         absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]

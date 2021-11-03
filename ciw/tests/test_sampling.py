@@ -86,6 +86,11 @@ class TestSampling(unittest.TestCase):
         Sq = ciw.dists.Sequential([3.3, 3.3, 4.4, 3.3, 4.4])
         Pf = ciw.dists.Pmf([1.1, 2.2, 3.3], [0.3, 0.2, 0.5])
         Na = ciw.dists.NoArrivals()
+        Ph = ciw.dists.PhaseType([1, 0, 0], [[-3, 2, 1], [1, -5, 4], [0, 1, -1]])
+        Er = ciw.dists.Erlang(4.5, 8)
+        Hx = ciw.dists.HyperExponential([4, 7, 2], [0.3, 0.1, 0.6])
+        He = ciw.dists.HyperErlang([4, 7, 2], [0.3, 0.1, 0.6], [2, 2, 7])
+        Cx = ciw.dists.Coxian([4, 7, 2], [0.3, 0.2, 1.0])
         self.assertEqual(str(Di), 'Distribution')
         self.assertEqual(str(Un), 'Uniform: 3.4, 6.7')
         self.assertEqual(str(Dt), 'Deterministic: 1.1')
@@ -99,6 +104,11 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Sq), 'Sequential')
         self.assertEqual(str(Pf), 'Pmf')
         self.assertEqual(str(Na), 'NoArrivals')
+        self.assertEqual(str(Ph), 'PhaseType')
+        self.assertEqual(str(Er), 'Erlang: 4.5, 8')
+        self.assertEqual(str(Hx), 'HyperExponential')
+        self.assertEqual(str(He), 'HyperErlang')
+        self.assertEqual(str(Cx), 'Coxian')
 
     def test_distribution_parent_is_useless(self):
         D = ciw.dists.Distribution()
@@ -938,3 +948,65 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(round(average_queue_size, 7), 0.9468383)
         self.assertEqual(round((-0.05*average_queue_size) + 0.2, 7), 0.1526581)
         self.assertEqual(round(sum(services) / len(services), 7), 0.1529728)
+
+    def test_erlang_dist_object(self):
+        Er = ciw.dists.Erlang(5, 7)
+        ciw.seed(5)
+        samples = [round(Er._sample(), 2) for _ in range(10)]
+        expected = [2.07, 1.21, 1.28, 1.75, 2.56, 0.5, 1.06, 1.72, 1.17, 1.49]
+        self.assertEqual(samples, expected)
+        expected_vector = [1, 0, 0, 0, 0, 0, 0, 0]
+        expected_matrix = [
+          [-5, 5, 0, 0, 0, 0, 0, 0],
+          [0, -5, 5, 0, 0, 0, 0, 0],
+          [0, 0, -5, 5, 0, 0, 0, 0],
+          [0, 0, 0, -5, 5, 0, 0, 0],
+          [0, 0, 0, 0, -5, 5, 0, 0],
+          [0, 0, 0, 0, 0, -5, 5, 0],
+          [0, 0, 0, 0, 0, 0, -5, 5],
+          [0, 0, 0,0, 0, 0, 0, 0],
+        ]
+        self.assertEqual(Er.initial_state, expected_vector)
+        self.assertEqual(Er.absorbing_matrix, expected_matrix)
+
+    def test_sampling_erlang_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.Erlang(5, 7)],
+            'service_distributions': [ciw.dists.Erlang(5, 7)],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Nn = Q.transitive_nodes[0]
+        ciw.seed(5)
+
+        samples = [round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [2.07, 1.21, 1.28, 1.75, 2.56]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [0.5, 1.06, 1.72, 1.17, 1.49]
+        self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Erlang, -4, 2)
+        self.assertRaises(ValueError, ciw.dists.Erlang, 4, -2)
+        self.assertRaises(ValueError, ciw.dists.Erlang, -4, -2)
+
+
+    @given(sizes=integers(min_value=1, max_value=20),
+           rates=floats(min_value=0.01, max_value=50),
+           rm=random_module())
+    def test_sampling_erlang_dist_hypothesis(self, sizes, rates, rm):
+        params = {
+            'arrival_distributions': [ciw.dists.Erlang(rates, sizes)],
+            'service_distributions': [ciw.dists.Erlang(rates, sizes)],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Nw = Q.transitive_nodes[0]
+        for itr in range(10): # Because repition happens in the simulation
+            self.assertTrue(
+                Nw.simulation.service_times[Nw.id_number][0]._sample() >= 0.0)
+            self.assertTrue(
+                Nw.simulation.inter_arrival_times[Nw.id_number][0]._sample() >= 0.0)
