@@ -307,7 +307,7 @@ class PhaseType(Distribution):
     def __init__(self, initial_state, absorbing_matrix):
         if any(p < 0 or p > 1.0 for p in initial_state):
             raise ValueError('Initial state vector must have valid probabilities.')
-        if sum(initial_state) != 1.0:
+        if sum(initial_state) > 1.0 + 10**(-10) or sum(initial_state) < 1.0 - 10**(-10):
             raise ValueError('Initial state vector probabilities must sum to 1.0.')
         if any(len(absorbing_matrix) != len(row) for row in absorbing_matrix):
             raise ValueError('Matrix of the absorbing Markov chain must be square.')
@@ -381,10 +381,6 @@ class HyperExponential(PhaseType):
     def __init__(self, rates, probs):
         if any(r <= 0.0 for r in rates):
             raise ValueError('Rates must be positive.')
-        if any(p < 0 or p > 1.0 for p in probs):
-            raise ValueError('Initial state vector must have valid probabilities.')
-        if sum(probs) != 1.0:
-            raise ValueError('Initial state vector probabilities must sum to 1.0.')
         initial_state = probs + [0]
         num_phases = len(probs)
         absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]
@@ -409,10 +405,6 @@ class HyperErlang(PhaseType):
     def __init__(self, rates, probs, phase_lengths):
         if any(r <= 0.0 for r in rates):
             raise ValueError('Rates must be positive.')
-        if any(p < 0 or p > 1.0 for p in probs):
-            raise ValueError('Initial state vector must have valid probabilities.')
-        if sum(probs) != 1.0:
-            raise ValueError('Initial state vector probabilities must sum to 1.0.')
         if any(n < 1 for n in phase_lengths):
             raise ValueError('At least one phase is required for each sub-phase.')
         initial_state = []

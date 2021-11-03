@@ -20,6 +20,11 @@ The following are currently supported:
 - :ref:`empirical_dist`
 - :ref:`sequential_dist`
 - :ref:`pmf_dist`
+- :ref:`phasetype_dist`
+- :ref:`erlang_dist`
+- :ref:`hyperexponential_dist`
+- :ref:`hypererlang_dist`
+- :ref:`coxian_dist`
 - :ref:`no_arrivals`
 
 
@@ -188,6 +193,71 @@ For example, if :math:`P(1.4) = 0.2`, :math:`P(1.7) = 0.5`, and :math:`P(1.9) = 
 
     ciw.dists.Pmf([1.4, 1.7, 1.9], [0.2, 0.5, 0.3])
 
+
+.. _phasetype_dist:
+
+------------------------
+Phase-Type Distributions
+------------------------
+
+Phase-Type distributions are defined by an initial state vector and transition matrix of its underlying Markov chain. More information is found :ref:`on the Guide to Phase-Type distributions <phase-type>`::
+
+    initial_state = [0.7, 0.2, 0.1, 0.0]
+    absorbing_matrix = [
+        [-6, 2, 0, 4],
+        [0, -3, 3, 0],
+        [1, 0, -5, 4],
+        [0, 0, 0, 0]
+    ]
+    ciw.dists.PhaseType(initial_state, absorbing_matrix)
+
+
+.. _erlang_dist:
+
+-----------------------
+The Erlang Distribution
+-----------------------
+
+An Erlang distribution with parameters :math:`\lambda` and :math:`n` is the sum of :math:`n` Exponential distributions with parameter :math:`\lambda`.
+Write an Erlang distribution with :math:`\lambda = 9` and :math:`\n = 4` as follows::
+
+    ciw.dists.Erlang(rate=9, num_phases=4)
+
+
+.. _hyperexponential_dist:
+
+---------------------------------
+The HyperExponential Distribution
+---------------------------------
+
+An HyperExponential distribution is defined by a probability vector :math:`\mathbf{p}` and rate vector :math:`\mathbf{\lambda}`, and samples an Exponential distribution with parameter :math:`\lambda_i` with probability :math:`p_i`.
+Write a HyperExponential distribution with :math:`\mathbf{\lambda} = \left(9, 5, 6, 1\right)` and :math:`\mathbf{p} = \left(0.2, 0.1, 0.6, 0.1\right)` as follows::
+
+    ciw.dists.HyperExponential(rates=[9, 5, 6, 1], probs=[0.2, 0.1, 0.6, 0.1])
+
+
+.. _hypererlang_dist:
+
+----------------------------
+The HyperErlang Distribution
+----------------------------
+
+A HyperErlang distribution is defined by parameters :math:`\mathbf{\lambda}`, :math:`\mathbf{p}`, and :math:`\mathbf{n}`, and samples an Erlang distribution of size :math:`n_i` with parameter :math:`\lambda_i` with probability :math:`p_i`.
+Write a HyperErlang distribution with :math:`\mathbf{\lambda} = \left(5, 2, 3\right)`, :math:`\mathbf{p} = \left(0.5, 0.25, 0.25\right)`, and :math:`n = \left(2, 1, 2\right)` as follows::
+
+    ciw.dists.HyperErlang(rates=[5, 2, 3], probs=[0.5, 0.25, 0.25], phase_lengths=[2, 1, 2])
+
+
+.. _coxian_dist:
+
+--------------------
+Coxian Distributions
+--------------------
+
+A Coxian distribution is a specific type of Phase-Type distribution defined by parameters :math:`\mathbf{\lambda}`, the rates of each phase, and :math:`\mathbf{p}`, the probability of going to the absorbing state after each phase.
+Write a Coxian distribution with :math:`\mathbf{\lambda} = \left(5, 2, 3, 7\right)` and :math:`\mathbf{p} = \left(0.5, 0.3, 0.65, 1\right)` as follows::
+
+    ciw.dists.Coxian(rates=[5, 2, 3, 7], probs=[0.5, 0.3, 0.65, 1])
 
 
 .. _no_arrivals:

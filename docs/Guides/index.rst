@@ -13,6 +13,7 @@ Contents:
    exact.rst
    sim_numcusts.rst
    set_distributions.rst
+   phasetype.rst
    time_dependent.rst
    processor-sharing.rst
    priority.rst
