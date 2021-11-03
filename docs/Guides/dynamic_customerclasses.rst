@@ -21,7 +21,7 @@ The :code:`class_change_matrices` for this system are shown below:
     \end{pmatrix}
 
 
-This is input into the simulation model by including :code:`xlass_change_matrices` keyword when creating a Network object::
+This is input into the simulation model by including :code:`class_change_matrices` keyword when creating a Network object::
     
     >>> import ciw
     >>> N = ciw.create_network(
