@@ -317,6 +317,10 @@ class PhaseType(Distribution):
             raise ValueError('Transition rates must be positive.')
         if not all(-(10**(-10)) < sum(row) < 10**(-10) for i, row in enumerate(absorbing_matrix)):
             raise ValueError('Matrix rows must sum to 0.')
+        if not all(r == 0 for r in absorbing_matrix[-1]):
+            raise ValueError('Final state must be the absorbing state.')
+        if not any(row[-1] > 0 for row in absorbing_matrix):
+            raise ValueError('Must be possible to reach the absorbing state.')
         self.initial_state = initial_state
         self.states = tuple(range(len(initial_state)))
         self.absorbing_matrix = absorbing_matrix

@@ -86,7 +86,7 @@ class TestSampling(unittest.TestCase):
         Sq = ciw.dists.Sequential([3.3, 3.3, 4.4, 3.3, 4.4])
         Pf = ciw.dists.Pmf([1.1, 2.2, 3.3], [0.3, 0.2, 0.5])
         Na = ciw.dists.NoArrivals()
-        Ph = ciw.dists.PhaseType([1, 0, 0], [[-3, 2, 1], [1, -5, 4], [0, 1, -1]])
+        Ph = ciw.dists.PhaseType([1, 0, 0], [[-3, 2, 1], [1, -5, 4], [0, 0, 0]])
         Er = ciw.dists.Erlang(4.5, 8)
         Hx = ciw.dists.HyperExponential([4, 7, 2], [0.3, 0.1, 0.6])
         He = ciw.dists.HyperErlang([4, 7, 2], [0.3, 0.1, 0.6], [2, 2, 7])
@@ -949,6 +949,31 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(round((-0.05*average_queue_size) + 0.2, 7), 0.1526581)
         self.assertEqual(round(sum(services) / len(services), 7), 0.1529728)
 
+
+    def test_phasetype_dist_object(self):
+        initial_state = [0.3, 0.7, 0.0]
+        absorbing_matrix = [
+            [-5, 3, 2],
+            [0, -4, 4],
+            [0, 0, 0]
+        ]
+        Ph = ciw.dists.PhaseType(initial_state, absorbing_matrix)
+        ciw.seed(5)
+        samples = [round(Ph._sample(), 2) for _ in range(10)]
+        expected = [0.34, 0.71, 0.64, 0.47, 0.03, 0.07, 0.21, 0.7, 0.04, 0.04]
+        self.assertEqual(samples, expected)
+        self.assertRaises(ValueError, ciw.dists.PhaseType, [-0.3, 0.7, 0.0], absorbing_matrix)
+        self.assertRaises(ValueError, ciw.dists.PhaseType, [1.3, 0.7, 0.0], absorbing_matrix)
+        self.assertRaises(ValueError, ciw.dists.PhaseType, [0.3, 0.9, 0.0], absorbing_matrix)
+        self.assertRaises(ValueError, ciw.dists.PhaseType, initial_state, [[-3, 3], [7, -10, 3]])
+        self.assertRaises(ValueError, ciw.dists.PhaseType, initial_state, [[-3, 3], [7, -7]])
+        self.assertRaises(ValueError, ciw.dists.PhaseType, initial_state, [[-3, 3], [7, -7]])
+        self.assertRaises(ValueError, ciw.dists.PhaseType, initial_state, [[-3, -3, 0], [1, -9, 8], [0, 0, 0]])
+        self.assertRaises(ValueError, ciw.dists.PhaseType, initial_state, [[-3, 3, 0], [3, -9, 8], [0, 0, 0]])
+        self.assertRaises(ValueError, ciw.dists.PhaseType, initial_state, [[-5, 5, 0], [4, -4, 0], [0, 0, 0]])
+        self.assertRaises(ValueError, ciw.dists.PhaseType, initial_state, [[-5, 3, 2], [0, -4, 4], [0, 1, -1]])
+
+
     def test_erlang_dist_object(self):
         Er = ciw.dists.Erlang(5, 7)
         ciw.seed(5)
@@ -969,6 +994,14 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(Er.initial_state, expected_vector)
         self.assertEqual(Er.absorbing_matrix, expected_matrix)
 
+        self.assertRaises(ValueError, ciw.dists.Erlang, -4, 2)
+        self.assertRaises(ValueError, ciw.dists.Erlang, 4, -2)
+        self.assertRaises(ValueError, ciw.dists.Erlang, -4, -2)
+
+        many_samples = [round(Er.sample(), 4) for _ in range(1000)]
+        # We would expect this to be  `num_phases` / `rate` = 7 / 5 = 1.4
+        self.assertEqual(round(sum(many_samples) / 1000, 4), 1.4057)
+
     def test_sampling_erlang_dist(self):
         params = {
             'arrival_distributions': [ciw.dists.Erlang(5, 7)],
@@ -988,10 +1021,6 @@ class TestSampling(unittest.TestCase):
         expected = [0.5, 1.06, 1.72, 1.17, 1.49]
         self.assertEqual(samples, expected)
 
-        self.assertRaises(ValueError, ciw.dists.Erlang, -4, 2)
-        self.assertRaises(ValueError, ciw.dists.Erlang, 4, -2)
-        self.assertRaises(ValueError, ciw.dists.Erlang, -4, -2)
-
 
     @given(sizes=integers(min_value=1, max_value=20),
            rates=floats(min_value=0.01, max_value=50),
@@ -1010,3 +1039,154 @@ class TestSampling(unittest.TestCase):
                 Nw.simulation.service_times[Nw.id_number][0]._sample() >= 0.0)
             self.assertTrue(
                 Nw.simulation.inter_arrival_times[Nw.id_number][0]._sample() >= 0.0)
+
+
+    def test_hyperexponential_dist_object(self):
+        Hx = ciw.dists.HyperExponential([5, 7, 2, 1], [0.4, 0.1, 0.3, 0.2])
+        ciw.seed(5)
+        samples = [round(Hx._sample(), 2) for _ in range(10)]
+        expected = [0.68, 1.43, 1.28, 0.13, 1.05, 0.12, 0.04, 0.43, 0.05, 0.5]
+        self.assertEqual(samples, expected)
+        expected_vector = [0.4, 0.1, 0.3, 0.2, 0]
+        expected_matrix = [
+            [-5, 0, 0, 0, 5],
+            [0, -7, 0, 0, 7],
+            [0, 0, -2, 0, 2],
+            [0, 0, 0, -1, 1],
+            [0, 0, 0, 0, 0]
+        ]
+        self.assertEqual(Hx.initial_state, expected_vector)
+        self.assertEqual(Hx.absorbing_matrix, expected_matrix)
+
+        self.assertRaises(ValueError, ciw.dists.HyperExponential, [5, -7, -2, 1], [0.4, 0.1, 0.3, 0.2])
+        self.assertRaises(ValueError, ciw.dists.HyperExponential, [5, 7, 2, 1], [0.4, 5.1, 0.3, 0.2])
+        self.assertRaises(ValueError, ciw.dists.HyperExponential, [5, 7, 2, 1], [0.4, -0.1, 0.3, 0.2])
+        self.assertRaises(ValueError, ciw.dists.HyperExponential, [5, 7, 2, 1], [0.4, 0.8, 0.3, 0.2])
+
+        many_samples = [round(Hx.sample(), 2) for _ in range(1000)]
+        # We would expect this to be sum of the element-wise division of probabilities and rates:
+        # (0.4 / 5) + (0.1 / 7) + (0.3 / 2) + (0.2 / 1) = 0.4442857142857143
+        self.assertEqual(round(sum(many_samples) / 1000, 4), 0.416)
+
+    def test_sampling_hyperexponential_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.HyperExponential([5, 7, 2, 1], [0.4, 0.1, 0.3, 0.2])],
+            'service_distributions': [ciw.dists.HyperExponential([5, 7, 2, 1], [0.4, 0.1, 0.3, 0.2])],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Nn = Q.transitive_nodes[0]
+        ciw.seed(5)
+
+        samples = [round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [0.68, 1.43, 1.28, 0.13, 1.05]
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [0.12, 0.04, 0.43, 0.05, 0.5]
+        self.assertEqual(samples, expected)
+
+
+    def test_hypererlang_dist_object(self):
+        Hg = ciw.dists.HyperErlang([5, 7, 2], [0.5, 0.3, 0.2], [3, 2, 5])
+        ciw.seed(5)
+        samples = [round(Hg._sample(), 2) for _ in range(10)]
+        expected = [0.42, 3.71, 0.35, 0.38, 0.61, 0.25, 0.22, 3.46, 3.07, 1.69]
+        self.assertEqual(samples, expected)
+        expected_vector = [0.5, 0.0, 0.0, 0.3, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0]
+        expected_matrix = [
+            [-5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, -5, 5, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, -5, 0, 0, 0, 0, 0, 0, 0, 5],
+            [0, 0, 0, -7, 7, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, -7, 0, 0, 0, 0, 0, 7],
+            [0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, -2, 2, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+        self.assertEqual(Hg.initial_state, expected_vector)
+        self.assertEqual(Hg.absorbing_matrix, expected_matrix)
+
+        self.assertRaises(ValueError, ciw.dists.HyperErlang, [5, -7, 2], [0.5, 0.3, 0.2], [3, 2, 5])
+        self.assertRaises(ValueError, ciw.dists.HyperErlang, [5, 7, 2], [-0.5, 0.3, 0.2], [3, 2, 5])
+        self.assertRaises(ValueError, ciw.dists.HyperErlang, [5, 7, 2], [0.5, 1.3, 0.2], [3, 2, 5])
+        self.assertRaises(ValueError, ciw.dists.HyperErlang, [5, 7, 2], [0.5, 0.9, 0.2], [3, 2, 5])
+        self.assertRaises(ValueError, ciw.dists.HyperErlang, [5, 7, 2], [0.5, 0.3, 0.2], [0, 2, 5])
+
+        many_samples = [round(Hg.sample(), 2) for _ in range(1000)]
+        # We would expect this to be sum of the element-wise multiplication of probabilities, inverse rates, and subphase lengths:
+        # (0.5 * 3 / 5) + (0.3 * 2 / 7) + (0.2 * 5 / 2) = 0.8857142857142857
+        self.assertEqual(round(sum(many_samples) / 1000, 4), 0.8744)
+
+    def test_sampling_hypererlang_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.HyperErlang([5, 7, 2], [0.5, 0.3, 0.2], [3, 2, 5])],
+            'service_distributions': [ciw.dists.HyperErlang([5, 7, 2], [0.5, 0.3, 0.2], [3, 2, 5])],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Nn = Q.transitive_nodes[0]
+        ciw.seed(5)
+
+        samples = [round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [0.42, 3.71, 0.35, 0.38, 0.61]
+
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [0.25, 0.22, 3.46, 3.07, 1.69]
+        self.assertEqual(samples, expected)
+
+
+    def test_coxian_dist_object(self):
+        Cx = ciw.dists.Coxian([5, 4, 7, 2], [0.2, 0.5, 0.3, 1.0])
+        ciw.seed(5)
+        samples = [round(Cx._sample(), 2) for _ in range(10)]
+        expected = [1.01, 0.53, 0.18, 0.17, 0.04, 1.09, 0.77, 0.81, 0.08, 0.43]
+        self.assertEqual(samples, expected)
+        expected_vector = [1.0, 0.0, 0.0, 0.0, 0.0]
+        expected_matrix = [
+            [-5, (0.8)*5, 0, 0, (0.2)*5],
+            [0, -4, (0.5)*4, 0, (0.5)*4],
+            [0, 0, -7, (0.7)*7, (0.3)*7],
+            [0, 0, 0, -2, 2],
+            [0, 0, 0, 0, 0]
+        ]
+        self.assertEqual(Cx.initial_state, expected_vector)
+        self.assertEqual(Cx.absorbing_matrix, expected_matrix)
+
+        self.assertRaises(ValueError, ciw.dists.Coxian, [5, -4, 7, 2], [0.2, 0.5, 0.3, 1.0])
+        self.assertRaises(ValueError, ciw.dists.Coxian, [5, 4, 7, 2], [0.2, -0.5, 0.3, 1.0])
+        self.assertRaises(ValueError, ciw.dists.Coxian, [5, 4, 7, 2], [0.2, 1.5, 0.3, 1.0])
+
+        many_samples = [round(Cx.sample(), 2) for _ in range(1000)]
+        # We would expect this to be expected time to absorption of the underlying absobring Markov chain.
+        # We can calculate this using Numpy:
+        # >>> (np.linalg.inv(np.eye(4) - (np.matrix(absorbing_matrix) / 7 + np.eye(5))[:-1, :-1]) @ np.ones(4))[0, 0] / 7
+        # 0.5971428571428571
+        self.assertEqual(round(sum(many_samples) / 1000, 4), 0.6035)
+
+    def test_sampling_coxian_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.Coxian([5, 4, 7, 2], [0.2, 0.5, 0.3, 1.0])],
+            'service_distributions': [ciw.dists.Coxian([5, 4, 7, 2], [0.2, 0.5, 0.3, 1.0])],
+            'number_of_servers': [1],
+            'routing': [[0.1]]
+        }
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Nn = Q.transitive_nodes[0]
+        ciw.seed(5)
+
+        samples = [round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [1.01, 0.53, 0.18, 0.17, 0.04]
+
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
+        expected = [1.09, 0.77, 0.81, 0.08, 0.43]
+        self.assertEqual(samples, expected)
