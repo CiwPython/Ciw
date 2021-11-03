@@ -15,8 +15,8 @@ Note that due to sampling on initialisation, the seed will need to be set **befo
 As an example, take the following network::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(5)],
-    ...     service_distributions=[ciw.dists.Exponential(10)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=5)],
+    ...     service_distributions=[ciw.dists.Exponential(rate=10)],
     ...     number_of_servers=[1]
     ... )
 

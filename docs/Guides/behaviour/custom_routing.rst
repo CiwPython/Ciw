@@ -13,13 +13,13 @@ Consider the following three node network, where arrivals only occur at the firs
 
     >>> N = ciw.create_network(
     ...     arrival_distributions=[
-    ...         ciw.dists.Exponential(10),
+    ...         ciw.dists.Exponential(rate=10),
     ...         ciw.dists.NoArrivals(),
     ...         ciw.dists.NoArrivals()],
     ...     service_distributions=[
-    ...         ciw.dists.Exponential(25),
-    ...         ciw.dists.Exponential(6),
-    ...         ciw.dists.Exponential(8)],
+    ...         ciw.dists.Exponential(rate=25),
+    ...         ciw.dists.Exponential(rate=6),
+    ...         ciw.dists.Exponential(rate=8)],
     ...     routing=[[0.0, 0.5, 0.5],
     ...              [0.0, 0.0, 0.0],
     ...              [0.0, 0.0, 0.0]],

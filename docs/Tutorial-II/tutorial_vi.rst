@@ -21,12 +21,12 @@ A restricted network such as this is represented by nearly the same Network obje
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Deterministic(4.0),
+    ...     arrival_distributions=[ciw.dists.Deterministic(value=4.0),
     ...                            ciw.dists.NoArrivals(),
     ...                            ciw.dists.NoArrivals()],
-    ...     service_distributions=[ciw.dists.Uniform(3, 5),
-    ...                            ciw.dists.Uniform(3, 5),
-    ...                            ciw.dists.Uniform(3, 5)],
+    ...     service_distributions=[ciw.dists.Uniform(lower=3, upper=5),
+    ...                            ciw.dists.Uniform(lower=3, upper=5),
+    ...                            ciw.dists.Uniform(lower=3, upper=5)],
     ...     routing=[[0.0, 1.0, 0.0],
     ...              [0.0, 0.0, 1.0],
     ...              [0.0, 0.0, 0.0]],
@@ -91,12 +91,12 @@ How many hours of operation will the manufacturing plant need to run for so that
 First, under the new system how many broken stools per hour do we expect?::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Deterministic(4.0),
+    ...     arrival_distributions=[ciw.dists.Deterministic(value=4.0),
     ...                            ciw.dists.NoArrivals(),
     ...                            ciw.dists.NoArrivals()],
-    ...     service_distributions=[ciw.dists.Uniform(3.5, 4.5),
-    ...                            ciw.dists.Uniform(3.5, 4.5),
-    ...                            ciw.dists.Uniform(3.5, 4.5)],
+    ...     service_distributions=[ciw.dists.Uniform(lower=3.5, upper=4.5),
+    ...                            ciw.dists.Uniform(lower=3.5, upper=4.5),
+    ...                            ciw.dists.Uniform(lower=3.5, upper=4.5)],
     ...     routing=[[0.0, 1.0, 0.0],
     ...              [0.0, 0.0, 1.0],
     ...              [0.0, 0.0, 0.0]],

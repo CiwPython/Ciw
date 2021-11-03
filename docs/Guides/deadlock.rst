@@ -29,8 +29,8 @@ Parameters::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...    arrival_distributions=[ciw.dists.Exponential(6.0)],
-    ...    service_distributions=[ciw.dists.Exponential(5.0)],
+    ...    arrival_distributions=[ciw.dists.Exponential(rate=6.0)],
+    ...    service_distributions=[ciw.dists.Exponential(rate=5.0)],
     ...    routing=[[0.5]],
     ...    number_of_servers=[1],
     ...    queue_capacities=[3]

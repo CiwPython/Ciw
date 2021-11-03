@@ -27,10 +27,10 @@ To implement this, create the Network object with the :code:`priority_classes` o
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(5)],
-    ...                            'Class 1': [ciw.dists.Exponential(5)]},
-    ...     service_distributions={'Class 0': [ciw.dists.Exponential(10)],
-    ...                            'Class 1': [ciw.dists.Exponential(10)]},
+    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(rate=5)],
+    ...                            'Class 1': [ciw.dists.Exponential(rate=5)]},
+    ...     service_distributions={'Class 0': [ciw.dists.Exponential(rate=10)],
+    ...                            'Class 1': [ciw.dists.Exponential(rate=10)]},
     ...     priority_classes={'Class 0': 0, 'Class 1': 1},
     ...     number_of_servers=[1]
     ... )

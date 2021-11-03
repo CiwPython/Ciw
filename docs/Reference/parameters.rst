@@ -19,15 +19,15 @@ For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    arrival_distributions={'Class 0': [ciw.dists.Exponential(2.4),
-                                       ciw.dists.Uniform(0.3, 0.5)],
-                           'Class 1': [ciw.dists.Exponential(3.0),
-                                       ciw.dists.Deterministic(0.8)]}
+    arrival_distributions={'Class 0': [ciw.dists.Exponential(rate=2.4),
+                                       ciw.dists.Uniform(lower=0.3, upper=0.5)],
+                           'Class 1': [ciw.dists.Exponential(rate=3.0),
+                                       ciw.dists.Deterministic(value=0.8)]}
 
 An example where only one class of customer is required::
 
-    arrival_distributions=[ciw.dists.Exponential(2.4),
-                           ciw.dists.Exponential(2.0)]
+    arrival_distributions=[ciw.dists.Exponential(rate=2.4),
+                           ciw.dists.Exponential(rate=2.0)]
 
 
 batching_distributions
@@ -42,15 +42,15 @@ For more details on batching, see :ref:`batch-arrivals`.
 
 An example is shown::
 
-    batching_distributions={'Class 0': [ciw.dists.Deterministic(1),
-                                        ciw.dists.Sequential([1, 1, 2])],
-                            'Class 1': [ciw.dists.Deterministic(3),
-                                        ciw.dists.Deterministic(2)]}
+    batching_distributions={'Class 0': [ciw.dists.Deterministic(value=1),
+                                        ciw.dists.Sequential(sequence=[1, 1, 2])],
+                            'Class 1': [ciw.dists.Deterministic(value=3),
+                                        ciw.dists.Deterministic(value=2)]}
 
 An example where only one class of customer is required::
 
-    batching_distributions=[ciw.dists.Deterministic(2),
-                            ciw.dists.Deterministic(1)]
+    batching_distributions=[ciw.dists.Deterministic(value=2),
+                            ciw.dists.Deterministic(value=1)]
 
 
 
@@ -182,13 +182,13 @@ For more details on inputting distributions, see :ref:`set-dists`.
 
 An example is shown::
 
-    service_distributions={'Class 0': [ciw.dists.Exponential(4.4),
-                                       ciw.dists.Uniform(0.1, 0.9)],
-                           'Class 1': [ciw.dists.Exponential(6.0),
-                                       ciw.dists.Lognormal(0.5, 0.6)]}
+    service_distributions={'Class 0': [ciw.dists.Exponential(rate=4.4),
+                                       ciw.dists.Uniform(lower=0.1, upper=0.9)],
+                           'Class 1': [ciw.dists.Exponential(rate=6.0),
+                                       ciw.dists.Lognormal(mean=0.5, sd=0.6)]}
 
 An example where only one class of customer is required::
 
-    service_distributions=[ciw.dists.Exponential(4.8),
-                           ciw.dists.Exponential(5.2)]
+    service_distributions=[ciw.dists.Exponential(rate=4.8),
+                           ciw.dists.Exponential(rate=5.2)]
 

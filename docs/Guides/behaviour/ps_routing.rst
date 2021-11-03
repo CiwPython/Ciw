@@ -12,14 +12,14 @@ If the arrival distribution is Poisson with rate 8, and required service times a
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(8),
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=8),
     ...                            ciw.dists.NoArrivals(),
     ...                            ciw.dists.NoArrivals(),
     ...                            ciw.dists.NoArrivals()],
-    ...     service_distributions=[ciw.dists.Deterministic(0),
-    ...                            ciw.dists.Exponential(10),
-    ...                            ciw.dists.Exponential(10),
-    ...                            ciw.dists.Exponential(10)],
+    ...     service_distributions=[ciw.dists.Deterministic(value=0),
+    ...                            ciw.dists.Exponential(rate=10),
+    ...                            ciw.dists.Exponential(rate=10),
+    ...                            ciw.dists.Exponential(rate=10)],
     ...     number_of_servers=[float('inf'),
     ...                        float('inf'),
     ...                        float('inf'),

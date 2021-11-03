@@ -12,8 +12,8 @@ Consider an Markovian queue with infinite process sharing capacity (this capacit
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(4)],
-    ...     service_distributions=[ciw.dists.Exponential(9)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=4)],
+    ...     service_distributions=[ciw.dists.Exponential(rate=9)],
     ...     number_of_servers=[float('inf')]
     ... )
 
@@ -65,8 +65,8 @@ This is done by setting a :code:`number_of_servers` in the network object.
 Consider the same system, but a limit of 3 customers sharing the service load at a time::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(4)],
-    ...     service_distributions=[ciw.dists.Exponential(9)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=4)],
+    ...     service_distributions=[ciw.dists.Exponential(rate=9)],
     ...     number_of_servers=[3]
     ... )
     >>> ciw.seed(0)
@@ -95,8 +95,8 @@ With capacitated processor sharing queues, we can set the threshold :math:`R` by
 Consider the another system, but with threshold of 3 customers before processor sharing is required::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(10)],
-    ...     service_distributions=[ciw.dists.Exponential(12)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=10)],
+    ...     service_distributions=[ciw.dists.Exponential(rate=12)],
     ...     number_of_servers=[float('inf')],
     ...     ps_thresholds=[3]
     ... )

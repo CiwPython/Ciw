@@ -16,8 +16,8 @@ Consider the following Network::
 
     >>> import ciw
 	>>> N = ciw.create_network(
-	...     arrival_distributions={'Class 0': [ciw.dists.Exponential(6.0), ciw.dists.Exponential(2.5)]},
-	...     service_distributions={'Class 0': [ciw.dists.Exponential(8.5), ciw.dists.Exponential(5.5)]},
+	...     arrival_distributions={'Class 0': [ciw.dists.Exponential(rate=6.0), ciw.dists.Exponential(rate=2.5)]},
+	...     service_distributions={'Class 0': [ciw.dists.Exponential(rate=8.5), ciw.dists.Exponential(rate=5.5)]},
 	...     routing={'Class 0': [[0.0, 0.2], [0.1, 0.0]]},
 	...     number_of_servers=[1, 1],
 	...     queue_capacities=[float('inf'), 4]

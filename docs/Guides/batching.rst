@@ -13,9 +13,9 @@ Let's show an example::
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Deterministic(18.5)],
-    ...     service_distributions=[ciw.dists.Deterministic(3.0)],
-    ...     batching_distributions=[ciw.dists.Deterministic(3)],
+    ...     arrival_distributions=[ciw.dists.Deterministic(value=18.5)],
+    ...     service_distributions=[ciw.dists.Deterministic(value=3.0)],
+    ...     batching_distributions=[ciw.dists.Deterministic(value=3)],
     ...     number_of_servers=[1]
     ... )
 
@@ -35,10 +35,10 @@ As there is only one server, two of those customers will have to wait::
 Just like arrival and service distributions, batching distributions can be defined for multiple nodes and multiple customer classes, using lists and dictionaries::
 
     batching_distributions={
-        'Class 0': [ciw.dists.Deterministic(3),
-                    ciw.dists.Deterministic(1)],
-        'Class 1': [ciw.dists.Deterministic(2),
-                    ciw.dists.Deterministic(2)]},
+        'Class 0': [ciw.dists.Deterministic(value=3),
+                    ciw.dists.Deterministic(value=1)],
+        'Class 1': [ciw.dists.Deterministic(value=2),
+                    ciw.dists.Deterministic(value=2)]},
 
 Note:
   + *Only discrete distributions may be used,* currently implemented are:
@@ -73,8 +73,8 @@ Now use this when defining a network:
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Deterministic(3.0)],
-    ...     service_distributions=[ciw.dists.Deterministic(0.5)],
+    ...     arrival_distributions=[ciw.dists.Deterministic(value=3.0)],
+    ...     service_distributions=[ciw.dists.Deterministic(value=0.5)],
     ...     batching_distributions=[TimeDependentBatches()],
     ...     number_of_servers=[1]
     ... )

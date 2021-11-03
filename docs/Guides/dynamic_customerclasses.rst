@@ -25,12 +25,12 @@ This is input into the simulation model by including :code:`xlass_change_matrice
     
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(5)],
+    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(rate=5)],
     ...                            'Class 1': [ciw.dists.NoArrivals()],
     ...                            'Class 2': [ciw.dists.NoArrivals()]},
-    ...     service_distributions={'Class 0': [ciw.dists.Exponential(10)],
-    ...                            'Class 1': [ciw.dists.Exponential(10)],
-    ...                            'Class 2': [ciw.dists.Exponential(10)]},
+    ...     service_distributions={'Class 0': [ciw.dists.Exponential(rate=10)],
+    ...                            'Class 1': [ciw.dists.Exponential(rate=10)],
+    ...                            'Class 2': [ciw.dists.Exponential(rate=10)]},
     ...     routing={'Class 0': [[1.0]],
     ...              'Class 1': [[1.0]],
     ...              'Class 2': [[1.0]]},

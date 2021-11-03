@@ -53,7 +53,7 @@ Let's implement this into a one node infinite server queue::
     >>> import ciw
     >>> N = ciw.create_network(
     ...     arrival_distributions=[TimeDependentDist()],
-    ...     service_distributions=[ciw.dists.Deterministic(0.0)],
+    ...     service_distributions=[ciw.dists.Deterministic(value=0.0)],
     ...     number_of_servers=['Inf']
     ... )
 
@@ -101,7 +101,7 @@ where we access the system's state by considering the :ref:`state tracker <state
 Now to test if this is working, the average service time should be roughly equal to the above function applied to the average queue size::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(4)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=4)],
     ...     service_distributions=[StateDependentDist()],
     ...     number_of_servers=[1]
     ... )
@@ -135,8 +135,8 @@ Ar gyfer dosraniadau dyfodi - wrth creu'r gwrthrych :code:`Simulation`, rhoddir 
 Ac i weld os yw'n gweithio, gyda terfan o 44 unigolyn::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[LimitedExponential(1, 44)],
-    ...     service_distributions=[ciw.dists.Exponential(3)],
+    ...     arrival_distributions=[LimitedExponential(rate=1, limit=44)],
+    ...     service_distributions=[ciw.dists.Exponential(rate=3)],
     ...     number_of_servers=[2]
     ... )
 

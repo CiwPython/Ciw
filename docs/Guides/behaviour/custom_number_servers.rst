@@ -13,8 +13,8 @@ Consider an M/M/1 queue with :math:`\Lambda = 1` and :math:`\mu = 0.4`. Here the
     >>> import ciw
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(1)],
-    ...     service_distributions=[ciw.dists.Exponential(0.4)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=1)],
+    ...     service_distributions=[ciw.dists.Exponential(rate=0.4)],
     ...     number_of_servers=[1]
     ... )
     

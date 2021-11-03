@@ -17,8 +17,8 @@ Example: consider an M/M/1 queue. The :code:`SystemPopulation` tracker defines a
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...    arrival_distributions=[ciw.dists.Exponential(0.1)],
-    ...    service_distributions=[ciw.dists.Exponential(0.2)],
+    ...    arrival_distributions=[ciw.dists.Exponential(rate=0.1)],
+    ...    service_distributions=[ciw.dists.Exponential(rate=0.2)],
     ...    number_of_servers=[1]
     ... )
 
