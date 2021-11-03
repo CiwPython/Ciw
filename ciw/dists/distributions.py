@@ -442,7 +442,9 @@ class Coxian(PhaseType):
         if any(r <= 0.0 for r in rates):
             raise ValueError('Rates must be positive.')
         if any(p < 0 or p > 1.0 for p in probs):
-            raise ValueError('Initial state vector must have valid probabilities.')
+            raise ValueError('Probability vector must have valid probabilities.')
+        if probs[-1] != 1.0:
+            raise ValueError('The probability of going to the absorbing state from the final phase must be 1.0.')
         num_phases = len(rates)
         initial_state = [1] + [0] * num_phases
         absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]

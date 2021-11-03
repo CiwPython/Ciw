@@ -1163,6 +1163,7 @@ class TestSampling(unittest.TestCase):
         self.assertRaises(ValueError, ciw.dists.Coxian, [5, -4, 7, 2], [0.2, 0.5, 0.3, 1.0])
         self.assertRaises(ValueError, ciw.dists.Coxian, [5, 4, 7, 2], [0.2, -0.5, 0.3, 1.0])
         self.assertRaises(ValueError, ciw.dists.Coxian, [5, 4, 7, 2], [0.2, 1.5, 0.3, 1.0])
+        self.assertRaises(ValueError, ciw.dists.Coxian, [5, 4, 7, 2], [0.2, 0.5, 0.3, 0.6])
 
         many_samples = [round(Cx.sample(), 2) for _ in range(1000)]
         # We would expect this to be expected time to absorption of the underlying absobring Markov chain.
