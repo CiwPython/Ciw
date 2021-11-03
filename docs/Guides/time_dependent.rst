@@ -119,7 +119,7 @@ Now to test if this is working, the average service time should be roughly equal
     >>> (-0.05 * average_queue_size) + 0.2
     0.1552347...
 
-Ar gyfer dosraniadau dyfodi - wrth creu'r gwrthrych :code:`Simulation`, rhoddir i'r gwrthrychau dosraniad y briodwedd :code:`.simulation`, felly gall rhywbeth tebyg digwydd. Er enghraifft, mae'r dosraniad canlynol yn samplu o ddosraniad Esbonyddol nes i nifer :code:`limit` o unigolion cael eu samplu::
+For arrival distributions - when creating the :code:`Simulation` object, the distribution objects are given a :code:`.simulation` attribute, so something similar can happen. For example, the following distribution will sample form an Exponential distribution unil :code:`limit` number of individuals has been sampled::
 
     >>> class LimitedExponential(ciw.dists.Exponential):
     ...     def __init__(self, rate, limit):
@@ -132,7 +132,7 @@ Ar gyfer dosraniadau dyfodi - wrth creu'r gwrthrych :code:`Simulation`, rhoddir 
     ...         else:
     ...             return float('Inf')
 
-Ac i weld os yw'n gweithio, gyda terfan o 44 unigolyn::
+And to see it working, a limit of 44 individuals::
 
     >>> N = ciw.create_network(
     ...     arrival_distributions=[LimitedExponential(rate=1, limit=44)],
