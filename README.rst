@@ -5,8 +5,8 @@ A discrete event simulation library for queueing networks
 ---------------------------------------------------------
 
 
-.. image:: https://travis-ci.com/CiwPython/Ciw.svg?branch=master
-    :target: https://travis-ci.com/CiwPython/Ciw
+.. image:: https://app.travis-ci.com/CiwPython/Ciw.svg?branch=master
+    :target: https://app.travis-ci.com/CiwPython/Ciw
 
 .. image:: https://img.shields.io/pypi/v/ciw.svg
     :target: https://pypi.python.org/pypi/Ciw
@@ -55,8 +55,8 @@ Import Ciw::
 To define an M/M/3 queue, with λ = 0.2 and μ = 0.1::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(0.2)],
-    ...     service_distributions=[ciw.dists.Exponential(0.1)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=0.2)],
+    ...     service_distributions=[ciw.dists.Exponential(rate=0.1)],
     ...     number_of_servers=[3]
     ... )
 
