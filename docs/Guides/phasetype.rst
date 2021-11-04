@@ -1,8 +1,8 @@
 .. _phase-type:
 
-===============================
-How to Phase-Type Distributions
-===============================
+===================================
+How to set Phase-Type Distributions
+===================================
 
 One particular subset of distributions offered by Ciw is Phase-Type distributions.
 These are very useful and versatile family of distributions defined by absorbing Markov chains.
