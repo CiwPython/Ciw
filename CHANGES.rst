@@ -1,6 +1,11 @@
 History
 -------
 
+v2.2.1 (2021-11-04)
+~~~~~~~~~~~~~~~~~~~
+- PhaseType distributions implemented
+- Classes for specific PhaseType distributions: Erlang, HyperExponential, HyperErlang, and Coxian
+
 v2.2.0 (2021-07-22)
 ~~~~~~~~~~~~~~~~~~~
 - Processor sharing implemented (limited and capacitated)
