@@ -87,6 +87,7 @@ A number of other features are also implemented, including:
 + `Phase-Type distributions <https://ciw.readthedocs.io/en/latest/Guides/phasetype.html>`_
 + `Time-dependent and state-dependent distributions <https://ciw.readthedocs.io/en/latest/Guides/time_dependent.html>`_
 + `Batch arrivals <https://ciw.readthedocs.io/en/latest/Guides/batching.html>`_
++ `Baulking customers <https://ciw.readthedocs.io/en/latest/Guides/baulking.html>`_
 + `Processor sharing <https://ciw.readthedocs.io/en/latest/Guides/processor-sharing.html>`_
 + `Multiple customer classes <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vii.html>`_
 + `Priorities <https://ciw.readthedocs.io/en/latest/Guides/priority.html>`_

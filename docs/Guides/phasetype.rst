@@ -1,7 +1,7 @@
 .. _phase-type:
 
 ===================================
-How to set Phase-Type Distributions
+How to Set Phase-Type Distributions
 ===================================
 
 One particular subset of distributions offered by Ciw is Phase-Type distributions.
