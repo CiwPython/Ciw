@@ -84,14 +84,14 @@ A number of other features are also implemented, including:
 
 + `Type I blocking <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vi.html>`_
 + `A large range of sampling distributions <https://ciw.readthedocs.io/en/latest/Reference/distributions.html>`_
-+ `Phase-Type distributions <https://ciw.readthedocs.io/en/latest/Guides/server_schedule.html>`_
++ `Phase-Type distributions <https://ciw.readthedocs.io/en/latest/Guides/phasetype.html>`_
 + `Time-dependent and state-dependent distributions <https://ciw.readthedocs.io/en/latest/Guides/time_dependent.html>`_
 + `Batch arrivals <https://ciw.readthedocs.io/en/latest/Guides/batching.html>`_
 + `Processor sharing <https://ciw.readthedocs.io/en/latest/Guides/processor-sharing.html>`_
 + `Multiple customer classes <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vii.html>`_
 + `Priorities <https://ciw.readthedocs.io/en/latest/Guides/priority.html>`_
 + `Customers changing classes <https://ciw.readthedocs.io/en/latest/Guides/dynamic_customerclasses.html>`_
-+ `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/phasetype.html>`_
++ `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/server_schedule.html>`_
 + `State tracking <https://ciw.readthedocs.io/en/latest/Guides/state_trackers.html>`_
 + `Stopping the simulation after a certain amount of customers <https://ciw.readthedocs.io/en/latest/Guides/sim_numcusts.html>`_
 + `Process-based routing <https://ciw.readthedocs.io/en/latest/Guides/process_based.html>`_
