@@ -1022,8 +1022,8 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(samples, expected)
 
 
-    @given(sizes=integers(min_value=1, max_value=20),
-           rates=floats(min_value=0.01, max_value=50),
+    @given(sizes=integers(min_value=1, max_value=10),
+           rates=floats(min_value=0.1, max_value=20),
            rm=random_module())
     def test_sampling_erlang_dist_hypothesis(self, sizes, rates, rm):
         params = {
