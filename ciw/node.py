@@ -112,26 +112,29 @@ class Node(object):
         server.cust = individual
         server.busy = True
         individual.server = server
-        server.next_end_service_date = individual.service_end_date
         self.simulation.deadlock_detector.action_at_attach_server(
             self, server, individual)
 
     def begin_service_if_possible_accept(self, next_individual):
         """
         Begins the service of the next individual (at acceptance point):
-          - give an arrival date and service time
-          - if there's a free server, give a start date and end date
-          - attach server to individual
+            - Sets the arrival date as the current time
+            - If there is a free server or there are infinite servers:
+                - Attach the server to the individual (only when servers are not infinite)
+            - Get service start time, service time, service end time
+            - Update the server's end date (only when servers are not infinite)
         """
         next_individual.arrival_date = self.get_now()
         free_server = self.find_free_server()
         if free_server is not None or isinf(self.c):
+            if not isinf(self.c):
+                self.attach_server(free_server, next_individual)
             next_individual.service_start_date = self.get_now()
             next_individual.service_time = self.get_service_time(next_individual)
             next_individual.service_end_date = self.increment_time(
                 self.get_now(), next_individual.service_time)
-            if free_server is not None:
-                self.attach_server(free_server, next_individual)
+            if not isinf(self.c):
+                free_server.next_end_service_date = next_individual.service_end_date
 
     def begin_interrupted_individuals_service(self, srvr):
         """
