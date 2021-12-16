@@ -29,3 +29,4 @@ Here's a library of examples of this functionality:
    custom_arrivals.rst
    custom_number_servers.rst
    ps_routing.rst
+   server_dependent_dist.rst
