@@ -23,7 +23,6 @@ Here the traffic intensity of the system is greater than one, that is we have cu
 
 Now let's plot the system population over time::
 
-    >>> import matplotlib.pyplot as plt
     >>> plt.plot(
     ...     [row[0] for row in Q.statetracker.history],
     ...     [row[1] for row in Q.statetracker.history]
@@ -80,7 +79,6 @@ Now rerun the same system, telling Ciw to use the new :code:`ServerDependentDist
 
 Now let's plot the system population over time::
 
-    >>> import matplotlib.pyplot as plt
     >>> plt.plot(
     ...     [row[0] for row in Q.statetracker.history],
     ...     [row[1] for row in Q.statetracker.history]
