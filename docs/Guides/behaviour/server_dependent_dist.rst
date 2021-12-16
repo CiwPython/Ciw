@@ -94,7 +94,7 @@ We see the system population is now better under control.
 Furthermore, by looking at the number of individuals served by each server we can see that the two faster servers have been serving more individuals than the other two::
 
     >>> for s in Q.nodes[1].servers:
-    ...     print(f"Server {s.id_number}: {s.served_inds} served.")
+    ...     print(f"Server {s.id_number}: {s.served_inds} served")
     Server 1: 21 served
     Server 2: 21 served
     Server 3: 73 served
