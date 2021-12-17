@@ -1,6 +1,13 @@
 History
 -------
 
+v2.2.2 (2021-12-17)
+~~~~~~~~~~~~~~~~~~~
+- State trackers now take objects not indices
+- Servers are attached to individuals before sampling service times
+- Docs on sever-dependant distributions
+- Docs on DES+SD hybrid simulations
+
 v2.2.1 (2021-11-04)
 ~~~~~~~~~~~~~~~~~~~
 - PhaseType distributions implemented
