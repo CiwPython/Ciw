@@ -1,32 +1,44 @@
-Server-dependent service rate
-=============================
+Server-dependent Services
+=========================
 
-In this example we will consider a network where each server has its own unique service rate.
+In this example we will consider a service centre where each server has its own unique service rate.
+We will model a shop with four servers, each server gains commission from their sales, and so we need to record the number of customers each server serves. Each server works at a different speed.
 We will look at a system without this behaviour first, and then the system with the desired behaviour, for comparison.
 
 Without desired behaviour
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Consider an M/M/4 queue with :math:`\Lambda = 2` and :math:`\mu = 0.2`. 
-Here the traffic intensity of the system is greater than one, that is we have customers arriving faster than can be served, and so the queue size will increase over time. Let's see this::
+We need to first define a way to record when each server serves their customers. We can do this with a custom Distribution object. We will define :code:`Exponential_CountCusts` that gives and updates each server's :code:`served_inds` attribute, which has the time points that they begin service with each individual::
 
     >>> import ciw
+    >>> class Exponential_CountCusts(ciw.dists.Exponential):
+    ...     def sample(self, t=None, ind=None):
+    ...         n = ind.server.id_number
+    ...         if hasattr(ind.server, "served_inds"):
+    ...             ind.server.served_inds.append(self.simulation.current_time)
+    ...         else:
+    ...             ind.server.served_inds = [self.simulation.current_time]
+    ...         return super().sample()
+
+Now consider an M/M/4 queue with :math:`\Lambda = 2` and :math:`\mu = 0.5`::
+
     >>> N = ciw.create_network(
     ...     arrival_distributions=[ciw.dists.Exponential(rate=2.0)],
-    ...     service_distributions=[ciw.dists.Exponential(rate=0.2)],
+    ...     service_distributions=[Exponential_CountCusts(rate=0.5)],
     ...     number_of_servers=[4],
     ... )
 
     >>> ciw.seed(0)
-    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
-    >>> Q.simulate_until_max_time(100)
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(500)
 
-Now let's plot the system population over time::
+For each server we can plot their cumulative count of individuals served over time, seeing that the rate at which the servers gain their commission are all equal::
 
-    >>> plt.plot(
-    ...     [row[0] for row in Q.statetracker.history],
-    ...     [row[1] for row in Q.statetracker.history]
-    ... ); # doctest:+SKIP
+    >>> for s in Q.nodes[1].servers:
+    ...     plt.plot(
+    ...         [0] + [t for t in s.served_inds],
+    ...         [0] + [i + 1 for i, t in enumerate(s.served_inds)],
+    ...     label=f"Server {s.id_number}") # doctest:+SKIP
+    >>>     plt.legend() # doctest:+SKIP
 
 .. image:: ../../_static/server_dependent_dist_without.svg
    :alt: Plot of population over time.
@@ -36,64 +48,55 @@ Now let's plot the system population over time::
 With desired behaviour
 ~~~~~~~~~~~~~~~~~~~~~~
 
-We will now create a :code:`ServerDependentDist` class that allows us to use different service rates for each server.
-First create the :code:`ServerDependentDist` that inherits from :code:`ciw.dists.Distribution` class, and overwrites the :code:`__init__` method and the :code:`sample` method. 
-The :code:`__init__` method takes a dictionary with keys being the server id and values being the service rates. 
-The :code:`sample` method returns a random number from the exponential distribution with parameter that corresposnds to the server that is currently in use.
-The concerned individual :code:`ind` can be used to get the server that the individual is assigned to. 
-Using :code:`ind.server.id_number` we can get the id number of that server.
-As an additional step a new attribute is attached to each server that keeps track of how many individuals each server has served::
+We now want each of the servers to serve at a different rate.
+Will now create a :code:`Dependent_CountCusts` class that allows us to use different service rates for each server.
+In addition to counting the number of served individuals, this will identify the current server (:code:`ind.server`) by their ID number, and use a :code:`rates` dictionary to map server IDs to service rates::
 
     >>> import random
-    >>> class ServerDependentDist(ciw.dists.Distribution):
+    >>> class Dependent_CountCusts(ciw.dists.Exponential):
     ...     def __init__(self, rates):
     ...         self.rates = rates
-    ...
+    ...     
     ...     def sample(self, t=None, ind=None):
     ...         n = ind.server.id_number
-    ...         rate = self.rates[n]
     ...         if hasattr(ind.server, "served_inds"):
-    ...             ind.server.served_inds += 1
+    ...             ind.server.served_inds.append(self.simulation.current_time)
     ...         else:
-    ...             ind.server.served_inds = 1
-    ...         return random.expovariate(rate)
+    ...             ind.server.served_inds = [self.simulation.current_time]
+    ...         r = self.rates[ind.server.id_number]
+    ...         return random.expovariate(r)
 
-From the previous example, let us assume that 2 of the 4 servers have been upgraded to faster models and define a server dependent distribution that returns:
-    + :code:`0.2` if the server id number is 1,
-    + :code:`0.2` if the server id number is 2,
-    + :code:`1` if the server id number is 3,
-    + :code:`1` if the server id number is 4
+Now let's define the service rate for each of the servers:
+    + server 1 serves with rate `0.5`,
+    + server 2 serves with rate `0.1`,
+    + server 3 serves with rate `2`,
+    + server 4 serves with rate `3`.
 
-Now rerun the same system, telling Ciw to use the new :code:`ServerDependentDist` for the service distributions::
+Now rerun the same system, telling Ciw to use the new :code:`Dependent_CountCusts` for the service distributions with the given rates dictionary::
 
-    >>> rates = {1: 0.2, 2: 0.2, 3: 1, 4: 1}
+    >>> rates = {1: 0.5, 2: 0.1, 3: 2, 4: 3}
     >>> N = ciw.create_network(
     ...     arrival_distributions=[ciw.dists.Exponential(rate=2.0)],
-    ...     service_distributions=[ServerDependentDist(rates=rates)],
-    ...     number_of_servers=[4]
+    ...     service_distributions=[Dependent_CountCusts(rates=rates)],
+    ...     number_of_servers=[4],
     ... )
 
     >>> ciw.seed(0)
-    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
-    >>> Q.simulate_until_max_time(100)
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(500)
 
-Now let's plot the system population over time::
+Plotting the cumulative counts for each server population over time::
 
-    >>> plt.plot(
-    ...     [row[0] for row in Q.statetracker.history],
-    ...     [row[1] for row in Q.statetracker.history]
-    ... ); # doctest:+SKIP
+    >>> for s in Q.nodes[1].servers:
+    ...     plt.plot(
+    ...         [0] + [t for t in s.served_inds],
+    ...         [0] + [i + 1 for i, t in enumerate(s.served_inds)],
+    ...     label=f"Server {s.id_number}") # doctest:+SKIP
+    >>>     plt.legend() # doctest:+SKIP
 
-.. image:: ../../_static/server_dependent_dist_without.svg
+.. image:: ../../_static/server_dependent_dist_with.svg
    :alt: Plot of population increasing over time.
    :align: center
 
-We see the system population is now better under control. 
-Furthermore, by looking at the number of individuals served by each server we can see that the two faster servers have been serving more individuals than the other two::
+We now see that each of the servers has a different rate at which they gain commission.
 
-    >>> for s in Q.nodes[1].servers:
-    ...     print(f"Server {s.id_number}: {s.served_inds} served")
-    Server 1: 21 served
-    Server 2: 21 served
-    Server 3: 73 served
-    Server 4: 76 served
