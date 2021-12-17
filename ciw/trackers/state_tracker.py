@@ -12,19 +12,19 @@ class StateTracker(object):
         self.state = None
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
-    def change_state_accept(self, node_id, cust_clss):
+    def change_state_accept(self, node, ind):
         """
         Changes the state of the system when a customer is accepted.
         """
         pass
 
-    def change_state_block(self, node_id, destination, cust_clss):
+    def change_state_block(self, node, destination, ind):
         """
         Changes the state of the system when a customer gets blocked.
         """
         pass
 
-    def change_state_release(self, node_id, destination, cust_clss, blocked):
+    def change_state_release(self, node, destination, ind, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -108,19 +108,19 @@ class SystemPopulation(StateTracker):
         self.state = 0
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
-    def change_state_accept(self, node_id, cust_clss):
+    def change_state_accept(self, node, ind):
         """
         Changes the state of the system when a customer is accepted.
         """
         self.state += 1
 
-    def change_state_block(self, node_id, destination, cust_clss):
+    def change_state_block(self, node, destination, ind):
         """
         Changes the state of the system when a customer gets blocked.
         """
         pass
 
-    def change_state_release(self, node_id, destination, cust_clss, blocked):
+    def change_state_release(self, node, destination, ind, blocked):
         """
         Changes the state of the system when a customer is released.
         """
@@ -151,23 +151,23 @@ class NodePopulation(StateTracker):
             self.simulation.network.number_of_nodes)]
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
-    def change_state_accept(self, node_id, cust_clss):
+    def change_state_accept(self, node, ind):
         """
         Changes the state of the system when a customer is accepted.
         """
-        self.state[node_id-1] += 1
+        self.state[node.id_number - 1] += 1
 
-    def change_state_block(self, node_id, destination, cust_clss):
+    def change_state_block(self, node, destination, ind):
         """
         Changes the state of the system when a customer gets blocked.
         """
         pass
 
-    def change_state_release(self, node_id, destination, cust_clss, blocked):
+    def change_state_release(self, node, destination, ind, blocked):
         """
         Changes the state of the system when a customer is released.
         """
-        self.state[node_id-1] -= 1
+        self.state[node.id_number - 1] -= 1
 
     def hash_state(self):
         """
@@ -200,26 +200,26 @@ class NodePopulationSubset(StateTracker):
         self.state = [0 for i in self.observed_nodes]
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
-    def change_state_accept(self, node_id, cust_clss):
+    def change_state_accept(self, node, ind):
         """
         Changes the state of the system when a customer is accepted.
         """
-        if node_id-1 in self.observed_nodes:
-            state_index = self.observed_nodes.index(node_id-1)
+        if node.id_number - 1 in self.observed_nodes:
+            state_index = self.observed_nodes.index(node.id_number - 1)
             self.state[state_index] += 1
 
-    def change_state_block(self, node_id, destination, cust_clss):
+    def change_state_block(self, node, destination, ind):
         """
         Changes the state of the system when a customer gets blocked.
         """
         pass
 
-    def change_state_release(self, node_id, destination, cust_clss, blocked):
+    def change_state_release(self, node, destination, ind, blocked):
         """
         Changes the state of the system when a customer is released.
         """
-        if node_id-1 in self.observed_nodes:
-            state_index = self.observed_nodes.index(node_id-1)
+        if node.id_number - 1 in self.observed_nodes:
+            state_index = self.observed_nodes.index(node.id_number - 1)
             self.state[state_index] -= 1
 
     def hash_state(self):
@@ -254,23 +254,23 @@ class NodeClassMatrix(StateTracker):
             self.simulation.network.number_of_nodes)]
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
-    def change_state_accept(self, node_id, cust_clss):
+    def change_state_accept(self, node, ind):
         """
         Changes the state of the system when a customer is accepted.
         """
-        self.state[node_id-1][cust_clss] += 1
+        self.state[node.id_number - 1][ind.customer_class] += 1
 
-    def change_state_block(self, node_id, destination, cust_clss):
+    def change_state_block(self, node, destination, ind):
         """
         Changes the state of the system when a customer gets blocked.
         """
         pass
 
-    def change_state_release(self, node_id, destination, cust_clss, blocked):
+    def change_state_release(self, node, destination, ind, blocked):
         """
         Changes the state of the system when a customer is released.
         """
-        self.state[node_id-1][cust_clss] -= 1
+        self.state[node.id_number - 1][ind.customer_class] -= 1
 
     def hash_state(self):
         """
@@ -299,27 +299,27 @@ class NaiveBlocking(StateTracker):
             self.simulation.network.number_of_nodes)]
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
-    def change_state_accept(self, node_id, cust_clss):
+    def change_state_accept(self, node, ind):
         """
         Changes the state of the system when a customer is accepted.
         """
-        self.state[node_id-1][0] += 1
+        self.state[node.id_number - 1][0] += 1
 
-    def change_state_block(self, node_id, destination, cust_clss):
+    def change_state_block(self, node, destination, ind):
         """
         Changes the state of the system when a customer gets blocked.
         """
-        self.state[node_id-1][1] += 1
-        self.state[node_id-1][0] -= 1
+        self.state[node.id_number - 1][1] += 1
+        self.state[node.id_number - 1][0] -= 1
 
-    def change_state_release(self, node_id, destination, cust_clss, blocked):
+    def change_state_release(self, node, destination, ind, blocked):
         """
         Changes the state of the system when a customer is released.
         """
         if blocked:
-            self.state[node_id-1][1] -= 1
+            self.state[node.id_number - 1][1] -= 1
         else:
-            self.state[node_id-1][0] -= 1
+            self.state[node.id_number - 1][0] -= 1
 
     def hash_state(self):
         """
@@ -356,37 +356,37 @@ class MatrixBlocking(StateTracker):
         self.increment = 1
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
-    def change_state_accept(self, node_id, cust_clss):
+    def change_state_accept(self, node, ind):
         """
         Changes the state of the system when a customer is accepted.
         """
-        self.state[-1][node_id-1] += 1
+        self.state[-1][node.id_number - 1] += 1
 
-    def change_state_block(self, node_id, destination, cust_clss):
+    def change_state_block(self, node, destination, ind):
         """
         Changes the state of the system when a customer gets blocked.
         """
-        self.state[0][node_id-1][destination-1].append(self.increment)
+        self.state[0][node.id_number - 1][destination.id_number - 1].append(self.increment)
         self.increment += 1
 
-    def change_state_release(self, node_id, destination, cust_clss, blocked):
+    def change_state_release(self, node, destination, ind, blocked):
         """
         Changes the state of the system when a customer is released.
         """
         if blocked:
-            self.state[-1][node_id-1] -= 1
+            self.state[-1][node.id_number - 1] -= 1
             self.increment -= 1
             position = self.find_blocked_position_and_pop(
-                node_id, destination)
+                node, destination)
             self.adjust_positions(position)
         else:
-            self.state[-1][node_id-1] -= 1
+            self.state[-1][node.id_number - 1] -= 1
 
-    def find_blocked_position_and_pop(self, node_id, destination):
+    def find_blocked_position_and_pop(self, node, destination):
         """
         Finds the position of the next customer to unblock.
         """
-        position = self.state[0][node_id-1][destination-1].pop(0)
+        position = self.state[0][node.id_number - 1][destination.id_number - 1].pop(0)
         return position
 
     def adjust_positions(self, position):

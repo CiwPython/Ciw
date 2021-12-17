@@ -94,8 +94,7 @@ class Node(object):
         self.individuals[next_individual.priority_class].append(next_individual)
         self.number_of_individuals += 1
         self.begin_service_if_possible_accept(next_individual)
-        self.simulation.statetracker.change_state_accept(
-            self.id_number, next_individual.customer_class)
+        self.simulation.statetracker.change_state_accept(self, next_individual)
 
     def add_new_servers(self, num_servers):
         """
@@ -215,8 +214,7 @@ class Node(object):
           blockages for deadlock detection
         """
         individual.is_blocked = True
-        self.simulation.statetracker.change_state_block(
-            self.id_number, next_node.id_number, individual.customer_class)
+        self.simulation.statetracker.change_state_block(self, next_node, individual)
         next_node.blocked_queue.append(
             (self.id_number, individual.id_number))
         next_node.len_blocked_queue += 1
@@ -418,9 +416,8 @@ class Node(object):
         if not isinf(self.c):
             self.detatch_server(next_individual.server, next_individual)
         self.write_individual_record(next_individual)
-        self.simulation.statetracker.change_state_release(self.id_number,
-            next_node.id_number, next_individual.customer_class,
-            next_individual.is_blocked)
+        self.simulation.statetracker.change_state_release(self,
+            next_node, next_individual, next_individual.is_blocked)
         self.begin_service_if_possible_release()
         next_node.accept(next_individual)
         self.release_blocked_individual()

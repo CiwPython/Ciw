@@ -16,8 +16,10 @@ class TestStateTracker(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         self.assertEqual(B.state, None)
-        B.change_state_accept(1, 1)
+        B.change_state_accept(N, ind)
         self.assertEqual(B.state, None)
 
     def test_base_change_state_block_method(self):
@@ -25,8 +27,10 @@ class TestStateTracker(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         self.assertEqual(B.state, None)
-        B.change_state_block(1, 1, 1)
+        B.change_state_block(N, N, ind)
         self.assertEqual(B.state, None)
 
     def test_base_change_state_release_method(self):
@@ -34,8 +38,10 @@ class TestStateTracker(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         self.assertEqual(B.state, None)
-        B.change_state_release(1, 1, 1, True)
+        B.change_state_release(N, N, ind, True)
         self.assertEqual(B.state, None)
 
     def test_base_hash_state_method(self):
@@ -99,9 +105,11 @@ class TestSystemPopulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.SystemPopulation()
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         B.initialise(Q)
         self.assertEqual(B.state, 0)
-        B.change_state_accept(1, 1)
+        B.change_state_accept(N, ind)
         self.assertEqual(B.state, 1)
 
     def test_systempop_change_state_block_method(self):
@@ -109,8 +117,11 @@ class TestSystemPopulation(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.SystemPopulation()
         B.initialise(Q)
+        N1 = Q.nodes[1]
+        N2 = Q.nodes[2]
+        ind = ciw.Individual(1)
         B.state = 1
-        B.change_state_block(1, 1, 2)
+        B.change_state_block(N1, N2, ind)
         self.assertEqual(B.state, 1)
 
     def test_systempop_change_state_release_method(self):
@@ -118,10 +129,13 @@ class TestSystemPopulation(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.SystemPopulation()
         B.initialise(Q)
+        N = Q.nodes[1]
+        Nex = Q.nodes[-1]
+        ind = ciw.Individual(1)
         B.state = 15
-        B.change_state_release(1, 1, 2, False)
+        B.change_state_release(N, Nex, ind, False)
         self.assertEqual(B.state, 14)
-        B.change_state_release(1, 1, 2, True)
+        B.change_state_release(N, Nex, ind, True)
         self.assertEqual(B.state, 13)
 
     def test_systempop_hash_state_method(self):
@@ -189,8 +203,10 @@ class TestNodePopulation(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         self.assertEqual(B.state, [0, 0, 0, 0])
-        B.change_state_accept(1, 1)
+        B.change_state_accept(N, ind)
         self.assertEqual(B.state, [1, 0, 0, 0])
 
     def test_nodepop_change_state_block_method(self):
@@ -198,8 +214,11 @@ class TestNodePopulation(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
+        N1 = Q.nodes[1]
+        N2 = Q.nodes[2]
+        ind = ciw.Individual(1)
         B.state = [1, 0, 0, 0]
-        B.change_state_block(1, 1, 2)
+        B.change_state_block(N1, N2, ind)
         self.assertEqual(B.state, [1, 0, 0, 0])
 
     def test_nodepop_change_state_release_method(self):
@@ -207,10 +226,14 @@ class TestNodePopulation(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
+        N = Q.nodes[1]
+        Nex = Q.nodes[-1]
+        ind1 = ciw.Individual(1)
+        ind2 = ciw.Individual(2)
         B.state = [3, 3, 1, 8]
-        B.change_state_release(1, 1, 2, False)
+        B.change_state_release(N, Nex, ind1, False)
         self.assertEqual(B.state, [2, 3, 1, 8])
-        B.change_state_release(1, 1, 2, True)
+        B.change_state_release(N, Nex, ind2, True)
         self.assertEqual(B.state, [1, 3, 1, 8])
 
     def test_nodepop_hash_state_method(self):
@@ -278,8 +301,10 @@ class TestNodeClassMatrix(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1, customer_class=1)
         self.assertEqual(B.state, [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
-        B.change_state_accept(1, 1)
+        B.change_state_accept(N, ind)
         self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
     def test_nodeclassmatrix_change_state_block_method(self):
@@ -287,8 +312,10 @@ class TestNodeClassMatrix(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         B.state = [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-        B.change_state_block(1, 1, 1)
+        B.change_state_block(N, N, ind)
         self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
     def test_nodeclassmatrix_change_state_release_method(self):
@@ -296,10 +323,13 @@ class TestNodeClassMatrix(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
+        N = Q.nodes[1]
+        Nex = Q.nodes[-1]
+        ind = ciw.Individual(1, customer_class=2)
         B.state = [[0, 1, 2], [1, 1, 1], [0, 1, 0], [4, 3, 1]]
-        B.change_state_release(1, 1, 2, False)
+        B.change_state_release(N, Nex, ind, False)
         self.assertEqual(B.state, [[0, 1, 1], [1, 1, 1], [0, 1, 0], [4, 3, 1]])
-        B.change_state_release(1, 1, 2, True)
+        B.change_state_release(N, Nex, ind, True)
         self.assertEqual(B.state, [[0, 1, 0], [1, 1, 1], [0, 1, 0], [4, 3, 1]])
 
     def test_nodeclassmatrix_hash_state_method(self):
@@ -367,8 +397,10 @@ class TestNaiveBlocking(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         self.assertEqual(B.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
-        B.change_state_accept(1, 1)
+        B.change_state_accept(N, ind)
         self.assertEqual(B.state, [[1, 0], [0, 0], [0, 0], [0, 0]])
 
     def test_naive_change_state_block_method(self):
@@ -376,8 +408,10 @@ class TestNaiveBlocking(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(2)
         B.state = [[1, 0], [0, 0], [0, 0], [0, 0]]
-        B.change_state_block(1, 1, 2)
+        B.change_state_block(N, N, ind)
         self.assertEqual(B.state, [[0, 1], [0, 0], [0, 0], [0, 0]])
 
     def test_naive_change_state_release_method(self):
@@ -385,10 +419,12 @@ class TestNaiveBlocking(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(2)
         B.state = [[2, 1], [3, 0], [1, 0], [4, 4]]
-        B.change_state_release(1, 1, 2, False)
+        B.change_state_release(N, N, ind, False)
         self.assertEqual(B.state, [[1, 1], [3, 0], [1, 0], [4, 4]])
-        B.change_state_release(1, 1, 2, True)
+        B.change_state_release(N, N, ind, True)
         self.assertEqual(B.state, [[1, 0], [3, 0], [1, 0], [4, 4]])
 
     def test_naive_hash_state_method(self):
@@ -460,12 +496,14 @@ class TestMatrixBlocking(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
         self.assertEqual(B.state, [[[[], [], [], []],
                                     [[], [], [], []],
                                     [[], [], [], []],
                                     [[], [], [], []]],
                                     [0, 0, 0, 0]])
-        B.change_state_accept(1, 1)
+        B.change_state_accept(N, ind)
         self.assertEqual(B.state, [[[[], [], [], []],
                                     [[], [], [], []],
                                     [[], [], [], []],
@@ -477,24 +515,29 @@ class TestMatrixBlocking(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
+        N1 = Q.nodes[1]
+        N2 = Q.nodes[2]
+        N3 = Q.nodes[3]
+        ind1 = ciw.Individual(1, customer_class=2)
+        ind2 = ciw.Individual(1, customer_class=0)
         B.state = [[[[], [], [], []],
                     [[], [], [], []],
                     [[], [], [], []],
                     [[], [], [], []]],
                     [2, 3, 1, 0]]
-        B.change_state_block(1, 3, 2)
+        B.change_state_block(N1, N3, ind1)
         self.assertEqual(B.state, [[[[], [], [1], []],
                                     [[], [], [], []],
                                     [[], [], [], []],
                                     [[], [], [], []]],
                                     [2, 3, 1, 0]])
-        B.change_state_block(2, 1, 0)
+        B.change_state_block(N2, N1, ind2)
         self.assertEqual(B.state, [[[[],  [], [1], []],
                                     [[2], [], [],  []],
                                     [[],  [], [],  []],
                                     [[],  [], [],  []]],
                                     [2, 3, 1, 0]])
-        B.change_state_block(1, 3, 0)
+        B.change_state_block(N1, N3, ind2)
         self.assertEqual(B.state, [[[[],  [], [1, 3], []],
                                     [[2], [], [],     []],
                                     [[],  [], [],     []],
@@ -506,18 +549,22 @@ class TestMatrixBlocking(unittest.TestCase):
           'ciw/tests/testing_parameters/params.yml'))
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
+        N1 = Q.nodes[1]
+        N3 = Q.nodes[3]
+        ind1 = ciw.Individual(1, customer_class=2)
+        ind2 = ciw.Individual(1, customer_class=0)
         B.state = [[[[],  [], [1, 3], []],
                     [[2], [], [],     []],
                     [[],  [], [],     []],
                     [[],  [], [],     []]],
                     [2, 3, 1, 0]]
-        B.change_state_release(3, 1, 2, False)
+        B.change_state_release(N3, N1, ind1, False)
         self.assertEqual(B.state, [[[[],  [], [1, 3], []],
                                      [[2], [], [],     []],
                                      [[],  [], [],     []],
                                      [[],  [], [],     []]],
                                      [2, 3, 0, 0]])
-        B.change_state_release(1, 3, 0, True)
+        B.change_state_release(N1, N3, ind1, True)
         self.assertEqual(B.state, [[[[],  [], [2], []],
                                     [[1], [], [],   []],
                                     [[],  [], [],   []],
