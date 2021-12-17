@@ -41,7 +41,7 @@ For each server we can plot their cumulative count of individuals served over ti
     >>>     plt.legend() # doctest:+SKIP
 
 .. image:: ../../_static/server_dependent_dist_without.svg
-   :alt: Plot of population over time.
+   :alt: Plot server commission over time, all with the same behaviour.
    :align: center
 
 
@@ -95,7 +95,7 @@ Plotting the cumulative counts for each server population over time::
     >>>     plt.legend() # doctest:+SKIP
 
 .. image:: ../../_static/server_dependent_dist_with.svg
-   :alt: Plot of population increasing over time.
+   :alt: Plot server commission over time, all with the different behaviour.
    :align: center
 
 We now see that each of the servers has a different rate at which they gain commission.
