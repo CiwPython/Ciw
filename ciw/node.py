@@ -112,26 +112,29 @@ class Node(object):
         server.cust = individual
         server.busy = True
         individual.server = server
-        server.next_end_service_date = individual.service_end_date
         self.simulation.deadlock_detector.action_at_attach_server(
             self, server, individual)
 
     def begin_service_if_possible_accept(self, next_individual):
         """
         Begins the service of the next individual (at acceptance point):
-          - give an arrival date and service time
-          - if there's a free server, give a start date and end date
-          - attach server to individual
+            - Sets the arrival date as the current time
+            - If there is a free server or there are infinite servers:
+                - Attach the server to the individual (only when servers are not infinite)
+            - Get service start time, service time, service end time
+            - Update the server's end date (only when servers are not infinite)
         """
         next_individual.arrival_date = self.get_now()
         free_server = self.find_free_server()
         if free_server is not None or isinf(self.c):
+            if not isinf(self.c):
+                self.attach_server(free_server, next_individual)
             next_individual.service_start_date = self.get_now()
             next_individual.service_time = self.get_service_time(next_individual)
             next_individual.service_end_date = self.increment_time(
                 self.get_now(), next_individual.service_time)
-            if free_server is not None:
-                self.attach_server(free_server, next_individual)
+            if not isinf(self.c):
+                free_server.next_end_service_date = next_individual.service_end_date
 
     def begin_interrupted_individuals_service(self, srvr):
         """
@@ -145,10 +148,11 @@ class Node(object):
             node_blocked_to.blocked_queue.remove((self.id_number, ind.id_number))
             node_blocked_to.len_blocked_queue -= 1
             ind.is_blocked = False
+        self.attach_server(srvr, ind)
         ind.service_time = self.get_service_time(ind)
         ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
         ind.interrupted = False
-        self.attach_server(srvr, ind)
+        srvr.next_end_service_date = ind.service_end_date
         self.interrupted_individuals.remove(ind)
         self.number_interrupted_individuals -= 1
 
@@ -167,11 +171,12 @@ class Node(object):
             else:
                 for ind in self.all_individuals:
                     if not ind.server:
+                        self.attach_server(srvr, ind)
                         ind.service_start_date = self.get_now()
                         ind.service_time = self.get_service_time(ind)
                         ind.service_end_date = self.increment_time(
                             ind.service_start_date, ind.service_time)
-                        self.attach_server(srvr, ind)
+                        srvr.next_end_service_date = ind.service_end_date
                         break
 
     def begin_service_if_possible_release(self):
@@ -191,11 +196,12 @@ class Node(object):
             else:
                 for ind in self.all_individuals:
                     if not ind.server:
+                        self.attach_server(srvr, ind)
                         ind.service_start_date = self.get_now()
                         ind.service_time = self.get_service_time(ind)
                         ind.service_end_date = self.increment_time(
                             ind.service_start_date, ind.service_time)
-                        self.attach_server(srvr, ind)
+                        srvr.next_end_service_date = ind.service_end_date
                         break
 
     def block_individual(self, individual, next_node):
