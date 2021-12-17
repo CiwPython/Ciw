@@ -7,4 +7,5 @@
 .coverage
 dist/
 *.hypothesis/*
+*ciw/.hypothesis*
 env/
