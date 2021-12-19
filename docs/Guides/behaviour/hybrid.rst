@@ -156,7 +156,7 @@ Now a function can be written that will run one trial of this hybrid simulation.
         results['D'] = Q.SD.D
         return results
 
-Running these for one trial only (this is bad practice, see here), we can plot the stock levels over time. We see that changing the number of servers from :math:`k = 1` to :math:`k = 3`, a parameter associated with the discrete component, changes the stock levels, results associated with the continuous component.
+Running these for one trial only (this is bad practice, :ref:`see here <simulation-practice>`), we can plot the stock levels over time. We see that changing the number of servers from :math:`k = 1` to :math:`k = 3`, a parameter associated with the discrete component, changes the stock levels, results associated with the continuous component.
 
 .. image:: ../../_static/des+sd_hybrid.svg
    :alt: Stock level plots of the hybrid simulation results.

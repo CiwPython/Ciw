@@ -12,7 +12,7 @@ It is therefore a random sum of exponential variables.
 The diagram below gives a general representation of an absorbing Markov chain with four states, 1, 2, 3, and the absorbing state :math:`\star`:
 
 .. image:: ../_static/phasetype.svg
-   :scale: 100 %
+   :width: 100%
    :alt: Absorbing Markov chain of a general Phase-Type distribution.
    :align: center
 
@@ -53,7 +53,7 @@ Erlang Distributions
 An Erlang distribution with parameters :math:`\lambda` and :math:`n` is the sum of :math:`n` Exponential distributions with parameter :math:`\lambda`. This can be equivalently defined as the Phase-Type distribution with the following structure:
 
 .. image:: ../_static/erlang.svg
-   :scale: 100 %
+   :width: 100%
    :alt: Absorbing Markov chain of an Erlang distribution.
    :align: center
 
@@ -85,7 +85,7 @@ HyperExponential Distributions
 An HyperExponential distribution is defined by a probability vector :math:`\mathbf{p}` and rate vector :math:`\mathbf{\lambda}`, and samples an Exponential distribution with parameter :math:`\lambda_i` with probability :math:`p_i`. This can be equivalently defined as the Phase-Type distribution with the following structure:
 
 .. image:: ../_static/hyperexponential.svg
-   :scale: 100 %
+   :width: 100%
    :alt: Absorbing Markov chain of a HyperExponential distribution.
    :align: center
 
@@ -118,7 +118,7 @@ A HyperErlang distribution is defined by parameters :math:`\mathbf{\lambda}`, :m
 
 
 .. image:: ../_static/hypererlang.svg
-   :scale: 100 %
+   :width: 100%
    :alt: Absorbing Markov chain of a HyperErlang distribution.
    :align: center
 
@@ -151,7 +151,7 @@ A Coxian distribution is defined by parameters :math:`\mathbf{\lambda}`, the rat
 
 
 .. image:: ../_static/coxian.svg
-   :scale: 100 %
+   :width: 100%
    :alt: Absorbing Markov chain of a general Coxian distribution.
    :align: center
 
