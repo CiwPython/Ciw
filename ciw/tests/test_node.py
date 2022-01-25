@@ -722,3 +722,47 @@ class TestNode(unittest.TestCase):
             'ciw/tests/testing_parameters/params.yml')
         Q = AssertSim(N)
         Q.simulate_until_max_time(100)
+
+    def test_server_priority_function_allocate_to_less_busy(self):
+        """
+        Test that the server priority function is working correctly.
+        """
+        def get_server_busy_time(server):
+            return server.busy_time
+
+        ciw.seed(0)
+        Q = ciw.Simulation(ciw.create_network(
+                arrival_distributions=[ciw.dists.Exponential(1)],
+                service_distributions=[ciw.dists.Exponential(2)],
+                number_of_servers=[2],
+                server_priority_function=get_server_busy_time
+            )
+        )
+        Q.simulate_until_max_time(1000)
+
+        expected_times = [245.07547532640024, 244.68396417751663]
+        for i, srv in enumerate(Q.nodes[1].servers):
+            self.assertEqual(srv.busy_time, expected_times[i])
+
+
+    def test_server_priority_function_allocate_to_last_server_first(self):
+        """
+        Test that the server priority function is working correctly.
+        """
+        def get_server_busy_time(server):
+            return -server.id_number
+
+        ciw.seed(0)
+        Q = ciw.Simulation(ciw.create_network(
+                arrival_distributions=[ciw.dists.Exponential(1)],
+                service_distributions=[ciw.dists.Exponential(2)],
+                number_of_servers=[2],
+                server_priority_function=get_server_busy_time
+            )
+        )
+        Q.simulate_until_max_time(1000)
+
+        expected_times = [158.68745586286119, 331.0719836410557]
+        for i, srv in enumerate(Q.nodes[1].servers):
+            self.assertEqual(srv.busy_time, expected_times[i])
+
