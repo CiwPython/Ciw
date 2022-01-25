@@ -21,6 +21,7 @@ class Node(object):
         """
         self.simulation = simulation
         node = self.simulation.network.service_centres[id_ - 1]
+        self.server_priority_function = node.server_priority_function
         if node.schedule:
             raw_schedule = node.schedule
             self.cyclelength = self.increment_time(0, raw_schedule[-1][1])
@@ -293,10 +294,18 @@ class Node(object):
         """
         if isinf(self.c):
             return None
-        for svr in self.servers:
+        
+        if self.server_priority_function is None:
+            all_servers = self.servers
+        else:
+            all_servers = sorted(self.servers, key=self.server_priority_function)
+
+        for svr in all_servers:
             if not svr.busy:
                 return svr
         return None
+
+
 
     def find_next_individual(self):
         """
