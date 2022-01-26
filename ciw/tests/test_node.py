@@ -251,7 +251,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.service_start_date, False)
         self.assertEqual(ind.service_end_date, False)
         Q.current_time = 200.0
-        Q.transitive_nodes[0].begin_service_if_possible_release()
+        Q.transitive_nodes[0].begin_service_if_possible_release(ind)
         self.assertEqual(ind.arrival_date, 100.0)
         self.assertEqual(round(ind.service_time, 5), 0.03382)
         self.assertEqual(ind.service_start_date, 200.0)
@@ -266,9 +266,9 @@ class TestNode(unittest.TestCase):
         N1.individuals = [[ciw.Individual(i) for i in range(N1.c + 3)]]
         N2.individuals = [[ciw.Individual(i + 100) for i in range(N2.c + 4)]]
         for ind in N1.all_individuals[:2]:
-            N1.attach_server(N1.find_free_server(), ind)
+            N1.attach_server(N1.find_free_server(ind), ind)
         for ind in N2.all_individuals[:1]:
-            N2.attach_server(N2.find_free_server(), ind)
+            N2.attach_server(N2.find_free_server(ind), ind)
 
         self.assertEqual([str(obs) for obs in N1.all_individuals],
             ['Individual 0',
@@ -728,7 +728,7 @@ class TestNode(unittest.TestCase):
         Test the server priority function when we prioritise the server that was
         less busy throughout the simulation.
         """
-        def get_server_busy_time(server):
+        def get_server_busy_time(server, ind):
             return server.busy_time
 
         ciw.seed(0)
@@ -751,7 +751,7 @@ class TestNode(unittest.TestCase):
         Test the server priority function when we prioritise the server with the
         highest id number.
         """
-        def get_server_busy_time(server):
+        def get_server_busy_time(server, ind):
             return -server.id_number
 
         ciw.seed(0)
@@ -773,10 +773,10 @@ class TestNode(unittest.TestCase):
         Test the server priority function with two nodes that each has a 
         different priority rule.
         """
-        def prioritise_less_busy(srv):
+        def prioritise_less_busy(srv, ind):
             return srv.busy_time
 
-        def prioritise_highest_id(srv):
+        def prioritise_highest_id(srv, ind):
             return -srv.id_number
 
         ciw.seed(0)
