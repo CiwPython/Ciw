@@ -1,6 +1,10 @@
 History
 -------
 
+v2.2.3 (2021-01-27)
+~~~~~~~~~~~~~~~~~~~
+- Server priority functions implemented.
+
 v2.2.2 (2021-12-17)
 ~~~~~~~~~~~~~~~~~~~
 - State trackers now take objects not indices
