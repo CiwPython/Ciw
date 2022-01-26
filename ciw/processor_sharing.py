@@ -64,7 +64,7 @@ class PSNode(Node):
             next_individual.with_server = True
             self.update_all_service_end_dates()
 
-    def begin_service_if_possible_release(self):
+    def begin_service_if_possible_release(self, ind=None):
         """
         Begins the service of the next individual (at point
         of previous individual's release)

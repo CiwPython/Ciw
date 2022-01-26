@@ -21,6 +21,7 @@ class Node(object):
         """
         self.simulation = simulation
         node = self.simulation.network.service_centres[id_ - 1]
+        self.server_priority_function = node.server_priority_function
         if node.schedule:
             raw_schedule = node.schedule
             self.cyclelength = self.increment_time(0, raw_schedule[-1][1])
@@ -124,7 +125,7 @@ class Node(object):
             - Update the server's end date (only when servers are not infinite)
         """
         next_individual.arrival_date = self.get_now()
-        free_server = self.find_free_server()
+        free_server = self.find_free_server(next_individual)
         if free_server is not None or isinf(self.c):
             if not isinf(self.c):
                 self.attach_server(free_server, next_individual)
@@ -178,7 +179,7 @@ class Node(object):
                         srvr.next_end_service_date = ind.service_end_date
                         break
 
-    def begin_service_if_possible_release(self):
+    def begin_service_if_possible_release(self, next_individual):
         """
         Begins the service of the next individual (at point
         of previous individual's release)
@@ -188,7 +189,7 @@ class Node(object):
           - give a start date and end date
           - attach server to individual
         """
-        srvr = self.find_free_server()
+        srvr = self.find_free_server(next_individual)
         if srvr is not None:
             if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(srvr)
@@ -287,16 +288,26 @@ class Node(object):
         if server.offduty:
             self.kill_server(server)
 
-    def find_free_server(self):
+    def find_free_server(self, ind):
         """
         Finds a free server.
         """
         if isinf(self.c):
             return None
-        for svr in self.servers:
+        
+        if self.server_priority_function is None:
+            all_servers = self.servers
+        else:
+            all_servers = sorted(
+                self.servers, key=lambda srv: self.server_priority_function(srv, ind)
+            )
+
+        for svr in all_servers:
             if not svr.busy:
                 return svr
         return None
+
+
 
     def find_next_individual(self):
         """
@@ -418,7 +429,7 @@ class Node(object):
         self.write_individual_record(next_individual)
         self.simulation.statetracker.change_state_release(self,
             next_node, next_individual, next_individual.is_blocked)
-        self.begin_service_if_possible_release()
+        self.begin_service_if_possible_release(next_individual)
         next_node.accept(next_individual)
         self.release_blocked_individual()
 
