@@ -164,7 +164,7 @@ def create_network_from_dictionary(params_input):
             schedules[nd],
             preempts[nd],
             params['ps_thresholds'][nd],
-            params['server_priority_function']))
+            params['server_priority_function'][nd]))
     for clss in range(number_of_classes):
         if all(isinstance(f, types.FunctionType) for f in params['routing']):
             classes.append(CustomerClass(
@@ -234,7 +234,9 @@ def fill_out_dictionary(params_input):
             len(params['arrival_distributions']))},
         'ps_thresholds': [1 for _ in range(len(
             params['number_of_servers']))],
-        'server_priority_function' : None
+        'server_priority_function' : [
+            None for _ in range(len(params['number_of_servers']))
+        ]
         }
 
     for a in default_dict:

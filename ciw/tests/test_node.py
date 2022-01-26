@@ -725,7 +725,8 @@ class TestNode(unittest.TestCase):
 
     def test_server_priority_function_allocate_to_less_busy(self):
         """
-        Test that the server priority function is working correctly.
+        Test the server priority function when we prioritise the server that was
+        less busy throughout the simulation.
         """
         def get_server_busy_time(server):
             return server.busy_time
@@ -735,7 +736,7 @@ class TestNode(unittest.TestCase):
                 arrival_distributions=[ciw.dists.Exponential(1)],
                 service_distributions=[ciw.dists.Exponential(2)],
                 number_of_servers=[2],
-                server_priority_function=get_server_busy_time
+                server_priority_function=[get_server_busy_time]
             )
         )
         Q.simulate_until_max_time(1000)
@@ -747,7 +748,8 @@ class TestNode(unittest.TestCase):
 
     def test_server_priority_function_allocate_to_last_server_first(self):
         """
-        Test that the server priority function is working correctly.
+        Test the server priority function when we prioritise the server with the
+        highest id number.
         """
         def get_server_busy_time(server):
             return -server.id_number
@@ -757,7 +759,7 @@ class TestNode(unittest.TestCase):
                 arrival_distributions=[ciw.dists.Exponential(1)],
                 service_distributions=[ciw.dists.Exponential(2)],
                 number_of_servers=[2],
-                server_priority_function=get_server_busy_time
+                server_priority_function=[get_server_busy_time]
             )
         )
         Q.simulate_until_max_time(1000)
@@ -766,3 +768,30 @@ class TestNode(unittest.TestCase):
         for i, srv in enumerate(Q.nodes[1].servers):
             self.assertEqual(srv.busy_time, expected_times[i])
 
+    def test_server_priority_function_two_nodes(self):
+        """
+        Test the server priority function with two nodes that each has a 
+        different priority rule.
+        """
+        def prioritise_less_busy(srv):
+            return srv.busy_time
+
+        def prioritise_highest_id(srv):
+            return -srv.id_number
+
+        ciw.seed(0)
+        Q = ciw.Simulation(ciw.create_network(
+                arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
+                service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
+                number_of_servers=[2, 2],
+                routing=[[0, 0], [0, 0]],
+                server_priority_function=[prioritise_less_busy, prioritise_highest_id]
+            )
+        )
+        Q.simulate_until_max_time(1000)
+        expected_times_node_1 = [256.2457715650031, 257.59339967047254]
+        expected_times_node_2 = [157.35577182806387, 356.41473247082365]
+
+        for i, (srv_1, srv_2) in enumerate(zip(Q.nodes[1].servers, Q.nodes[2].servers)):
+            self.assertEqual(srv_1.busy_time, expected_times_node_1[i])
+            self.assertEqual(srv_2.busy_time, expected_times_node_2[i])
