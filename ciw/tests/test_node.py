@@ -736,7 +736,7 @@ class TestNode(unittest.TestCase):
                 arrival_distributions=[ciw.dists.Exponential(1)],
                 service_distributions=[ciw.dists.Exponential(2)],
                 number_of_servers=[2],
-                server_priority_function=[get_server_busy_time]
+                server_priority_functions=[get_server_busy_time]
             )
         )
         Q.simulate_until_max_time(1000)
@@ -759,7 +759,7 @@ class TestNode(unittest.TestCase):
                 arrival_distributions=[ciw.dists.Exponential(1)],
                 service_distributions=[ciw.dists.Exponential(2)],
                 number_of_servers=[2],
-                server_priority_function=[get_server_busy_time]
+                server_priority_functions=[get_server_busy_time]
             )
         )
         Q.simulate_until_max_time(1000)
@@ -785,7 +785,7 @@ class TestNode(unittest.TestCase):
                 service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
                 number_of_servers=[2, 2],
                 routing=[[0, 0], [0, 0]],
-                server_priority_function=[prioritise_less_busy, prioritise_highest_id]
+                server_priority_functions=[prioritise_less_busy, prioritise_highest_id]
             )
         )
         Q.simulate_until_max_time(1000)

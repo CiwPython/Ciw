@@ -43,7 +43,7 @@ def create_network(arrival_distributions=None,
                    routing=None,
                    batching_distributions=None,
                    ps_thresholds=None,
-                   server_priority_function=None):
+                   server_priority_functions=None):
     """
     Takes in kwargs, creates dictionary.
     """
@@ -70,8 +70,8 @@ def create_network(arrival_distributions=None,
         params['batching_distributions'] = batching_distributions
     if ps_thresholds != None:
         params['ps_thresholds'] = ps_thresholds
-    if server_priority_function != None:
-        params['server_priority_function'] = server_priority_function
+    if server_priority_functions != None:
+        params['server_priority_functions'] = server_priority_functions
 
     return create_network_from_dictionary(params)
 
@@ -164,7 +164,7 @@ def create_network_from_dictionary(params_input):
             schedules[nd],
             preempts[nd],
             params['ps_thresholds'][nd],
-            params['server_priority_function'][nd]))
+            params['server_priority_functions'][nd]))
     for clss in range(number_of_classes):
         if all(isinstance(f, types.FunctionType) for f in params['routing']):
             classes.append(CustomerClass(
@@ -234,7 +234,7 @@ def fill_out_dictionary(params_input):
             len(params['arrival_distributions']))},
         'ps_thresholds': [1 for _ in range(len(
             params['number_of_servers']))],
-        'server_priority_function' : [
+        'server_priority_functions' : [
             None for _ in range(len(params['number_of_servers']))
         ]
         }
