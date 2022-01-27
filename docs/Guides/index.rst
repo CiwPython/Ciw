@@ -20,6 +20,7 @@ Contents:
    batching.rst
    baulking.rst
    server_schedule.rst
+   server_priority.rst
    dynamic_customerclasses.rst
    state_trackers.rst
    deadlock.rst

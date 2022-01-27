@@ -59,7 +59,7 @@ class TestStateTracker(unittest.TestCase):
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
         for ind in N.all_individuals:
-            srvr = N.find_free_server()
+            srvr = N.find_free_server(ind)
             N.attach_server(srvr, ind)
         self.assertEqual(Q.statetracker.state, None)
         Q.current_time = 43.11
@@ -154,7 +154,7 @@ class TestSystemPopulation(unittest.TestCase):
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
-            srvr = N.find_free_server()
+            srvr = N.find_free_server(ind)
             N.attach_server(srvr, ind)
         Q.statetracker.state = 14
         self.assertEqual(Q.statetracker.state, 14)
@@ -252,7 +252,7 @@ class TestNodePopulation(unittest.TestCase):
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
-            srvr = N.find_free_server()
+            srvr = N.find_free_server(ind)
             N.attach_server(srvr, ind)
         Q.statetracker.state = [5, 3, 6, 0]
         self.assertEqual(Q.statetracker.state, [5, 3, 6, 0])
@@ -348,7 +348,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
-            srvr = N.find_free_server()
+            srvr = N.find_free_server(ind)
             N.attach_server(srvr, ind)
         Q.statetracker.state = [[3, 2, 1], [1, 1, 1], [3, 1, 2], [0, 0, 0]]
         self.assertEqual(Q.statetracker.state, [[3, 2, 1], [1, 1, 1], [3, 1, 2], [0, 0, 0]])
@@ -443,7 +443,7 @@ class TestNaiveBlocking(unittest.TestCase):
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
-            srvr = N.find_free_server()
+            srvr = N.find_free_server(ind)
             N.attach_server(srvr, ind)
         Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
         self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
@@ -595,7 +595,7 @@ class TestMatrixBlocking(unittest.TestCase):
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
-            srvr = N.find_free_server()
+            srvr = N.find_free_server(ind)
             N.attach_server(srvr, ind)
         Q.statetracker.state = [[[[],  [2], [], []],
                                  [[],  [],  [], []],
