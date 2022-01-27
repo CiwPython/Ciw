@@ -32,7 +32,6 @@ It’s core features include the capability to simulate networks of queues, mult
 
 
 - `Read the documentation <https://ciw.readthedocs.io>`_
-- `Example Jupyter Notebooks <https://github.com/CiwPython/Ciw-notebooks>`_
 - `Contribution guidelines <https://github.com/CiwPython/Ciw/blob/master/CONTRIBUTING.rst>`_
 - `Our great contributors <https://github.com/CiwPython/Ciw/blob/master/AUTHORS.rst>`_
 
@@ -91,6 +90,7 @@ A number of other features are also implemented, including:
 + `Processor sharing <https://ciw.readthedocs.io/en/latest/Guides/processor-sharing.html>`_
 + `Multiple customer classes <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vii.html>`_
 + `Priorities <https://ciw.readthedocs.io/en/latest/Guides/priority.html>`_
++ `Server priorities <https://ciw.readthedocs.io/en/latest/Guides/server_priority.html>`_
 + `Customers changing classes <https://ciw.readthedocs.io/en/latest/Guides/dynamic_customerclasses.html>`_
 + `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/server_schedule.html>`_
 + `State tracking <https://ciw.readthedocs.io/en/latest/Guides/state_trackers.html>`_
