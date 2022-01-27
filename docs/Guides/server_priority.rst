@@ -10,7 +10,7 @@ For example, consider an :ref:`M/M/3 <kendall-notation>` system.
 By default, whenever a new individual arrives they would be allocated to:
 
 + server 1, if server 1 is not busy;
-+ server 2, if server 2 is not busy and server 1 is busyl
++ server 2, if server 2 is not busy and server 1 is busy;
 + server 3, if server 3 is not busy and server 1 and 2 are busy.
 
 Observing the utilisation of each server we can see that server 1 is far more busy than server 2 and server 3::
