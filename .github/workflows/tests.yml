@@ -30,12 +30,12 @@ jobs:
 
     - name: Check docs build
       run: |
-        python -m pip install sphinx
+        python -m pip install -r docs/requirements.txt
         cd docs; make html; cd ..;
 
     - name: Run tests
       run: |
-        python -m pip install coverage
+        python -m pip install -r test_requirements.txt
         coverage run --source=ciw -m unittest discover
 
     - name: Report coverage
