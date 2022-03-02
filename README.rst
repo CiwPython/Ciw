@@ -4,15 +4,11 @@ Ciw
 A discrete event simulation library for queueing networks
 ---------------------------------------------------------
 
-
-.. image:: https://app.travis-ci.com/CiwPython/Ciw.svg?branch=master
-    :target: https://app.travis-ci.com/CiwPython/Ciw
+.. image:: https://github.com/CiwPython/Ciw/actions/workflows/tests.yml/badge.svg
+    :target: https://github.com/CiwPython/Ciw/actions/workflows/tests.yml
 
 .. image:: https://img.shields.io/pypi/v/ciw.svg
     :target: https://pypi.python.org/pypi/Ciw
-
-.. image:: https://coveralls.io/repos/github/CiwPython/Ciw/badge.svg?branch=master
-    :target: https://coveralls.io/github/CiwPython/Ciw?branch=master
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
     :target: https://gitter.im/geraintpalmer/Ciw?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
