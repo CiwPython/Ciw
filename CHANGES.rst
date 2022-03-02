@@ -1,6 +1,12 @@
 History
 -------
 
+v2.2.4 (2021-03-02)
+~~~~~~~~~~~~~~~~~~~
+- Improve docs on pausing simulations and server priorities
+- Record server ID in the DataRecords
+- Move CI to GitHub Actions
+
 v2.2.3 (2021-01-27)
 ~~~~~~~~~~~~~~~~~~~
 - Server priority functions implemented.
