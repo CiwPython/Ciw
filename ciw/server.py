@@ -22,7 +22,7 @@ class Server(object):
 
     @property
     def utilisation(self):
-        return self.busy_time / self.total_time
+        return 3
 
     def __repr__(self):
         """
