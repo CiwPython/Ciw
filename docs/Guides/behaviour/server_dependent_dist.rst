@@ -22,7 +22,7 @@ We need to first define a way to record when each server serves their customers.
 Now consider an M/M/4 queue with :math:`\Lambda = 2` and :math:`\mu = 0.5`::
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(rate=2.0)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=5.0)],
     ...     service_distributions=[Exponential_CountCusts(rate=0.5)],
     ...     number_of_servers=[4],
     ... )
@@ -76,7 +76,7 @@ Now rerun the same system, telling Ciw to use the new :code:`Dependent_CountCust
 
     >>> rates = {1: 0.5, 2: 0.1, 3: 2, 4: 3}
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(rate=2.0)],
+    ...     arrival_distributions=[ciw.dists.Exponential(rate=5.0)],
     ...     service_distributions=[Dependent_CountCusts(rates=rates)],
     ...     number_of_servers=[4],
     ... )
