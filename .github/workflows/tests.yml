@@ -41,3 +41,7 @@ jobs:
     - name: Report coverage
       run: |
         coverage report -m --fail-under=100
+
+    - name: Run docts
+      run: |
+        python doctests.py
