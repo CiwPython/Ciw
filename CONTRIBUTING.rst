@@ -14,6 +14,7 @@ Install the testing dependencies::
 
 Install a development version of the library::
 
+    python -m pip install -r requirements.txt
     python setup.py develop
 
 Make sure the tests pass (Ciw uses unit & doc testing)::
