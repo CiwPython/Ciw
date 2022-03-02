@@ -48,7 +48,7 @@ To illustrate, let's simulate for 20 minutes::
 
     >>> blockages = [r.time_blocked for r in recs]
     >>> max(blockages)
-    7
+    1.402303...
 
 Here we see that in 20 minutes the maximum time a stool was blocked at a workstation for was 1.4 seconds.
 
