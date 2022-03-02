@@ -13,7 +13,7 @@ units::
     >>> N = ciw.create_network(
     ...      arrival_distributions=[ciw.dists.Exponential(rate=1)],
     ...      service_distributions=[ciw.dists.Exponential(rate=2)],
-    ...      number_of_servers=[3]
+    ...      number_of_servers=[1]
     ... )
     >>> ciw.seed(0)
     >>> Q = ciw.Simulation(N)
@@ -22,29 +22,34 @@ units::
 We can now inspect the simulation at this point, observing the records of the simulation for the first 5 time units::
 
     >>> import pandas as pd
-    >>> pd.DataFrame(Q.get_all_records())
-       id_number  customer_class  node  arrival_date  waiting_time ...
-    0          1               0     1      1.860607      0.000000 ...
-    1          2               0     1      2.406320      0.163601 ...
-    2          3               0     1      2.705963      0.221936 ...
-    3          4               0     1      3.225046      0.468626 ...
+    >>> columns = ["id_number", "arrival_date", "waiting_time"]
+    >>> recs = Q.get_all_records()
+    >>> df = pd.DataFrame(recs)
+    >>> df[columns]
+       id_number  arrival_date  waiting_time
+    0          1      1.860607      0.000000
+    1          2      2.406320      0.163601
+    2          3      2.705963      0.221936
+    3          4      3.225046      0.468626
 
 We can now resume the simulation and observe the records for a further 4 time
 units. Notice we have already reached time 5, therefore we simulate until 
 5 + 4 = 9 time units::
 
     >>> Q.simulate_until_max_time(9)
-    >>> pd.DataFrame(Q.get_all_records())
-        id_number  customer_class  node  arrival_date  waiting_time ...
-    0          1               0     1      1.860607      0.000000 ... 
-    1          2               0     1      2.406320      0.163601 ... 
-    2          3               0     1      2.705963      0.221936 ... 
-    3          4               0     1      3.225046      0.468626 ... 
-    4          5               0     1      3.586464      0.545000 ... 
-    5          6               0     1      4.233868      1.091194 ... 
-    6          7               0     1      4.936433      0.870279 ... 
-    7          8               0     1      5.267493      0.683398 ... 
-    8          9               0     1      6.677278      0.476178 ... 
+    >>> recs = Q.get_all_records()
+    >>> df = pd.DataFrame(recs)
+    >>> df[columns]
+       id_number  arrival_date  waiting_time
+    0          1      1.860607      0.000000
+    1          2      2.406320      0.163601
+    2          3      2.705963      0.221936
+    3          4      3.225046      0.468626
+    4          5      3.586464      0.545000
+    5          6      4.233868      1.091194
+    6          7      4.936433      0.870279
+    7          8      5.267493      0.683398
+    8          9      6.677278      0.476178
 
 Notice that the first four records are exactly the same. That is because they 
 are the very same records, they have not been re-simulated.
