@@ -34,7 +34,6 @@ jobs:
         cd docs; make html; cd ..;
 
     - name: Run tests
-      run: |
         python -m pip install coverage
         coverage run --source=ciw -m unittest discover
 

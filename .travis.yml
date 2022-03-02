@@ -1,0 +1,24 @@
+language: python
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+  - "pypy3"
+
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/.hypothesis
+
+install:
+  - pip install -r requirements.txt
+  - python setup.py develop
+  - pip install coveralls
+  - pip install sphinx
+script:
+  - cd docs; make html
+  - cd ..
+  - python doctests.py
+  - coverage run --source=ciw -m unittest discover ciw
+  - pip uninstall -y ciw
+  - pip install ciw
+after_success: coveralls
