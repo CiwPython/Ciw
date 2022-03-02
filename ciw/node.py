@@ -545,6 +545,11 @@ class Node(object):
             - Queue size at departure
             - Server id
         """
+        if isinf(self.c):
+            server_id = False
+        else:
+            server_id = individual.server.id_number
+        
         record = DataRecord(individual.id_number,
             individual.previous_class,
             self.id_number,
@@ -557,7 +562,8 @@ class Node(object):
             individual.exit_date,
             individual.destination,
             individual.queue_size_at_arrival,
-            individual.queue_size_at_departure)
+            individual.queue_size_at_departure,
+            server_id)
         individual.data_records.append(record)
 
     def reset_individual_attributes(self, individual):

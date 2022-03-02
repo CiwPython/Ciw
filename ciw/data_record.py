@@ -1,9 +1,9 @@
 from collections import namedtuple
 
 DataRecord = namedtuple('Record', [
-	'id_number',
-	'customer_class',
-	'node',
+    'id_number',
+    'customer_class',
+    'node',
     'arrival_date',
     'waiting_time',
     'service_start_date',
@@ -13,5 +13,6 @@ DataRecord = namedtuple('Record', [
     'exit_date',
     'destination',
     'queue_size_at_arrival',
-    'queue_size_at_departure'
+    'queue_size_at_departure',
+    'server_id'
     ])
