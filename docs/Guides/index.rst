@@ -12,7 +12,7 @@ Contents:
    progressbar.rst
    exact.rst
    sim_numcusts.rst
-   pause_restarts.rst
+   pause_restart.rst
    set_distributions.rst
    phasetype.rst
    time_dependent.rst
