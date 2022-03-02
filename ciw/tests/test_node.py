@@ -822,3 +822,39 @@ class TestNode(unittest.TestCase):
         for i, (srv_1, srv_2) in enumerate(zip(Q.nodes[1].servers, Q.nodes[2].servers)):
             self.assertEqual(srv_1.busy_time, expected_times_node_1[i])
             self.assertEqual(srv_2.busy_time, expected_times_node_2[i])
+
+    def test_records_correct_server_id(self):
+        """
+        Test that the server id is recorded correctly.
+        """
+        def custom_server_priority(srv, ind):
+            """
+            A custom server priority function that priortises server 1 for 
+            customer class 0 and server 2 for customer class 1.
+            """
+            if ind.customer_class == 0:
+                priorities = {1: 0, 2: 1}
+                return priorities[srv.id_number]
+            if ind.customer_class == 1:
+                priorities = {1: 1, 2: 0,}
+                return priorities[srv.id_number]
+
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Exponential(rate=1.0)], 'Class 1': [ciw.dists.Exponential(rate=1.0)]
+            },
+            service_distributions={
+                'Class 0': [ciw.dists.Exponential(rate=100.0)], 'Class 1': [ciw.dists.Exponential(rate=100.0)]
+            },
+            number_of_servers=[2],
+            server_priority_functions=[custom_server_priority],
+        )
+
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(50)
+
+        all_class_0_correct = all([rec.server_id == 1 for rec in Q.get_all_records() if rec.customer_class == 0])
+        all_class_1_correct = all([rec.server_id == 1 for rec in Q.get_all_records() if rec.customer_class == 0])
+
+        self.assertTrue(all_class_0_correct)
+        self.assertTrue(all_class_1_correct)
