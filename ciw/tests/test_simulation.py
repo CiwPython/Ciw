@@ -306,7 +306,8 @@ class TestSimulation(unittest.TestCase):
                             'Exit Date',
                             'Destination',
                             'Queue Size at Arrival',
-                            'Queue Size at Departure']
+                            'Queue Size at Departure',
+                            'Server I.D.']
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(50)
@@ -753,7 +754,8 @@ class TestSimulation(unittest.TestCase):
             'exit_date',
             'destination',
             'queue_size_at_arrival',
-            'queue_size_at_departure')
+            'queue_size_at_departure',
+            'server_id')
         self.assertEqual(ciw.data_record.DataRecord._fields, expected_fields)
         self.assertEqual(ciw.data_record.DataRecord.__name__, 'Record')
 
