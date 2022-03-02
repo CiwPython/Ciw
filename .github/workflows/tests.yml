@@ -10,7 +10,7 @@ jobs:
       max-parallel: 4
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,20 +23,25 @@ jobs:
       run: |
         python -m pip install --upgrade pip
 
-    - name: install testing dependencies
+    - name: Check docs build
+      run: |
+        python -m pip install -r docs/requirements.txt
+        cd docs; make html; cd ..;
+
+    - name: install the library
       run: |
         python -m pip install -r requirements.txt
         python setup.py develop
 
-    - name: Check docs build
-      run: |
-        python -m pip install sphinx
-        cd docs; make html; cd ..;
-
     - name: Run tests
-        python -m pip install coverage
+      run: |
+        python -m pip install -r test_requirements.txt
         coverage run --source=ciw -m unittest discover
 
     - name: Report coverage
       run: |
         coverage report -m --fail-under=100
+
+    - name: Run docts
+      run: |
+        python doctests.py
