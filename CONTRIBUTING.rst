@@ -8,12 +8,20 @@ Fork, then clone the repo::
 
     git clone git@github.com:your-username/Ciw.git
 
+Install the testing dependencies::
+
+    python -m pip install -r test_requirements.txt
+
+Install a development version of the library::
+
+    python setup.py develop
+
 Make sure the tests pass (Ciw uses unit & doc testing)::
 
     python -m unittest discover ciw
     python doctests.py
 
-We encourage the use of coverage, enusring all aspects of the code are tested::
+We encourage the use of coverage, ensuring all aspects of the code are tested::
 
     coverage run --source=ciw -m unittest discover ciw.tests
     coverage report -m
@@ -21,9 +29,10 @@ We encourage the use of coverage, enusring all aspects of the code are tested::
 Add tests for your change. Make your change and make the tests pass.
 
 Please update the documentation too, and ensure doctests pass.
-To build the documentation (`Sphinx <https://www.sphinx-doc.org/en/master/>`_ required)::
-    
+To build the documentation::
+
     cd docs
+    python -m pip install -r requirements.txt
     make html
 
 Push to your fork and submit a pull request!
