@@ -532,6 +532,33 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.data_records[0].exit_date, 9)
         self.assertEqual(ind.data_records[0].customer_class, 0)
 
+
+    def test_reset_individual_attributes(self):
+        ciw.seed(7)
+        Q = ciw.Simulation(ciw.create_network_from_yml(
+            'ciw/tests/testing_parameters/params.yml'))
+        N = Q.transitive_nodes[0]
+        ind = ciw.Individual(6)
+        Q.current_time = 3
+        N.accept(ind)
+        ind.service_start_date = 3.5
+        ind.service_end_date = 5.5
+        ind.exit_date = 9
+        N.write_individual_record(ind)
+        self.assertEqual(ind.arrival_date, 3)
+        self.assertEqual(ind.service_start_date, 3.5)
+        self.assertEqual(ind.service_end_date, 5.5)
+        self.assertEqual(ind.exit_date, 9)
+        self.assertEqual(ind.customer_class, 0)
+
+        N.reset_individual_attributes(ind)
+        self.assertFalse(ind.arrival_date)
+        self.assertFalse(ind.service_start_date)
+        self.assertFalse(ind.service_end_date)
+        self.assertFalse(ind.exit_date)
+        self.assertFalse(ind.customer_class)
+
+
     def test_date_from_schedule_generator(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))

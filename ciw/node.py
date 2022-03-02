@@ -424,9 +424,10 @@ class Node(object):
         self.number_of_individuals -= 1
         next_individual.queue_size_at_departure = self.number_of_individuals
         next_individual.exit_date = self.get_now()
+        self.write_individual_record(next_individual)
         if not isinf(self.c):
             self.detatch_server(next_individual.server, next_individual)
-        self.write_individual_record(next_individual)
+        self.reset_individual_attributes(next_individual)
         self.simulation.statetracker.change_state_release(self,
             next_node, next_individual, next_individual.is_blocked)
         self.begin_service_if_possible_release(next_individual)
@@ -542,6 +543,7 @@ class Node(object):
             - Previous class
             - Queue size at arrival
             - Queue size at departure
+            - Server id
         """
         record = DataRecord(individual.id_number,
             individual.previous_class,
@@ -558,6 +560,10 @@ class Node(object):
             individual.queue_size_at_departure)
         individual.data_records.append(record)
 
+    def reset_individual_attributes(self, individual):
+        """
+        Resets the attributes of an individual
+        """
         individual.arrival_date = False
         individual.service_time = False
         individual.service_start_date = False
@@ -566,6 +572,7 @@ class Node(object):
         individual.queue_size_at_arrival = False
         individual.queue_size_at_departure = False
         individual.destination = False
+
 
     def date_from_schedule_generator(self, boundaries):
         """
