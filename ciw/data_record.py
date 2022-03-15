@@ -14,5 +14,6 @@ DataRecord = namedtuple('Record', [
     'destination',
     'queue_size_at_arrival',
     'queue_size_at_departure',
-    'server_id'
+    'server_id',
+    'record_type'
     ])

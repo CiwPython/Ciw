@@ -318,7 +318,8 @@ class Simulation(object):
                                'Destination',
                                'Queue Size at Arrival',
                                'Queue Size at Departure',
-                               'Server I.D.']),
+                               'Server I.D.',
+                               'Record Type']),
         records = self.get_all_records()
         for row in records:
             csv_wrtr.writerow(row)

@@ -307,7 +307,8 @@ class TestSimulation(unittest.TestCase):
                             'Destination',
                             'Queue Size at Arrival',
                             'Queue Size at Departure',
-                            'Server I.D.']
+                            'Server I.D.',
+                            'Record Type']
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(50)
@@ -670,6 +671,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIsInstance(Q.nodes[1], DummyNode1)
         self.assertIsInstance(Q.nodes[2], DummyNode1)
         self.assertIsInstance(Q.nodes[3], DummyNode2)
+    
     def test_setting_individual_and_server_classes_in_init(self):
         class DummyIndividual(ciw.Individual):
             def __repr__(self):
@@ -755,7 +757,8 @@ class TestSimulation(unittest.TestCase):
             'destination',
             'queue_size_at_arrival',
             'queue_size_at_departure',
-            'server_id')
+            'server_id',
+            'record_type')
         self.assertEqual(ciw.data_record.DataRecord._fields, expected_fields)
         self.assertEqual(ciw.data_record.DataRecord.__name__, 'Record')
 

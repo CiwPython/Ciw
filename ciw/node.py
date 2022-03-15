@@ -563,7 +563,8 @@ class Node(object):
             individual.destination,
             individual.queue_size_at_arrival,
             individual.queue_size_at_departure,
-            server_id)
+            server_id,
+            'service')
         individual.data_records.append(record)
 
     def reset_individual_attributes(self, individual):

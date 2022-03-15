@@ -5,7 +5,7 @@ from hypothesis.strategies import floats, integers
 
 class TestDataRecord(unittest.TestCase):
     def test_init_method(self):
-        r = ciw.DataRecord(2, 2, 1, 2, 0, 2, 3, 5, 3, 8, 1, 0, 3, 1)
+        r = ciw.DataRecord(2, 2, 1, 2, 0, 2, 3, 5, 3, 8, 1, 0, 3, 1, 'service')
         self.assertEqual(r.id_number, 2)
         self.assertEqual(r.customer_class, 2)
         self.assertEqual(r.node, 1)
@@ -20,8 +20,9 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.queue_size_at_arrival, 0)
         self.assertEqual(r.queue_size_at_departure, 3)
         self.assertEqual(r.server_id, 1)
+        self.assertEqual(r.record_type, 'service')
 
-        r = ciw.DataRecord(355, 3, 1, 5.7, 2.5, 8.2, 2.1, 10.3, 0.0, 10.3, -1, 32, 21, 100)
+        r = ciw.DataRecord(355, 3, 1, 5.7, 2.5, 8.2, 2.1, 10.3, 0.0, 10.3, -1, 32, 21, 100, 'service')
         self.assertEqual(r.id_number, 355)
         self.assertEqual(r.customer_class, 3)
         self.assertEqual(r.node, 1)
@@ -36,6 +37,7 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.queue_size_at_arrival, 32)
         self.assertEqual(r.queue_size_at_departure, 21)
         self.assertEqual(r.server_id, 100)
+        self.assertEqual(r.record_type, 'service')
 
 
     @given(arrival_date = floats(min_value = 0.0, max_value = 99999.99),
@@ -71,7 +73,7 @@ class TestDataRecord(unittest.TestCase):
         r = ciw.DataRecord(id_number, customer_class, node, arrival_date,
             waiting_time, service_start_date, service_time, service_end_date,
             time_blocked, exit_date, destination, queue_size_at_arrival,
-            queue_size_at_departure, server_id)
+            queue_size_at_departure, server_id, 'service')
 
         # The tests
         self.assertEqual(r.id_number, id_number)
@@ -88,3 +90,4 @@ class TestDataRecord(unittest.TestCase):
         self.assertEqual(r.queue_size_at_arrival, queue_size_at_arrival)
         self.assertEqual(r.queue_size_at_departure, queue_size_at_departure)
         self.assertEqual(r.server_id, server_id)
+        self.assertEqual(r.record_type, 'service')
