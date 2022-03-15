@@ -11,6 +11,8 @@ def get_distribution(dist):
     Returns instances of the distribution classes that
     correspond to the indicator string in the .yml file.
     """
+    if dist == None:
+        return None
     if dist[0] == 'Uniform':
        return ciw.dists.Uniform(dist[1], dist[2])
     if dist[0] == 'Deterministic':
@@ -43,7 +45,9 @@ def create_network(arrival_distributions=None,
                    routing=None,
                    batching_distributions=None,
                    ps_thresholds=None,
-                   server_priority_functions=None):
+                   server_priority_functions=None,
+                   reneging_time_distributions=None,
+                   reneging_destinations=None):
     """
     Takes in kwargs, creates dictionary.
     """
@@ -72,6 +76,10 @@ def create_network(arrival_distributions=None,
         params['ps_thresholds'] = ps_thresholds
     if server_priority_functions != None:
         params['server_priority_functions'] = server_priority_functions
+    if reneging_time_distributions != None:
+        params['reneging_time_distributions'] = reneging_time_distributions
+    if reneging_destinations != None:
+        params['reneging_destinations'] = reneging_destinations
 
     return create_network_from_dictionary(params)
 
@@ -105,6 +113,11 @@ def create_network_from_yml(directory_name):
         for dist in params['service_distributions'][clss]:
             dists.append(get_distribution(dist))
         params['service_distributions'][clss] = dists
+    for clss in params['reneging_time_distributions']:
+        dists = []
+        for dist in params['reneging_time_distributions'][clss]:
+            dists.append(get_distribution(dist))
+        params['reneging_time_distributions'][clss] = dists
     validify_dictionary(params)
     return create_network_from_dictionary(params)
 
@@ -173,7 +186,9 @@ def create_network_from_dictionary(params_input):
                 routing,
                 priorities[clss],
                 baulking_functions[clss],
-                batches[clss]))
+                batches[clss],
+                params['reneging_time_distributions']['Class ' + str(clss)],
+                params['reneging_destinations']['Class ' + str(clss)]))
         else:
             classes.append(CustomerClass(
                 arrivals[clss],
@@ -181,7 +196,10 @@ def create_network_from_dictionary(params_input):
                 routing[clss],
                 priorities[clss],
                 baulking_functions[clss],
-                batches[clss]))
+                batches[clss],
+                params['reneging_time_distributions']['Class ' + str(clss)],
+                params['reneging_destinations']['Class ' + str(clss)]))
+
     n = Network(nodes, classes)
     if all(isinstance(f, types.FunctionType) for f in params['routing']):
         n.process_based = True
@@ -214,6 +232,14 @@ def fill_out_dictionary(params_input):
         if isinstance(params['batching_distributions'], list):
             btch_dists = params['batching_distributions']
             params['batching_distributions'] = {'Class 0': btch_dists}
+    if 'reneging_time_distributions' in params:
+        if isinstance(params['reneging_time_distributions'], list):
+            reneging_dists = params['reneging_time_distributions']
+            params['reneging_time_distributions'] = {'Class 0': reneging_dists}
+    if 'reneging_destinations' in params:
+        if isinstance(params['reneging_destinations'], list):
+            reneging_dests = params['reneging_destinations']
+            params['reneging_destinations'] = {'Class 0': reneging_dests}
 
     default_dict = {
         'name': 'Simulation',
@@ -235,8 +261,13 @@ def fill_out_dictionary(params_input):
         'ps_thresholds': [1 for _ in range(len(
             params['number_of_servers']))],
         'server_priority_functions' : [
-            None for _ in range(len(params['number_of_servers']))
-        ]
+            None for _ in range(len(params['number_of_servers']))],
+        'reneging_time_distributions': {'Class ' + str(i): [
+            None for _ in range(len(params['number_of_servers']))]
+            for i in range(len(params['arrival_distributions']))},
+        'reneging_destinations': {'Class ' + str(i): [
+            -1 for _ in range(len(params['number_of_servers']))]
+            for i in range(len(params['arrival_distributions']))},
         }
 
     for a in default_dict:
@@ -254,14 +285,20 @@ def validify_dictionary(params):
             params['number_of_classes'] ==
             len(params['arrival_distributions']) ==
             len(params['service_distributions']) ==
-            len(params['batching_distributions']))
+            len(params['batching_distributions']) ==
+            len(params['reneging_time_distributions']) ==
+            len(params['reneging_destinations'])
+        )
     else:
         consistant_num_classes = (
             params['number_of_classes'] ==
             len(params['arrival_distributions']) ==
             len(params['service_distributions']) ==
             len(params['routing']) ==
-            len(params['batching_distributions']))
+            len(params['batching_distributions']) ==
+            len(params['reneging_time_distributions']) ==
+            len(params['reneging_destinations'])
+        )
     if not consistant_num_classes:
         raise ValueError('Ensure consistant number of classes is used throughout.')
     if all(isinstance(f, types.FunctionType) for f in params['routing']):
@@ -269,6 +306,8 @@ def validify_dictionary(params):
             set(params['arrival_distributions']) ==
             set(params['service_distributions']) ==
             set(params['batching_distributions']) ==
+            set(params['reneging_time_distributions']) ==
+            set(params['reneging_destinations']) ==
             set(['Class ' + str(i) for i in range(params['number_of_classes'])]))
     else:
         consistant_class_names = (
@@ -276,6 +315,8 @@ def validify_dictionary(params):
             set(params['service_distributions']) ==
             set(params['routing']) ==
             set(params['batching_distributions']) ==
+            set(params['reneging_time_distributions']) ==
+            set(params['reneging_destinations']) ==
             set(['Class ' + str(i) for i in range(params['number_of_classes'])]))
     if not consistant_class_names:
         raise ValueError('Ensure correct names for customer classes.')
@@ -285,8 +326,11 @@ def validify_dictionary(params):
         len(obs) for obs in params['arrival_distributions'].values()] + [
         len(obs) for obs in params['service_distributions'].values()] + [
         len(obs) for obs in params['batching_distributions'].values()] + [
+        len(obs) for obs in params['reneging_time_distributions'].values()] + [
+        len(obs) for obs in params['reneging_destinations'].values()] + [
         len(params['routing'])] + [
         len(params['number_of_servers'])] + [
+        len(params['server_priority_functions'])] + [
         len(params['queue_capacities'])]
     else:
         num_nodes_count = [
@@ -295,12 +339,15 @@ def validify_dictionary(params):
             len(obs) for obs in params['service_distributions'].values()] + [
             len(obs) for obs in params['routing'].values()] + [
             len(obs) for obs in params['batching_distributions'].values()] + [
+            len(obs) for obs in params['reneging_time_distributions'].values()] + [
+            len(obs) for obs in params['reneging_destinations'].values()] + [
             len(row) for row in [obs for obs in params['routing'].values()][0]] + [
             len(params['number_of_servers'])] + [
+            len(params['server_priority_functions'])] + [
             len(params['queue_capacities'])]
     if len(set(num_nodes_count)) != 1:
         raise ValueError('Ensure consistant number of nodes is used throughout.')
-    if not all(isinstance(f, types.FunctionType) for f in params['routing']):    
+    if not all(isinstance(f, types.FunctionType) for f in params['routing']):
         for clss in params['routing'].values():
             for row in clss:
                 if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
@@ -324,3 +371,8 @@ def validify_dictionary(params):
         if isinstance(n, str) and n != 'Inf':
             if n not in params:
                 raise ValueError('No schedule ' + str(n) + ' defined.')
+    possible_destinations = list(range(1, params['number_of_nodes'] + 1)) + [-1]
+    for dests in params['reneging_destinations']:
+        correct_destinations = all(d in possible_destinations for d in params['reneging_destinations'][dests])
+        if not correct_destinations:
+            raise ValueError('Ensure all reneging destinations are possible.')

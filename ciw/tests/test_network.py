@@ -56,13 +56,17 @@ class TestCustomerClass(unittest.TestCase):
         batching_distributions = [ciw.dists.Deterministic(1),
                                   ciw.dists.Deterministic(1),
                                   ciw.dists.Deterministic(1)]
+        reneging_time_distributions = [None, None, None]
+        reneging_destinations = [-1, -1, -1]
 
-        CC = ciw.CustomerClass(arrival_distributions, service_distributions, routing, priority_class, baulking_functions, batching_distributions)
+        CC = ciw.CustomerClass(arrival_distributions, service_distributions, routing, priority_class, baulking_functions, batching_distributions, reneging_time_distributions, reneging_destinations)
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
         self.assertEqual(CC.service_distributions, service_distributions)
         self.assertEqual(CC.batching_distributions, batching_distributions)
         self.assertEqual(CC.routing, routing)
         self.assertEqual(CC.priority_class, priority_class)
+        self.assertEqual(CC.reneging_time_distributions, reneging_time_distributions)
+        self.assertEqual(CC.reneging_destinations, reneging_destinations)
 
         # check baulking function works
         self.assertEqual(CC.baulking_functions[2](0), 0.0)
@@ -97,6 +101,8 @@ class TestNetwork(unittest.TestCase):
                                   ciw.dists.Deterministic(1),
                                   ciw.dists.Deterministic(1)]
         baulking_functions = [None, None, example_baulking_function]
+        reneging_time_distributions = [None, None, None],
+        reneging_destinations = [-1, -1, -1]
         service_centres = [ciw.ServiceCentre(number_of_servers,
                                              queueing_capacity,
                                              class_change_matrix,
@@ -106,7 +112,9 @@ class TestNetwork(unittest.TestCase):
                                               routing,
                                               priority_class,
                                               baulking_functions,
-                                              batching_distributions) for i in range(2)]
+                                              batching_distributions,
+                                              reneging_time_distributions,
+                                              reneging_destinations) for i in range(2)]
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)

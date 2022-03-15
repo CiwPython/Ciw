@@ -44,7 +44,9 @@ class CustomerClass(object):
                  routing,
                  priority_class,
                  baulking_functions,
-                 batching_distributions):
+                 batching_distributions,
+                 reneging_time_distributions,
+                 reneging_destinations):
         """
         Initialises the CutomerCass object.
         """
@@ -54,6 +56,8 @@ class CustomerClass(object):
         self.routing = routing
         self.priority_class = priority_class
         self.baulking_functions = baulking_functions
+        self.reneging_time_distributions = reneging_time_distributions
+        self.reneging_destinations = reneging_destinations
 
 class Network(object):
     """
