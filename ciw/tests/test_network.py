@@ -94,19 +94,19 @@ class TestNetwork(unittest.TestCase):
                                  ciw.dists.Uniform(0.6, 1.2),
                                  ciw.dists.Exponential(5)]
         routing = [[0.2, 0.6, 0.2],
-                             [0.0, 0.0, 0.0],
-                             [0.5, 0.0, 0.0]]
+                   [0.0, 0.0, 0.0],
+                   [0.5, 0.0, 0.0]]
         priority_class = 0
         batching_distributions = [ciw.dists.Deterministic(1),
                                   ciw.dists.Deterministic(1),
                                   ciw.dists.Deterministic(1)]
         baulking_functions = [None, None, example_baulking_function]
-        reneging_time_distributions = [None, None, None],
+        reneging_time_distributions = [None, None, None]
         reneging_destinations = [-1, -1, -1]
         service_centres = [ciw.ServiceCentre(number_of_servers,
                                              queueing_capacity,
                                              class_change_matrix,
-                                             schedule) for i in range(4)]
+                                             schedule) for i in range(3)]
         customer_classes = [ciw.CustomerClass(arrival_distributions,
                                               service_distributions,
                                               routing,
@@ -118,10 +118,12 @@ class TestNetwork(unittest.TestCase):
         N = ciw.Network(service_centres, customer_classes)
         self.assertEqual(N.service_centres, service_centres)
         self.assertEqual(N.customer_classes, customer_classes)
-        self.assertEqual(N.number_of_nodes, 4)
+        self.assertEqual(N.number_of_nodes, 3)
         self.assertEqual(N.number_of_classes, 2)
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {0:0, 1:0})
+        self.assertFalse(N.service_centres[0].reneging)
+        self.assertFalse(N.service_centres[1].reneging)
 
 
     def test_create_network_from_dictionary(self):
@@ -566,10 +568,12 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.service_centres[0].number_of_servers, 2)
         self.assertEqual(N.service_centres[0].schedule, None)
         self.assertFalse(N.service_centres[0].preempt)
+        self.assertTrue(N.service_centres[0].reneging)
         self.assertEqual(N.service_centres[1].queueing_capacity, float('inf'))
         self.assertEqual(N.service_centres[1].number_of_servers, 2)
         self.assertEqual(N.service_centres[1].schedule, None)
         self.assertFalse(N.service_centres[1].preempt)
+        self.assertFalse(N.service_centres[1].reneging)
         self.assertEqual(str(N.customer_classes[0].reneging_time_distributions[0]), 'Exponential: 1')
         self.assertEqual(N.customer_classes[0].reneging_time_distributions[1], None)
         self.assertEqual(N.customer_classes[0].reneging_destinations[0], 2)

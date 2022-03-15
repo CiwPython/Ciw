@@ -67,6 +67,7 @@ class Node(object):
         self.number_interrupted_individuals = 0
         self.all_servers_total = []
         self.all_servers_busy = []
+        self.reneging = node.reneging
 
     @property
     def all_individuals(self):
