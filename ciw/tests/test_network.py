@@ -310,9 +310,8 @@ class TestNetwork(unittest.TestCase):
                   'number_of_classes': 1,
                   'routing': {'Class 0': [[0.5]]},
                   'number_of_nodes': 1,
-                  'queue_capacities': [float('inf')],
-                  'detect_deadlock': False}
-        params_list = [copy.deepcopy(params) for i in range(23)]
+                  'queue_capacities': [float('inf')]}
+        params_list = [copy.deepcopy(params) for i in range(26)]
 
         params_list[0]['number_of_classes'] = -2
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[0])
@@ -366,6 +365,12 @@ class TestNetwork(unittest.TestCase):
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[21])
         params_list[22]['class_change_matrices'] = {'Node 1':[[1.5]]}
         self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[22])
+        params_list[23]['reneging_time_distributions'] = {'Class 0': [ciw.dists.Exponential(1), ciw.dists.Exponential(1)]}
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[23])
+        params_list[24]['reneging_destinations'] = {'Class 0': [-1, -1, -1]}
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[24])
+        params_list[25]['reneging_destinations'] = {'Class 0': [7]}
+        self.assertRaises(ValueError, ciw.create_network_from_dictionary, params_list[25])
 
 
 class TestImportNoMatrix(unittest.TestCase):
@@ -545,6 +550,30 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                                                          [0.0, 0.0, 0.0]])
         self.assertEqual(N.customer_classes[0].baulking_functions, [None, None, example_baulking_function])
         self.assertEqual(N.number_of_priority_classes, 1)
+
+
+        N = ciw.create_network(
+                arrival_distributions=[ciw.dists.Exponential(5), ciw.dists.Exponential(5)],
+                service_distributions=[ciw.dists.Exponential(4), ciw.dists.Exponential(3)],
+                number_of_servers=[2, 2],
+                routing=[[0.0, 1.0], [0.2, 0.2]],
+                reneging_time_distributions=[ciw.dists.Exponential(1), None],
+                reneging_destinations=[2, -1]
+            )
+        self.assertEqual(N.number_of_nodes, 2)
+        self.assertEqual(N.number_of_classes, 1)
+        self.assertEqual(N.service_centres[0].queueing_capacity, float('inf'))
+        self.assertEqual(N.service_centres[0].number_of_servers, 2)
+        self.assertEqual(N.service_centres[0].schedule, None)
+        self.assertFalse(N.service_centres[0].preempt)
+        self.assertEqual(N.service_centres[1].queueing_capacity, float('inf'))
+        self.assertEqual(N.service_centres[1].number_of_servers, 2)
+        self.assertEqual(N.service_centres[1].schedule, None)
+        self.assertFalse(N.service_centres[1].preempt)
+        self.assertEqual(str(N.customer_classes[0].reneging_time_distributions[0]), 'Exponential: 1')
+        self.assertEqual(N.customer_classes[0].reneging_time_distributions[1], None)
+        self.assertEqual(N.customer_classes[0].reneging_destinations[0], 2)
+        self.assertEqual(N.customer_classes[0].reneging_destinations[1], -1)
 
 
     def test_error_no_arrivals_servers_services(self):

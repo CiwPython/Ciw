@@ -76,3 +76,4 @@ class Network(object):
         self.number_of_classes = len(customer_classes)
         self.number_of_priority_classes = len(set([clss.priority_class for clss in customer_classes]))
         self.priority_class_mapping = {i: clss.priority_class for i, clss in enumerate(customer_classes)}
+        
