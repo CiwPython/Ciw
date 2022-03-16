@@ -2,7 +2,7 @@ from __future__ import division
 from random import random
 import os
 from csv import writer
-from math import isinf
+from math import isinf, nan
 
 import networkx as nx
 
@@ -68,6 +68,8 @@ class Node(object):
         self.all_servers_total = []
         self.all_servers_busy = []
         self.reneging = node.reneging
+        if self.reneging:
+            self.next_renege_date = float('Inf')
 
     @property
     def all_individuals(self):
@@ -126,6 +128,9 @@ class Node(object):
             - Update the server's end date (only when servers are not infinite)
         """
         next_individual.arrival_date = self.get_now()
+        if self.reneging:
+            next_individual.reneging_date = self.get_reneging_date(next_individual)
+
         free_server = self.find_free_server(next_individual)
         if free_server is not None or isinf(self.c):
             if not isinf(self.c):
@@ -259,6 +264,11 @@ class Node(object):
         self.next_shift_change = next(self.date_generator)
         self.begin_service_if_possible_change_shift()
 
+    def check_if_renege(self):
+        if self.reneging:
+            return self.next_event_date == self.next_renege_date
+        return False
+
     def check_if_shiftchange(self):
         """
         Check whether current time is a shift change.
@@ -366,6 +376,8 @@ class Node(object):
         """
         if self.check_if_shiftchange():
             self.change_shift()
+        elif self.check_if_renege():
+            self.renege()
         else:
             self.finish_service()
 
@@ -459,11 +471,42 @@ class Node(object):
                 node_to_receive_from.number_interrupted_individuals -= 1
             node_to_receive_from.release(individual_to_receive_index, self)
 
+    def renege(self):
+        """
+        Removes the appropriate customer from the queue;
+        Resets that customer's reneging date;
+        Send customer to their reneging destination.
+        """
+        reneging_individual = [ind for ind in self.all_individuals if ind.reneging_date == self.simulation.current_time][0]
+        reneging_individual.reneging_date = float('Inf')
+        next_node_number = self.simulation.network.customer_classes[reneging_individual.customer_class].reneging_destinations[self.id_number-1]
+        next_node = self.simulation.nodes[next_node_number]
+        self.individuals[reneging_individual.prev_priority_class].remove(reneging_individual)
+        self.number_of_individuals -= 1
+        reneging_individual.queue_size_at_departure = self.number_of_individuals
+        reneging_individual.exit_date = self.get_now()
+        self.write_reneging_record(reneging_individual)
+        self.reset_individual_attributes(reneging_individual)
+        # self.simulation.statetracker.change_state_renege(self,
+        #     next_node, next_individual, next_individual.is_blocked)
+        next_node.accept(reneging_individual)
+        self.release_blocked_individual()
+
+
+    def get_reneging_date(self, ind):
+        """
+        Returns a service time for the given customer class.
+        """
+        dist = self.simulation.network.customer_classes[ind.customer_class].reneging_time_distributions[self.id_number-1]
+        if dist == None:
+            return float('inf')
+        return self.simulation.current_time + dist.sample(t=self.simulation.current_time, ind=ind)
+
     def get_service_time(self, ind):
         """
         Returns a service time for the given customer class.
         """
-        return self.simulation.service_times[self.id_number][ind.customer_class]._sample(t=self.simulation.current_time, ind=ind)
+        return self.simulation.service_times[self.id_number][ind.customer_class].sample(t=self.simulation.current_time, ind=ind)
 
     def take_servers_off_duty(self):
         """
@@ -502,20 +545,31 @@ class Node(object):
             next individual (who isn't blocked) to end service, or Inf
         """
         next_end_service = float("Inf")
+        next_renege_date = float("Inf")
         if not isinf(self.c):
             for s in self.servers:
                 if s.next_end_service_date < next_end_service:
                     next_end_service = s.next_end_service_date
+            if self.reneging:
+                for ind in self.all_individuals:
+                    if (ind.reneging_date < next_renege_date) and not ind.server:
+                        next_renege_date = ind.reneging_date
         else:
             for ind in self.all_individuals:
                 if not ind.is_blocked and ind.service_end_date >= self.get_now():
                     if ind.service_end_date < next_end_service:
                         next_end_service = ind.service_end_date
-        if self.schedule:
-            next_shift_change = self.next_shift_change
-            self.next_event_date = min(next_end_service, next_shift_change)
+        if self.reneging:
+            self.next_renege_date = next_renege_date
+            if self.schedule:
+                self.next_event_date = min(next_end_service, self.next_shift_change, self.next_renege_date)
+            else:
+                self.next_event_date = min(next_end_service, self.next_renege_date)
         else:
-            self.next_event_date = next_end_service
+            if self.schedule:
+                self.next_event_date = min(next_end_service, self.next_shift_change)
+            else:
+                self.next_event_date = next_end_service
 
     def wrap_up_servers(self, current_time):
         """
@@ -545,13 +599,15 @@ class Node(object):
             - Queue size at arrival
             - Queue size at departure
             - Server id
+            - Record type
         """
         if isinf(self.c):
             server_id = False
         else:
             server_id = individual.server.id_number
         
-        record = DataRecord(individual.id_number,
+        record = DataRecord(
+            individual.id_number,
             individual.previous_class,
             self.id_number,
             individual.arrival_date,
@@ -566,6 +622,42 @@ class Node(object):
             individual.queue_size_at_departure,
             server_id,
             'service')
+        individual.data_records.append(record)
+
+    def write_reneging_record(self, individual):
+        """
+        Write a data record for an individual:
+            - Arrival date
+            - Wait
+            - Service start date
+            - Service time
+            - Service end date
+            - Blocked
+            - Exit date
+            - Node
+            - Destination
+            - Previous class
+            - Queue size at arrival
+            - Queue size at departure
+            - Server id
+            - Record type
+        """        
+        record = DataRecord(
+            individual.id_number,
+            individual.previous_class,
+            self.id_number,
+            individual.arrival_date,
+            individual.exit_date - individual.arrival_date,
+            nan,
+            nan,
+            nan,
+            nan,
+            individual.exit_date,
+            individual.destination,
+            individual.queue_size_at_arrival,
+            individual.queue_size_at_departure,
+            nan,
+            'renege')
         individual.data_records.append(record)
 
     def reset_individual_attributes(self, individual):

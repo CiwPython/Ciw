@@ -2,6 +2,7 @@ import unittest
 import ciw
 from hypothesis import given, settings
 from hypothesis.strategies import floats, integers, random_module
+from math import nan
 
 class TestNode(unittest.TestCase):
     def test_init_method(self):
@@ -46,7 +47,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(Q.number_of_priority_classes, 2)
         self.assertEqual(N.interrupted_individuals, [])
         self.assertFalse(N.reneging)
-        
+
 
     def test_repr_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
@@ -862,3 +863,191 @@ class TestNode(unittest.TestCase):
 
         self.assertTrue(all_class_0_correct)
         self.assertTrue(all_class_1_correct)
+
+
+    def test_reneging_next_event(self):
+        """
+        Tests that when reneging the correct next event time is detected.
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7)],
+            service_distributions=[ciw.dists.Deterministic(11)],
+            number_of_servers=[1],
+            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+        )
+        Q = ciw.Simulation(N)
+        self.assertTrue(Q.nodes[1].reneging)
+        #### We would expect:
+        # t=7  arrival cust 1
+        # t=14 arrival cust 2
+        # t=17 renege  cust 2
+        # t=18 leave   cust 1
+        # t=21 arrival cust 3
+        # t=28 arrival cust 4
+        # t=31 renege  cust 4
+        # t=32 leave   cust 3
+        Q.simulate_until_max_time(6)
+        self.assertEqual(Q.nodes[0].next_event_date, 7)
+        self.assertEqual(Q.nodes[1].next_event_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(13)
+        self.assertEqual(Q.nodes[0].next_event_date, 14)
+        self.assertEqual(Q.nodes[1].next_event_date, 18)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(16)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 17)
+        self.assertEqual(Q.nodes[1].next_renege_date, 17)
+        Q.simulate_until_max_time(17.5)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 18)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(20)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(27)
+        self.assertEqual(Q.nodes[0].next_event_date, 28)
+        self.assertEqual(Q.nodes[1].next_event_date, 32)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(30)
+        self.assertEqual(Q.nodes[0].next_event_date, 35)
+        self.assertEqual(Q.nodes[1].next_event_date, 31)
+        self.assertEqual(Q.nodes[1].next_renege_date, 31)
+        Q.simulate_until_max_time(31.5)
+        self.assertEqual(Q.nodes[0].next_event_date, 35)
+        self.assertEqual(Q.nodes[1].next_event_date, 32)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+
+    def test_reneging_records(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7)],
+            service_distributions=[ciw.dists.Deterministic(11)],
+            number_of_servers=[1],
+            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(31.5)
+        recs = Q.get_all_records()
+        reneging_recs = [r for r in recs if r.record_type == 'renege']
+
+        self.assertEqual([r.id_number for r in reneging_recs], [2, 4])
+        self.assertEqual([r.arrival_date for r in reneging_recs], [14, 28])
+        self.assertEqual([r.exit_date for r in reneging_recs], [17, 31])
+        self.assertEqual([r.waiting_time for r in reneging_recs], [3, 3])
+        self.assertEqual([r.node for r in reneging_recs], [1, 1])
+        self.assertEqual([r.service_time for r in reneging_recs], [nan, nan])
+        self.assertEqual([r.service_start_date for r in reneging_recs], [nan, nan])
+        self.assertEqual([r.service_end_date for r in reneging_recs], [nan, nan])
+        self.assertEqual([r.server_id for r in reneging_recs], [nan, nan])
+        self.assertEqual([r.customer_class for r in reneging_recs], [0, 0])
+        self.assertEqual([r.queue_size_at_arrival for r in reneging_recs], [1, 1])
+        self.assertEqual([r.queue_size_at_departure for r in reneging_recs], [1, 1])
+
+    def test_reneging_sends_to_destination(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7), ciw.dists.NoArrivals()],
+            service_distributions=[ciw.dists.Deterministic(11), ciw.dists.Deterministic(2)],
+            routing=[[0, 0], [0, 0]],
+            number_of_servers=[1, 1],
+            reneging_time_distributions=[ciw.dists.Deterministic(3), None],
+            reneging_destinations=[2, -1]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs_ind2 = [r for r in recs if r.id_number == 2]
+
+        self.assertEqual([r.arrival_date for r in recs_ind2], [14, 17])
+        self.assertEqual([r.exit_date for r in recs_ind2], [17, 19])
+        self.assertEqual([r.waiting_time for r in recs_ind2], [3, 0])
+        self.assertEqual([r.node for r in recs_ind2], [1, 2])
+        self.assertEqual([r.service_time for r in recs_ind2], [nan, 2])
+        self.assertEqual([r.service_start_date for r in recs_ind2], [nan, 17])
+        self.assertEqual([r.service_end_date for r in recs_ind2], [nan, 19])
+        self.assertEqual([r.server_id for r in recs_ind2], [nan, 1])
+        self.assertEqual([r.customer_class for r in recs_ind2], [0, 0])
+        self.assertEqual([r.queue_size_at_arrival for r in recs_ind2], [1, 0])
+        self.assertEqual([r.queue_size_at_departure for r in recs_ind2], [1, 0])
+
+    def test_reneging_none_dist(self):
+        N = ciw.create_network(
+            arrival_distributions={'Class 0': [ciw.dists.NoArrivals()], 'Class 1': [ciw.dists.Deterministic(7)]},
+            service_distributions={'Class 0': [ciw.dists.Deterministic(11)], 'Class 1': [ciw.dists.Deterministic(11)]},
+            number_of_servers=[1],
+            reneging_time_distributions={'Class 0': [ciw.dists.Deterministic(3)], 'Class 1': [None]},
+            reneging_destinations={'Class 0': [-1], 'Class 1': [-1]}
+        )
+        Q = ciw.Simulation(N)
+        self.assertTrue(Q.nodes[1].reneging)
+        #### We would expect:
+        # t=7  arrival cust 1
+        # t=14 arrival cust 2
+        # t=18 leave   cust 1
+        Q.simulate_until_max_time(6)
+        self.assertEqual(Q.nodes[0].next_event_date, 7)
+        self.assertEqual(Q.nodes[1].next_event_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(13)
+        self.assertEqual(Q.nodes[0].next_event_date, 14)
+        self.assertEqual(Q.nodes[1].next_event_date, 18)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(17.5)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 18)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(20)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 29)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+
+    def test_reneging_with_schedules(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7)],
+            service_distributions=[ciw.dists.Deterministic(11)],
+            number_of_servers=[[[1, 16], [0, 10000]]],
+            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+        )
+        Q = ciw.Simulation(N)
+        self.assertTrue(Q.nodes[1].reneging)
+        #### We would expect:
+        # t=7  arrival cust 1
+        # t=14 arrival cust 2
+        # t=16 server meant to go off duty but doesn't
+        # t=17 renege  cust 2
+        # t=18 leave   cust 1, server goes off duty
+        # t=21 arrival cust 3
+        # t=24 renege  cust 3
+        # t=28 arrival cust 4
+        Q.simulate_until_max_time(6)
+        self.assertEqual(Q.nodes[0].next_event_date, 7)
+        self.assertEqual(Q.nodes[1].next_event_date, 16)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(13)
+        self.assertEqual(Q.nodes[0].next_event_date, 14)
+        self.assertEqual(Q.nodes[1].next_event_date, 16)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(15.5)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 16)
+        self.assertEqual(Q.nodes[1].next_renege_date, 17)
+        Q.simulate_until_max_time(16.5)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 17)
+        self.assertEqual(Q.nodes[1].next_renege_date, 17)
+        Q.simulate_until_max_time(17.5)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 18)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(20)
+        self.assertEqual(Q.nodes[0].next_event_date, 21)
+        self.assertEqual(Q.nodes[1].next_event_date, 10000)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        Q.simulate_until_max_time(23)
+        self.assertEqual(Q.nodes[0].next_event_date, 28)
+        self.assertEqual(Q.nodes[1].next_event_date, 24)
+        self.assertEqual(Q.nodes[1].next_renege_date, 24)
+        Q.simulate_until_max_time(27)
+        self.assertEqual(Q.nodes[0].next_event_date, 28)
+        self.assertEqual(Q.nodes[1].next_event_date, 10000)
+        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
