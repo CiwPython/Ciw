@@ -20,6 +20,7 @@ Contents:
    priority.rst
    batching.rst
    baulking.rst
+   reneging.rst
    server_schedule.rst
    server_priority.rst
    dynamic_customerclasses.rst
