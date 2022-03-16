@@ -30,6 +30,9 @@ class StateTracker(object):
         """
         pass
 
+    def change_state_renege(self, node, destination, ind, blocked):
+        self.change_state_release(node, destination, ind, blocked)
+
     def hash_state(self):
         """
         Returns a hashable state.

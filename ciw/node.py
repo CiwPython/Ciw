@@ -487,8 +487,7 @@ class Node(object):
         reneging_individual.exit_date = self.get_now()
         self.write_reneging_record(reneging_individual)
         self.reset_individual_attributes(reneging_individual)
-        # self.simulation.statetracker.change_state_renege(self,
-        #     next_node, next_individual, next_individual.is_blocked)
+        self.simulation.statetracker.change_state_renege(self, next_node, reneging_individual, False)
         next_node.accept(reneging_individual)
         self.release_blocked_individual()
 

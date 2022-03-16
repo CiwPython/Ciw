@@ -1368,3 +1368,66 @@ class TestStateProbabilities(unittest.TestCase):
         self.assertRaises(ValueError, Q.statetracker.state_probabilities, (4, 2))
         self.assertRaises(ValueError, Q.statetracker.state_probabilities, (-1, -4))
         self.assertRaises(ValueError, Q.statetracker.state_probabilities, (3, 3))
+
+
+    def test_state_tracker_with_reneging(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7)],
+            service_distributions=[ciw.dists.Deterministic(11)],
+            number_of_servers=[1],
+            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        self.assertTrue(Q.nodes[1].reneging)
+        #### We would expect:
+        # t=0  begin          ---> 0
+        # t=7  arrival cust 1 ---> 1
+        # t=14 arrival cust 2 ---> 2
+        # t=17 renege  cust 2 ---> 1
+        # t=18 leave   cust 1 ---> 0
+        # t=21 arrival cust 3 ---> 1
+        # t=28 arrival cust 4 ---> 2
+        # t=31 renege  cust 4 ---> 1
+        # t=32 leave   cust 3 ---> 0
+        Q.simulate_until_max_time(32.5)
+        self.assertEqual(len(Q.statetracker.history), 9)
+        self.assertEqual(Q.statetracker.history[0], [0.0, 0])
+        self.assertEqual(Q.statetracker.history[1], [7.0, 1])
+        self.assertEqual(Q.statetracker.history[2], [14.0, 2])
+        self.assertEqual(Q.statetracker.history[3], [17.0, 1])
+        self.assertEqual(Q.statetracker.history[4], [18.0, 0])
+        self.assertEqual(Q.statetracker.history[5], [21.0, 1])
+        self.assertEqual(Q.statetracker.history[6], [28.0, 2])
+        self.assertEqual(Q.statetracker.history[7], [31.0, 1])
+        self.assertEqual(Q.statetracker.history[8], [32.0, 0])
+
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7)],
+            service_distributions=[ciw.dists.Deterministic(11)],
+            number_of_servers=[1],
+            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulation())
+        self.assertTrue(Q.nodes[1].reneging)
+        #### We would expect:
+        # t=0  begin          ---> (0,)
+        # t=7  arrival cust 1 ---> (1,)
+        # t=14 arrival cust 2 ---> (2,)
+        # t=17 renege  cust 2 ---> (1,)
+        # t=18 leave   cust 1 ---> (0,)
+        # t=21 arrival cust 3 ---> (1,)
+        # t=28 arrival cust 4 ---> (2,)
+        # t=31 renege  cust 4 ---> (1,)
+        # t=32 leave   cust 3 ---> (0,)
+        Q.simulate_until_max_time(32.5)
+        self.assertEqual(len(Q.statetracker.history), 9)
+        self.assertEqual(Q.statetracker.history[0], [0.0, (0,)])
+        self.assertEqual(Q.statetracker.history[1], [7.0, (1,)])
+        self.assertEqual(Q.statetracker.history[2], [14.0, (2,)])
+        self.assertEqual(Q.statetracker.history[3], [17.0, (1,)])
+        self.assertEqual(Q.statetracker.history[4], [18.0, (0,)])
+        self.assertEqual(Q.statetracker.history[5], [21.0, (1,)])
+        self.assertEqual(Q.statetracker.history[6], [28.0, (2,)])
+        self.assertEqual(Q.statetracker.history[7], [31.0, (1,)])
+        self.assertEqual(Q.statetracker.history[8], [32.0, (0,)])
