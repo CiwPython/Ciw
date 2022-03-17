@@ -11,7 +11,7 @@ def get_distribution(dist):
     Returns instances of the distribution classes that
     correspond to the indicator string in the .yml file.
     """
-    if dist == None:
+    if dist is None:
         return None
     if dist[0] == 'Uniform':
        return ciw.dists.Uniform(dist[1], dist[2])
@@ -76,9 +76,9 @@ def create_network(arrival_distributions=None,
         params['ps_thresholds'] = ps_thresholds
     if server_priority_functions != None:
         params['server_priority_functions'] = server_priority_functions
-    if reneging_time_distributions != None:
+    if reneging_time_distributions is not None:
         params['reneging_time_distributions'] = reneging_time_distributions
-    if reneging_destinations != None:
+    if reneging_destinations is not None:
         params['reneging_destinations'] = reneging_destinations
 
     return create_network_from_dictionary(params)
@@ -114,9 +114,7 @@ def create_network_from_yml(directory_name):
             dists.append(get_distribution(dist))
         params['service_distributions'][clss] = dists
     for clss in params['reneging_time_distributions']:
-        dists = []
-        for dist in params['reneging_time_distributions'][clss]:
-            dists.append(get_distribution(dist))
+        dists = [get_distribution(dist) for dist in params['reneging_time_distributions'][clss]]
         params['reneging_time_distributions'][clss] = dists
     validify_dictionary(params)
     return create_network_from_dictionary(params)

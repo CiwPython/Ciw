@@ -36,7 +36,7 @@ This returns a list of named tuples. Each named tuple contains the following inf
     - :code:`queue_size_at_arrival`
     - :code:`queue_size_at_departure`
     - :code:`server_id`
-    - :coee: `record_type`
+    - :code: `record_type`
 
 More information on each of these is given in :ref:`refs-results`.
 

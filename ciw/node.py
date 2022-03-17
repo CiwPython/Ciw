@@ -128,12 +128,12 @@ class Node(object):
             - Update the server's end date (only when servers are not infinite)
         """
         next_individual.arrival_date = self.get_now()
-        if self.reneging:
+        if self.reneging is True:
             next_individual.reneging_date = self.get_reneging_date(next_individual)
 
         free_server = self.find_free_server(next_individual)
         if free_server is not None or isinf(self.c):
-            if not isinf(self.c):
+            if isinf(self.c) is False:
                 self.attach_server(free_server, next_individual)
             next_individual.service_start_date = self.get_now()
             next_individual.service_time = self.get_service_time(next_individual)
@@ -265,7 +265,7 @@ class Node(object):
         self.begin_service_if_possible_change_shift()
 
     def check_if_renege(self):
-        if self.reneging:
+        if self.reneging is True:
             return self.next_event_date == self.next_renege_date
         return False
 
@@ -376,7 +376,7 @@ class Node(object):
         """
         if self.check_if_shiftchange():
             self.change_shift()
-        elif self.check_if_renege():
+        elif self.check_if_renege() is True:
             self.renege()
         else:
             self.finish_service()
@@ -494,10 +494,10 @@ class Node(object):
 
     def get_reneging_date(self, ind):
         """
-        Returns a service time for the given customer class.
+        Returns the reneging date for a given individual.
         """
         dist = self.simulation.network.customer_classes[ind.customer_class].reneging_time_distributions[self.id_number-1]
-        if dist == None:
+        if dist is None:
             return float('inf')
         return self.simulation.current_time + dist.sample(t=self.simulation.current_time, ind=ind)
 
@@ -549,7 +549,7 @@ class Node(object):
             for s in self.servers:
                 if s.next_end_service_date < next_end_service:
                     next_end_service = s.next_end_service_date
-            if self.reneging:
+            if self.reneging is True:
                 for ind in self.all_individuals:
                     if (ind.reneging_date < next_renege_date) and not ind.server:
                         next_renege_date = ind.reneging_date
