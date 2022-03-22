@@ -24,7 +24,7 @@ As an example, consider an M/M/1 queue with three classes of customer. Each clas
      ...         'Class 0': [ciw.dists.Exponential(rate=2)],
      ...         'Class 1': [ciw.dists.Exponential(rate=4)],
      ...         'Class 2': [ciw.dists.Exponential(rate=6)]},
-     ...     service_dsitributions={
+     ...     service_distributions={
      ...         'Class 0': [ciw.dists.Exponential(rate=5)],
      ...         'Class 1': [ciw.dists.Exponential(rate=5)],
      ...         'Class 2': [ciw.dists.Exponential(rate=6)]},
