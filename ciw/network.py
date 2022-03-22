@@ -25,7 +25,7 @@ class ServiceCentre(object):
         self.preempt = preempt
         self.ps_threshold = ps_threshold
         self.server_priority_function = server_priority_function
-
+        self.class_change_time = False
 
 class CustomerClass(object):
     """
@@ -46,7 +46,8 @@ class CustomerClass(object):
                  baulking_functions,
                  batching_distributions,
                  reneging_time_distributions,
-                 reneging_destinations):
+                 reneging_destinations,
+                 class_change_time_distributions):
         """
         Initialises the CutomerCass object.
         """
@@ -58,6 +59,7 @@ class CustomerClass(object):
         self.baulking_functions = baulking_functions
         self.reneging_time_distributions = reneging_time_distributions
         self.reneging_destinations = reneging_destinations
+        self.class_change_time_distributions = class_change_time_distributions
 
 class Network(object):
     """
@@ -81,3 +83,6 @@ class Network(object):
                 node.reneging = False
             else:
                 node.reneging = True
+        if any(dist is not None for clss in customer_classes for dist in clss.class_change_time_distributions):
+            for node in self.service_centres:
+                node.class_change_time = True
