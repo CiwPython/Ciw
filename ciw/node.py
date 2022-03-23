@@ -252,6 +252,7 @@ class Node(object):
         changing_individual.priority_class = self.simulation.network.priority_class_mapping[changing_individual.next_class]
         if changing_individual.priority_class != changing_individual.prev_priority_class:
             self.change_priority_queue(changing_individual)
+        self.simulation.statetracker.change_state_classchange(self, changing_individual)
         changing_individual.previous_class = changing_individual.next_class
         changing_individual.prev_priority_class = changing_individual.priority_class
         self.decide_class_change(changing_individual)

@@ -1431,3 +1431,55 @@ class TestStateProbabilities(unittest.TestCase):
         self.assertEqual(Q.statetracker.history[6], [28.0, (2,)])
         self.assertEqual(Q.statetracker.history[7], [31.0, (1,)])
         self.assertEqual(Q.statetracker.history[8], [32.0, (0,)])
+
+    def test_state_tracker_with_classchange(self):
+        N = ciw.create_network(
+            arrival_distributions={'Class 0': [ciw.dists.Deterministic(3)],
+                                   'Class 1': [ciw.dists.NoArrivals()]},
+            service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
+                                   'Class 1': [ciw.dists.Deterministic(4.5)]},
+            number_of_servers=[1],
+            class_change_time_distributions=[
+                [None, ciw.dists.Deterministic(4)],
+                [None, None]]
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix())
+        #### We would expect:
+        # t=0    begin              ---> ((0, 0))
+        # t=3    arrival cust 1     ---> ((1, 0))
+        # t=6    arrival cust 2     ---> ((2, 0))
+        # t=7.5  leave   cust 1     ---> ((1, 0))
+        # t=9    arrival cust 3     ---> ((2, 0))
+        # t=12   leave   cust 2     ---> ((1, 0))
+        # t=12   arrival cust 4     ---> ((2, 0))
+        # t=15   arrival cust 5     ---> ((3, 0))
+        # t=16   changeclass cust 4 ---> ((2, 1))
+        # t=16.5 leave   cust 3     ---> ((1, 1))
+        # t=18   arrival cust 6     ---> ((2, 1))
+        # t=19   changeclass cust 5 ---> ((1, 2))
+        # t=21   leave   cust 4     ---> ((1, 1))
+        # t=21   arrival cust 7     ---> ((2, 1))
+        # t=22   changeclass cust 6 ---> ((1, 2))
+        # t=24   arrival cust 8     ---> ((2, 2))
+        # t=24   changeclass cust 8 ---> ((1, 3))
+        # t=25.5 leave   cust 5     ---> ((1, 2))
+        Q.simulate_until_max_time(25.75)
+        self.assertEqual(len(Q.statetracker.history), 18)
+        self.assertEqual(Q.statetracker.history[0], [0, ((0, 0),)])
+        self.assertEqual(Q.statetracker.history[1], [3.0, ((1, 0),)])
+        self.assertEqual(Q.statetracker.history[2], [6.0, ((2, 0),)])
+        self.assertEqual(Q.statetracker.history[3], [7.5, ((1, 0),)])
+        self.assertEqual(Q.statetracker.history[4], [9.0, ((2, 0),)])
+        self.assertEqual(Q.statetracker.history[5], [12.0, ((1, 0),)])
+        self.assertEqual(Q.statetracker.history[6], [12.0, ((2, 0),)])
+        self.assertEqual(Q.statetracker.history[7], [15.0, ((3, 0),)])
+        self.assertEqual(Q.statetracker.history[8], [16.0, ((2, 1),)])
+        self.assertEqual(Q.statetracker.history[9], [16.5, ((1, 1),)])
+        self.assertEqual(Q.statetracker.history[10], [18.0, ((2, 1),)])
+        self.assertEqual(Q.statetracker.history[11], [19.0, ((1, 2),)])
+        self.assertEqual(Q.statetracker.history[12], [21.0, ((1, 1),)])
+        self.assertEqual(Q.statetracker.history[13], [21.0, ((2, 1),)])
+        self.assertEqual(Q.statetracker.history[14], [22.0, ((1, 2),)])
+        self.assertEqual(Q.statetracker.history[15], [24.0, ((2, 2),)])
+        self.assertEqual(Q.statetracker.history[16], [25.0, ((1, 3),)])
+        self.assertEqual(Q.statetracker.history[17], [25.5, ((1, 2),)])
