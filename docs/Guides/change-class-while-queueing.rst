@@ -35,3 +35,43 @@ As an example, consider an M/M/1 queue with three classes of customer. Each clas
      ...         [None, None, None]]
      ... )
 
+
+As a further example, consider a one node queue with two servers, with two classes of customer. Both arrive with Exponential inter-arrival rate of 5, both Exponential service rates of 6, and Class 0 has priority over Class 1. However customers of Class 1 will change class, and hence change priority, if they have been waiting over 1.5 time units::
+
+    >>> N = ciw.create_network(
+    ...     arrival_distributions={
+    ...         'Class 0': [ciw.dists.Exponential(5)],
+    ...         'Class 1': [ciw.dists.Exponential(5)]},
+    ...     service_distributions={
+    ...         'Class 0': [ciw.dists.Exponential(6)],
+    ...         'Class 1': [ciw.dists.Exponential(6)]},
+    ...     number_of_servers=[2],
+    ...     priority_classes={
+    ...         'Class 0': 0,
+    ...         'Class 1': 1},
+    ...     class_change_time_distributions=[
+    ...     [None, None],
+    ...     [ciw.dists.Deterministic(1.5), None]]
+    ... )
+
+Running this for a while::
+
+    >>> ciw.seed(0)
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(100)
+    >>> recs = Q.get_all_records()
+
+We will see than no customer of Class 1 will have a waiting time longer than 1.5 time units, as they will have switched to Class 0 at this point::
+
+    >>> len([r.waiting_time for r in recs if r.customer_class == 1])
+    421
+    >>> [r for r in recs if r.customer_class == 1 and r.waiting_time >= 1.5]
+    []
+
+
+Under no class changing, we would expect roughly equal amounts of customers of Class 0 and Class 1, as they have the same arrival rates. However, as many Class 1 customers are changing to Class 0 customers, the ratio is now skewed::
+
+    >>> number_of_class0 = len([r for r in recs if r.customer_class == 0])
+    >>> number_of_class1 = len([r for r in recs if r.customer_class == 1])
+    >>> number_of_class0, number_of_class1
+    (563, 421)
