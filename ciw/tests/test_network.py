@@ -310,7 +310,7 @@ class TestNetwork(unittest.TestCase):
 
     def test_create_network_from_yml(self):
         N = ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml')
+          'ciw/tests/testing_parameters/params_change_class_dynamic.yml')
         self.assertEqual(N.number_of_nodes, 4)
         self.assertEqual(N.number_of_classes, 3)
         self.assertEqual(N.service_centres[0].queueing_capacity, 20)

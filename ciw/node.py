@@ -33,9 +33,12 @@ class Node(object):
             self.date_generator = self.date_from_schedule_generator(
                 raw_schedule_boundaries)
             self.next_shift_change = next(self.date_generator)
+            self.next_event_date = self.next_shift_change
         else:
             self.c = node.number_of_servers
             self.schedule = None
+            self.next_event_date = float("Inf")
+            self.next_shift_change = float("Inf")
         self.node_capacity = node.queueing_capacity + self.c
         if not self.simulation.network.process_based:
             self.transition_row = [
@@ -52,10 +55,6 @@ class Node(object):
             ].baulking_functions[id_ - 1] for clss in range(
             self.simulation.network.number_of_classes)]
         self.overtime = []
-        if self.schedule:
-            self.next_event_date = self.next_shift_change
-        else:
-            self.next_event_date = float("Inf")
         self.blocked_queue = []
         self.len_blocked_queue = 0
         if not isinf(self.c):
@@ -68,8 +67,9 @@ class Node(object):
         self.all_servers_total = []
         self.all_servers_busy = []
         self.reneging = node.reneging
-        if self.reneging:
-            self.next_renege_date = float('Inf')
+        self.next_renege_date = float('Inf')
+        self.dynamic_classes = node.class_change_time
+        self.next_class_change_date = float('Inf')
 
     @property
     def all_individuals(self):
@@ -130,6 +130,8 @@ class Node(object):
         next_individual.arrival_date = self.get_now()
         if self.reneging is True:
             next_individual.reneging_date = self.get_reneging_date(next_individual)
+        if self.dynamic_classes is True:
+            self.decide_class_change(next_individual)
 
         free_server = self.find_free_server(next_individual)
         if free_server is not None or isinf(self.c):
@@ -228,7 +230,7 @@ class Node(object):
         self.simulation.deadlock_detector.action_at_blockage(individual, next_node)
         self.simulation.unchecked_blockage = True
 
-    def change_customer_class(self,individual):
+    def change_customer_class(self, individual):
         """
         Takes individual and changes customer class
         according to a probability distribution.
@@ -240,6 +242,17 @@ class Node(object):
                 self.class_change[individual.previous_class])
             individual.prev_priority_class = individual.priority_class
             individual.priority_class = self.simulation.network.priority_class_mapping[individual.customer_class]
+
+    def change_customer_class_while_waiting(self):
+        """
+        Finds the next individual to have a class change (while queueing) and changes their class.
+        """
+        changing_individual = [ind for ind in self.all_individuals if ind.class_change_date == self.simulation.current_time][0]
+        old_class = changing_individual.customer_class
+        changing_individual.customer_class = changing_individual.next_class
+        changing_individual.previous_class = changing_individual.next_class
+        self.decide_class_change(changing_individual)
+
 
     def change_shift(self):
         """
@@ -265,6 +278,9 @@ class Node(object):
         self.begin_service_if_possible_change_shift()
 
     def check_if_renege(self):
+        """
+        Checks whether the current time is a renege time.
+        """
         if self.reneging is True:
             return self.next_event_date == self.next_renege_date
         return False
@@ -277,11 +293,29 @@ class Node(object):
             return self.next_event_date == self.next_shift_change
         return False
 
+    def check_if_classchange(self):
+        """
+        Checks whether the current time is a class change time.
+        """
+        if self.dynamic_classes is True:
+            return self.next_event_date == self.next_class_change_date
+        return False
+
     def create_starting_servers(self):
         """
         Initialise the servers.
         """
         return [self.simulation.ServerType(self, i + 1, 0.0) for i in range(self.c)]
+
+    def decide_class_change(self, next_individual):
+        """
+        Decides on the next_individual's next class and class change date
+        """
+        class_change_times = [float('Inf') if dist is None else dist.sample() for dist in self.simulation.network.customer_classes[next_individual.customer_class].class_change_time_distributions]
+        next_class = min(range(len(class_change_times)), key=class_change_times.__getitem__)
+        time = class_change_times[next_class]
+        next_individual.next_class = next_class
+        next_individual.class_change_date = self.increment_time(self.get_now(), time)
 
     def detatch_server(self, server, individual):
         """
@@ -317,8 +351,6 @@ class Node(object):
             if not svr.busy:
                 return svr
         return None
-
-
 
     def find_next_individual(self):
         """
@@ -374,10 +406,12 @@ class Node(object):
         """
         Has an event
         """
-        if self.check_if_shiftchange():
+        if self.check_if_shiftchange() is True:
             self.change_shift()
         elif self.check_if_renege() is True:
             self.renege()
+        elif self.check_if_classchange() is True:
+            self.change_customer_class_while_waiting()
         else:
             self.finish_service()
 
@@ -545,6 +579,7 @@ class Node(object):
         """
         next_end_service = float("Inf")
         next_renege_date = float("Inf")
+        next_class_change_date = float("Inf")
         if not isinf(self.c):
             for s in self.servers:
                 if s.next_end_service_date < next_end_service:
@@ -553,22 +588,21 @@ class Node(object):
                 for ind in self.all_individuals:
                     if (ind.reneging_date < next_renege_date) and not ind.server:
                         next_renege_date = ind.reneging_date
+                self.next_renege_date = next_renege_date
+            if self.dynamic_classes is True:
+                for ind in self.all_individuals:
+                    if (ind.class_change_date < next_class_change_date) and not ind.server:
+                        next_class_change_date = ind.class_change_date
+                self.next_class_change_date = next_class_change_date
         else:
             for ind in self.all_individuals:
                 if not ind.is_blocked and ind.service_end_date >= self.get_now():
                     if ind.service_end_date < next_end_service:
                         next_end_service = ind.service_end_date
-        if self.reneging:
-            self.next_renege_date = next_renege_date
-            if self.schedule:
-                self.next_event_date = min(next_end_service, self.next_shift_change, self.next_renege_date)
-            else:
-                self.next_event_date = min(next_end_service, self.next_renege_date)
+        if self.reneging or self.dynamic_classes or self.schedule:
+            self.next_event_date = min(next_end_service, self.next_shift_change, self.next_renege_date, self.next_class_change_date)
         else:
-            if self.schedule:
-                self.next_event_date = min(next_end_service, self.next_shift_change)
-            else:
-                self.next_event_date = next_end_service
+            self.next_event_date = next_end_service
 
     def wrap_up_servers(self, current_time):
         """

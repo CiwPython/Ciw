@@ -119,3 +119,16 @@ routing:
     - 0.0
     - 0.0
     - 0.3
+class_change_time_distributions:
+  - - None
+    - - Exponential
+      - 6.0
+    - - Exponential
+      - 6.0
+  - - None
+    - None
+    - - Exponential
+      - 6.0
+  - - None
+    - None
+    - None

@@ -1051,3 +1051,59 @@ class TestNode(unittest.TestCase):
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 10000)
         self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+
+    def test_class_change_while_waiting(self):
+        """
+        Only one type of customer arrive (Class 0),
+        but if they wait mire than 4 time units they change to Class 1.
+        Services last exactly 4.5 time units.
+        Simulate until 26 time units.
+
+        We would expect:
+        - first three customers to wait 0, 1.5, and 3 respectively. (Remain Class 0)
+        - next two customer wait 4.5 and 6 respectively. (Change to Class 1)
+        """
+        N = ciw.create_network(
+            arrival_distributions={'Class 0': [ciw.dists.Deterministic(3)],
+                                   'Class 1': [ciw.dists.NoArrivals()]},
+            service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
+                                   'Class 1': [ciw.dists.Deterministic(4.5)]},
+            number_of_servers=[1],
+            class_change_time_distributions=[
+                [None, ciw.dists.Deterministic(4)],
+                [None, None]]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(26)
+        recs = Q.get_all_records()
+        self.assertEqual(len(recs), 5)
+        # Customer 1
+        self.assertEqual(recs[0].arrival_date, 3)
+        self.assertEqual(recs[0].waiting_time, 0)
+        self.assertEqual(recs[0].service_start_date, 3)
+        self.assertEqual(recs[0].service_end_date, 7.5)
+        self.assertEqual(recs[0].customer_class, 0)
+        # Customer 2
+        self.assertEqual(recs[1].arrival_date, 6)
+        self.assertEqual(recs[1].waiting_time, 1.5)
+        self.assertEqual(recs[1].service_start_date, 7.5)
+        self.assertEqual(recs[1].service_end_date, 12)
+        self.assertEqual(recs[1].customer_class, 0)
+        # Customer 3
+        self.assertEqual(recs[2].arrival_date, 9)
+        self.assertEqual(recs[2].waiting_time, 3)
+        self.assertEqual(recs[2].service_start_date, 12)
+        self.assertEqual(recs[2].service_end_date, 16.5)
+        self.assertEqual(recs[2].customer_class, 0)
+        # Customer 4
+        self.assertEqual(recs[3].arrival_date, 12)
+        self.assertEqual(recs[3].waiting_time, 4.5)
+        self.assertEqual(recs[3].service_start_date, 16.5)
+        self.assertEqual(recs[3].service_end_date, 21)
+        self.assertEqual(recs[3].customer_class, 1)
+        # Customer 5
+        self.assertEqual(recs[4].arrival_date, 15)
+        self.assertEqual(recs[4].waiting_time, 6)
+        self.assertEqual(recs[4].service_start_date, 21)
+        self.assertEqual(recs[4].service_end_date, 25.5)
+        self.assertEqual(recs[4].customer_class, 1)
