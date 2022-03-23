@@ -248,11 +248,20 @@ class Node(object):
         Finds the next individual to have a class change (while queueing) and changes their class.
         """
         changing_individual = [ind for ind in self.all_individuals if ind.class_change_date == self.simulation.current_time][0]
-        old_class = changing_individual.customer_class
         changing_individual.customer_class = changing_individual.next_class
+        changing_individual.priority_class = self.simulation.network.priority_class_mapping[changing_individual.next_class]
+        if changing_individual.priority_class != changing_individual.prev_priority_class:
+            self.change_priority_queue(changing_individual)
         changing_individual.previous_class = changing_individual.next_class
+        changing_individual.prev_priority_class = changing_individual.priority_class
         self.decide_class_change(changing_individual)
 
+    def change_priority_queue(self, individual):
+        """
+        Moves an individual from their old priority queue to their new priority queue.
+        """
+        self.individuals[individual.prev_priority_class].remove(individual)
+        self.individuals[individual.priority_class].append(individual)
 
     def change_shift(self):
         """

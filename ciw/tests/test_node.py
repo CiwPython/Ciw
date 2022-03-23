@@ -841,7 +841,7 @@ class TestNode(unittest.TestCase):
                 priorities = {1: 0, 2: 1}
                 return priorities[srv.id_number]
             if ind.customer_class == 1:
-                priorities = {1: 1, 2: 0,}
+                priorities = {1: 1, 2: 0}
                 return priorities[srv.id_number]
 
         N = ciw.create_network(
@@ -849,7 +849,7 @@ class TestNode(unittest.TestCase):
                 'Class 0': [ciw.dists.Exponential(rate=1.0)], 'Class 1': [ciw.dists.Exponential(rate=1.0)]
             },
             service_distributions={
-                'Class 0': [ciw.dists.Exponential(rate=100.0)], 'Class 1': [ciw.dists.Exponential(rate=100.0)]
+                'Class 0': [ciw.dists.Exponential(rate=200.0)], 'Class 1': [ciw.dists.Exponential(rate=200.0)]
             },
             number_of_servers=[2],
             server_priority_functions=[custom_server_priority],
@@ -1055,7 +1055,7 @@ class TestNode(unittest.TestCase):
     def test_class_change_while_waiting(self):
         """
         Only one type of customer arrive (Class 0),
-        but if they wait mire than 4 time units they change to Class 1.
+        but if they wait more than 4 time units they change to Class 1.
         Services last exactly 4.5 time units.
         Simulate until 26 time units.
 
@@ -1107,3 +1107,64 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[4].service_start_date, 21)
         self.assertEqual(recs[4].service_end_date, 25.5)
         self.assertEqual(recs[4].customer_class, 1)
+
+
+    def test_priority_change_while_waiting(self):
+        """
+        Customers of class 0 have priority over class 1.
+        Class 0 arrive every 4, class 1 arrive every 3.
+        Class 1 turn to class 0 if they have waited longer than 7.
+        Services last exactly 4.5 time units.
+        Simulate until 26 time units.
+
+        We would expect:
+        - First served customer to be class 1, all other customers to be class 0
+        - Arrivals at 3, 4, 8, 12, and 6 respectively
+        - Service starts at 3, 7.5, 12, 16.5, and 21 respectively
+        - (the customer who arrives at 6 was class 1, but changed to class 0 at time 13)
+        """
+        N = ciw.create_network(
+            arrival_distributions={'Class 0': [ciw.dists.Deterministic(4)],
+                                   'Class 1': [ciw.dists.Deterministic(3)]},
+            service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
+                                   'Class 1': [ciw.dists.Deterministic(4.5)]},
+            number_of_servers=[1],
+            class_change_time_distributions=[
+                [None, None],
+                [ciw.dists.Deterministic(7), None]],
+            priority_classes={'Class 0': 0, 'Class 1': 1}
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(26)
+        recs = Q.get_all_records()
+        self.assertEqual(len(recs), 5)
+        # Customer 1
+        self.assertEqual(recs[0].arrival_date, 3)
+        self.assertEqual(recs[0].waiting_time, 0)
+        self.assertEqual(recs[0].service_start_date, 3)
+        self.assertEqual(recs[0].service_end_date, 7.5)
+        self.assertEqual(recs[0].customer_class, 1)
+        # Customer 2
+        self.assertEqual(recs[1].arrival_date, 4)
+        self.assertEqual(recs[1].waiting_time, 3.5)
+        self.assertEqual(recs[1].service_start_date, 7.5)
+        self.assertEqual(recs[1].service_end_date, 12)
+        self.assertEqual(recs[1].customer_class, 0)
+        # Customer 3
+        self.assertEqual(recs[2].arrival_date, 8)
+        self.assertEqual(recs[2].waiting_time, 4)
+        self.assertEqual(recs[2].service_start_date, 12)
+        self.assertEqual(recs[2].service_end_date, 16.5)
+        self.assertEqual(recs[2].customer_class, 0)
+        # Customer 4
+        self.assertEqual(recs[3].arrival_date, 12)
+        self.assertEqual(recs[3].waiting_time, 4.5)
+        self.assertEqual(recs[3].service_start_date, 16.5)
+        self.assertEqual(recs[3].service_end_date, 21)
+        self.assertEqual(recs[3].customer_class, 0)
+        # Customer 5
+        self.assertEqual(recs[4].arrival_date, 6)
+        self.assertEqual(recs[4].waiting_time, 15)
+        self.assertEqual(recs[4].service_start_date, 21)
+        self.assertEqual(recs[4].service_end_date, 25.5)
+        self.assertEqual(recs[4].customer_class, 0)
