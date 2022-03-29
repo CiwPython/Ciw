@@ -135,12 +135,8 @@ class Node(object):
             self.decide_class_change(next_individual)
 
         free_server = self.find_free_server(next_individual)
-        if self.priority_preempt and free_server is None and isinf(self.c) is False:
-            least_priority = max(s.cust.priority_class for s in self.servers)
-            if next_individual.priority_class < least_priority:
-                least_prioritised_individuals = [s.cust for s in self.servers if s.cust.priority_class == least_priority]
-                individual_to_preempt = max([ind for ind in least_prioritised_individuals], key=lambda cust: cust.service_start_date)
-                self.preempt(individual_to_preempt, next_individual)
+        if free_server is None and isinf(self.c) is False:
+            self.decide_preempt(next_individual)
         if free_server is not None or isinf(self.c):
             if isinf(self.c) is False:
                 self.attach_server(free_server, next_individual)
@@ -259,6 +255,7 @@ class Node(object):
         changing_individual.priority_class = self.simulation.network.priority_class_mapping[changing_individual.next_class]
         if changing_individual.priority_class != changing_individual.prev_priority_class:
             self.change_priority_queue(changing_individual)
+            self.decide_preempt(changing_individual)
         self.simulation.statetracker.change_state_classchange(self, changing_individual)
         changing_individual.previous_class = changing_individual.next_class
         changing_individual.prev_priority_class = changing_individual.priority_class
@@ -334,6 +331,17 @@ class Node(object):
         next_individual.next_class = next_class
         next_individual.class_change_date = self.increment_time(self.get_now(), time)
 
+    def decide_preempt(self, individual):
+        """
+        Decides if priority preemption is needed, finds the individual to preempt, and preempt them.
+        """
+        if self.priority_preempt:
+            least_priority = max(s.cust.priority_class for s in self.servers)
+            if individual.priority_class < least_priority:
+                least_prioritised_individuals = [s.cust for s in self.servers if s.cust.priority_class == least_priority]
+                individual_to_preempt = max([ind for ind in least_prioritised_individuals], key=lambda cust: cust.service_start_date)
+                self.preempt(individual_to_preempt, individual)
+
     def detatch_server(self, server, individual):
         """
         Detatches a server from an individual, and vice versa.
@@ -346,7 +354,7 @@ class Node(object):
             server.busy_time = (individual.exit_date - individual.service_start_date)
         else:
             server.busy_time += (individual.exit_date - individual.service_start_date)
-        server.total_time = self.increment_time(individual.exit_date, -server.start_date)
+        server.total_time = self.increment_time(self.get_now(), -server.start_date)
         if server.offduty:
             self.kill_server(server)
 
@@ -485,7 +493,7 @@ class Node(object):
         next_individual.service_time = self.get_service_time(next_individual)
         next_individual.service_end_date = self.increment_time(
             self.get_now(), next_individual.service_time)
-
+        server.next_end_service_date = next_individual.service_end_date
 
 
     def release(self, next_individual_index, next_node):
