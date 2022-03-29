@@ -653,6 +653,27 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {0:0, 1:0})
 
+    def test_create_network_preempt_priorities(self):
+        N = ciw.create_network(
+            arrival_distributions={'Class 0': [ciw.dists.Exponential(3.0), ciw.dists.Exponential(2.0)],
+                                   'Class 1': [ciw.dists.Exponential(4.0), ciw.dists.Exponential(2.0)],
+                                   'Class 2': [ciw.dists.Exponential(3.0), ciw.dists.Exponential(1.0)]},
+            service_distributions={'Class 0': [ciw.dists.Exponential(7.0), ciw.dists.Exponential(5.0)],
+                                   'Class 1': [ciw.dists.Exponential(8.0), ciw.dists.Exponential(1.0)],
+                                   'Class 2': [ciw.dists.Uniform(0.4, 1.2), ciw.dists.Uniform(0.4, 1.2)]},
+            number_of_servers=[9, 2],
+            routing={'Class 0': [[0.0, 0.5], [0.1, 0.3]],
+                     'Class 1': [[0.0, 0.5], [0.3, 0.1]],
+                     'Class 2': [[0.1, 0.4], [0.3, 0.1]]},
+            priority_classes=({'Class 0': 0, 'Class 1': 1, 'Class 2': 0}, [True, False])
+        )
+        self.assertEqual(N.number_of_nodes, 2)
+        self.assertEqual(N.number_of_classes, 3)
+        self.assertEqual(N.service_centres[0].priority_preempt, True)
+        self.assertEqual(N.service_centres[1].priority_preempt, False)
+        self.assertEqual(N.customer_classes[0].priority_class, 0)
+        self.assertEqual(N.customer_classes[1].priority_class, 1)
+        self.assertEqual(N.customer_classes[2].priority_class, 0)
 
 
     def test_error_no_arrivals_servers_services(self):
