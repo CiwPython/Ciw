@@ -61,13 +61,11 @@ When a highler priority customer arrives while a lower priority customer is in s
 
 + During non-pre-emptive priorities, customers cannot be interrupted. Therefore the lower priority customers finish their service before the higher priority customer begins their service.
 
-In order to implement pre-emptive or non-pre-emptive priorities, put the priority class mapping in a tuple with a :code:`True` or a :code:`False` as the second term, indicating pre-emptive or non-pre-emptive interruptions. For example::
+In order to implement pre-emptive or non-pre-emptive priorities, put the priority class mapping in a tuple with a list of :code:`True` or a :code:`False` as the second term, indicating pre-emptive or non-pre-emptive interruptions at each node of the network. For example::
 
-    priority_classes=({'Class 0': 0, 'Class 1': 1}, True) # preemptive
+    priority_classes=({'Class 0': 0, 'Class 1': 1}, [True, True, False])
 
-And::
-
-    priority_classes=({'Class 0': 0, 'Class 1': 1}, False) # non-preemptive
+This indicates that pre-emptive priorities will be used at the first two nodes, and non-pre-emptive priorities will be used at the third node.
 
 Ciw defaults to non-pre-emptive priorities, and so the following code implies non-pre-emptive priorities::
 
