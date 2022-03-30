@@ -67,33 +67,39 @@ Now we should see that no customer of Class 0 ever reached Node 3; and no custom
     >>> set([r.node for r in recs if r.customer_class==1]) == visited_by_children
     True
 
-Now say we'd like to find the average waiting time at the reception, baby specialist's clinic, and children's specialist's clinic. We'll simulate for 24 hours, using 3 hour warm-up and 3 hour cool-down, for 16 trials. Let's collect the average waiting times at each node every time::
+Now say we'd like to find the average waiting time at the reception, baby specialist's clinic, and children's specialist's clinic. We'll simulate for 24 hours, using 3 hour warm-up and 3 hour cool-down, for 16 trials. Let's collect the average waiting times for each class at each node every time::
 
-	>>> average_waits_1 = []
-	>>> average_waits_2 = []
-	>>> average_waits_3 = []
-	>>> for trial in range(16):
-	...     ciw.seed(trial)
-	...     Q = ciw.Simulation(N)
-	...     Q.simulate_until_max_time(30)
-	...     recs = Q.get_all_records()
-	...     waits1 = [r.waiting_time for r in recs if r.node==1 and r.arrival_date > 3 and r.arrival_date < 27]
-	...     waits2 = [r.waiting_time for r in recs if r.node==2 and r.arrival_date > 3 and r.arrival_date < 27]
-	...     waits3 = [r.waiting_time for r in recs if r.node==3 and r.arrival_date > 3 and r.arrival_date < 27]
-	...     average_waits_1.append(sum(waits1) / len(waits1))
-	...     average_waits_2.append(sum(waits2) / len(waits2))
-	...     average_waits_3.append(sum(waits3) / len(waits3))
+    >>> average_waits_1_babies = []
+    >>> average_waits_1_children = []
+    >>> average_waits_2 = []
+    >>> average_waits_3 = []
+    >>> for trial in range(16):
+    ...     ciw.seed(trial)
+    ...     Q = ciw.Simulation(N)
+    ...     Q.simulate_until_max_time(30)
+    ...     recs = Q.get_all_records()
+    ...     waits1_babies = [r.waiting_time for r in recs if r.node==1 and r.arrival_date > 3 and r.arrival_date < 27 and r.customer_class == 0]
+    ...     waits1_children = [r.waiting_time for r in recs if r.node==1 and r.arrival_date > 3 and r.arrival_date < 27 and r.customer_class == 1]
+    ...     waits2 = [r.waiting_time for r in recs if r.node==2 and r.arrival_date > 3 and r.arrival_date < 27]
+    ...     waits3 = [r.waiting_time for r in recs if r.node==3 and r.arrival_date > 3 and r.arrival_date < 27]
+    ...     average_waits_1_babies.append(sum(waits1_babies) / len(waits1_babies))
+    ...     average_waits_1_children.append(sum(waits1_children) / len(waits1_children))
+    ...     average_waits_2.append(sum(waits2) / len(waits2))
+    ...     average_waits_3.append(sum(waits3) / len(waits3))
 
 Now we can find the average wait over the trials::
 
-	>>> sum(average_waits_1) / len(average_waits_1)
-	0.274301...
+    >>> sum(average_waits_1_babies) / len(average_waits_1_babies)
+    0.298488...
 
-	>>> sum(average_waits_2) / len(average_waits_2)
-	0.268752...
+    >>> sum(average_waits_1_children) / len(average_waits_1_children)
+    0.261834...
 
-	>>> sum(average_waits_3) / len(average_waits_3)
-	0.284763...
+    >>> sum(average_waits_2) / len(average_waits_2)
+    0.268752...
 
-These results imply that on average babies wait 0.6 of an hour, around 36 minutes for an appointment.
+    >>> sum(average_waits_3) / len(average_waits_3)
+    0.284763...
+
+These results imply that on average babies wait 0.298488 + 0.268752 = 0.567 of an hour, around 34 minutes for an appointment.
 This could then be used as a baseline measure against which to compare potential reconfigurations of the clinic.

@@ -219,7 +219,7 @@ The Erlang Distribution
 -----------------------
 
 An Erlang distribution with parameters :math:`\lambda` and :math:`n` is the sum of :math:`n` Exponential distributions with parameter :math:`\lambda`.
-Write an Erlang distribution with :math:`\lambda = 9` and :math:`\n = 4` as follows::
+Write an Erlang distribution with :math:`\lambda = 9` and :math:`n = 4` as follows::
 
     ciw.dists.Erlang(rate=9, num_phases=4)
 
