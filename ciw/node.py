@@ -488,6 +488,7 @@ class Node(object):
         individual_to_preempt.service_start_date = False
         individual_to_preempt.service_time = False
         individual_to_preempt.service_end_date = False
+        self.decide_class_change(individual_to_preempt)
         self.attach_server(server, next_individual)
         next_individual.service_start_date = self.get_now()
         next_individual.service_time = self.get_service_time(next_individual)
