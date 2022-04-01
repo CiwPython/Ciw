@@ -95,6 +95,7 @@ class Node(object):
         next_individual.node = self.id_number
         next_individual.exit_date = False
         next_individual.is_blocked = False
+        next_individual.original_class = next_individual.customer_class
         next_individual.queue_size_at_arrival = self.number_of_individuals
         self.individuals[next_individual.priority_class].append(next_individual)
         self.number_of_individuals += 1
@@ -686,6 +687,7 @@ class Node(object):
         record = DataRecord(
             individual.id_number,
             individual.previous_class,
+            individual.original_class,
             self.id_number,
             individual.arrival_date,
             individual.service_start_date - individual.arrival_date,
@@ -722,6 +724,7 @@ class Node(object):
         record = DataRecord(
             individual.id_number,
             individual.previous_class,
+            individual.original_class,
             self.id_number,
             individual.arrival_date,
             individual.exit_date - individual.arrival_date,
