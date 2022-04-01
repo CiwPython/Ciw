@@ -12,7 +12,8 @@ class ServiceCentre(object):
                  queueing_capacity,
                  class_change_matrix=None,
                  schedule=None,
-                 preempt=False,
+                 schedule_preempt=False,
+                 priority_preempt=False,
                  ps_threshold=1,
                  server_priority_function=None):
         """
@@ -22,7 +23,8 @@ class ServiceCentre(object):
         self.queueing_capacity = queueing_capacity
         self.class_change_matrix = class_change_matrix
         self.schedule = schedule
-        self.preempt = preempt
+        self.schedule_preempt = schedule_preempt
+        self.priority_preempt = priority_preempt
         self.ps_threshold = ps_threshold
         self.server_priority_function = server_priority_function
         self.class_change_time = False

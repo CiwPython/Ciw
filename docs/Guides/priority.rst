@@ -49,3 +49,25 @@ Now let's run the simulation, comparing the waiting times for Class 0 and Class 
     >>> waits_1 = [r.waiting_time for r in recs if r.customer_class==1]
     >>> sum(waits_1)/len(waits_1)
     7.6103100...
+
+
+
+Pre-emption
+-----------
+
+When a highler priority customer arrives while a lower priority customer is in service, there are two options of what may happen.
+
++ During pre-emptive priorities, the higher priority customer will begin service immediately and replace the lower priority customer. That lower priority customer will immediately stop service and re-enter the beginning of their priority queue. However that customer's service time will be re-sampled when they eventually begin service.
+
++ During non-pre-emptive priorities, customers cannot be interrupted. Therefore the lower priority customers finish their service before the higher priority customer begins their service.
+
+In order to implement pre-emptive or non-pre-emptive priorities, put the priority class mapping in a tuple with a list of :code:`True` or a :code:`False` as the second term, indicating pre-emptive or non-pre-emptive interruptions at each node of the network. For example::
+
+    priority_classes=({'Class 0': 0, 'Class 1': 1}, [True, True, False])
+
+This indicates that pre-emptive priorities will be used at the first two nodes, and non-pre-emptive priorities will be used at the third node.
+
+Ciw defaults to non-pre-emptive priorities, and so the following code implies non-pre-emptive priorities::
+
+    priority_classes={'Class 0': 0, 'Class 1': 1} # non-preemptive
+

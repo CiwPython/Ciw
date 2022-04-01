@@ -135,6 +135,8 @@ def create_network_from_dictionary(params_input):
     params = fill_out_dictionary(params_input)
     validify_dictionary(params)
     # Then make the Network object
+    number_of_classes = params['number_of_classes']
+    number_of_nodes = params['number_of_nodes']
     arrivals = [params['arrival_distributions']['Class ' + str(clss)]
         for clss in range(len(params['arrival_distributions']))]
     services = [params['service_distributions']['Class ' + str(clss)]
@@ -144,14 +146,18 @@ def create_network_from_dictionary(params_input):
     else:
         routing = [params['routing']['Class ' + str(clss)]
             for clss in range(len(params['routing']))]
-    priorities = [params['priority_classes']['Class ' + str(clss)]
-        for clss in range(len(params['priority_classes']))]
+    if isinstance(params['priority_classes'], dict):
+        priorities = [params['priority_classes']['Class ' + str(clss)]
+            for clss in range(len(params['priority_classes']))]
+        preempt_priorities = [False for _ in range(number_of_nodes)]
+    if isinstance(params['priority_classes'], tuple):
+        priorities = [params['priority_classes'][0]['Class ' + str(clss)]
+            for clss in range(len(params['priority_classes'][0]))]
+        preempt_priorities = params['priority_classes'][1]
     baulking_functions = [params['baulking_functions']['Class ' + str(clss)]
         for clss in range(len(params['baulking_functions']))]
     batches = [params['batching_distributions']['Class ' + str(clss)]
         for clss in range(len(params['batching_distributions']))]
-    number_of_classes = params['number_of_classes']
-    number_of_nodes = params['number_of_nodes']
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['queue_capacities']]
     class_change_matrices = params.get('class_change_matrices',
         {'Node ' + str(nd + 1): None for nd in range(number_of_nodes)})
@@ -184,6 +190,7 @@ def create_network_from_dictionary(params_input):
             class_change_matrices['Node ' + str(nd + 1)],
             schedules[nd],
             preempts[nd],
+            preempt_priorities[nd],
             params['ps_thresholds'][nd],
             params['server_priority_functions'][nd]))
     for clss in range(number_of_classes):

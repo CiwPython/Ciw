@@ -161,7 +161,7 @@ class TestScheduling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
-        N.preempt = True
+        N.schedule_preempt = True
         N.add_new_servers(3)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
@@ -219,7 +219,7 @@ class TestScheduling(unittest.TestCase):
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
 
-        self.assertTrue(Q.nodes[1].preempt)
+        self.assertTrue(Q.nodes[1].schedule_preempt)
 
         Q.simulate_until_max_time(15.5)
 
@@ -243,7 +243,7 @@ class TestScheduling(unittest.TestCase):
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
 
-        self.assertTrue(Q.nodes[1].preempt)
+        self.assertTrue(Q.nodes[1].schedule_preempt)
 
         Q.simulate_until_max_time(22.5)
         recs = Q.get_all_records()
@@ -265,7 +265,7 @@ class TestScheduling(unittest.TestCase):
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
-        self.assertTrue(Q.nodes[1].preempt)
+        self.assertTrue(Q.nodes[1].schedule_preempt)
 
         Q.simulate_until_max_time(27.5)
         recs = Q.get_all_records()
