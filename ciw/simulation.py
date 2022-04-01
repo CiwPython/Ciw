@@ -307,6 +307,7 @@ class Simulation(object):
         if headers:
             csv_wrtr.writerow(['I.D. Number',
                                'Customer Class',
+                               'Original Customer Class',
                                'Node',
                                'Arrival Date',
                                'Waiting Time',

@@ -1083,30 +1083,35 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[0].service_start_date, 3)
         self.assertEqual(recs[0].service_end_date, 7.5)
         self.assertEqual(recs[0].customer_class, 0)
+        self.assertEqual(recs[0].original_customer_class, 0)
         # Customer 2
         self.assertEqual(recs[1].arrival_date, 6)
         self.assertEqual(recs[1].waiting_time, 1.5)
         self.assertEqual(recs[1].service_start_date, 7.5)
         self.assertEqual(recs[1].service_end_date, 12)
         self.assertEqual(recs[1].customer_class, 0)
+        self.assertEqual(recs[1].original_customer_class, 0)
         # Customer 3
         self.assertEqual(recs[2].arrival_date, 9)
         self.assertEqual(recs[2].waiting_time, 3)
         self.assertEqual(recs[2].service_start_date, 12)
         self.assertEqual(recs[2].service_end_date, 16.5)
         self.assertEqual(recs[2].customer_class, 0)
+        self.assertEqual(recs[2].original_customer_class, 0)
         # Customer 4
         self.assertEqual(recs[3].arrival_date, 12)
         self.assertEqual(recs[3].waiting_time, 4.5)
         self.assertEqual(recs[3].service_start_date, 16.5)
         self.assertEqual(recs[3].service_end_date, 21)
         self.assertEqual(recs[3].customer_class, 1)
+        self.assertEqual(recs[3].original_customer_class, 0)
         # Customer 5
         self.assertEqual(recs[4].arrival_date, 15)
         self.assertEqual(recs[4].waiting_time, 6)
         self.assertEqual(recs[4].service_start_date, 21)
         self.assertEqual(recs[4].service_end_date, 25.5)
         self.assertEqual(recs[4].customer_class, 1)
+        self.assertEqual(recs[4].original_customer_class, 0)
 
 
     def test_priority_change_while_waiting(self):
@@ -1144,27 +1149,32 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[0].service_start_date, 3)
         self.assertEqual(recs[0].service_end_date, 7.5)
         self.assertEqual(recs[0].customer_class, 1)
+        self.assertEqual(recs[0].original_customer_class, 1)
         # Customer 2
         self.assertEqual(recs[1].arrival_date, 4)
         self.assertEqual(recs[1].waiting_time, 3.5)
         self.assertEqual(recs[1].service_start_date, 7.5)
         self.assertEqual(recs[1].service_end_date, 12)
         self.assertEqual(recs[1].customer_class, 0)
+        self.assertEqual(recs[1].original_customer_class, 0)
         # Customer 3
         self.assertEqual(recs[2].arrival_date, 8)
         self.assertEqual(recs[2].waiting_time, 4)
         self.assertEqual(recs[2].service_start_date, 12)
         self.assertEqual(recs[2].service_end_date, 16.5)
         self.assertEqual(recs[2].customer_class, 0)
+        self.assertEqual(recs[2].original_customer_class, 0)
         # Customer 4
         self.assertEqual(recs[3].arrival_date, 12)
         self.assertEqual(recs[3].waiting_time, 4.5)
         self.assertEqual(recs[3].service_start_date, 16.5)
         self.assertEqual(recs[3].service_end_date, 21)
         self.assertEqual(recs[3].customer_class, 0)
+        self.assertEqual(recs[3].original_customer_class, 0)
         # Customer 5
         self.assertEqual(recs[4].arrival_date, 6)
         self.assertEqual(recs[4].waiting_time, 15)
         self.assertEqual(recs[4].service_start_date, 21)
         self.assertEqual(recs[4].service_end_date, 25.5)
         self.assertEqual(recs[4].customer_class, 0)
+        self.assertEqual(recs[4].original_customer_class, 1)
