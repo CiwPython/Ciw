@@ -1,18 +1,26 @@
 .. _preemption:
 
-Pre-emption
-===========
+Pre-emptive Interruptions & Options for Resuming Service
+========================================================
 
-When a highler priority customer arrives while a lower priority customer is in service, there are a number of options of what may happen.
+Pre-emptive interruptions can happen in a number of settings. In Ciw they may happen when using customer priorities, that is when a higher priority customer arrives while a lower priority customer is in service, the lower priority customer is displaced from service. They may also happen when using server schedules, when servers go off duty during a customer's service they are displaced.
 
-+ During non-pre-emptive priorities, customers cannot be interrupted. Therefore the lower priority customers finish their service before the higher priority customer begins their service (:code:`False`).
+Resuming Service
+----------------
 
-+ During pre-emptive priorities, the higher priority customer will begin service immediately and replace the lower priority customer. That lower priority customer will immediately stop service and re-enter the beginning of their priority queue. Upon re-entering service the previously displaced customer can either:
+There are a number of options of what may happen when an interrupted individual resumes service.
+In Ciw they can either:
     
-    + Have their service resampled (:code:`"resample"`);
-    + Restart the exact same service (:code:`"restart"`);
-    + Continue the original service from where they left off (:code:`"continue"`).
++ Have their service resampled (:code:`"resample"`);
++ Restart the exact same service (:code:`"restart"`);
++ Continue the original service from where they left off (:code:`"continue"`).
 
+
+
+Pre-emption & Priorities
+------------------------
+
+During non-pre-emptive priorities, customers cannot be interrupted. Therefore the lower priority customers finish their service before the higher priority customer begins their service (:code:`False`).
 
 In order to implement pre-emptive or non-pre-emptive priorities, put the priority class mapping in a tuple with a list of the chosen pre-emption options for each node in the network. For example::
 
@@ -27,3 +35,24 @@ Ciw defaults to non-pre-emptive priorities, and so the following code implies no
 **Note**: If there are more than one lowest priority customers in service to pre-empt, then the customer who started service last will be pre-empted.
 
 Unfinished pre-empted services are recorded as :code:`DataRecords` and so are collected along with service records with the :code:`get_all_records` method. They are distinguished by the :code:`record_type` field (services have :code:`service` record type, while pre-empted services have :code:`pre-empted service` record types).
+
+
+Pre-emption & Server Schedules
+------------------------------
+
+During a non-pre-emptive schedule, customers cannot be interrupted. Therefore servers finish the current customer's service before disappearing. This of course may mean that when new servers arrive the old servers are still there.
+During a pre-emptive schedule, that server will immediately stop service and leave. Whenever more servers come on duty, they will prioritise the interrupted customers and continue their service.
+
+In order to implement pre-emptive or non-pre-emptive schedules, put the schedule in a tuple with the pre-emption option. For example::
+
+    number_of_servers=[
+        ([[2, 10], [0, 30], [1, 100]], False)      # non-preemptive
+        ([[2, 10], [0, 30], [1, 100]], "resample") # preemptive and resamples service time
+        ([[2, 10], [0, 30], [1, 100]], "restart")  # preemptive and restarts origional service time
+        ([[2, 10], [0, 30], [1, 100]], "continue") # preemptive continutes services where left off
+    ]
+
+Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
+
+    number_of_servers=[[[2, 10], [0, 30], [1, 100]]] # non-preemptive
+
