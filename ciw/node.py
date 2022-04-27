@@ -161,7 +161,7 @@ class Node(object):
             node_blocked_to.len_blocked_queue -= 1
             ind.is_blocked = False
         self.attach_server(srvr, ind)
-        ind.service_time = self.get_service_time(ind)
+        self.give_service_time_after_preemption(ind)
         ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
         ind.interrupted = False
         srvr.next_end_service_date = ind.service_end_date
@@ -609,7 +609,7 @@ class Node(object):
         """
         Gathers servers that should be deleted.
         """
-        if not self.schedule_preempt:
+        if self.schedule_preempt == False:
             to_delete = []
             for srvr in self.servers:
                 srvr.shift_end = self.next_event_date
@@ -625,8 +625,10 @@ class Node(object):
                     self.interrupted_individuals.append(s.cust)
                     s.cust.interrupted = True
                     self.number_interrupted_individuals += 1
+                    self.interrupted_individuals[-1].original_service_time = self.interrupted_individuals[-1].service_time
+                    self.interrupted_individuals[-1].time_left = self.interrupted_individuals[-1].service_end_date - self.get_now()
+                    self.interrupted_individuals[-1].service_time = self.schedule_preempt
                     self.interrupted_individuals[-1].service_end_date = False
-                    self.interrupted_individuals[-1].service_time = False
             self.interrupted_individuals.sort(key=lambda x: (x.priority_class,
                                                              x.arrival_date))
         for obs in to_delete:

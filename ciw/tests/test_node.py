@@ -1390,7 +1390,7 @@ class TestNode(unittest.TestCase):
         r1, r2 = [r for r in recs if r.record_type == "service"]
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
-        self.assertEqual(r1.service_end_date, 13, recs)
+        self.assertEqual(r1.service_end_date, 13)
         self.assertEqual(r1.service_time, 10)
         self.assertEqual(r1.waiting_time, 0)
 
@@ -1461,7 +1461,7 @@ class TestNode(unittest.TestCase):
         between service times of 6 and 3. One customer of class 0 arrives at
         date 3. They have deterministic service times of 10.
 
-        Servers have a schedule, 1 server is on dute from the start, then 2
+        Servers have a schedule, 1 server is on duty from the start, then 2
         servers are on duty from time 5 onwards.
 
         The first customer would be displaced at time 3. Then and would restart
@@ -1490,7 +1490,7 @@ class TestNode(unittest.TestCase):
         r2, r1 = [r for r in recs if r.record_type == "service"]
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
-        self.assertEqual(r1.service_end_date, 13, recs)
+        self.assertEqual(r1.service_end_date, 13)
         self.assertEqual(r1.service_time, 10)
         self.assertEqual(r1.waiting_time, 0)
 

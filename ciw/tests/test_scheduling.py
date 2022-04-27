@@ -161,7 +161,7 @@ class TestScheduling(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params_schedule.yml'))
         N = Q.transitive_nodes[0]
-        N.schedule_preempt = True
+        N.schedule_preempt = 'resample'
         N.add_new_servers(3)
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1',
@@ -197,9 +197,11 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N.servers], [])
         self.assertEqual([obs.busy for obs in N.servers], [])
         self.assertEqual([obs.offduty for obs in N.servers], [])
-        self.assertEqual(ind1.service_time, False)
+        self.assertEqual(ind1.service_time, 'resample')
+        self.assertEqual(ind1.original_service_time, 5.5)
         self.assertEqual(ind1.service_end_date, False)
-        self.assertEqual(ind2.service_time, False)
+        self.assertEqual(ind2.service_time, 'resample')
+        self.assertEqual(ind2.original_service_time, 7.2)
         self.assertEqual(ind2.service_end_date, False)
         self.assertEqual(N.interrupted_individuals, [ind2, ind3, ind1])
         self.assertTrue(ind1 in N.individuals[1])
@@ -214,7 +216,7 @@ class TestScheduling(unittest.TestCase):
             'arrival_distributions': [ciw.dists.Deterministic(7.0)],
             'service_distributions': [ciw.dists.Deterministic(5.0)],
             'routing': [[0.0]],
-            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], True)]
+            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], 'resample')]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -229,7 +231,9 @@ class TestScheduling(unittest.TestCase):
         interrupted_ind = Q.nodes[1].interrupted_individuals[0]
         self.assertEqual(interrupted_ind.arrival_date, 14.0)
         self.assertEqual(interrupted_ind.service_start_date, 14.0)
-        self.assertEqual(interrupted_ind.service_time, False)
+        self.assertEqual(interrupted_ind.service_time, 'resample')
+        self.assertEqual(interrupted_ind.original_service_time, 5.0)
+        self.assertEqual(interrupted_ind.time_left, 4.0)
         self.assertEqual(interrupted_ind.service_end_date, False)
 
 
@@ -238,7 +242,7 @@ class TestScheduling(unittest.TestCase):
             'arrival_distributions': [ciw.dists.Deterministic(7.0)],
             'service_distributions': [ciw.dists.Deterministic(5.0)],
             'routing': [[0.0]],
-            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], True)]
+            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], 'resample')]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -261,7 +265,7 @@ class TestScheduling(unittest.TestCase):
             'arrival_distributions': [ciw.dists.Deterministic(3.0)],
             'service_distributions': [ciw.dists.Deterministic(10.0)],
             'routing': [[0.0]],
-            'number_of_servers': [([[4, 12.5], [0, 17], [1, 100]], True)]
+            'number_of_servers': [([[4, 12.5], [0, 17], [1, 100]], 'resample')]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -303,3 +307,69 @@ class TestScheduling(unittest.TestCase):
         nd = Q.transitive_nodes[0]
         self.assertEqual(nd.overtime, [Decimal('0.0'), Decimal('1.0'), Decimal('3.0'), Decimal('2.0'), Decimal('3.0')])
         self.assertEqual(sum(nd.overtime)/len(nd.overtime), Decimal('1.8'))
+
+
+    def test_preemptive_schedules_resume_options(self):
+        """
+        A customer arrives at date 1, who's service time alternates
+        between service times of 10 and 20.
+
+        Servers have a schedule, 1 server is on duty from the start, then 0
+        servers are on duty from time 5 to 9, then 1 server is on duty again.
+
+        The customer would be displaced at time 5. Then and would restart
+        service at time 9. 
+            - Under "restart" we would expect them to leave at time 19
+            (service time = 10)
+            - Under "continue" we would expect them to leave at time 15
+            (service time = 10 - 4 = 6)
+            - Under "resample" we would expect them to leave at time 29
+            (service time = 20)
+        """ 
+        # Testing under restart
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1, float("inf")])],
+            service_distributions=[ciw.dists.Sequential([10, 20])],
+            number_of_servers=[([[1, 5], [0, 9], [1, 100]], 'restart')],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(40)
+        recs = Q.get_all_records()
+        r1 = [r for r in recs if r.record_type == "service"][0]
+        self.assertEqual(r1.arrival_date, 1)
+        self.assertEqual(r1.service_start_date, 1)
+        self.assertEqual(r1.service_end_date, 19)
+        self.assertEqual(r1.service_time, 18)
+        self.assertEqual(r1.waiting_time, 0)
+
+        # Testing under continue
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1, float("inf")])],
+            service_distributions=[ciw.dists.Sequential([10, 20])],
+            number_of_servers=[([[1, 5], [0, 9], [1, 100]], 'continue')],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(40)
+        recs = Q.get_all_records()
+        r1 = [r for r in recs if r.record_type == "service"][0]
+        self.assertEqual(r1.arrival_date, 1)
+        self.assertEqual(r1.service_start_date, 1)
+        self.assertEqual(r1.service_end_date, 15)
+        self.assertEqual(r1.service_time, 14)
+        self.assertEqual(r1.waiting_time, 0)
+
+        # Testing under resample
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([1, float("inf")])],
+            service_distributions=[ciw.dists.Sequential([10, 20])],
+            number_of_servers=[([[1, 5], [0, 9], [1, 100]], 'resample')],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(40)
+        recs = Q.get_all_records()
+        r1 = [r for r in recs if r.record_type == "service"][0]
+        self.assertEqual(r1.arrival_date, 1)
+        self.assertEqual(r1.service_start_date, 1)
+        self.assertEqual(r1.service_end_date, 29)
+        self.assertEqual(r1.service_time, 28)
+        self.assertEqual(r1.waiting_time, 0)
