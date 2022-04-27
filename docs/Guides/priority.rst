@@ -71,3 +71,4 @@ Ciw defaults to non-pre-emptive priorities, and so the following code implies no
 
     priority_classes={'Class 0': 0, 'Class 1': 1} # non-preemptive
 
+Note that if there are more than one lowest priority customers in service to pre-empt, then the customer who started service last will be pre-empted.

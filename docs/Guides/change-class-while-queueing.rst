@@ -16,7 +16,7 @@ As an example, consider an M/M/1 queue with three classes of customer. Each clas
  - customers of Class 0 will change to customers of Class 2 if they have waited in the queue for longer than 0.5 time units.
  - customers of Class 1 will change to customers of Class 2 Exponentially at rate 1.
 
- This is input into the simulation as follows::
+This is input into the simulation as follows::
 
      >>> import ciw
      >>> N = ciw.create_network(
@@ -50,8 +50,8 @@ As a further example, consider a one node queue with two servers, with two class
     ...         'Class 0': 0,
     ...         'Class 1': 1},
     ...     class_change_time_distributions=[
-    ...     [None, None],
-    ...     [ciw.dists.Deterministic(1.5), None]]
+    ...         [None, None],
+    ...         [ciw.dists.Deterministic(1.5), None]]
     ... )
 
 Running this for a while::
