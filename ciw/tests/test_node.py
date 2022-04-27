@@ -841,7 +841,7 @@ class TestNode(unittest.TestCase):
                 priorities = {1: 0, 2: 1}
                 return priorities[srv.id_number]
             if ind.customer_class == 1:
-                priorities = {1: 1, 2: 0,}
+                priorities = {1: 1, 2: 0}
                 return priorities[srv.id_number]
 
         N = ciw.create_network(
@@ -849,12 +849,12 @@ class TestNode(unittest.TestCase):
                 'Class 0': [ciw.dists.Exponential(rate=1.0)], 'Class 1': [ciw.dists.Exponential(rate=1.0)]
             },
             service_distributions={
-                'Class 0': [ciw.dists.Exponential(rate=100.0)], 'Class 1': [ciw.dists.Exponential(rate=100.0)]
+                'Class 0': [ciw.dists.Exponential(rate=200.0)], 'Class 1': [ciw.dists.Exponential(rate=200.0)]
             },
             number_of_servers=[2],
             server_priority_functions=[custom_server_priority],
         )
-
+        ciw.seed(0)
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(50)
 
@@ -1051,3 +1051,308 @@ class TestNode(unittest.TestCase):
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 10000)
         self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+
+    def test_class_change_while_waiting(self):
+        """
+        Only one type of customer arrive (Class 0),
+        but if they wait more than 4 time units they change to Class 1.
+        Services last exactly 4.5 time units.
+        Simulate until 26 time units.
+
+        We would expect:
+        - first three customers to wait 0, 1.5, and 3 respectively. (Remain Class 0)
+        - next two customer wait 4.5 and 6 respectively. (Change to Class 1)
+        """
+        N = ciw.create_network(
+            arrival_distributions={'Class 0': [ciw.dists.Deterministic(3)],
+                                   'Class 1': [ciw.dists.NoArrivals()]},
+            service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
+                                   'Class 1': [ciw.dists.Deterministic(4.5)]},
+            number_of_servers=[1],
+            class_change_time_distributions=[
+                [None, ciw.dists.Deterministic(4)],
+                [None, None]]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(26)
+        recs = Q.get_all_records()
+        self.assertEqual(len(recs), 5)
+        # Customer 1
+        self.assertEqual(recs[0].arrival_date, 3)
+        self.assertEqual(recs[0].waiting_time, 0)
+        self.assertEqual(recs[0].service_start_date, 3)
+        self.assertEqual(recs[0].service_end_date, 7.5)
+        self.assertEqual(recs[0].customer_class, 0)
+        self.assertEqual(recs[0].original_customer_class, 0)
+        # Customer 2
+        self.assertEqual(recs[1].arrival_date, 6)
+        self.assertEqual(recs[1].waiting_time, 1.5)
+        self.assertEqual(recs[1].service_start_date, 7.5)
+        self.assertEqual(recs[1].service_end_date, 12)
+        self.assertEqual(recs[1].customer_class, 0)
+        self.assertEqual(recs[1].original_customer_class, 0)
+        # Customer 3
+        self.assertEqual(recs[2].arrival_date, 9)
+        self.assertEqual(recs[2].waiting_time, 3)
+        self.assertEqual(recs[2].service_start_date, 12)
+        self.assertEqual(recs[2].service_end_date, 16.5)
+        self.assertEqual(recs[2].customer_class, 0)
+        self.assertEqual(recs[2].original_customer_class, 0)
+        # Customer 4
+        self.assertEqual(recs[3].arrival_date, 12)
+        self.assertEqual(recs[3].waiting_time, 4.5)
+        self.assertEqual(recs[3].service_start_date, 16.5)
+        self.assertEqual(recs[3].service_end_date, 21)
+        self.assertEqual(recs[3].customer_class, 1)
+        self.assertEqual(recs[3].original_customer_class, 0)
+        # Customer 5
+        self.assertEqual(recs[4].arrival_date, 15)
+        self.assertEqual(recs[4].waiting_time, 6)
+        self.assertEqual(recs[4].service_start_date, 21)
+        self.assertEqual(recs[4].service_end_date, 25.5)
+        self.assertEqual(recs[4].customer_class, 1)
+        self.assertEqual(recs[4].original_customer_class, 0)
+
+
+    def test_priority_change_while_waiting(self):
+        """
+        Customers of class 0 have priority over class 1.
+        Class 0 arrive every 4, class 1 arrive every 3.
+        Class 1 turn to class 0 if they have waited longer than 7.
+        Services last exactly 4.5 time units.
+        Simulate until 26 time units.
+
+        We would expect:
+        - First served customer to be class 1, all other customers to be class 0
+        - Arrivals at 3, 4, 8, 12, and 6 respectively
+        - Service starts at 3, 7.5, 12, 16.5, and 21 respectively
+        - (the customer who arrives at 6 was class 1, but changed to class 0 at time 13)
+        """
+        N = ciw.create_network(
+            arrival_distributions={'Class 0': [ciw.dists.Deterministic(4)],
+                                   'Class 1': [ciw.dists.Deterministic(3)]},
+            service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
+                                   'Class 1': [ciw.dists.Deterministic(4.5)]},
+            number_of_servers=[1],
+            class_change_time_distributions=[
+                [None, None],
+                [ciw.dists.Deterministic(7), None]],
+            priority_classes={'Class 0': 0, 'Class 1': 1}
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(26)
+        recs = Q.get_all_records()
+        self.assertEqual(len(recs), 5)
+        # Customer 1
+        self.assertEqual(recs[0].arrival_date, 3)
+        self.assertEqual(recs[0].waiting_time, 0)
+        self.assertEqual(recs[0].service_start_date, 3)
+        self.assertEqual(recs[0].service_end_date, 7.5)
+        self.assertEqual(recs[0].customer_class, 1)
+        self.assertEqual(recs[0].original_customer_class, 1)
+        # Customer 2
+        self.assertEqual(recs[1].arrival_date, 4)
+        self.assertEqual(recs[1].waiting_time, 3.5)
+        self.assertEqual(recs[1].service_start_date, 7.5)
+        self.assertEqual(recs[1].service_end_date, 12)
+        self.assertEqual(recs[1].customer_class, 0)
+        self.assertEqual(recs[1].original_customer_class, 0)
+        # Customer 3
+        self.assertEqual(recs[2].arrival_date, 8)
+        self.assertEqual(recs[2].waiting_time, 4)
+        self.assertEqual(recs[2].service_start_date, 12)
+        self.assertEqual(recs[2].service_end_date, 16.5)
+        self.assertEqual(recs[2].customer_class, 0)
+        self.assertEqual(recs[2].original_customer_class, 0)
+        # Customer 4
+        self.assertEqual(recs[3].arrival_date, 12)
+        self.assertEqual(recs[3].waiting_time, 4.5)
+        self.assertEqual(recs[3].service_start_date, 16.5)
+        self.assertEqual(recs[3].service_end_date, 21)
+        self.assertEqual(recs[3].customer_class, 0)
+        self.assertEqual(recs[3].original_customer_class, 0)
+        # Customer 5
+        self.assertEqual(recs[4].arrival_date, 6)
+        self.assertEqual(recs[4].waiting_time, 15)
+        self.assertEqual(recs[4].service_start_date, 21)
+        self.assertEqual(recs[4].service_end_date, 25.5)
+        self.assertEqual(recs[4].customer_class, 0)
+        self.assertEqual(recs[4].original_customer_class, 1)
+
+    def test_preemptive_priorities(self):
+        """
+        One server.
+        Two classes of customer, 0 and 1, 0 higher priority than 1.
+        Class 0 have service distribution Deterministic 4.
+        Class 1 have service distribution Deterministic 5.
+
+        Class 0 arrive at times [1.5, 5]
+        Class 1 arrive at times [7.5]
+
+        Without preemption we would expect:
+        Class & Arrival & Wait & Service start & Service end 
+        1     & 1.5     & 0    & 1.5           & 6.5
+        1     & 5       & 1.5  & 6.5           & 11.5
+        0     & 7.5     & 4    & 11.5          & 15.5
+
+        With preemption we would expect:
+        Class & Arrival & Wait & Service start & Service end 
+        1     & 1.5     & 0    & 1.5           & 6.5
+        1     & 5       & 6.5  & 11.5          & 11.5
+        0     & 7.5     & 0    & 7.5           & 11.5
+        """
+
+        # First without preemption:
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Sequential([7.5, float('inf')])],
+                'Class 1': [ciw.dists.Sequential([1.5, 3.5, float('inf')])]},
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(4)], 
+                'Class 1': [ciw.dists.Deterministic(5)]},
+            number_of_servers=[1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, [False])
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs.sort(key=lambda r: r.arrival_date)
+        self.assertEqual(recs[0].arrival_date, 1.5)
+        self.assertEqual(recs[1].arrival_date, 5)
+        self.assertEqual(recs[2].arrival_date, 7.5)
+        self.assertEqual(recs[0].waiting_time, 0)
+        self.assertEqual(recs[1].waiting_time, 1.5)
+        self.assertEqual(recs[2].waiting_time, 4)
+        self.assertEqual(recs[0].service_start_date, 1.5)
+        self.assertEqual(recs[1].service_start_date, 6.5)
+        self.assertEqual(recs[2].service_start_date, 11.5)
+        self.assertEqual(recs[0].service_end_date, 6.5)
+        self.assertEqual(recs[1].service_end_date, 11.5)
+        self.assertEqual(recs[2].service_end_date, 15.5)
+
+        # Now with preemption:
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Sequential([7.5, float('inf')])],
+                'Class 1': [ciw.dists.Sequential([1.5, 3.5, float('inf')])]},
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(4)], 
+                'Class 1': [ciw.dists.Deterministic(5)]},
+            number_of_servers=[1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, [True])
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs.sort(key=lambda r: r.arrival_date)
+        self.assertEqual(recs[0].arrival_date, 1.5)
+        self.assertEqual(recs[1].arrival_date, 5)
+        self.assertEqual(recs[2].arrival_date, 7.5)
+        self.assertEqual(recs[0].waiting_time, 0)
+        self.assertEqual(recs[1].waiting_time, 6.5)
+        self.assertEqual(recs[2].waiting_time, 0)
+        self.assertEqual(recs[0].service_start_date, 1.5)
+        self.assertEqual(recs[1].service_start_date, 11.5)
+        self.assertEqual(recs[2].service_start_date, 7.5)
+        self.assertEqual(recs[0].service_end_date, 6.5)
+        self.assertEqual(recs[1].service_end_date, 16.5)
+        self.assertEqual(recs[2].service_end_date, 11.5)
+
+    def test_preemptive_priorities_at_class_change(self):
+        """
+        One server.
+        Two classes of customer, 0 and 1, 0 higher priority than 1.
+        Only Class 1 arrive, every 2 time units
+        All classes have service distribution Deterministic 2.5.
+
+        Class 1 turn into class 0 after waiting 1.2 time units
+
+        Without preemption we would expect:
+        Arrival & Wait & Service start & Service end 
+        2       & 0    & 2             & 4.5
+        4       & 0.5  & 4.5           & 7
+        6       & 1    & 7             & 9.5
+        8       & 1.5  & 9.5           & 12
+        10      & 2    & 12            & 14.5
+
+        With preemption we would expect:
+        Arrival & Wait & Service start & Service end 
+        2       & 0    & 2             & 4.5
+        4       & 0.5  & 4.5           & 7
+        6       & 5.7  & 11.7          & 14.2
+        8       & 1.2  & 9.2           & 11.7
+        10      & 4.2  & 14.2          & 16.5
+        """
+        # First without preemption:
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.NoArrivals()],
+                'Class 1': [ciw.dists.Sequential([2, 2, 2, 2, 2, float('inf')])]},
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(2.5)], 
+                'Class 1': [ciw.dists.Deterministic(2.5)]},
+            number_of_servers=[1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, [False]),
+            class_change_time_distributions=[[None, None], [ciw.dists.Deterministic(1.2), None]]
+        )
+        Q = ciw.Simulation(N, exact=26)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs.sort(key=lambda r: r.arrival_date)
+        self.assertEqual(float(recs[0].arrival_date), 2)
+        self.assertEqual(float(recs[1].arrival_date), 4)
+        self.assertEqual(float(recs[2].arrival_date), 6)
+        self.assertEqual(float(recs[3].arrival_date), 8)
+        self.assertEqual(float(recs[4].arrival_date), 10)
+        self.assertEqual(float(recs[0].waiting_time), 0)
+        self.assertEqual(float(recs[1].waiting_time), 0.5)
+        self.assertEqual(float(recs[2].waiting_time), 1)
+        self.assertEqual(float(recs[3].waiting_time), 1.5)
+        self.assertEqual(float(recs[4].waiting_time), 2)
+        self.assertEqual(float(recs[0].service_start_date), 2)
+        self.assertEqual(float(recs[1].service_start_date), 4.5)
+        self.assertEqual(float(recs[2].service_start_date), 7)
+        self.assertEqual(float(recs[3].service_start_date), 9.5)
+        self.assertEqual(float(recs[4].service_start_date), 12)
+        self.assertEqual(float(recs[0].service_end_date), 4.5)
+        self.assertEqual(float(recs[1].service_end_date), 7)
+        self.assertEqual(float(recs[2].service_end_date), 9.5)
+        self.assertEqual(float(recs[3].service_end_date), 12)
+        self.assertEqual(float(recs[4].service_end_date), 14.5)
+
+        # Now with preemption:
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.NoArrivals()],
+                'Class 1': [ciw.dists.Sequential([2, 2, 2, 2, 2, float('inf')])]},
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(2.5)], 
+                'Class 1': [ciw.dists.Deterministic(2.5)]},
+            number_of_servers=[1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, [True]),
+            class_change_time_distributions=[[None, None], [ciw.dists.Deterministic(1.2), None]]
+        )
+        Q = ciw.Simulation(N, exact=26)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs.sort(key=lambda r: r.arrival_date)
+        self.assertEqual(float(recs[0].arrival_date), 2)
+        self.assertEqual(float(recs[1].arrival_date), 4)
+        self.assertEqual(float(recs[2].arrival_date), 6)
+        self.assertEqual(float(recs[3].arrival_date), 8)
+        self.assertEqual(float(recs[4].arrival_date), 10)
+        self.assertEqual(float(recs[0].waiting_time), 0)
+        self.assertEqual(float(recs[1].waiting_time), 0.5)
+        self.assertEqual(float(recs[2].waiting_time), 5.7)
+        self.assertEqual(float(recs[3].waiting_time), 1.2)
+        self.assertEqual(float(recs[4].waiting_time), 4.2)
+        self.assertEqual(float(recs[0].service_start_date), 2)
+        self.assertEqual(float(recs[1].service_start_date), 4.5)
+        self.assertEqual(float(recs[2].service_start_date), 11.7)
+        self.assertEqual(float(recs[3].service_start_date), 9.2)
+        self.assertEqual(float(recs[4].service_start_date), 14.2)
+        self.assertEqual(float(recs[0].service_end_date), 4.5)
+        self.assertEqual(float(recs[1].service_end_date), 7)
+        self.assertEqual(float(recs[2].service_end_date), 14.2)
+        self.assertEqual(float(recs[3].service_end_date), 11.7)
+        self.assertEqual(float(recs[4].service_end_date), 16.7)

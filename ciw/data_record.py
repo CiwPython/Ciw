@@ -3,6 +3,7 @@ from collections import namedtuple
 DataRecord = namedtuple('Record', [
     'id_number',
     'customer_class',
+    'original_customer_class',
     'node',
     'arrival_date',
     'waiting_time',

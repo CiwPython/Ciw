@@ -11,7 +11,7 @@ def get_distribution(dist):
     Returns instances of the distribution classes that
     correspond to the indicator string in the .yml file.
     """
-    if dist is None:
+    if (dist is None) or (dist == 'None'):
         return None
     if dist[0] == 'Uniform':
        return ciw.dists.Uniform(dist[1], dist[2])
@@ -38,6 +38,7 @@ def get_distribution(dist):
 def create_network(arrival_distributions=None,
                    baulking_functions=None,
                    class_change_matrices=None,
+                   class_change_time_distributions=None,
                    number_of_servers=None,
                    priority_classes=None,
                    queue_capacities=None,
@@ -47,7 +48,8 @@ def create_network(arrival_distributions=None,
                    ps_thresholds=None,
                    server_priority_functions=None,
                    reneging_time_distributions=None,
-                   reneging_destinations=None):
+                   reneging_destinations=None,
+):
     """
     Takes in kwargs, creates dictionary.
     """
@@ -64,6 +66,8 @@ def create_network(arrival_distributions=None,
         params['baulking_functions'] = baulking_functions
     if class_change_matrices != None:
         params['class_change_matrices'] = class_change_matrices
+    if class_change_time_distributions is not None:
+        params['class_change_time_distributions'] = class_change_time_distributions
     if priority_classes != None:
         params['priority_classes'] = priority_classes
     if queue_capacities != None:
@@ -116,6 +120,10 @@ def create_network_from_yml(directory_name):
     for clss in params['reneging_time_distributions']:
         dists = [get_distribution(dist) for dist in params['reneging_time_distributions'][clss]]
         params['reneging_time_distributions'][clss] = dists
+    if 'class_change_time_distributions' in params:
+        for clss, dist_original in enumerate(params['class_change_time_distributions']):
+            dists = [get_distribution(dist) for dist in dist_original]
+            params['class_change_time_distributions'][clss] = dists
     validify_dictionary(params)
     return create_network_from_dictionary(params)
 
@@ -127,6 +135,8 @@ def create_network_from_dictionary(params_input):
     params = fill_out_dictionary(params_input)
     validify_dictionary(params)
     # Then make the Network object
+    number_of_classes = params['number_of_classes']
+    number_of_nodes = params['number_of_nodes']
     arrivals = [params['arrival_distributions']['Class ' + str(clss)]
         for clss in range(len(params['arrival_distributions']))]
     services = [params['service_distributions']['Class ' + str(clss)]
@@ -136,17 +146,23 @@ def create_network_from_dictionary(params_input):
     else:
         routing = [params['routing']['Class ' + str(clss)]
             for clss in range(len(params['routing']))]
-    priorities = [params['priority_classes']['Class ' + str(clss)]
-        for clss in range(len(params['priority_classes']))]
+    if isinstance(params['priority_classes'], dict):
+        priorities = [params['priority_classes']['Class ' + str(clss)]
+            for clss in range(len(params['priority_classes']))]
+        preempt_priorities = [False for _ in range(number_of_nodes)]
+    if isinstance(params['priority_classes'], tuple):
+        priorities = [params['priority_classes'][0]['Class ' + str(clss)]
+            for clss in range(len(params['priority_classes'][0]))]
+        preempt_priorities = params['priority_classes'][1]
     baulking_functions = [params['baulking_functions']['Class ' + str(clss)]
         for clss in range(len(params['baulking_functions']))]
     batches = [params['batching_distributions']['Class ' + str(clss)]
         for clss in range(len(params['batching_distributions']))]
-    number_of_classes = params['number_of_classes']
-    number_of_nodes = params['number_of_nodes']
     queueing_capacities = [float(i) if i == "Inf" else i for i in params['queue_capacities']]
     class_change_matrices = params.get('class_change_matrices',
         {'Node ' + str(nd + 1): None for nd in range(number_of_nodes)})
+    class_change_time_distributions = params.get('class_change_time_distributions',
+        [[None for clss1 in range(number_of_classes)] for clss2 in range(number_of_classes)])
     number_of_servers, schedules, nodes, classes, preempts = [], [], [], [], []
     for c in params['number_of_servers']:
         if isinstance(c, (tuple, list)):
@@ -174,6 +190,7 @@ def create_network_from_dictionary(params_input):
             class_change_matrices['Node ' + str(nd + 1)],
             schedules[nd],
             preempts[nd],
+            preempt_priorities[nd],
             params['ps_thresholds'][nd],
             params['server_priority_functions'][nd]))
     for clss in range(number_of_classes):
@@ -186,7 +203,8 @@ def create_network_from_dictionary(params_input):
                 baulking_functions[clss],
                 batches[clss],
                 params['reneging_time_distributions']['Class ' + str(clss)],
-                params['reneging_destinations']['Class ' + str(clss)]))
+                params['reneging_destinations']['Class ' + str(clss)],
+                class_change_time_distributions[clss]))
         else:
             classes.append(CustomerClass(
                 arrivals[clss],
@@ -196,7 +214,8 @@ def create_network_from_dictionary(params_input):
                 baulking_functions[clss],
                 batches[clss],
                 params['reneging_time_distributions']['Class ' + str(clss)],
-                params['reneging_destinations']['Class ' + str(clss)]))
+                params['reneging_destinations']['Class ' + str(clss)],
+                class_change_time_distributions[clss]))
 
     n = Network(nodes, classes)
     if all(isinstance(f, types.FunctionType) for f in params['routing']):
@@ -365,6 +384,10 @@ def validify_dictionary(params):
             for row in nd:
                 if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
                     raise ValueError('Ensure that class change matrix is valid.')
+    if 'class_change_time_distributions' in params:
+        wrong_num_classes = any(len(row) != params['number_of_classes'] for row in params['class_change_time_distributions']) or (len(params['class_change_time_distributions']) != params['number_of_classes'])
+        if wrong_num_classes:
+            raise ValueError('Ensure correct number of customer classes used in class_change_time_distributions.')
     for n in params['number_of_servers']:
         if isinstance(n, str) and n != 'Inf':
             if n not in params:

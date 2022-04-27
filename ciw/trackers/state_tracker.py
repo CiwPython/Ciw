@@ -31,7 +31,16 @@ class StateTracker(object):
         pass
 
     def change_state_renege(self, node, destination, ind, blocked):
+        """
+        Changes the state of the system when a customer reneges.
+        """
         self.change_state_release(node, destination, ind, blocked)
+
+    def change_state_classchange(self, node, ind):
+        """
+        Changes the state of the system when a customer changes class while queueung.
+        """
+        pass
 
     def hash_state(self):
         """
@@ -274,6 +283,13 @@ class NodeClassMatrix(StateTracker):
         Changes the state of the system when a customer is released.
         """
         self.state[node.id_number - 1][ind.customer_class] -= 1
+
+    def change_state_classchange(self, node, ind):
+        """
+        Changes the state of the system when a customer changes class while queueing.
+        """
+        self.state[node.id_number - 1][ind.previous_class] -= 1
+        self.state[node.id_number - 1][ind.customer_class] += 1
 
     def hash_state(self):
         """
