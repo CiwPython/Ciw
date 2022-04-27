@@ -185,7 +185,10 @@ class Node(object):
                     if not ind.server:
                         self.attach_server(srvr, ind)
                         ind.service_start_date = self.get_now()
-                        ind.service_time = self.get_service_time(ind)
+                        if ind.service_time is False: 
+                            ind.service_time = self.get_service_time(ind)
+                        else:
+                            self.give_service_time_after_preemption(ind)
                         ind.service_end_date = self.increment_time(
                             ind.service_start_date, ind.service_time)
                         srvr.next_end_service_date = ind.service_end_date
@@ -210,7 +213,10 @@ class Node(object):
                     if not ind.server:
                         self.attach_server(srvr, ind)
                         ind.service_start_date = self.get_now()
-                        ind.service_time = self.get_service_time(ind)
+                        if ind.service_time is False: 
+                            ind.service_time = self.get_service_time(ind)
+                        else:
+                            self.give_service_time_after_preemption(ind)
                         ind.service_end_date = self.increment_time(
                             ind.service_start_date, ind.service_time)
                         srvr.next_end_service_date = ind.service_end_date
@@ -336,7 +342,7 @@ class Node(object):
         """
         Decides if priority preemption is needed, finds the individual to preempt, and preempt them.
         """
-        if self.priority_preempt:
+        if self.priority_preempt != False:
             least_priority = max(s.cust.priority_class for s in self.servers)
             if individual.priority_class < least_priority:
                 least_prioritised_individuals = [s.cust for s in self.servers if s.cust.priority_class == least_priority]
@@ -428,6 +434,17 @@ class Node(object):
         """
         return self.simulation.current_time
 
+    def give_service_time_after_preemption(self, individual):
+        """
+        Either resample, restart or continue service time where it was left off
+        """
+        if individual.service_time == "resample":
+            individual.service_time = self.get_service_time(individual)
+        if individual.service_time == "restart":
+            individual.service_time = individual.original_service_time
+        if individual.service_time == "continue":
+            individual.service_time = individual.time_left
+
     def have_event(self):
         """
         Has an event
@@ -487,7 +504,9 @@ class Node(object):
         server = individual_to_preempt.server
         self.detatch_server(server, individual_to_preempt)
         individual_to_preempt.service_start_date = False
-        individual_to_preempt.service_time = False
+        individual_to_preempt.original_service_time = individual_to_preempt.service_time
+        individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.get_now()
+        individual_to_preempt.service_time = self.priority_preempt
         individual_to_preempt.service_end_date = False
         self.decide_class_change(individual_to_preempt)
         self.attach_server(server, next_individual)
