@@ -1239,7 +1239,7 @@ class TestNode(unittest.TestCase):
                 'Class 0': [ciw.dists.Deterministic(4)], 
                 'Class 1': [ciw.dists.Deterministic(5)]},
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, [True])
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["resample"])
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1329,7 +1329,7 @@ class TestNode(unittest.TestCase):
                 'Class 0': [ciw.dists.Deterministic(2.5)], 
                 'Class 1': [ciw.dists.Deterministic(2.5)]},
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, [True]),
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["resample"]),
             class_change_time_distributions=[[None, None], [ciw.dists.Deterministic(1.2), None]]
         )
         Q = ciw.Simulation(N, exact=26)
@@ -1356,3 +1356,100 @@ class TestNode(unittest.TestCase):
         self.assertEqual(float(recs[2].service_end_date), 14.2)
         self.assertEqual(float(recs[3].service_end_date), 11.7)
         self.assertEqual(float(recs[4].service_end_date), 16.7)
+
+
+    def test_preemptive_priorities_resume_option(self):
+        """
+        One customer of class 1 arrives at date 1. Class 1 customers alternate
+        between service times of 6 and 3. One customer of class 0 arrives at
+        date 3. They have deterministic service times of 10.
+
+        The first customer would be displaced at time 3 and would restart
+        service at time 13. 
+            - Under "restart" we would expect customer 1 to leave at time 19 
+            (service time = 6)
+            - Under "continue" we would expect customer 1 to leave at time 17
+            (service time = 6 - 2 = 4)
+            - Under "resample" we would expect the customer to leave at time 16
+            (service time = 3)
+        """ 
+        # Testing under restart
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
+                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(10)], 
+                'Class 1': [ciw.dists.Sequential([6, 3])]},
+            number_of_servers=[1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["restart"]),
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        r1, r2 = [r for r in recs if r.record_type == "service"]
+        self.assertEqual(r1.arrival_date, 3)
+        self.assertEqual(r1.service_start_date, 3)
+        self.assertEqual(r1.service_end_date, 13, recs)
+        self.assertEqual(r1.service_time, 10)
+        self.assertEqual(r1.waiting_time, 0)
+
+        self.assertEqual(r2.arrival_date, 1)
+        self.assertEqual(r2.service_start_date, 13)
+        self.assertEqual(r2.service_end_date, 19)
+        self.assertEqual(r2.service_time, 6)
+        self.assertEqual(r2.waiting_time, 12)
+
+        # Testing under continue
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
+                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(10)], 
+                'Class 1': [ciw.dists.Sequential([6, 3])]},
+            number_of_servers=[1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["continue"]),
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        r1, r2 = [r for r in recs if r.record_type == "service"]
+        self.assertEqual(r1.arrival_date, 3)
+        self.assertEqual(r1.service_start_date, 3)
+        self.assertEqual(r1.service_end_date, 13)
+        self.assertEqual(r1.service_time, 10)
+        self.assertEqual(r1.waiting_time, 0)
+
+        self.assertEqual(r2.arrival_date, 1)
+        self.assertEqual(r2.service_start_date, 13)
+        self.assertEqual(r2.service_end_date, 17)
+        self.assertEqual(r2.service_time, 4)
+        self.assertEqual(r2.waiting_time, 12)
+
+        # Testing under resample
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
+                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(10)], 
+                'Class 1': [ciw.dists.Sequential([6, 3])]},
+            number_of_servers=[1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["resample"]),
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        r1, r2 = [r for r in recs if r.record_type == "service"]
+        self.assertEqual(r1.arrival_date, 3)
+        self.assertEqual(r1.service_start_date, 3)
+        self.assertEqual(r1.service_end_date, 13)
+        self.assertEqual(r1.service_time, 10)
+        self.assertEqual(r1.waiting_time, 0)
+
+        self.assertEqual(r2.arrival_date, 1)
+        self.assertEqual(r2.service_start_date, 13)
+        self.assertEqual(r2.service_end_date, 16)
+        self.assertEqual(r2.service_time, 3)
+        self.assertEqual(r2.waiting_time, 12)
