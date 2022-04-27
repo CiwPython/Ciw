@@ -1,0 +1,134 @@
+arrival_distributions:
+  Class 0:
+  - - Exponential
+    - 3.0
+  - - Exponential
+    - 7.0
+  - - Exponential
+    - 4.0
+  - - Exponential
+    - 1.0
+  Class 1:
+  - - Exponential
+    - 2.0
+  - - Exponential
+    - 3.0
+  - - Exponential
+    - 6.0
+  - - Exponential
+    - 4.0
+  Class 2:
+  - - Exponential
+    - 2.0
+  - - Exponential
+    - 1.0
+  - - Exponential
+    - 2.0
+  - - Exponential
+    - 0.5
+number_of_servers:
+- 9
+- 10
+- 8
+- 8
+queue_capacities:
+- 20
+- "Inf"
+- 30
+- "Inf"
+service_distributions:
+  Class 0:
+  - - Exponential
+    - 7.0
+  - - Exponential
+    - 7.0
+  - - Gamma
+    - 0.4
+    - 0.6
+  - - Deterministic
+    - 0.5
+  Class 1:
+  - - Exponential
+    - 7.0
+  - - Triangular
+    - 0.1
+    - 0.8
+    - 0.85
+  - - Exponential
+    - 8.0
+  - - Exponential
+    - 5.0
+  Class 2:
+  - - Deterministic
+    - 0.3
+  - - Deterministic
+    - 0.2
+  - - Exponential
+    - 8.0
+  - - Exponential
+    - 9.0
+routing:
+  Class 0:
+  - - 0.1
+    - 0.2
+    - 0.1
+    - 0.4
+  - - 0.2
+    - 0.2
+    - 0.0
+    - 0.1
+  - - 0.0
+    - 0.8
+    - 0.1
+    - 0.1
+  - - 0.4
+    - 0.1
+    - 0.1
+    - 0.0
+  Class 1:
+  - - 0.6
+    - 0.0
+    - 0.0
+    - 0.2
+  - - 0.1
+    - 0.1
+    - 0.2
+    - 0.2
+  - - 0.9
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.2
+    - 0.1
+    - 0.1
+    - 0.1
+  Class 2:
+  - - 0.0
+    - 0.0
+    - 0.4
+    - 0.3
+  - - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+  - - 0.1
+    - 0.3
+    - 0.2
+    - 0.2
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 0.3
+class_change_time_distributions:
+  - - None
+    - - Exponential
+      - 6.0
+    - - Exponential
+      - 6.0
+  - - None
+    - None
+    - - Exponential
+      - 6.0
+  - - None
+    - None
+    - None

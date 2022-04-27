@@ -4,7 +4,7 @@
 How to Simulate Baulking Customers
 ==================================
 
-Ciw allows customer's to baulk (decide not join the queue) upon arrival, according to baulking functions.
+Ciw allows customers to baulk (decide not join the queue) upon arrival, according to baulking functions.
 These functions take in a parameter :code:`n`, the number of individuals at the node, and returns a probability of baulking.
 
 For example, say we have an :ref:`M/M/1 <kendall-notation>` system where customers:

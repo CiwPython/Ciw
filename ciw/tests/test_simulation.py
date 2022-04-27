@@ -296,6 +296,7 @@ class TestSimulation(unittest.TestCase):
     def test_writing_data_files(self):
         expected_headers = ['I.D. Number',
                             'Customer Class',
+                            'Original Customer Class',
                             'Node',
                             'Arrival Date',
                             'Waiting Time',
@@ -307,7 +308,8 @@ class TestSimulation(unittest.TestCase):
                             'Destination',
                             'Queue Size at Arrival',
                             'Queue Size at Departure',
-                            'Server I.D.']
+                            'Server I.D.',
+                            'Record Type']
         Q = ciw.Simulation(ciw.create_network_from_yml(
             'ciw/tests/testing_parameters/params.yml'))
         Q.simulate_until_max_time(50)
@@ -387,7 +389,7 @@ class TestSimulation(unittest.TestCase):
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
         self.assertEqual(len(inds), 3)
-        self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
+        self.assertTrue(all([x[7] == 5.0 for x in recs[1:]]))
 
         ciw.seed(35)
         Q = ciw.Simulation(ciw.create_network(**params))
@@ -395,7 +397,7 @@ class TestSimulation(unittest.TestCase):
         inds = Q.get_all_individuals()
         recs = Q.get_all_records()
         self.assertEqual(len(inds), 2)
-        self.assertTrue(all([x[6] == 5.0 for x in recs[1:]]))
+        self.assertTrue(all([x[7] == 5.0 for x in recs[1:]]))
 
         completed_inds = []
         for _ in range(1000):
@@ -416,7 +418,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params))
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records()
-        mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
+        mod_service_starts = [obs%3 for obs in [r[6] for r in recs]]
         self.assertNotEqual(set(mod_service_starts),
                             set([0.50, 0.51, 0.52, 0.53, 0.54]))
 
@@ -424,7 +426,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params), exact=14)
         Q.simulate_until_max_time(10)
         recs = Q.get_all_records()
-        mod_service_starts = [obs%3 for obs in [r[5] for r in recs]]
+        mod_service_starts = [obs%3 for obs in [r[6] for r in recs]]
         expected_set = set([Decimal(k) for k in
             ['0.50', '0.51', '0.52', '0.53', '0.54']])
         self.assertEqual(set(mod_service_starts), expected_set)
@@ -670,6 +672,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIsInstance(Q.nodes[1], DummyNode1)
         self.assertIsInstance(Q.nodes[2], DummyNode1)
         self.assertIsInstance(Q.nodes[3], DummyNode2)
+    
     def test_setting_individual_and_server_classes_in_init(self):
         class DummyIndividual(ciw.Individual):
             def __repr__(self):
@@ -744,6 +747,7 @@ class TestSimulation(unittest.TestCase):
     def test_namedtuple_record(self):
         expected_fields = ('id_number',
             'customer_class',
+            'original_customer_class',
             'node',
             'arrival_date',
             'waiting_time',
@@ -755,7 +759,8 @@ class TestSimulation(unittest.TestCase):
             'destination',
             'queue_size_at_arrival',
             'queue_size_at_departure',
-            'server_id')
+            'server_id',
+            'record_type')
         self.assertEqual(ciw.data_record.DataRecord._fields, expected_fields)
         self.assertEqual(ciw.data_record.DataRecord.__name__, 'Record')
 

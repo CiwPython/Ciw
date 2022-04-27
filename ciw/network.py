@@ -12,7 +12,8 @@ class ServiceCentre(object):
                  queueing_capacity,
                  class_change_matrix=None,
                  schedule=None,
-                 preempt=False,
+                 schedule_preempt=False,
+                 priority_preempt=False,
                  ps_threshold=1,
                  server_priority_function=None):
         """
@@ -22,10 +23,11 @@ class ServiceCentre(object):
         self.queueing_capacity = queueing_capacity
         self.class_change_matrix = class_change_matrix
         self.schedule = schedule
-        self.preempt = preempt
+        self.schedule_preempt = schedule_preempt
+        self.priority_preempt = priority_preempt
         self.ps_threshold = ps_threshold
         self.server_priority_function = server_priority_function
-
+        self.class_change_time = False
 
 class CustomerClass(object):
     """
@@ -44,7 +46,10 @@ class CustomerClass(object):
                  routing,
                  priority_class,
                  baulking_functions,
-                 batching_distributions):
+                 batching_distributions,
+                 reneging_time_distributions,
+                 reneging_destinations,
+                 class_change_time_distributions):
         """
         Initialises the CutomerCass object.
         """
@@ -54,6 +59,9 @@ class CustomerClass(object):
         self.routing = routing
         self.priority_class = priority_class
         self.baulking_functions = baulking_functions
+        self.reneging_time_distributions = reneging_time_distributions
+        self.reneging_destinations = reneging_destinations
+        self.class_change_time_distributions = class_change_time_distributions
 
 class Network(object):
     """
@@ -72,3 +80,11 @@ class Network(object):
         self.number_of_classes = len(customer_classes)
         self.number_of_priority_classes = len(set([clss.priority_class for clss in customer_classes]))
         self.priority_class_mapping = {i: clss.priority_class for i, clss in enumerate(customer_classes)}
+        for nd_id, node in enumerate(self.service_centres):
+            if all(clss.reneging_time_distributions[nd_id] == None for clss in self.customer_classes):
+                node.reneging = False
+            else:
+                node.reneging = True
+        if any(dist is not None for clss in customer_classes for dist in clss.class_change_time_distributions):
+            for node in self.service_centres:
+                node.class_change_time = True
