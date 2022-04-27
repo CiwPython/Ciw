@@ -970,6 +970,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(recs, [])
         self.assertEqual(total_inds_0, total_inds_1)
 
+
     def test_schedules_and_blockages_work_together(self):
         N = ciw.create_network(
             arrival_distributions={
@@ -1011,7 +1012,8 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_customers(3, method='Finish')
         inds = Q.nodes[-1].all_individuals
         service_times = [round(dr.service_time, 1) for ind in inds for dr in ind.data_records]
-        self.assertEqual(service_times, [0.1, 3.0, 0.9, 3.0, 1.6, 3.0])
+        self.assertEqual(service_times, [0.1, 3.0, 0.1, 3.0, 0.1, 3.0])
+
 
     def test_generic_deadlock_detector(self):
         DD = ciw.deadlock.NoDetection()

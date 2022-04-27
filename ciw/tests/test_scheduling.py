@@ -230,7 +230,7 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(Q.nodes[1].all_individuals, Q.nodes[1].interrupted_individuals)
         interrupted_ind = Q.nodes[1].interrupted_individuals[0]
         self.assertEqual(interrupted_ind.arrival_date, 14.0)
-        self.assertEqual(interrupted_ind.service_start_date, 14.0)
+        self.assertEqual(interrupted_ind.service_start_date, False)
         self.assertEqual(interrupted_ind.service_time, 'resample')
         self.assertEqual(interrupted_ind.original_service_time, 5.0)
         self.assertEqual(interrupted_ind.time_left, 4.0)
@@ -242,7 +242,7 @@ class TestScheduling(unittest.TestCase):
             'arrival_distributions': [ciw.dists.Deterministic(7.0)],
             'service_distributions': [ciw.dists.Deterministic(5.0)],
             'routing': [[0.0]],
-            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], 'resample')]
+            'number_of_servers': [([[1, 15], [0, 17], [2, 100]], 'continue')]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -254,10 +254,9 @@ class TestScheduling(unittest.TestCase):
 
         self.assertEqual(len(Q.nodes[1].interrupted_individuals), 0)
         self.assertEqual(len(Q.nodes[1].all_individuals), 1)
-        self.assertEqual(set([r.service_time for r in recs]), set([5.0, 8.0]))
+        self.assertEqual(set([r.service_time for r in recs]), set([5.0, 4.0]))
         # 5 due to the one individual who has finished service without interruption.
-        # 8 die to the 1 time unit in service before interruption, then 2 time units of
-        # interruption, and then resampling 5 time units for rest of service.
+        # 4 due to the 1 time unit in service before interruption not counting.
 
 
         # Example where more customers are interrupted than can restart service
@@ -265,7 +264,7 @@ class TestScheduling(unittest.TestCase):
             'arrival_distributions': [ciw.dists.Deterministic(3.0)],
             'service_distributions': [ciw.dists.Deterministic(10.0)],
             'routing': [[0.0]],
-            'number_of_servers': [([[4, 12.5], [0, 17], [1, 100]], 'resample')]
+            'number_of_servers': [([[4, 12.5], [0, 17], [1, 100]], 'continue')]
         }
         N = ciw.create_network(**params)
         Q = ciw.Simulation(N)
@@ -273,13 +272,16 @@ class TestScheduling(unittest.TestCase):
 
         Q.simulate_until_max_time(27.5)
         recs = Q.get_all_records()
-        self.assertEqual(len(Q.nodes[1].interrupted_individuals), 2)
-        self.assertEqual(len(Q.nodes[1].all_individuals), 8)
-        self.assertEqual(set([r.service_time for r in recs]), set([24.0]))
-        # 24 due to the individual beginning service at time 3, and first service
-        # finishing at time 12.5 (total: 9.5 time units). Then server goes off duty
-        # for 4.5 time units (total: 14 time units). Then resample service time and
-        # get serviced for another 10 time units (total: 24 time units).
+        self.assertEqual(len(Q.nodes[1].interrupted_individuals), 1)
+        self.assertEqual(len(Q.nodes[1].all_individuals), 7)
+        self.assertEqual([r.service_time for r in recs], [0.5, 3.5])
+        # 0.5 due to the individual beginning service at time 3, and first service
+        # finishing at time 12.5 (total: 9.5 time units). Then there is only 0.5
+        # units left and only the final part is counted here.
+        # 3.5 due to the individual beginning service at time 6, and first service
+        # finishing at time 12.5 (total: 6.5 time units). Then they only restart
+        # once the first customer has finished their second service, at time 17.5,
+        # and there are 3.5 time units left.
 
 
     def test_overtime(self):
@@ -337,10 +339,10 @@ class TestScheduling(unittest.TestCase):
         recs = Q.get_all_records()
         r1 = [r for r in recs if r.record_type == "service"][0]
         self.assertEqual(r1.arrival_date, 1)
-        self.assertEqual(r1.service_start_date, 1)
+        self.assertEqual(r1.service_start_date, 9)
         self.assertEqual(r1.service_end_date, 19)
-        self.assertEqual(r1.service_time, 18)
-        self.assertEqual(r1.waiting_time, 0)
+        self.assertEqual(r1.service_time, 10)
+        self.assertEqual(r1.waiting_time, 8)
 
         # Testing under continue
         N = ciw.create_network(
@@ -353,10 +355,10 @@ class TestScheduling(unittest.TestCase):
         recs = Q.get_all_records()
         r1 = [r for r in recs if r.record_type == "service"][0]
         self.assertEqual(r1.arrival_date, 1)
-        self.assertEqual(r1.service_start_date, 1)
+        self.assertEqual(r1.service_start_date, 9)
         self.assertEqual(r1.service_end_date, 15)
-        self.assertEqual(r1.service_time, 14)
-        self.assertEqual(r1.waiting_time, 0)
+        self.assertEqual(r1.service_time, 6)
+        self.assertEqual(r1.waiting_time, 8)
 
         # Testing under resample
         N = ciw.create_network(
@@ -369,7 +371,7 @@ class TestScheduling(unittest.TestCase):
         recs = Q.get_all_records()
         r1 = [r for r in recs if r.record_type == "service"][0]
         self.assertEqual(r1.arrival_date, 1)
-        self.assertEqual(r1.service_start_date, 1)
+        self.assertEqual(r1.service_start_date, 9)
         self.assertEqual(r1.service_end_date, 29)
-        self.assertEqual(r1.service_time, 28)
-        self.assertEqual(r1.waiting_time, 0)
+        self.assertEqual(r1.service_time, 20)
+        self.assertEqual(r1.waiting_time, 8)

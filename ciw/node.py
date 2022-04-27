@@ -162,6 +162,7 @@ class Node(object):
             ind.is_blocked = False
         self.attach_server(srvr, ind)
         self.give_service_time_after_preemption(ind)
+        ind.service_start_date = self.get_now()
         ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
         ind.interrupted = False
         srvr.next_end_service_date = ind.service_end_date
@@ -625,12 +626,12 @@ class Node(object):
                     self.interrupted_individuals.append(s.cust)
                     s.cust.interrupted = True
                     self.number_interrupted_individuals += 1
-                    self.interrupted_individuals[-1].original_service_time = self.interrupted_individuals[-1].service_time
-                    self.interrupted_individuals[-1].time_left = self.interrupted_individuals[-1].service_end_date - self.get_now()
-                    self.interrupted_individuals[-1].service_time = self.schedule_preempt
-                    self.interrupted_individuals[-1].service_end_date = False
-            self.interrupted_individuals.sort(key=lambda x: (x.priority_class,
-                                                             x.arrival_date))
+                    s.cust.service_start_date = False
+                    s.cust.original_service_time = self.interrupted_individuals[-1].service_time
+                    s.cust.time_left = self.interrupted_individuals[-1].service_end_date - self.get_now()
+                    s.cust.service_time = self.schedule_preempt
+                    s.cust.service_end_date = False
+            self.interrupted_individuals.sort(key=lambda x: (x.priority_class, x.arrival_date))
         for obs in to_delete:
             self.kill_server(obs)
 
