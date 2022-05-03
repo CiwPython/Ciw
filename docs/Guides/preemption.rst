@@ -56,3 +56,12 @@ Ciw defaults to non-pre-emptive schedules, and so the following code implies a n
 
     number_of_servers=[[[2, 10], [0, 30], [1, 100]]] # non-preemptive
 
+
+Records of Interrupted Services
+-------------------------------
+
+Interrupted services are recorded as :code:`DataRecords` and so are collected along with completed service records with the :code:`get_all_records` method. They are distinguished by the :code:`record_type` field (services have :code:`service` record type, while interrupted services have :code:`interrupted service` record types).
+
+**Note:** For data records of the type :code:`interrupted service`, the :code:`service_time` field corresponds to the originally intended service time for that service, not the amount of time that the customer spent in service before being interrupted. The difference between the :code:`exit_date` and :code:`arrival_date` fields give the amount of time that customer spent in service before being interrupted.
+
+**Note:** In both :code:`service` and :code:`interrupted service` record types, the :code:`waiting_time` field corresponds to the total time between the :code:`arrival_date` and the :code:`service_start_date`. Therefore this includes all previous interrupted services that customer may have experienced before this particular record's service start date.
