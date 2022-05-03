@@ -503,12 +503,13 @@ class Node(object):
         Removes individual_to_preempt from service and replaces them with next_individual
         """
         server = individual_to_preempt.server
-        self.detatch_server(server, individual_to_preempt)
-        individual_to_preempt.service_start_date = False
         individual_to_preempt.original_service_time = individual_to_preempt.service_time
+        self.write_interruption_record(individual_to_preempt)
+        individual_to_preempt.service_start_date = False
         individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.get_now()
         individual_to_preempt.service_time = self.priority_preempt
         individual_to_preempt.service_end_date = False
+        self.detatch_server(server, individual_to_preempt)
         self.decide_class_change(individual_to_preempt)
         self.attach_server(server, next_individual)
         next_individual.service_start_date = self.get_now()
@@ -724,6 +725,44 @@ class Node(object):
             server_id,
             'service')
         individual.data_records.append(record)
+
+    def write_interruption_record(self, individual):
+        """
+        Write a data record for an individual:
+            - Arrival date
+            - Wait
+            - Service start date
+            - Service time
+            - Service end date
+            - Blocked
+            - Exit date
+            - Node
+            - Destination
+            - Previous class
+            - Queue size at arrival
+            - Queue size at departure
+            - Server id
+            - Record type
+        """
+        record = DataRecord(
+            individual.id_number,
+            individual.previous_class,
+            individual.original_class,
+            self.id_number,
+            individual.arrival_date,
+            individual.service_start_date - individual.arrival_date,
+            individual.service_start_date,
+            individual.original_service_time,
+            nan,
+            nan,
+            self.get_now(),
+            nan,
+            individual.queue_size_at_arrival,
+            individual.queue_size_at_departure,
+            individual.server.id_number,
+            'interrupted service')
+        individual.data_records.append(record)
+
 
     def write_reneging_record(self, individual):
         """
