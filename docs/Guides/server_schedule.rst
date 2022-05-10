@@ -50,24 +50,15 @@ Simulating this system, we'll see that no services begin between dates 10 and 30
 Pre-emption
 -----------
 
-When a server is due to go off duty during a customer's service, there are two options of what may happen.
+There are a number of options that can be used to pre-emptively interrupt customers when servers go off duty. See the following page:
 
-+ During a pre-emptive schedule, that server will immediately stop service and leave. Whenever more servers come on duty, they will prioritise the interrupted customers and continue their service. However those customers' service times are re-sampled.
++ :ref:`Pre-emption options <preemption>`.
 
-+ During a non-pre-emptive schedule, customers cannot be interrupted. Therefore servers finish the current customer's service before disappearing. This of course may mean that when new servers arrive the old servers are still there.
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-In order to implement pre-emptive or non-pre-emptive schedules, put the schedule in a tuple with a :code:`True` or a :code:`False` as the second term, indicating pre-emptive or non-pre-emptive interruptions. For example::
-
-    number_of_servers=[([[2, 10], [0, 30], [1, 100]], True)] # preemptive
-
-And::
-
-    number_of_servers=[([[2, 10], [0, 30], [1, 100]], False)] # non-preemptive
-
-Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
-
-    number_of_servers=[[[2, 10], [0, 30], [1, 100]]] # non-preemptive
-
+   preemption.rst
 
 
 Overtime

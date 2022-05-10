@@ -161,7 +161,8 @@ class Node(object):
             node_blocked_to.len_blocked_queue -= 1
             ind.is_blocked = False
         self.attach_server(srvr, ind)
-        ind.service_time = self.get_service_time(ind)
+        self.give_service_time_after_preemption(ind)
+        ind.service_start_date = self.get_now()
         ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
         ind.interrupted = False
         srvr.next_end_service_date = ind.service_end_date
@@ -185,7 +186,10 @@ class Node(object):
                     if not ind.server:
                         self.attach_server(srvr, ind)
                         ind.service_start_date = self.get_now()
-                        ind.service_time = self.get_service_time(ind)
+                        if ind.service_time is False: 
+                            ind.service_time = self.get_service_time(ind)
+                        else:
+                            self.give_service_time_after_preemption(ind)
                         ind.service_end_date = self.increment_time(
                             ind.service_start_date, ind.service_time)
                         srvr.next_end_service_date = ind.service_end_date
@@ -210,7 +214,10 @@ class Node(object):
                     if not ind.server:
                         self.attach_server(srvr, ind)
                         ind.service_start_date = self.get_now()
-                        ind.service_time = self.get_service_time(ind)
+                        if ind.service_time is False: 
+                            ind.service_time = self.get_service_time(ind)
+                        else:
+                            self.give_service_time_after_preemption(ind)
                         ind.service_end_date = self.increment_time(
                             ind.service_start_date, ind.service_time)
                         srvr.next_end_service_date = ind.service_end_date
@@ -336,7 +343,7 @@ class Node(object):
         """
         Decides if priority preemption is needed, finds the individual to preempt, and preempt them.
         """
-        if self.priority_preempt:
+        if self.priority_preempt != False:
             least_priority = max(s.cust.priority_class for s in self.servers)
             if individual.priority_class < least_priority:
                 least_prioritised_individuals = [s.cust for s in self.servers if s.cust.priority_class == least_priority]
@@ -428,6 +435,17 @@ class Node(object):
         """
         return self.simulation.current_time
 
+    def give_service_time_after_preemption(self, individual):
+        """
+        Either resample, restart or continue service time where it was left off
+        """
+        if individual.service_time == "resample":
+            individual.service_time = self.get_service_time(individual)
+        if individual.service_time == "restart":
+            individual.service_time = individual.original_service_time
+        if individual.service_time == "continue":
+            individual.service_time = individual.time_left
+
     def have_event(self):
         """
         Has an event
@@ -485,10 +503,13 @@ class Node(object):
         Removes individual_to_preempt from service and replaces them with next_individual
         """
         server = individual_to_preempt.server
-        self.detatch_server(server, individual_to_preempt)
+        individual_to_preempt.original_service_time = individual_to_preempt.service_time
+        self.write_interruption_record(individual_to_preempt)
         individual_to_preempt.service_start_date = False
-        individual_to_preempt.service_time = False
+        individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.get_now()
+        individual_to_preempt.service_time = self.priority_preempt
         individual_to_preempt.service_end_date = False
+        self.detatch_server(server, individual_to_preempt)
         self.decide_class_change(individual_to_preempt)
         self.attach_server(server, next_individual)
         next_individual.service_start_date = self.get_now()
@@ -590,7 +611,7 @@ class Node(object):
         """
         Gathers servers that should be deleted.
         """
-        if not self.schedule_preempt:
+        if self.schedule_preempt == False:
             to_delete = []
             for srvr in self.servers:
                 srvr.shift_end = self.next_event_date
@@ -606,10 +627,12 @@ class Node(object):
                     self.interrupted_individuals.append(s.cust)
                     s.cust.interrupted = True
                     self.number_interrupted_individuals += 1
-                    self.interrupted_individuals[-1].service_end_date = False
-                    self.interrupted_individuals[-1].service_time = False
-            self.interrupted_individuals.sort(key=lambda x: (x.priority_class,
-                                                             x.arrival_date))
+                    s.cust.service_start_date = False
+                    s.cust.original_service_time = self.interrupted_individuals[-1].service_time
+                    s.cust.time_left = self.interrupted_individuals[-1].service_end_date - self.get_now()
+                    s.cust.service_time = self.schedule_preempt
+                    s.cust.service_end_date = False
+            self.interrupted_individuals.sort(key=lambda x: (x.priority_class, x.arrival_date))
         for obs in to_delete:
             self.kill_server(obs)
 
@@ -702,6 +725,44 @@ class Node(object):
             server_id,
             'service')
         individual.data_records.append(record)
+
+    def write_interruption_record(self, individual):
+        """
+        Write a data record for an individual:
+            - Arrival date
+            - Wait
+            - Service start date
+            - Service time
+            - Service end date
+            - Blocked
+            - Exit date
+            - Node
+            - Destination
+            - Previous class
+            - Queue size at arrival
+            - Queue size at departure
+            - Server id
+            - Record type
+        """
+        record = DataRecord(
+            individual.id_number,
+            individual.previous_class,
+            individual.original_class,
+            self.id_number,
+            individual.arrival_date,
+            individual.service_start_date - individual.arrival_date,
+            individual.service_start_date,
+            individual.original_service_time,
+            nan,
+            nan,
+            self.get_now(),
+            nan,
+            individual.queue_size_at_arrival,
+            individual.queue_size_at_departure,
+            individual.server.id_number,
+            'interrupted service')
+        individual.data_records.append(record)
+
 
     def write_reneging_record(self, individual):
         """
