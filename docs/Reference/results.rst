@@ -53,5 +53,5 @@ The data records contained in this list are named tuples with the following vari
        - The size of the queue at the customer's exit date. Does not include the individual themselves.
     - :code:`server_id`
        - The unique identification number of the server that served that customer.
-    - :code: `record_type`
-       - Indicates if the record describes a service, or a customer reneging.
+    - :code:`record_type`
+       - Indicates if the record describes a service, interrupted service, or a customer reneging.
