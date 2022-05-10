@@ -1,6 +1,13 @@
 History
 -------
 
+v2.3.0 (2022-05-10)
+~~~~~~~~~~~~~~~~~~~
+- Reneging customers implemented
+- Customer class changes while waiting implemented
+- Preemptive interruption options implemented
+- New record_type field added to DataRecords
+
 v2.2.4 (2021-03-02)
 ~~~~~~~~~~~~~~~~~~~
 - Improve docs on pausing simulations and server priorities
