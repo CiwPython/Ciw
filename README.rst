@@ -10,9 +10,6 @@ A discrete event simulation library for queueing networks
 .. image:: https://img.shields.io/pypi/v/ciw.svg
     :target: https://pypi.python.org/pypi/Ciw
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-    :target: https://gitter.im/geraintpalmer/Ciw?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
 .. image:: https://zenodo.org/badge/47995577.svg
     :target: https://zenodo.org/badge/latestdoi/47995577
 
