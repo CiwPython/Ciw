@@ -3,3 +3,4 @@ networkx>=2.3
 hypothesis==5.33.0
 tqdm==4.14.0
 coverage
+pandas>=1.3

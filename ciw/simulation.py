@@ -302,26 +302,25 @@ class Simulation(object):
         """
         root = os.getcwd()
         directory = os.path.join(root, file_name)
-        data_file = open('%s' % directory, 'w')
-        csv_wrtr = writer(data_file)
-        if headers:
-            csv_wrtr.writerow(['I.D. Number',
-                               'Customer Class',
-                               'Original Customer Class',
-                               'Node',
-                               'Arrival Date',
-                               'Waiting Time',
-                               'Service Start Date',
-                               'Service Time',
-                               'Service End Date',
-                               'Time Blocked',
-                               'Exit Date',
-                               'Destination',
-                               'Queue Size at Arrival',
-                               'Queue Size at Departure',
-                               'Server I.D.',
-                               'Record Type']),
-        records = self.get_all_records()
-        for row in records:
-            csv_wrtr.writerow(row)
-        data_file.close()
+        with open('%s' % directory, 'w', newline='', encoding="utf=8") as data_file:
+            csv_wrtr = writer(data_file)
+            if headers:
+                csv_wrtr.writerow(['I.D. Number',
+                                'Customer Class',
+                                'Original Customer Class',
+                                'Node',
+                                'Arrival Date',
+                                'Waiting Time',
+                                'Service Start Date',
+                                'Service Time',
+                                'Service End Date',
+                                'Time Blocked',
+                                'Exit Date',
+                                'Destination',
+                                'Queue Size at Arrival',
+                                'Queue Size at Departure',
+                                'Server I.D.',
+                                'Record Type']),
+            records = self.get_all_records()
+            for row in records:
+                csv_wrtr.writerow(row)
