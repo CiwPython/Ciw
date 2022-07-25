@@ -1,4 +1,5 @@
 from __future__ import division
+from pickle import FALSE
 from random import random
 import os
 from csv import writer
@@ -390,7 +391,7 @@ class Node(object):
         Finds the next individual that should now finish service.
         """
         next_individual_indices = [i for i, ind in enumerate(
-            self.all_individuals) if ind.service_end_date == self.next_event_date]
+            self.all_individuals) if ind.service_end_date == self.next_event_date if ind.is_blocked==False]
         if len(next_individual_indices) > 1:
             next_individual_index = random_choice(next_individual_indices)
         else:

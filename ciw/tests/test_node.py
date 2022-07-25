@@ -1575,3 +1575,17 @@ class TestNode(unittest.TestCase):
         self.assertEqual(r2.service_end_date, 8)
         self.assertEqual(r2.service_time, 3)
         self.assertEqual(r2.waiting_time, 4)
+
+    def test_do_not_repeat_finish_service_for_blocked_individuals(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential(sequence=[3.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), ciw.dists.Sequential(sequence=[1.0, 1.0, float('inf')])],
+            service_distributions=[ciw.dists.Deterministic(value=1.0), ciw.dists.Deterministic(value=300.0)],
+            routing=[[0.0, 1.0],
+                     [0.0, 0.0]],
+            number_of_servers=[10, 2],
+            queue_capacities=[float('inf'), 0]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(5)
+        expected_blocked_queue = [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9)]
+        self.assertEqual(set(Q.nodes[2].blocked_queue), set(expected_blocked_queue))
