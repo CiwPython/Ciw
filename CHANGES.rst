@@ -1,6 +1,11 @@
 History
 -------
 
++ **v.2.3.1 (2022-07-25)**
+    + Fixes bug where blocked customers were candidates for `finish_service` when more than one customer finishes service simultaneously
+    + Correctly writes csv's in Windows
+    + Support for Python 3.9 by updating tqdm requirement
+
 + **v2.3.0 (2022-05-10)**
     + Reneging customers implemented
     + Customer class changes while waiting implemented
