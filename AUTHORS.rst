@@ -16,3 +16,5 @@ Ciw has been developed by the following contributors:
 + `timlathy <https://github.com/timlathy>`_
 + `Michalis Panayides <https://github.com/11michalis11>`_
 + `Jorge Martín Pérez <https://github.com/MartinPJorge/>`_
++ `KernelA <https://github.com/KernelA>`_
++ `Matthew Howells <https://github.com/MHowells>`_
