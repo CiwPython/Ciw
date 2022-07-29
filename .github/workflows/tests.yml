@@ -45,3 +45,7 @@ jobs:
     - name: Run docts
       run: |
         python doctests.py
+
+    - name: Test parallel processing script
+      run: |
+        python docs/_static/script_for_parallel_processing/main.py

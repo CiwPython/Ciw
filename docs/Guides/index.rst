@@ -29,3 +29,4 @@ Contents:
    process_based.rst
    from_file.rst
    behaviour/index.rst
+   parallel_process.rst
