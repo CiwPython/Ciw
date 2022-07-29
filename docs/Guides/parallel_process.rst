@@ -36,7 +36,7 @@ repeated and the average taken::
     >>> import numpy as np
     >>> max_time = 500
     >>> repetitions = 200
-    >>> np.mean([run_simulation(network=N, max_time=max_time, seed=seed) for seed in range(repetitions)])
+    >>> np.mean([get_mean_wait(network=N, max_time=max_time, seed=seed) for seed in range(repetitions)])
     3.762233...
 
 To obtain the above by running 2 simulations at the same time (assuming that 2
