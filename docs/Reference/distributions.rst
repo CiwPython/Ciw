@@ -25,6 +25,7 @@ The following are currently supported:
 - :ref:`hyperexponential_dist`
 - :ref:`hypererlang_dist`
 - :ref:`coxian_dist`
+- :ref:`poissonintervals_dist`
 - :ref:`no_arrivals`
 
 
@@ -258,6 +259,19 @@ A Coxian distribution is a specific type of Phase-Type distribution defined by p
 Write a Coxian distribution with :math:`\mathbf{\lambda} = \left(5, 2, 3, 7\right)` and :math:`\mathbf{p} = \left(0.5, 0.3, 0.65, 1\right)` as follows::
 
     ciw.dists.Coxian(rates=[5, 2, 3, 7], probs=[0.5, 0.3, 0.65, 1])
+
+
+.. _poissonintervals_dist:
+
+------------------------------
+Poisson Intervals Distribution
+------------------------------
+
+The Poisson Intervals Distribution is a time-dependent distribution, where different time intervals sample arrivals from Poisson distributions, or inter-arrival times from Exponential distributions. It is used to overcome the problem of skipping arrivals accross interval thresholds.
+
+For Exponential arrivals with rate 3 in the time interval (0, 4.8), rate 5.5 in the time interval (4.8, 9.3), and rate 0.1 in the time interval (9.3, 12), and repeating in the same manner thereafter until the time 100::
+
+    ciw.dists.PoissonIntervals(rates=[3, 5.5, 0.1], endpoints=[4.8, 9.3, 12], max_sample_date=100)
 
 
 .. _no_arrivals:
