@@ -68,12 +68,12 @@ Therefore a total of 42 customers passed through the system::
 
 
 
-The Problem of Sampling Arrivals Accross Thresholds
----------------------------------------------------
+The Problem of Sampling Arrivals Across Thresholds
+--------------------------------------------------
 
-Problems can occur when using time dependent arrivals, in particular if the arrival rates suddenly change dramatically accross time thresholds. This is due to the way in which arrivals are sampled, by sampling the _next_ arrival from the inter-arrival time of the previous sample.
+Problems can occur when using time dependent arrivals, in particular if the arrival rates suddenly change dramatically across time thresholds. This is due to the way in which arrivals are sampled, by sampling the _next_ arrival from the inter-arrival time of the previous sample.
 
-For example, consider arrivals occuring once every 10 time units in the interval (0, 55) time units, and then once every 0.1 time units in the interval (55, 58) time units, and then back to once every 10 time units thereafter. Arrivals would occur at dates 10, 20, 30, 40, 50. At this point the simulation is still in the (0, 55) interval, and so only knows to sample every 10 time units. So the next sample will be at date 60, and the simulation has completely skipped the (55, 58) interval, which should have sampled around 30 arrivals.
+For example, consider arrivals occurring once every 10 time units in the interval (0, 55) time units, and then once every 0.1 time units in the interval (55, 58) time units, and then back to once every 10 time units thereafter. Arrivals would occur at dates 10, 20, 30, 40, 50. At this point the simulation is still in the (0, 55) interval, and so only knows to sample every 10 time units. So the next sample will be at date 60, and the simulation has completely skipped the (55, 58) interval, which should have sampled around 30 arrivals.
 For example::
 
     >>> class TimeDependentDist(ciw.dists.Distribution):
@@ -125,7 +125,7 @@ The distribution's :code:`sample()` method sampled the scheduled inter-arrival t
 State Dependent Distributions
 -----------------------------
 
-In adddition to the time parameter :code:`t`, the sample method takes in the concerned individual :code:`ind`.
+In addition to the time parameter :code:`t`, the sample method takes in the concerned individual :code:`ind`.
 Therefore individuals can use this individual's attributes when sampling a service time (*note it does not make sense to use this to sample inter-arrival times as that individual has not been created yet!*).
 This individual has a :code:`ind.simulation` attribute, which points to the :code:`Simulation` object, meaning it has access to the whole state of the system.
 
@@ -172,7 +172,7 @@ Now to test if this is working, the average service time should be roughly equal
     >>> (-0.05 * average_queue_size) + 0.2
     0.1552347...
 
-For arrival distributions - when creating the :code:`Simulation` object, the distribution objects are given a :code:`.simulation` attribute, so something similar can happen. For example, the following distribution will sample form an Exponential distribution unil :code:`limit` number of individuals has been sampled::
+For arrival distributions - when creating the :code:`Simulation` object, the distribution objects are given a :code:`.simulation` attribute, so something similar can happen. For example, the following distribution will sample form an Exponential distribution until :code:`limit` number of individuals has been sampled::
 
     >>> class LimitedExponential(ciw.dists.Exponential):
     ...     def __init__(self, rate, limit):
