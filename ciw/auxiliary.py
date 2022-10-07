@@ -1,5 +1,5 @@
 import random
-import numpy.random as npr
+import numpy as np
 
 def seed(z):
 	"""
@@ -9,7 +9,7 @@ def seed(z):
 		- numpy random
 	"""
 	random.seed(z)
-	npr.seed(z)
+	np.random.seed(z)
 
 def random_choice(array, probs=None):
 	"""

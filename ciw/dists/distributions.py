@@ -1,6 +1,6 @@
 from ciw.auxiliary import *
 from itertools import cycle
-import numpy.random as npr
+import numpy as np
 import copy
 from operator import add, mul, sub, truediv
 from random import (expovariate, uniform, triangular, gammavariate,
@@ -515,7 +515,7 @@ class PoissonIntervals(Sequential):
     def get_dates(self):
         self.dates = [0.0]
         for i, interval in enumerate(self.intervals):
-            n = npr.poisson(self.rates[i % self.num_intervals] * (interval[1]-interval[0]))
+            n = np.random.poisson(self.rates[i % self.num_intervals] * (interval[1]-interval[0]))
             interval_dates = [random.uniform(interval[0], interval[1]) for _ in range(n)]
             interval_dates = sorted(interval_dates)
             self.dates += interval_dates
