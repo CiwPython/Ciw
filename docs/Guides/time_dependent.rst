@@ -96,7 +96,9 @@ For example::
     [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 
-To overcome this Ciw has the :code:`PoissonIntervals` distribution, which allows different time intervals to sample number of arrivals from a Poisson distribution with different arrival rates. This does not use the same sampling logic and so can overcome this problem. For example, if we have a time interval (0, 3) with rate 1 customers per time unit, and an interval (3, 4) with 8 customers per time unit, which then repeats. We can use::
+To overcome this Ciw has the :code:`PoissonIntervals` distribution, which allows different time intervals to sample number of arrivals from a Poisson distribution with different arrival rates. This does not use the same sampling logic and so can overcome this problem. It first sampled from a Poisson distribution to find the number of arrivals in each time interval, and then samples arrival dates within that time interval from a Uniform distribution. Therefore the whole schedule of arrivals is determined before the simulation has began.
+
+For example, if we have a time interval (0, 3) with rate 1 customers per time unit, and an interval (3, 4) with 8 customers per time unit, which then repeats. We can use::
 
     >>> ciw.seed(0)
     >>> Pi = ciw.dists.PoissonIntervals(
