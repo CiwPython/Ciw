@@ -81,7 +81,7 @@ For example::
     ...         if t < 55:
     ...             return 10
     ...         if t < 58:
-    ...             return 0.0
+    ...             return 0.1
     ...         return 10
 
     >>> N = ciw.create_network(
