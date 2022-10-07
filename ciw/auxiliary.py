@@ -1,14 +1,15 @@
 import random
+import numpy.random as npr
 
 def seed(z):
 	"""
 	Sets all seeds used to generate random number streams.
 	Currently contains:
 		- random library
-	Previously contained:
-		- numpy
+		- numpy random
 	"""
 	random.seed(z)
+	npr.seed(z)
 
 def random_choice(array, probs=None):
 	"""

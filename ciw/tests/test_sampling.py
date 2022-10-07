@@ -91,6 +91,7 @@ class TestSampling(unittest.TestCase):
         Hx = ciw.dists.HyperExponential([4, 7, 2], [0.3, 0.1, 0.6])
         He = ciw.dists.HyperErlang([4, 7, 2], [0.3, 0.1, 0.6], [2, 2, 7])
         Cx = ciw.dists.Coxian([4, 7, 2], [0.3, 0.2, 1.0])
+        Pi = ciw.dists.PoissonIntervals(rates=[5, 1.5, 3], endpoints=[3.2, 7.9, 10], max_sample_date=15)
         self.assertEqual(str(Di), 'Distribution')
         self.assertEqual(str(Un), 'Uniform: 3.4, 6.7')
         self.assertEqual(str(Dt), 'Deterministic: 1.1')
@@ -109,6 +110,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Hx), 'HyperExponential')
         self.assertEqual(str(He), 'HyperErlang')
         self.assertEqual(str(Cx), 'Coxian')
+        self.assertEqual(str(Pi), 'PoissonIntervals')
 
     def test_distribution_parent_is_useless(self):
         D = ciw.dists.Distribution()
@@ -1191,3 +1193,109 @@ class TestSampling(unittest.TestCase):
         samples = [round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2) for _ in range(5)]
         expected = [1.09, 0.77, 0.81, 0.08, 0.43]
         self.assertEqual(samples, expected)
+
+
+    def test_poissoninterval_dist_object(self):
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[5, 1.5, 3],
+            endpoints=[3.2, 7.9, 10],
+            max_sample_date=15
+        )
+        ciw.seed(5)
+        samples = [round(Pi._sample(), 4
+            ) for _ in range(10)]
+        expected = [0.0092, 0.2351, 0.102, 0.0641, 0.1917, 0.0525, 0.1697, 0.0141, 0.4184, 0.2229]
+        self.assertEqual(samples, expected)
+
+        expected_dates = [0]
+        for t in Pi.inter_arrivals:
+            expected_dates.append(expected_dates[-1] + t)
+        self.assertEqual(Pi.dates, expected_dates)
+        self.assertLessEqual(Pi.dates[-1], Pi.max_sample_date)
+
+        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, -1.5, 3], [3.2, 7.9, 10], 15)
+        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 0], [3.2, 7.9, 10], 15)
+        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [3.2, 1.9, 10], 15)
+        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [-3.2, 7.9, 10], 15)
+        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [3.2, 7.9, 10], -15)
+        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [3.2, 7.9, 10], 0)
+        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3, 6], [3.2, 7.9, 10], 15)
+
+    def test_poissoninterval_against_theory(self):
+        """
+        rates = [5, 1.5, 3]
+        endpoints = [3.2, 7.9, 10]
+        max_sample_date = 20
+        (0.0, 3.2) --- Two lots of intervals of length 3.2, with rate 5.   Expected: 5x3.2x2 = 32
+        (3.2, 7.9) --- Two lots of intervals of length 4.7, with rate 1.5. Expected: 1.5x4.7x2 = 14.1
+        (7.9, 10)  --- Two lots of intervals of length 2.1, with rate 3.   Expected: 3x2.1x2 = 12.6
+        """
+        ciw.seed(0)
+        n = 250
+        distributions = [
+            ciw.dists.PoissonIntervals(
+                rates=[5, 1.5, 3],
+                endpoints=[3.2, 7.9, 10],
+                max_sample_date=20)
+            for _ in range(n)
+        ]
+        counts = {
+            (0, 3.2) : sum([sum([((r > 0) and (r < 3.2)) or ((r > 10) and (r < 13.2)) for r in Pi.dates]) for Pi in distributions]) / n,
+            (3.2, 7.9): sum([sum([((r > 3.2) and (r < 7.9)) or ((r > 13.2) and (r < 17.9)) for r in Pi.dates]) for Pi in distributions]) / n,
+            (7.9, 10): sum([sum([((r > 7.9) and (r < 10)) or ((r > 17.9) and (r < 20)) for r in Pi.dates]) for Pi in distributions]) / n
+        }
+        self.assertEqual(counts[(0, 3.2)],   31.516) ## expected 32
+        self.assertEqual(counts[(3.2, 7.9)], 13.82)  ## expected 14.1
+        self.assertEqual(counts[(7.9, 10)],  12.244) ## expected 12.6
+
+        """
+        rates = [2, 0.6, 0.8, 12, 3]
+        endpoints = [0.5, 10, 32, 40.3, 50]
+        max_sample_date = 100
+        (0.0, 0.5) --- Two lots of intervals of length 0.5, with rate 2.   Expected: 0.5x2x2 = 2
+        (0.5, 10)  --- Two lots of intervals of length 9.5, with rate 0.6. Expected: 9.5x0.6x2 = 11.4
+        (10, 32)   --- Two lots of intervals of length 22, with rate 0.8.  Expected: 22x0.8x2 = 35.2
+        (32, 40.3) --- Two lots of intervals of length 8.3, with rate 12.  Expected: 8.3x12x2 = 199.2
+        (40.3, 50) --- Two lots of intervals of length 9.7, with rate 3.   Expected: 9.7x3x2 = 58.2
+        """
+        ciw.seed(0)
+        n = 250
+        distributions = [
+            ciw.dists.PoissonIntervals(
+                rates=[2, 0.6, 0.8, 12, 3],
+                endpoints=[0.5, 10, 32, 40.3, 50],
+                max_sample_date=100)
+            for _ in range(n)
+        ]
+        counts = {
+            (0, 0.5) : sum([sum([((r > 0) and (r < 0.5)) or ((r > 50) and (r < 50.5)) for r in Pi.dates]) for Pi in distributions]) / n,
+            (0.5, 10) : sum([sum([((r > 0.5) and (r < 10)) or ((r > 50.5) and (r < 60)) for r in Pi.dates]) for Pi in distributions]) / n,
+            (10, 32) : sum([sum([((r > 10) and (r < 32)) or ((r > 60) and (r < 82)) for r in Pi.dates]) for Pi in distributions]) / n,
+            (32, 40.3) : sum([sum([((r > 32) and (r < 40.3)) or ((r > 82) and (r < 90.3)) for r in Pi.dates]) for Pi in distributions]) / n,
+            (40.3, 50) : sum([sum([((r > 40.3) and (r < 50)) or ((r > 90.3) and (r < 100)) for r in Pi.dates]) for Pi in distributions]) / n,
+        }
+        self.assertEqual(counts[(0, 0.5)],   2.164)   ## expected 2
+        self.assertEqual(counts[(0.5, 10)],  11.064)  ## expected 11.4
+        self.assertEqual(counts[(10, 32)],   34.168)  ## expected 35.2
+        self.assertEqual(counts[(32, 40.3)], 198.772) ## expected 199.2
+        self.assertEqual(counts[(40.3, 50)], 58.296)  ## expected 58.2
+
+    def test_sampling_poissoninterval_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.PoissonIntervals(rates=[5, 1.5, 3], endpoints=[3.2, 7.9, 10], max_sample_date=15)],
+            'service_distributions': [ciw.dists.PoissonIntervals(rates=[5, 1.5, 3], endpoints=[3.2, 7.9, 10], max_sample_date=15)],
+            'number_of_servers': [1]
+        }
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Nt = Q.transitive_nodes[0]
+        ciw.seed(5)
+
+        samples = [round(Nt.simulation.service_times[Nt.id_number][0]._sample(), 4) for _ in range(10)]
+        expected =  [0.0291, 0.0288, 0.0154, 0.0764, 0.0329, 0.9894, 0.6795, 0.5481, 0.1214, 0.1829]
+
+        self.assertEqual(samples, expected)
+
+        samples = [round(Nt.simulation.inter_arrival_times[Nt.id_number][0]._sample(), 4) for _ in range(10)]
+        expected = [0.3203, 0.0432, 0.0386, 0.0667, 0.1828, 0.0955, 0.1053, 0.6067, 0.239, 0.0966]
+        self.assertEqual(samples, expected)
+

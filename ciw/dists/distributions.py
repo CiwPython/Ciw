@@ -1,5 +1,6 @@
 from ciw.auxiliary import *
 from itertools import cycle
+import numpy.random as npr
 import copy
 from operator import add, mul, sub, truediv
 from random import (expovariate, uniform, triangular, gammavariate,
@@ -456,6 +457,68 @@ class Coxian(PhaseType):
 
     def __repr__(self):
         return "Coxian"
+
+
+class PoissonIntervals(Sequential):
+    """
+    A time-dependant Poission distribution for arrivals.
+    
+    Takes:
+      - `rates` a list of Possion rates for each time interval
+      - `endpoints` the endpoints of each time interval
+      - `max_sample_date` the point where no more arrivals can occur
+    
+    The idea is to first sample the number of arrivals in each time
+    interval from a Poisson distribution. Then to randomly distribute
+    those arrival dates within the interval using a Uniform distribution.
+    Then to take consecutive differences of these arrivals as the
+    inter-arrival times, and use Ciw's Sequential distribution to output
+    them.
+    """ 
+    def __init__(self, rates, endpoints, max_sample_date):
+        if any(r <= 0.0 for r in rates):
+            raise ValueError('All rates must be positive.')
+        if any(e <= 0.0 for e in endpoints):
+            raise ValueError('All interval endpoints must be positive.')
+        if max_sample_date <= 0.0:
+            raise ValueError('Maximum sample date must be positive.')
+        diffs = [s - t for s, t in zip(endpoints[1:], endpoints[:-1])]
+        if any(d <= 0.0 for d in diffs):
+            raise ValueError('Interval endpoints must be strictly increasing.')
+        if len(rates) != len(endpoints):
+            raise ValueError('Consistent number if intervals (rates and endpoints) must be used.')
+
+        self.rates = rates
+        self.endpoints = endpoints
+        self.max_sample_date = max_sample_date
+        self.get_intervals()
+        self.get_dates()
+        self.inter_arrivals = [t - s for s, t in zip(self.dates, self.dates[1:])]
+        super().__init__(self.inter_arrivals)
+
+    def __repr__(self):
+        return 'PoissonIntervals'
+
+    def get_intervals(self):
+        self.num_intervals = len(self.endpoints)
+        self.intervals = [(0, self.endpoints[0])]
+        i, t1, t2 = 0, 0, 0
+        while self.intervals[-1][-1] < self.max_sample_date:
+            if i % self.num_intervals == self.num_intervals-1:
+                t2 = t1 + self.endpoints[-1]
+            self.intervals.append(
+                (t1 + self.endpoints[i % self.num_intervals],
+                 min(t2 + self.endpoints[(i+1) % self.num_intervals], self.max_sample_date)))
+            i += 1
+            t1 = t2
+    
+    def get_dates(self):
+        self.dates = [0.0]
+        for i, interval in enumerate(self.intervals):
+            n = npr.poisson(self.rates[i % self.num_intervals] * (interval[1]-interval[0]))
+            interval_dates = [random.uniform(interval[0], interval[1]) for _ in range(n)]
+            interval_dates = sorted(interval_dates)
+            self.dates += interval_dates
 
 
 class NoArrivals(Distribution):
