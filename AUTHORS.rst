@@ -5,6 +5,7 @@ Ciw has been developed by the following contributors:
 
 + `Geraint Palmer <https://github.com/geraintpalmer/>`_
 + `Vincent Knight <https://github.com/drvinceknight/>`_
++ `Paul Harper <https://sites.google.com/site/profpaulharper/home>`_
 + `Lieke Hölscher <https://github.com/Lieke19/>`_
 + `Sam Luen-English <https://github.com/sluenenglish/>`_
 + `Alex Carney <https://github.com/alcarney/>`_

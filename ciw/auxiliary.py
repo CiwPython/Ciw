@@ -1,14 +1,16 @@
 import random
+import numpy as np
+import ciw
 
 def seed(z):
 	"""
 	Sets all seeds used to generate random number streams.
 	Currently contains:
 		- random library
-	Previously contained:
-		- numpy
+		- numpy random
 	"""
 	random.seed(z)
+	ciw.rng = np.random.default_rng(seed=z)
 
 def random_choice(array, probs=None):
 	"""

@@ -68,6 +68,59 @@ Therefore a total of 42 customers passed through the system::
 
 
 
+The Problem of Sampling Arrivals Accross Thresholds
+---------------------------------------------------
+
+Problems can occur when using time dependent arrivals, in particular if the arrival rates suddenly change dramatically accross time thresholds. This is due to the way in which arrivals are sampled, by sampling the _next_ arrival from the inter-arrival time of the previous sample.
+
+For example, consider arrivals occuring once every 10 time units in the interval (0, 55) time units, and then once every 0.1 time units in the interval (55, 58) time units, and then back to once every 10 time units thereafter. Arrivals would occur at dates 10, 20, 30, 40, 50. At this point the simulation is still in the (0, 55) interval, and so only knows to sample every 10 time units. So the next sample will be at date 60, and the simulation has completely skipped the (55, 58) interval, which should have sampled around 30 arrivals.
+For example::
+
+    >>> class TimeDependentDist(ciw.dists.Distribution):
+    ...     def sample(self, t, ind=None):
+    ...         if t < 55:
+    ...             return 10
+    ...         if t < 58:
+    ...             return 0.0
+    ...         return 10
+
+    >>> N = ciw.create_network(
+    ...     arrival_distributions=[TimeDependentDist()],
+    ...     service_distributions=[ciw.dists.Deterministic(value=0.0)],
+    ...     number_of_servers=['Inf']
+    ... )
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(101)
+    >>> recs = Q.get_all_records()
+    >>> [r.arrival_date for r in recs]
+    [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
+
+To overcome this Ciw has the :code:`PoissonIntervals` distribution, which allows different time intervals to sample number of arrivals from a Poisson distribution with different arrival rates. This does not use the same sampling logic and so can overcome this problem. It first sampled from a Poisson distribution to find the number of arrivals in each time interval, and then samples arrival dates within that time interval from a Uniform distribution. Therefore the whole schedule of arrivals is determined before the simulation has began.
+
+For example, if we have a time interval (0, 3) with rate 1 customers per time unit, and an interval (3, 4) with 8 customers per time unit, which then repeats. We can use::
+
+    >>> ciw.seed(0)
+    >>> Pi = ciw.dists.PoissonIntervals(
+    ...     rates=[1, 8],
+    ...     endpoints=[3, 4],
+    ...     max_sample_date=10
+    ... )
+
+Here they keyword argument :code:`max_sample_date` is date where no samples will be sampled after this date. Here we can see :code:`Pi.dates` gives a list of dates to sample
+
+    >>> [round(d, 3) for d in Pi.dates]
+    [0.0, 2.274, 2.533, 3.259, 3.303, 3.405, 3.421, 3.477, 3.511, 3.583, 3.784, 6.724, 7.251, 7.282, 7.505, 7.618, 7.756, 7.91]
+
+Here in the interval (0, 3) 2 arrivals were sampled (expected value 3); in the interval (3, 4) 8 arrivals were sampled (expected value 8); in the interval (4, 7) 1 arrival was samples (expected value 3); and in the interval (7, 8) 6 arrivals were sampled (expected value 10); and in the interval (8, 10) 0 arrival was sampled (expeced value 2
+).
+
+The distribution's :code:`sample()` method sampled the scheduled inter-arrival times for these dates::
+
+    >>> [round(Pi.sample(), 3) for _ in range(6)]
+    [2.274, 0.259, 0.726, 0.044, 0.102, 0.016]
+
+
 
 State Dependent Distributions
 -----------------------------
