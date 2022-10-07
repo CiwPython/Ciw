@@ -16,3 +16,4 @@ from .network import *
 import ciw.dists
 import ciw.deadlock
 import ciw.trackers
+rng = np.random.default_rng()

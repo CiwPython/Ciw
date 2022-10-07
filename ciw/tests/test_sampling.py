@@ -1196,15 +1196,15 @@ class TestSampling(unittest.TestCase):
 
 
     def test_poissoninterval_dist_object(self):
+        ciw.seed(5)
         Pi = ciw.dists.PoissonIntervals(
             rates=[5, 1.5, 3],
             endpoints=[3.2, 7.9, 10],
             max_sample_date=15
         )
-        ciw.seed(5)
         samples = [round(Pi._sample(), 4
             ) for _ in range(10)]
-        expected = [0.0092, 0.2351, 0.102, 0.0641, 0.1917, 0.0525, 0.1697, 0.0141, 0.4184, 0.2229]
+        expected = [0.0928, 0.2694, 0.4268, 0.701, 0.011, 0.239, 0.0966, 0.1567, 0.0834, 0.291]
         self.assertEqual(samples, expected)
 
         expected_dates = [0]
@@ -1244,9 +1244,9 @@ class TestSampling(unittest.TestCase):
             (3.2, 7.9): sum([sum([((r > 3.2) and (r < 7.9)) or ((r > 13.2) and (r < 17.9)) for r in Pi.dates]) for Pi in distributions]) / n,
             (7.9, 10): sum([sum([((r > 7.9) and (r < 10)) or ((r > 17.9) and (r < 20)) for r in Pi.dates]) for Pi in distributions]) / n
         }
-        self.assertEqual(counts[(0, 3.2)],   31.516) ## expected 32
-        self.assertEqual(counts[(3.2, 7.9)], 13.82)  ## expected 14.1
-        self.assertEqual(counts[(7.9, 10)],  12.244) ## expected 12.6
+        self.assertEqual(counts[(0, 3.2)],   31.756) ## expected 32
+        self.assertEqual(counts[(3.2, 7.9)], 14.184) ## expected 14.1
+        self.assertEqual(counts[(7.9, 10)],  12.748) ## expected 12.6
 
         """
         rates = [2, 0.6, 0.8, 12, 3]
@@ -1274,13 +1274,14 @@ class TestSampling(unittest.TestCase):
             (32, 40.3) : sum([sum([((r > 32) and (r < 40.3)) or ((r > 82) and (r < 90.3)) for r in Pi.dates]) for Pi in distributions]) / n,
             (40.3, 50) : sum([sum([((r > 40.3) and (r < 50)) or ((r > 90.3) and (r < 100)) for r in Pi.dates]) for Pi in distributions]) / n,
         }
-        self.assertEqual(counts[(0, 0.5)],   2.164)   ## expected 2
-        self.assertEqual(counts[(0.5, 10)],  11.064)  ## expected 11.4
-        self.assertEqual(counts[(10, 32)],   34.168)  ## expected 35.2
-        self.assertEqual(counts[(32, 40.3)], 198.772) ## expected 199.2
-        self.assertEqual(counts[(40.3, 50)], 58.296)  ## expected 58.2
+        self.assertEqual(counts[(0, 0.5)],   2.016)   ## expected 2
+        self.assertEqual(counts[(0.5, 10)],  11.4)    ## expected 11.4
+        self.assertEqual(counts[(10, 32)],   35.324)  ## expected 35.2
+        self.assertEqual(counts[(32, 40.3)], 198.968) ## expected 199.2
+        self.assertEqual(counts[(40.3, 50)], 58.12)  ## expected 58.2
 
     def test_sampling_poissoninterval_dist(self):
+        ciw.seed(5)
         params = {
             'arrival_distributions': [ciw.dists.PoissonIntervals(rates=[5, 1.5, 3], endpoints=[3.2, 7.9, 10], max_sample_date=15)],
             'service_distributions': [ciw.dists.PoissonIntervals(rates=[5, 1.5, 3], endpoints=[3.2, 7.9, 10], max_sample_date=15)],
@@ -1288,14 +1289,12 @@ class TestSampling(unittest.TestCase):
         }
         Q = ciw.Simulation(ciw.create_network(**params))
         Nt = Q.transitive_nodes[0]
-        ciw.seed(5)
 
         samples = [round(Nt.simulation.service_times[Nt.id_number][0]._sample(), 4) for _ in range(10)]
-        expected =  [0.0291, 0.0288, 0.0154, 0.0764, 0.0329, 0.9894, 0.6795, 0.5481, 0.1214, 0.1829]
-
+        expected = [0.0108, 0.0623, 0.1092, 0.026, 0.2578, 0.0648, 0.4333, 0.0275, 0.0187, 0.0707]
         self.assertEqual(samples, expected)
 
         samples = [round(Nt.simulation.inter_arrival_times[Nt.id_number][0]._sample(), 4) for _ in range(10)]
-        expected = [0.3203, 0.0432, 0.0386, 0.0667, 0.1828, 0.0955, 0.1053, 0.6067, 0.239, 0.0966]
+        expected = [0.2694, 0.4268, 0.701, 0.011, 0.239, 0.0966, 0.1567, 0.0834, 0.291, 0.006]
         self.assertEqual(samples, expected)
 

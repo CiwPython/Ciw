@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import ciw
 
 def seed(z):
 	"""
@@ -9,7 +10,7 @@ def seed(z):
 		- numpy random
 	"""
 	random.seed(z)
-	np.random.seed(z)
+	ciw.rng = np.random.default_rng(seed=z)
 
 def random_choice(array, probs=None):
 	"""

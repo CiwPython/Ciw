@@ -96,11 +96,11 @@ For example::
     [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 
-To overcome this Ciw has the :code:`PoissonIntervals` distribution, which allows different time intervals to sample number of arrivals from a Poisson distribution with different arrival rates. This does not use the same sampling logic and so can overcome this problem. For example, if we have a time interval (0, 3) with rate 0.5 customers per time unit, and an interval (3, 4) with 5 customers per time unit, which then repeats. We can use::
+To overcome this Ciw has the :code:`PoissonIntervals` distribution, which allows different time intervals to sample number of arrivals from a Poisson distribution with different arrival rates. This does not use the same sampling logic and so can overcome this problem. For example, if we have a time interval (0, 3) with rate 1 customers per time unit, and an interval (3, 4) with 8 customers per time unit, which then repeats. We can use::
 
     >>> ciw.seed(0)
     >>> Pi = ciw.dists.PoissonIntervals(
-    ...     rates=[0.5, 5],
+    ...     rates=[1, 8],
     ...     endpoints=[3, 4],
     ...     max_sample_date=10
     ... )
@@ -108,14 +108,15 @@ To overcome this Ciw has the :code:`PoissonIntervals` distribution, which allows
 Here they keyword argument :code:`max_sample_date` is date where no samples will be sampled after this date. Here we can see :code:`Pi.dates` gives a list of dates to sample
 
     >>> [round(d, 3) for d in Pi.dates]
-    [0.0, 1.262, 2.274, 2.533, 3.259, 3.282, 3.303, 3.405, 3.477, 3.505, 3.511, 3.583, 3.784, 3.908, 7.251, 7.618, 7.756, 7.81, 7.91, 7.983, 9.804]
+    [0.0, 2.274, 2.533, 3.259, 3.303, 3.405, 3.421, 3.477, 3.511, 3.583, 3.784, 6.724, 7.251, 7.282, 7.505, 7.618, 7.756, 7.91]
 
-Here in the interval (0, 3) 4 arrivals were sampled (expected value 1.5); in the interval (3, 4) 10 arrivals were sampled (expected value 10); in the interval (4, 7) 0 arrivals were samples (expected value 1.5); and in the interval (7, 8) 6 arrivals were sampled (expected value 10); and in the interval (8, 10) 1 arrival was sampled (expeced value 1).
+Here in the interval (0, 3) 2 arrivals were sampled (expected value 3); in the interval (3, 4) 8 arrivals were sampled (expected value 8); in the interval (4, 7) 1 arrival was samples (expected value 3); and in the interval (7, 8) 6 arrivals were sampled (expected value 10); and in the interval (8, 10) 0 arrival was sampled (expeced value 2
+).
 
 The distribution's :code:`sample()` method sampled the scheduled inter-arrival times for these dates::
 
     >>> [round(Pi.sample(), 3) for _ in range(6)]
-    [1.262, 1.012, 0.259, 0.726, 0.023, 0.021]
+    [2.274, 0.259, 0.726, 0.044, 0.102, 0.016]
 
 
 
