@@ -1,7 +1,13 @@
 History
 -------
 
-+ **v.2.3.1 (2022-07-25)**
++ **v2.3.2 (2022-10-07)**
+    + Add PoissonIntervals distribution
+    + Add numpy random generator, ciw.seed now also creates new random generator
+    + Documentation on parallelising trials
+    + Remove support for Python 3.6
+
++ **v2.3.1 (2022-07-25)**
     + Fixes bug where blocked customers were candidates for `finish_service` when more than one customer finishes service simultaneously
     + Correctly writes csv's in Windows
     + Support for Python 3.9 by updating tqdm requirement
