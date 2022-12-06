@@ -476,7 +476,7 @@ class PoissonIntervals(Sequential):
     them.
     """ 
     def __init__(self, rates, endpoints, max_sample_date):
-        if any(r <= 0.0 for r in rates):
+        if any(r < 0.0 for r in rates):
             raise ValueError('All rates must be positive.')
         if any(e <= 0.0 for e in endpoints):
             raise ValueError('All interval endpoints must be positive.')

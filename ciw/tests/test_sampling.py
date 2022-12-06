@@ -1214,12 +1214,21 @@ class TestSampling(unittest.TestCase):
         self.assertLessEqual(Pi.dates[-1], Pi.max_sample_date)
 
         self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, -1.5, 3], [3.2, 7.9, 10], 15)
-        self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 0], [3.2, 7.9, 10], 15)
         self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [3.2, 1.9, 10], 15)
         self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [-3.2, 7.9, 10], 15)
         self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [3.2, 7.9, 10], -15)
         self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3], [3.2, 7.9, 10], 0)
         self.assertRaises(ValueError, ciw.dists.PoissonIntervals, [5, 1.5, 3, 6], [3.2, 7.9, 10], 15)
+
+    def test_poissoninterval_rate_zero(self):
+        ciw.seed(5)
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[10, 0],
+            endpoints=[1, 2],
+            max_sample_date=15
+        )
+        arrivals_when_rate_is_zero = [date for date in Pi.dates if int(date) % 2 == 1]
+        self.assertEqual(arrivals_when_rate_is_zero, [])
 
     def test_poissoninterval_against_theory(self):
         """
