@@ -486,7 +486,7 @@ class PoissonIntervals(Sequential):
         if any(d <= 0.0 for d in diffs):
             raise ValueError('Interval endpoints must be strictly increasing.')
         if len(rates) != len(endpoints):
-            raise ValueError('Consistent number if intervals (rates and endpoints) must be used.')
+            raise ValueError('Consistent number of intervals (rates and endpoints) must be used.')
 
         self.rates = rates
         self.endpoints = endpoints
@@ -494,6 +494,8 @@ class PoissonIntervals(Sequential):
         self.get_intervals()
         self.get_dates()
         self.inter_arrivals = [t - s for s, t in zip(self.dates, self.dates[1:])]
+        if self.inter_arrivals == []:
+            self.inter_arrivals = [float('inf')]
         super().__init__(self.inter_arrivals)
 
     def __repr__(self):
