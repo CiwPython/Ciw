@@ -1230,6 +1230,17 @@ class TestSampling(unittest.TestCase):
         arrivals_when_rate_is_zero = [date for date in Pi.dates if int(date) % 2 == 1]
         self.assertEqual(arrivals_when_rate_is_zero, [])
 
+        ciw.seed(5)
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[0, 0],
+            endpoints=[1, 2],
+            max_sample_date=15
+        )
+        arrivals_when_rate_is_zero = [date for date in Pi.dates if int(date) % 2 == 1]
+        self.assertEqual(arrivals_when_rate_is_zero, [])
+        self.assertEqual(Pi.sample(), float('inf'))
+
+
     def test_poissoninterval_against_theory(self):
         """
         rates = [5, 1.5, 3]
