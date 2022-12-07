@@ -1,7 +1,7 @@
 History
 -------
 
-+ **v2.3.3 (2022-12-07)**
++ **v2.3.4 (2022-12-07)**
     + PoissonIntervals distribution now allows rates of zero
 
 + **v2.3.2 (2022-10-07)**
