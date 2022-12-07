@@ -1,6 +1,9 @@
 History
 -------
 
++ **v2.3.3 (2022-12-07)**
+    + PoissonIntervals distribution now allows rates of zero
+
 + **v2.3.2 (2022-10-07)**
     + Add PoissonIntervals distribution
     + Add numpy random generator, ciw.seed now also creates new random generator
