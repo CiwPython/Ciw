@@ -375,3 +375,152 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(r1.service_end_date, 29)
         self.assertEqual(r1.service_time, 20)
         self.assertEqual(r1.waiting_time, 8)
+
+    def test_priority_preemption_when_zero_servers(self):
+        """
+        Test whether pre-emptive priorities and server schedules where there are zero servers work well together.
+
+        We will show two scenarios.
+            - The first where the one server goes off and back on duty while there are no customers present.
+            - The second where the server goes off duty but back on duty while there are customers waiting.
+        """
+        # First scenario
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Deterministic(7)],
+                'Class 1': [ciw.dists.Deterministic(13)]
+            },
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(5.5)],
+                'Class 1': [ciw.dists.Deterministic(1.5)]
+            },
+            number_of_servers=[[[1, 20.3], [0, 20.6], [1, 100]]],
+            priority_classes=({
+                'Class 0': 1,
+                'Class 1': 0
+            }, ['continue'])
+        )
+
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(35)
+
+        recs = Q.get_all_records()
+        # Individual 1
+        self.assertEqual(recs[0].id_number, 1)
+        self.assertEqual(recs[0].customer_class, 0)
+        self.assertEqual(recs[0].arrival_date, 7)
+        self.assertEqual(recs[0].service_start_date, 7)
+        self.assertEqual(recs[0].service_end_date, 12.5)
+        self.assertEqual(recs[0].record_type, 'service')
+        # Individual 2
+        self.assertEqual(recs[1].id_number, 2)
+        self.assertEqual(recs[1].customer_class, 1)
+        self.assertEqual(recs[1].arrival_date, 13)
+        self.assertEqual(recs[1].service_start_date, 13)
+        self.assertEqual(recs[1].service_end_date, 14.5)
+        self.assertEqual(recs[1].record_type, 'service')
+        # Individual 3
+        self.assertEqual(recs[2].id_number, 3)
+        self.assertEqual(recs[2].customer_class, 0)
+        self.assertEqual(recs[2].arrival_date, 14)
+        self.assertEqual(recs[2].service_start_date, 14.5)
+        self.assertEqual(recs[2].service_end_date, 20)
+        self.assertEqual(recs[2].record_type, 'service')
+        # Individual 5
+        self.assertEqual(recs[3].id_number, 5)
+        self.assertEqual(recs[3].customer_class, 1)
+        self.assertEqual(recs[3].arrival_date, 26)
+        self.assertEqual(recs[3].service_start_date, 26)
+        self.assertEqual(recs[3].service_end_date, 27.5)
+        self.assertEqual(recs[3].record_type, 'service')
+        # Individual 4's interrupted service
+        self.assertEqual(recs[4].id_number, 4)
+        self.assertEqual(recs[4].customer_class, 0)
+        self.assertEqual(recs[4].arrival_date, 21)
+        self.assertEqual(recs[4].service_start_date, 21)
+        self.assertEqual(recs[4].record_type, 'interrupted service')
+        # Individual 4's resumed service
+        self.assertEqual(recs[5].id_number, 4)
+        self.assertEqual(recs[5].customer_class, 0)
+        self.assertEqual(recs[5].arrival_date, 21)
+        self.assertEqual(recs[5].service_start_date, 27.5)
+        self.assertEqual(recs[5].service_end_date, 28)
+        self.assertEqual(recs[5].record_type, 'service')
+        # Individual 6
+        self.assertEqual(recs[6].id_number, 6)
+        self.assertEqual(recs[6].customer_class, 0)
+        self.assertEqual(recs[6].arrival_date, 28)
+        self.assertEqual(recs[6].service_start_date, 28)
+        self.assertEqual(recs[6].service_end_date, 33.5)
+        self.assertEqual(recs[6].record_type, 'service')
+
+        # Second scenario
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Deterministic(7)],
+                'Class 1': [ciw.dists.Deterministic(13)]
+            },
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(5.5)],
+                'Class 1': [ciw.dists.Deterministic(1.5)]
+            },
+            number_of_servers=[[[1, 20.3], [0, 22], [1, 100]]],
+            priority_classes=({
+                'Class 0': 1,
+                'Class 1': 0
+            }, ['continue'])
+        )
+
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(35)
+
+        recs = Q.get_all_records()
+        # Individual 1
+        self.assertEqual(recs[0].id_number, 1)
+        self.assertEqual(recs[0].customer_class, 0)
+        self.assertEqual(recs[0].arrival_date, 7)
+        self.assertEqual(recs[0].service_start_date, 7)
+        self.assertEqual(recs[0].service_end_date, 12.5)
+        self.assertEqual(recs[0].record_type, 'service')
+        # Individual 2
+        self.assertEqual(recs[1].id_number, 2)
+        self.assertEqual(recs[1].customer_class, 1)
+        self.assertEqual(recs[1].arrival_date, 13)
+        self.assertEqual(recs[1].service_start_date, 13)
+        self.assertEqual(recs[1].service_end_date, 14.5)
+        self.assertEqual(recs[1].record_type, 'service')
+        # Individual 3
+        self.assertEqual(recs[2].id_number, 3)
+        self.assertEqual(recs[2].customer_class, 0)
+        self.assertEqual(recs[2].arrival_date, 14)
+        self.assertEqual(recs[2].service_start_date, 14.5)
+        self.assertEqual(recs[2].service_end_date, 20)
+        self.assertEqual(recs[2].record_type, 'service')
+        # Individual 5
+        self.assertEqual(recs[3].id_number, 5)
+        self.assertEqual(recs[3].customer_class, 1)
+        self.assertEqual(recs[3].arrival_date, 26)
+        self.assertEqual(recs[3].service_start_date, 26)
+        self.assertEqual(recs[3].service_end_date, 27.5)
+        self.assertEqual(recs[3].record_type, 'service')
+        # Individual 4's interrupted service
+        self.assertEqual(recs[4].id_number, 4)
+        self.assertEqual(recs[4].customer_class, 0)
+        self.assertEqual(recs[4].arrival_date, 21)
+        self.assertEqual(recs[4].service_start_date, 22)
+        self.assertEqual(recs[4].record_type, 'interrupted service')
+        # Individual 4's resumed service
+        self.assertEqual(recs[5].id_number, 4)
+        self.assertEqual(recs[5].customer_class, 0)
+        self.assertEqual(recs[5].arrival_date, 21)
+        self.assertEqual(recs[5].service_start_date, 27.5)
+        self.assertEqual(recs[5].service_end_date, 29)
+        self.assertEqual(recs[5].record_type, 'service')
+        # Individual 6
+        self.assertEqual(recs[6].id_number, 6)
+        self.assertEqual(recs[6].customer_class, 0)
+        self.assertEqual(recs[6].arrival_date, 28)
+        self.assertEqual(recs[6].service_start_date, 29)
+        self.assertEqual(recs[6].service_end_date, 34.5)
+        self.assertEqual(recs[6].record_type, 'service')
+
