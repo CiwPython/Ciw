@@ -1,6 +1,9 @@
 History
 -------
 
++ **v2.3.5 (2023-02-07)**
+    + Fixes bug caused when implementing preemptive priority classes and server schedules that take all servers off duty.
+
 + **v2.3.4 (2022-12-07)**
     + PoissonIntervals distribution now allows rates of zero
 
