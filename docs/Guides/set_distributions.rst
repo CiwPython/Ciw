@@ -8,7 +8,7 @@ Ciw offeres a variety of inter-arrival and service time distributions.
 A full list can be found :ref:`here <refs-dists>`.
 They are objects, that are defined in the :code:`Network` with the :code:`'arrival_distributions'` and :code:`'service_distributions'` keywords.
 
-+ :code:`'Aarival_distributions'`: This is the distribution that inter-arrival times are drawn from. That is the time between two consecutive arrivals. It is particular to specific nodes and customer classes.
++ :code:`'arrival_distributions'`: This is the distribution that inter-arrival times are drawn from. That is the time between two consecutive arrivals. It is particular to specific nodes and customer classes.
 + :code:`'service_distributions'`: This is the distribution that service times are drawn from. That is the amount of time a customer spends with a server (independent of how many servers there are). It is particular for to specific node and customer classes.
 
 The following example, with two nodes and two customer classes, uses eight different arrival and service rate distributions::
