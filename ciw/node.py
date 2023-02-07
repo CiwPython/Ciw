@@ -137,7 +137,7 @@ class Node(object):
             self.decide_class_change(next_individual)
 
         free_server = self.find_free_server(next_individual)
-        if free_server is None and isinf(self.c) is False:
+        if free_server is None and isinf(self.c) is False and self.c > 0:
             self.decide_preempt(next_individual)
         if free_server is not None or isinf(self.c):
             if isinf(self.c) is False:
