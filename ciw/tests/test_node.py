@@ -1502,11 +1502,12 @@ class TestNode(unittest.TestCase):
         self.assertEqual(interrupted_record.arrival_date, 21)
         self.assertEqual(interrupted_record.service_start_date, 21)
         self.assertEqual(interrupted_record.service_time, 4)
-        # self.assertEqual(interrupted_record.service_end_date, 24)
+        self.assertEqual(interrupted_record.exit_date, 24)
         self.assertEqual(resumed_record.arrival_date, 21)
         self.assertEqual(resumed_record.service_start_date, 29)
         self.assertEqual(resumed_record.service_time, 1)
         self.assertEqual(resumed_record.service_end_date, 30)
+        self.assertEqual(resumed_record.exit_date, 30)
 
 
     def test_preemptive_priorities_resume_options_due_to_schedule(self):
