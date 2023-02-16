@@ -672,7 +672,26 @@ class TestSimulation(unittest.TestCase):
         self.assertIsInstance(Q.nodes[1], DummyNode1)
         self.assertIsInstance(Q.nodes[2], DummyNode1)
         self.assertIsInstance(Q.nodes[3], DummyNode2)
-    
+
+
+    def test_raise_error_when_setting_wrong_number_of_node_classes(self):
+        class DummyNode(ciw.Node):
+            pass
+        def create_simulation_with_node_classes(node_classes):
+            N = ciw.create_network(
+                arrival_distributions=[ciw.dists.Exponential(10), ciw.dists.Exponential(10), ciw.dists.Exponential(10)],
+                service_distributions=[ciw.dists.Exponential(10), ciw.dists.Exponential(10), ciw.dists.Exponential(10)],
+                routing=[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                number_of_servers=[1, 1, 1]
+            )
+            return ciw.Simulation(N, node_class=node_classes)
+
+        two_nodes = [DummyNode, DummyNode]
+        four_nodes = [DummyNode, DummyNode, DummyNode, DummyNode]
+        self.assertRaises(ValueError, create_simulation_with_node_classes, two_nodes)
+        self.assertRaises(ValueError, create_simulation_with_node_classes, four_nodes)
+
+
     def test_setting_individual_and_server_classes_in_init(self):
         class DummyIndividual(ciw.Individual):
             def __repr__(self):
