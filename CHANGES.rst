@@ -1,6 +1,10 @@
 History
 -------
 
++ **v.2.3.6 (2023-02-16)**
+    + Writes a data record for interrupted services caused by server schedules.
+    + Raises an error when an inconsistant number of custom node classes are used.
+
 + **v2.3.5 (2023-02-07)**
     + Fixes bug caused when implementing preemptive priority classes and server schedules that take all servers off duty.
 
