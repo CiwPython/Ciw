@@ -628,8 +628,9 @@ class Node(object):
                     self.interrupted_individuals.append(s.cust)
                     s.cust.interrupted = True
                     self.number_interrupted_individuals += 1
-                    s.cust.service_start_date = False
                     s.cust.original_service_time = self.interrupted_individuals[-1].service_time
+                    self.write_interruption_record(s.cust)
+                    s.cust.service_start_date = False
                     s.cust.time_left = self.interrupted_individuals[-1].service_end_date - self.get_now()
                     s.cust.service_time = self.schedule_preempt
                     s.cust.service_end_date = False

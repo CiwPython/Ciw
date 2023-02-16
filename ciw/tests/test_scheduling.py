@@ -274,7 +274,7 @@ class TestScheduling(unittest.TestCase):
         recs = Q.get_all_records()
         self.assertEqual(len(Q.nodes[1].interrupted_individuals), 1)
         self.assertEqual(len(Q.nodes[1].all_individuals), 7)
-        self.assertEqual([r.service_time for r in recs], [0.5, 3.5])
+        self.assertEqual([r.service_time for r in recs if r.record_type=='service'], [0.5, 3.5])
         # 0.5 due to the individual beginning service at time 3, and first service
         # finishing at time 12.5 (total: 9.5 time units). Then there is only 0.5
         # units left and only the final part is counted here.

@@ -1477,6 +1477,38 @@ class TestNode(unittest.TestCase):
         self.assertEqual(r2.waiting_time, 12)
 
 
+    def test_data_records_for_interrupted_individuals(self):
+        """
+        Customers arrive every 7 time units. Services last 4 time units.
+        There is one server, who goes off duty at time 24 and comes back at time 29.
+        There will be one interrupted individual:
+          - ind 3; arrives 21; interrupted 24; resumed 29; finishes 30.
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7)],
+            service_distributions=[ciw.dists.Deterministic(4)],
+            number_of_servers=[([[1, 24], [0, 29], [1, 37]], "continue")]
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(36)
+        recs = Q.get_all_records()
+
+        recs_ind3 = [r for r in recs if r.id_number==3]
+        self.assertEqual(len(recs_ind3), 2)
+
+        interrupted_record = [r for r in recs_ind3 if r.record_type == 'interrupted service'][0]
+        resumed_record = [r for r in recs_ind3 if r.record_type == 'service'][0]
+        self.assertEqual(interrupted_record.arrival_date, 21)
+        self.assertEqual(interrupted_record.service_start_date, 21)
+        self.assertEqual(interrupted_record.service_time, 4)
+        # self.assertEqual(interrupted_record.service_end_date, 24)
+        self.assertEqual(resumed_record.arrival_date, 21)
+        self.assertEqual(resumed_record.service_start_date, 29)
+        self.assertEqual(resumed_record.service_time, 1)
+        self.assertEqual(resumed_record.service_end_date, 30)
+
+
     def test_preemptive_priorities_resume_options_due_to_schedule(self):
         """
         One customer of class 1 arrives at date 1. Class 1 customers alternate

@@ -1011,7 +1011,7 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(3, method='Finish')
         inds = Q.nodes[-1].all_individuals
-        service_times = [round(dr.service_time, 1) for ind in inds for dr in ind.data_records]
+        service_times = [round(dr.service_time, 1) for ind in inds for dr in ind.data_records if dr.record_type=='service']
         self.assertEqual(service_times, [0.1, 3.0, 0.1, 3.0, 0.1, 3.0])
 
 
