@@ -1,7 +1,10 @@
 History
 -------
 
-+ **v.2.3.6 (2023-02-16)**
++ **v2.3.7 (2023-04-06)**
+    + Adds Poisson, Geometric, and Binomial distributions fro batching.
+
++ **v2.3.6 (2023-02-16)**
     + Writes a data record for interrupted services caused by server schedules.
     + Raises an error when an inconsistant number of custom node classes are used.
 

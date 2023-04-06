@@ -46,6 +46,9 @@ Note:
      + :code:`Empirical`
      + :code:`Pmf`
      + :code:`Sequential`
+     + :code:`Poisson`
+     + :code:`Geometric`
+     + :code:`Binomial`
   + If the keyword :code:`batching_distributions` is omitted, then no batching is assumed. That is only one customer arrives at a time. Equivalent to :code:`ciw.dists.Deterministic(1)`.
   + If some nodes/customer classes require no batching, but others do, please use :code:`ciw.dists.Deterministic(1)`.
   + Batch arrivals may lead to :ref:`simultaneous events <simultaneous_events>`, please take care.

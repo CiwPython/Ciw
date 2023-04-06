@@ -26,6 +26,9 @@ The following are currently supported:
 - :ref:`hypererlang_dist`
 - :ref:`coxian_dist`
 - :ref:`poissonintervals_dist`
+- :ref:`poisson_dist`
+- :ref:`geometric_dist`
+- :ref:`binomial_dist`
 - :ref:`no_arrivals`
 
 
@@ -272,6 +275,42 @@ The Poisson Intervals Distribution is a time-dependent distribution, where diffe
 For Exponential arrivals with rate 3 in the time interval (0, 4.8), rate 5.5 in the time interval (4.8, 9.3), and rate 0.1 in the time interval (9.3, 12), and repeating in the same manner thereafter until the time 100::
 
     ciw.dists.PoissonIntervals(rates=[3, 5.5, 0.1], endpoints=[4.8, 9.3, 12], max_sample_date=100)
+
+
+.. _poisson_dist:
+
+------------------------
+The Poisson Distribution
+------------------------
+
+The Poisson distribution samples a random integer from the Poisson distribution with mean :math:`\lambda`.
+Write an Poisson distribution with mean `1.7` as follows::
+
+    ciw.dists.Poisson(rate=1.7)
+
+
+.. _geometric_dist:
+
+--------------------------
+The Geometric Distribution
+--------------------------
+
+The Geometric distribution samples a random integer from the Geometric distribution with parameter :math:`p`. That is, the number of Bernoulli trials until a success, when each independent Bernoulli trial has probability :math:`p` of succes.
+Write an Geometric distribution with success probability of `0.3` as follows::
+
+    ciw.dists.Geometric(prob=0.3)
+
+
+.. _binomial_dist:
+
+-------------------------
+The Binomial Distribution
+-------------------------
+
+The Binomial distribution samples a random integer from the Binomial distribution with parameters :math:`n` and :math:`p`. That is, the number of successful Bernoulli trials out of a total of :math:`n` trials, when each independent Bernoulli trial has probability :math:`p` of succes.
+Write an Geometric distribution with success probability of `0.3` and `20` trials as follows::
+
+    ciw.dists.Binomial(n=20, prob=0.3)
 
 
 .. _no_arrivals:
