@@ -92,6 +92,9 @@ class TestSampling(unittest.TestCase):
         He = ciw.dists.HyperErlang([4, 7, 2], [0.3, 0.1, 0.6], [2, 2, 7])
         Cx = ciw.dists.Coxian([4, 7, 2], [0.3, 0.2, 1.0])
         Pi = ciw.dists.PoissonIntervals(rates=[5, 1.5, 3], endpoints=[3.2, 7.9, 10], max_sample_date=15)
+        Po = ciw.dists.Poisson(rate=1.5)
+        Ge = ciw.dists.Geometric(prob=0.3)
+        Bi = ciw.dists.Binomial(n=20, prob=0.7)
         self.assertEqual(str(Di), 'Distribution')
         self.assertEqual(str(Un), 'Uniform: 3.4, 6.7')
         self.assertEqual(str(Dt), 'Deterministic: 1.1')
@@ -111,6 +114,9 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(He), 'HyperErlang')
         self.assertEqual(str(Cx), 'Coxian')
         self.assertEqual(str(Pi), 'PoissonIntervals')
+        self.assertEqual(str(Po), 'Poisson: 1.5')
+        self.assertEqual(str(Ge), 'Geometric: 0.3')
+        self.assertEqual(str(Bi), 'Binomial: 20, 0.7')
 
     def test_distribution_parent_is_useless(self):
         D = ciw.dists.Distribution()
@@ -1316,5 +1322,87 @@ class TestSampling(unittest.TestCase):
 
         samples = [round(Nt.simulation.inter_arrival_times[Nt.id_number][0]._sample(), 4) for _ in range(10)]
         expected = [0.2694, 0.4268, 0.701, 0.011, 0.239, 0.0966, 0.1567, 0.0834, 0.291, 0.006]
+        self.assertEqual(samples, expected)
+
+
+    def test_poisson_dist_object(self):
+        Po = ciw.dists.Poisson(1.5)
+        ciw.seed(5)
+        samples = [Po._sample() for _ in range(10)]
+        expected = [3, 0, 1, 0, 0, 2, 4, 2, 1, 1]
+        self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Poisson, -1.5)
+
+    def test_sampling_poisson_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.Deterministic(1)],
+            'service_distributions': [ciw.dists.Deterministic(0)],
+            'batching_distributions': [ciw.dists.Poisson(1.5)],
+            'number_of_servers': [1]
+        }
+        ciw.seed(5)
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Q.simulate_until_max_time(10.5)
+        recs = Q.get_all_records()
+
+        samples = [len([r for r in recs if r.arrival_date == t]) for t in range(1, 11)]
+        expected = [3, 0, 1, 0, 0, 2, 4, 2, 1, 1]
+        self.assertEqual(samples, expected)
+
+
+    def test_geometric_dist_object(self):
+        Ge = ciw.dists.Geometric(0.3)
+        ciw.seed(5)
+        samples = [Ge._sample() for _ in range(10)]
+        expected = [6, 3, 4, 2, 1, 2, 2, 1, 1, 3]
+        self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Geometric, -0.5)
+        self.assertRaises(ValueError, ciw.dists.Geometric, 1.4)
+
+    def test_sampling_geometric_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.Deterministic(1)],
+            'service_distributions': [ciw.dists.Deterministic(0)],
+            'batching_distributions': [ciw.dists.Geometric(0.3)],
+            'number_of_servers': [1]
+        }
+        ciw.seed(5)
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Q.simulate_until_max_time(10.5)
+        recs = Q.get_all_records()
+
+        samples = [len([r for r in recs if r.arrival_date == t]) for t in range(1, 11)]
+        expected = [6, 3, 4, 2, 1, 2, 2, 1, 1, 3]
+        self.assertEqual(samples, expected)
+
+
+    def test_binomial_dist_object(self):
+        Bi = ciw.dists.Binomial(20, 0.4)
+        ciw.seed(5)
+        samples = [Bi._sample() for _ in range(10)]
+        expected = [10, 10, 8, 7, 5, 7, 7, 4, 4, 15]
+        self.assertEqual(samples, expected)
+
+        self.assertRaises(ValueError, ciw.dists.Binomial, 20, -0.5)
+        self.assertRaises(ValueError, ciw.dists.Binomial, 20, 1.4)
+        self.assertRaises(ValueError, ciw.dists.Binomial, -5, 0.2)
+        self.assertRaises(ValueError, ciw.dists.Binomial, 13.5, 0.2)
+
+    def test_sampling_binomial_dist(self):
+        params = {
+            'arrival_distributions': [ciw.dists.Deterministic(1)],
+            'service_distributions': [ciw.dists.Deterministic(0)],
+            'batching_distributions': [ciw.dists.Binomial(20, 0.4)],
+            'number_of_servers': [1]
+        }
+        ciw.seed(5)
+        Q = ciw.Simulation(ciw.create_network(**params))
+        Q.simulate_until_max_time(10.5)
+        recs = Q.get_all_records()
+
+        samples = [len([r for r in recs if r.arrival_date == t]) for t in range(1, 11)]
+        expected = [10, 10, 8, 7, 5, 7, 7, 4, 4, 15]
         self.assertEqual(samples, expected)
 

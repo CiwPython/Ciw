@@ -532,3 +532,67 @@ class NoArrivals(Distribution):
 
     def sample(self, t=None, ind=None):
         return float('Inf')
+
+
+class Poisson(Distribution):
+    """
+    The Poisson distribution.
+    Note that this is a discrete integer distribution, for use with Batching.
+
+    Takes:
+      - `rate` the rate parameter, lambda
+    """
+    def __init__(self, rate):
+        if rate <= 0.0:
+            raise ValueError('Poisson distribution must sample positive numbers only.')
+        self.rate = rate
+
+    def sample(self, t=None, ind=None):
+        return ciw.rng.poisson(lam=self.rate)
+
+    def __repr__(self):
+        return f'Poisson: {self.rate}'
+
+
+class Geometric(Distribution):
+    """
+    The Geometric distribution.
+    Note that this is a discrete integer distribution, for use with Batching.
+
+    Takes:
+      - `prob` the probability parameter
+    """
+    def __init__(self, prob):
+        if prob <= 0.0 or prob >= 1:
+            raise ValueError('Geometric distribution must have parameter between 0 and 1.')
+        self.prob = prob
+
+    def sample(self, t=None, ind=None):
+        return ciw.rng.geometric(p=self.prob)
+
+    def __repr__(self):
+        return f'Geometric: {self.prob}'
+
+
+class Binomial(Distribution):
+    """
+    The Binomial distribution.
+    Note that this is a discrete integer distribution, for use with Batching.
+
+    Takes:
+      - `n` the parameter representing the total number of experiments
+      - `prob` the probability parameter
+    """
+    def __init__(self, n, prob):
+        if prob <= 0.0 or prob >= 1:
+            raise ValueError('Binomial distribution have probability parameter between 0 and 1.')
+        if not isinstance(n, int) or n <= 0:
+            raise ValueError("The number of trials of the Binomial distirbution must be a positive integer.")
+        self.n = n
+        self.prob = prob
+
+    def sample(self, t=None, ind=None):
+        return ciw.rng.binomial(n=self.n, p=self.prob)
+
+    def __repr__(self):
+        return f'Binomial: {self.n}, {self.prob}'
