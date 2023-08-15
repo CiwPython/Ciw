@@ -13,3 +13,10 @@ def SIRO(individuals):
 	Returns a random individual from the queue
 	"""
 	return random_choice(individuals)
+
+def LIFO(individuals):
+	"""
+	LIFO: Last in first out / Last come first served
+	Returns the individual who joined the queue most recently
+	"""
+	return individuals[-1]
