@@ -16,8 +16,9 @@ Contents:
    set_distributions.rst
    phasetype.rst
    time_dependent.rst
-   processor-sharing.rst
    priority.rst
+   service_disciplines.rst
+   processor-sharing.rst
    batching.rst
    baulking.rst
    reneging.rst
