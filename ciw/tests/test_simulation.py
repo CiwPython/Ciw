@@ -1060,8 +1060,26 @@ class TestServiceDisciplines(unittest.TestCase):
         self.assertTrue(isinstance(N.service_centres[0].service_discipline, types.FunctionType))
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(9)
-        recs = sorted(Q.get_all_records(), key=lambda dr: dr.arrival_date)
+        recs = sorted(Q.get_all_records(), key=lambda dr: dr.service_start_date)
+        self.assertEqual([r.id_number for r in recs], [1, 2, 3, 4, 5])
         self.assertEqual([r.arrival_date for r in recs], [1.0, 2.0, 3.0, 4.0, 5.0])
         self.assertEqual([r.service_time for r in recs], [1.5, 1.5, 1.5, 1.5, 1.5])
         self.assertEqual([r.service_end_date for r in recs], [2.5, 4.0, 5.5, 7.0, 8.5])
+
+    def test_service_in_random_order(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(1)],
+            service_distributions=[ciw.dists.Deterministic(2.5)],
+            service_disciplines=[ciw.disciplines.SIRO],
+            number_of_servers=[1]
+        )
+        self.assertTrue(isinstance(N.service_centres[0].service_discipline, types.FunctionType))
+        ciw.seed(1)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(14)
+        recs = sorted(Q.get_all_records(), key=lambda dr: dr.service_start_date)
+        self.assertEqual([r.id_number for r in recs], [1, 2, 5, 4, 8])
+        self.assertEqual([r.arrival_date for r in recs], [1.0, 2.0, 5.0, 4.0, 8.0])
+        self.assertEqual([r.service_time for r in recs], [2.5, 2.5, 2.5, 2.5, 2.5])
+        self.assertEqual([r.service_end_date for r in recs], [3.5, 6.0, 8.5, 11.0, 13.5])
 
