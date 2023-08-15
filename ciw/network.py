@@ -15,7 +15,8 @@ class ServiceCentre(object):
                  schedule_preempt=False,
                  priority_preempt=False,
                  ps_threshold=1,
-                 server_priority_function=None):
+                 server_priority_function=None,
+                 service_discipline=None):
         """
         Initialises the ServiceCentre object.
         """
@@ -27,6 +28,7 @@ class ServiceCentre(object):
         self.priority_preempt = priority_preempt
         self.ps_threshold = ps_threshold
         self.server_priority_function = server_priority_function
+        self.service_discipline = service_discipline
         self.class_change_time = False
 
 class CustomerClass(object):

@@ -49,6 +49,7 @@ def create_network(arrival_distributions=None,
                    server_priority_functions=None,
                    reneging_time_distributions=None,
                    reneging_destinations=None,
+                   service_disciplines=None,
 ):
     """
     Takes in kwargs, creates dictionary.
@@ -84,6 +85,8 @@ def create_network(arrival_distributions=None,
         params['reneging_time_distributions'] = reneging_time_distributions
     if reneging_destinations is not None:
         params['reneging_destinations'] = reneging_destinations
+    if service_disciplines is not None:
+        params['service_disciplines'] = service_disciplines
 
     return create_network_from_dictionary(params)
 
@@ -192,7 +195,8 @@ def create_network_from_dictionary(params_input):
             preempts[nd],
             preempt_priorities[nd],
             params['ps_thresholds'][nd],
-            params['server_priority_functions'][nd]))
+            params['server_priority_functions'][nd],
+            params['service_disciplines'][nd]))
     for clss in range(number_of_classes):
         if all(isinstance(f, types.FunctionType) for f in params['routing']):
             classes.append(CustomerClass(
@@ -285,6 +289,8 @@ def fill_out_dictionary(params_input):
         'reneging_destinations': {'Class ' + str(i): [
             -1 for _ in range(len(params['number_of_servers']))]
             for i in range(len(params['arrival_distributions']))},
+        'service_disciplines': [ciw.disciplines.FIFO for _ in range(
+            len(params['number_of_servers']))]
         }
 
     for a in default_dict:
@@ -361,7 +367,8 @@ def validify_dictionary(params):
             len(row) for row in [obs for obs in params['routing'].values()][0]] + [
             len(params['number_of_servers'])] + [
             len(params['server_priority_functions'])] + [
-            len(params['queue_capacities'])]
+            len(params['queue_capacities'])] + [
+            len(params['service_disciplines'])]
     if len(set(num_nodes_count)) != 1:
         raise ValueError('Ensure consistant number of nodes is used throughout.')
     if not all(isinstance(f, types.FunctionType) for f in params['routing']):

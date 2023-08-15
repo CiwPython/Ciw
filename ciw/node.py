@@ -23,6 +23,7 @@ class Node(object):
         self.simulation = simulation
         node = self.simulation.network.service_centres[id_ - 1]
         self.server_priority_function = node.server_priority_function
+        self.service_discipline = node.service_discipline
         if node.schedule:
             raw_schedule = node.schedule
             self.cyclelength = self.increment_time(0, raw_schedule[-1][1])
@@ -183,18 +184,17 @@ class Node(object):
             if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(srvr)
             else:
-                for ind in self.all_individuals:
-                    if not ind.server:
-                        self.attach_server(srvr, ind)
-                        ind.service_start_date = self.get_now()
-                        if ind.service_time is False: 
-                            ind.service_time = self.get_service_time(ind)
-                        else:
-                            self.give_service_time_after_preemption(ind)
-                        ind.service_end_date = self.increment_time(
-                            ind.service_start_date, ind.service_time)
-                        srvr.next_end_service_date = ind.service_end_date
-                        break
+                ind = self.choose_next_customer()
+                if ind is not None:
+                    self.attach_server(srvr, ind)
+                    ind.service_start_date = self.get_now()
+                    if ind.service_time is False: 
+                        ind.service_time = self.get_service_time(ind)
+                    else:
+                        self.give_service_time_after_preemption(ind)
+                    ind.service_end_date = self.increment_time(
+                        ind.service_start_date, ind.service_time)
+                    srvr.next_end_service_date = ind.service_end_date
 
     def begin_service_if_possible_release(self, next_individual):
         """
@@ -211,18 +211,17 @@ class Node(object):
             if self.number_interrupted_individuals > 0:
                 self.begin_interrupted_individuals_service(srvr)
             else:
-                for ind in self.all_individuals:
-                    if not ind.server:
-                        self.attach_server(srvr, ind)
-                        ind.service_start_date = self.get_now()
-                        if ind.service_time is False: 
-                            ind.service_time = self.get_service_time(ind)
-                        else:
-                            self.give_service_time_after_preemption(ind)
-                        ind.service_end_date = self.increment_time(
-                            ind.service_start_date, ind.service_time)
-                        srvr.next_end_service_date = ind.service_end_date
-                        break
+                ind = self.choose_next_customer()
+                if ind is not None:
+                    self.attach_server(srvr, ind)
+                    ind.service_start_date = self.get_now()
+                    if ind.service_time is False: 
+                        ind.service_time = self.get_service_time(ind)
+                    else:
+                        self.give_service_time_after_preemption(ind)
+                    ind.service_end_date = self.increment_time(
+                        ind.service_start_date, ind.service_time)
+                    srvr.next_end_service_date = ind.service_end_date
 
     def block_individual(self, individual, next_node):
         """
@@ -323,6 +322,15 @@ class Node(object):
         if self.dynamic_classes is True:
             return self.next_event_date == self.next_class_change_date
         return False
+
+    def choose_next_customer(self):
+        """
+        Chooses which customer will be next to be served.
+        """
+        for priority_individuals in self.individuals:
+            waiting_individuals = [ind for ind in priority_individuals if not ind.server]
+            if len(waiting_individuals) > 0:
+                return self.service_discipline(waiting_individuals)
 
     def create_starting_servers(self):
         """

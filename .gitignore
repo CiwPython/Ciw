@@ -8,4 +8,5 @@
 dist/
 *.hypothesis/*
 *ciw/.hypothesis*
+*ciw/disciplines/.hypothesis*
 env/
