@@ -873,12 +873,14 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params_dict))
         Q.simulate_until_max_time(51)
         recs = Q.get_all_records()
-        self.assertEqual(Q.baulked_dict, {1:{0:[20.0, 25.0, 35.0, 40.0, 45.0]}})
-        self.assertEqual([r.id_number for r in recs], [1, 2])
-        self.assertEqual([r.arrival_date for r in recs], [5.0, 10.0])
-        self.assertEqual([r.waiting_time for r in recs], [0.0, 16.0])
-        self.assertEqual([r.service_start_date for r in recs], [5.0, 26.0])
-        self.assertEqual([r.service_end_date for r in recs], [26.0, 47.0])
+        completed_recs = [r for r in recs if r.record_type=='service']
+        baulk_recs = [r for r in recs if r.record_type=='baulk']
+        self.assertEqual([r.arrival_date for r in baulk_recs], [20.0, 25.0, 35.0, 40.0, 45.0])
+        self.assertEqual([r.id_number for r in completed_recs], [1, 2])
+        self.assertEqual([r.arrival_date for r in completed_recs], [5.0, 10.0])
+        self.assertEqual([r.waiting_time for r in completed_recs], [0.0, 16.0])
+        self.assertEqual([r.service_start_date for r in completed_recs], [5.0, 26.0])
+        self.assertEqual([r.service_end_date for r in completed_recs], [26.0, 47.0])
 
         params_dict = {
             'arrival_distributions': [ciw.dists.Deterministic(5.0),
@@ -893,17 +895,21 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params_dict))
         Q.simulate_until_max_time(51)
         recs = Q.get_all_records()
-        self.assertEqual(Q.baulked_dict,
-            {1:{0:[20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]}, 2:{0:[]}})
-        self.assertEqual(sorted([r.id_number for r in recs]),
+        completed_recs = [r for r in recs if r.record_type=='service']
+        baulk_recs = [r for r in recs if r.record_type=='baulk']
+        self.assertEqual(
+            [r.arrival_date for r in baulk_recs],
+            [20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
+        )
+        self.assertEqual(sorted([r.id_number for r in completed_recs]),
             [1, 2, 5, 11])
-        self.assertEqual(sorted([r.arrival_date for r in recs]),
+        self.assertEqual(sorted([r.arrival_date for r in completed_recs]),
             [5.0, 10.0, 23.0, 46.0])
-        self.assertEqual(sorted([r.waiting_time for r in recs]),
+        self.assertEqual(sorted([r.waiting_time for r in completed_recs]),
             [0.0, 0.0, 0.0, 16.0])
-        self.assertEqual(sorted([r.service_start_date for r in recs]),
+        self.assertEqual(sorted([r.service_start_date for r in completed_recs]),
             [5.0, 23.0, 26.0, 46.0])
-        self.assertEqual(sorted([r.service_end_date for r in recs]),
+        self.assertEqual(sorted([r.service_end_date for r in completed_recs]),
             [24.5, 26.0, 47.0, 47.5])
 
     def test_prioritys_with_classchanges(self):

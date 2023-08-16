@@ -23,9 +23,6 @@ class ArrivalNode(object):
         self.rejection_dict = {nd + 1: {clss:[] for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
-        self.baulked_dict = {nd + 1: {clss:[] for clss in range(
-            self.simulation.network.number_of_classes)}
-            for nd in range(self.simulation.network.number_of_nodes)}
 
     def initialise(self):
         self.initialise_event_dates_dict()
@@ -48,7 +45,8 @@ class ArrivalNode(object):
             rnd_num = random()
             if rnd_num < next_node.baulking_functions[self.next_class](
                 next_node.number_of_individuals):
-                self.record_baulk(next_node)
+                self.record_baulk(next_node, next_individual)
+                self.send_individual(self.simulation.nodes[-1], next_individual)
             else:
                 self.send_individual(next_node, next_individual)
 
@@ -129,11 +127,11 @@ class ArrivalNode(object):
             return batch
         raise ValueError('Batch sizes must be positive integers.')
 
-    def record_baulk(self, next_node):
+    def record_baulk(self, next_node, individual):
         """
         Adds an individual to the baulked dictionary.
         """
-        self.baulked_dict[next_node.id_number][self.next_class].append(self.next_event_date)
+        next_node.write_baulking_record(individual)
 
     def record_rejection(self, next_node):
         """

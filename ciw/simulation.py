@@ -57,7 +57,6 @@ class Simulation(object):
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
         self.rejection_dict = self.nodes[0].rejection_dict
-        self.baulked_dict = self.nodes[0].baulked_dict
         self.unchecked_blockage = False
 
     def __repr__(self):

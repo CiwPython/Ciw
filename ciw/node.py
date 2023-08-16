@@ -769,6 +769,31 @@ class Node(object):
             record_type='renege')
         individual.data_records.append(record)
 
+
+    def write_baulking_record(self, individual):
+        """
+        Write a data record for an individual baulks.
+        """
+        record = DataRecord(
+            id_number=individual.id_number,
+            customer_class=individual.previous_class,
+            original_customer_class=individual.original_class,
+            node=self.id_number,
+            arrival_date=self.get_now(),
+            waiting_time=nan,
+            service_start_date=nan,
+            service_time=nan,
+            service_end_date=nan,
+            time_blocked=nan,
+            exit_date=self.get_now(),
+            destination=nan,
+            queue_size_at_arrival=self.number_of_individuals,
+            queue_size_at_departure=nan,
+            server_id=nan,
+            record_type='baulk')
+        individual.data_records.append(record)
+
+
     def reset_individual_attributes(self, individual):
         """
         Resets the attributes of an individual
