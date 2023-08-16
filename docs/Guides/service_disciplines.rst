@@ -16,16 +16,19 @@ As an example, say we have a three node network, and we want to use FIFO discipl
 
 	>>> import ciw
 	>>> N = ciw.create_network(
-	...      arrival_distributions=[ciw.dists.Exponential(rate=5),
-	...                             ciw.dists.Exponential(rate=5),
-	...                             ciw.dists.Exponential(rate=5)],
-	...      service_distributions=[ciw.dists.Exponential(rate=10),
-	...                             ciw.dists.Exponential(rate=10),
-	...                             ciw.dists.Exponential(rate=10)],
-	...      service_disciplines=[ciw.disciplines.FIFO,
-	...                           ciw.disciplines.LIFO,
-	...                           ciw.disciplines.SIRO],
-	...      number_of_servers=[1, 1, 1]
+	...     arrival_distributions=[ciw.dists.Exponential(rate=5),
+	...                            ciw.dists.Exponential(rate=5),
+	...                            ciw.dists.Exponential(rate=5)],
+	...     service_distributions=[ciw.dists.Exponential(rate=10),
+	...                            ciw.dists.Exponential(rate=10),
+	...                            ciw.dists.Exponential(rate=10)],
+	...     service_disciplines=[ciw.disciplines.FIFO,
+	...                          ciw.disciplines.LIFO,
+	...                          ciw.disciplines.SIRO],
+	...     number_of_servers=[1, 1, 1],
+	...     routing=[[0.0, 0.5, 0.5],
+	...              [0.0, 0.0, 0.5],
+	...              [0.0, 0.0, 0.0]]
 	... )
 
 **Note:** When using priority classes, service disciplines come into effect *within* a given priority class, but all customers of a higher priority class will be served before any customer of a lower priority service class, whatever service discipline is chosen.
