@@ -123,15 +123,19 @@ class TestSimulation(unittest.TestCase):
         ciw.seed(2)
         Q1 = ciw.Simulation(N)
         Q1.simulate_until_max_customers(10, method='Finish')
-        self.assertEqual(Q1.nodes[-1].number_of_individuals, 10)
-        self.assertEqual(len(Q1.nodes[-1].all_individuals), 10)
+        self.assertEqual(Q1.nodes[-1].number_of_completed_individuals, 10)
+        recs = Q1.get_all_records()
+        completed_records = [r for r in recs if r.record_type=='service']
+        self.assertEqual(len(completed_records), 10)
 
         # Test 'Finish' method
         ciw.seed(2)
         Q2 = ciw.Simulation(N)
         Q2.simulate_until_max_customers(10)
-        self.assertEqual(Q2.nodes[-1].number_of_individuals, 10)
-        self.assertEqual(len(Q2.nodes[-1].all_individuals), 10)
+        self.assertEqual(Q2.nodes[-1].number_of_completed_individuals, 10)
+        recs = Q2.get_all_records()
+        completed_records = [r for r in recs if r.record_type=='service']
+        self.assertEqual(len(completed_records), 10)
 
         next_active_node = Q2.find_next_active_node()
         end_time_finish = next_active_node.next_event_date
@@ -142,11 +146,10 @@ class TestSimulation(unittest.TestCase):
         Q3.simulate_until_max_customers(10, method='Arrive')
         self.assertEqual(Q3.nodes[0].number_of_individuals, 10)
         all_inds = sum([len(nd.all_individuals) for nd in Q3.nodes[1:]])
-        number_of_losses = sum(
-            [len(Q3.rejection_dict[nd][cls]) for nd in
-            range(1, Q3.network.number_of_nodes + 1) for cls in
-            range(Q3.network.number_of_classes)])
-        self.assertEqual(all_inds + number_of_losses, 10)
+        recs = Q3.get_all_records()
+        rejected_records = [r for r in recs if r.record_type=='rejection']
+        number_of_losses = len(rejected_records)
+        self.assertEqual(all_inds, 10)
         self.assertEqual(number_of_losses, 5)
 
         next_active_node = Q3.find_next_active_node()
@@ -158,7 +161,10 @@ class TestSimulation(unittest.TestCase):
         Q4.simulate_until_max_customers(10, method='Accept')
         self.assertEqual(Q4.nodes[0].number_accepted_individuals, 10)
         all_inds = sum([len(nd.all_individuals) for nd in Q4.nodes[1:]])
-        self.assertEqual(all_inds, 10)
+        recs = Q4.get_all_records()
+        compleded_services = len([r for r in recs if r.record_type=='service'])
+        still_in_node = len(Q4.nodes[1].all_individuals)
+        self.assertEqual(compleded_services + still_in_node, 10)
 
         next_active_node = Q4.find_next_active_node()
         end_time_accept = next_active_node.next_event_date
@@ -873,12 +879,14 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params_dict))
         Q.simulate_until_max_time(51)
         recs = Q.get_all_records()
-        self.assertEqual(Q.baulked_dict, {1:{0:[20.0, 25.0, 35.0, 40.0, 45.0]}})
-        self.assertEqual([r.id_number for r in recs], [1, 2])
-        self.assertEqual([r.arrival_date for r in recs], [5.0, 10.0])
-        self.assertEqual([r.waiting_time for r in recs], [0.0, 16.0])
-        self.assertEqual([r.service_start_date for r in recs], [5.0, 26.0])
-        self.assertEqual([r.service_end_date for r in recs], [26.0, 47.0])
+        completed_recs = [r for r in recs if r.record_type=='service']
+        baulk_recs = [r for r in recs if r.record_type=='baulk']
+        self.assertEqual([r.arrival_date for r in baulk_recs], [20.0, 25.0, 35.0, 40.0, 45.0])
+        self.assertEqual([r.id_number for r in completed_recs], [1, 2])
+        self.assertEqual([r.arrival_date for r in completed_recs], [5.0, 10.0])
+        self.assertEqual([r.waiting_time for r in completed_recs], [0.0, 16.0])
+        self.assertEqual([r.service_start_date for r in completed_recs], [5.0, 26.0])
+        self.assertEqual([r.service_end_date for r in completed_recs], [26.0, 47.0])
 
         params_dict = {
             'arrival_distributions': [ciw.dists.Deterministic(5.0),
@@ -893,17 +901,21 @@ class TestSimulation(unittest.TestCase):
         Q = ciw.Simulation(ciw.create_network(**params_dict))
         Q.simulate_until_max_time(51)
         recs = Q.get_all_records()
-        self.assertEqual(Q.baulked_dict,
-            {1:{0:[20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]}, 2:{0:[]}})
-        self.assertEqual(sorted([r.id_number for r in recs]),
+        completed_recs = [r for r in recs if r.record_type=='service']
+        baulk_recs = [r for r in recs if r.record_type=='baulk']
+        self.assertEqual(
+            [r.arrival_date for r in baulk_recs],
+            [20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
+        )
+        self.assertEqual(sorted([r.id_number for r in completed_recs]),
             [1, 2, 5, 11])
-        self.assertEqual(sorted([r.arrival_date for r in recs]),
+        self.assertEqual(sorted([r.arrival_date for r in completed_recs]),
             [5.0, 10.0, 23.0, 46.0])
-        self.assertEqual(sorted([r.waiting_time for r in recs]),
+        self.assertEqual(sorted([r.waiting_time for r in completed_recs]),
             [0.0, 0.0, 0.0, 16.0])
-        self.assertEqual(sorted([r.service_start_date for r in recs]),
+        self.assertEqual(sorted([r.service_start_date for r in completed_recs]),
             [5.0, 23.0, 26.0, 46.0])
-        self.assertEqual(sorted([r.service_end_date for r in recs]),
+        self.assertEqual(sorted([r.service_end_date for r in completed_recs]),
             [24.5, 26.0, 47.0, 47.5])
 
     def test_prioritys_with_classchanges(self):

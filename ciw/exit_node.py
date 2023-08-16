@@ -10,6 +10,7 @@ class ExitNode(object):
         """
         self.all_individuals = []
         self.number_of_individuals = 0
+        self.number_of_completed_individuals = 0
         self.id_number = -1
         self.next_event_date = float("Inf")
         self.node_capacity = float("Inf")
@@ -20,12 +21,14 @@ class ExitNode(object):
         """
         return 'Exit Node'
 
-    def accept(self, next_individual):
+    def accept(self, next_individual, completed=True):
         """
         Adds individual to the list of completed individuals.
         """
         self.all_individuals.append(next_individual)
         self.number_of_individuals += 1
+        if completed:
+            self.number_of_completed_individuals += 1
 
     def update_next_event_date(self):
         """

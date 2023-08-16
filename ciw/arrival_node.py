@@ -16,14 +16,7 @@ class ArrivalNode(object):
         self.number_of_individuals_per_class = [0] * self.simulation.network.number_of_classes
         self.number_accepted_individuals = 0
         self.number_accepted_individuals_per_class = [0] * self.simulation.network.number_of_classes
-
         self.event_dates_dict = {nd + 1: {clss: False for clss in range(
-            self.simulation.network.number_of_classes)}
-            for nd in range(self.simulation.network.number_of_nodes)}
-        self.rejection_dict = {nd + 1: {clss:[] for clss in range(
-            self.simulation.network.number_of_classes)}
-            for nd in range(self.simulation.network.number_of_nodes)}
-        self.baulked_dict = {nd + 1: {clss:[] for clss in range(
             self.simulation.network.number_of_classes)}
             for nd in range(self.simulation.network.number_of_nodes)}
 
@@ -48,7 +41,8 @@ class ArrivalNode(object):
             rnd_num = random()
             if rnd_num < next_node.baulking_functions[self.next_class](
                 next_node.number_of_individuals):
-                self.record_baulk(next_node)
+                self.record_baulk(next_node, next_individual)
+                self.simulation.nodes[-1].accept(next_individual, completed=False)
             else:
                 self.send_individual(next_node, next_individual)
 
@@ -129,17 +123,17 @@ class ArrivalNode(object):
             return batch
         raise ValueError('Batch sizes must be positive integers.')
 
-    def record_baulk(self, next_node):
+    def record_baulk(self, next_node, individual):
         """
         Adds an individual to the baulked dictionary.
         """
-        self.baulked_dict[next_node.id_number][self.next_class].append(self.next_event_date)
+        next_node.write_baulking_or_rejection_record(individual, record_type='baulk')
 
-    def record_rejection(self, next_node):
+    def record_rejection(self, next_node, individual):
         """
         Adds an individual to the rejection dictionary.
         """
-        self.rejection_dict[next_node.id_number][self.next_class].append(self.next_event_date)
+        next_node.write_baulking_or_rejection_record(individual, record_type='rejection')
 
     def release_individual(self, next_node, next_individual):
         """
@@ -147,7 +141,8 @@ class ArrivalNode(object):
         or sends that individual to baulk or not.
         """
         if next_node.number_of_individuals >= next_node.node_capacity:
-            self.record_rejection(next_node)
+            self.record_rejection(next_node, next_individual)
+            self.simulation.nodes[-1].accept(next_individual, completed=False)
         else:
             self.decide_baulk(next_node, next_individual)
 

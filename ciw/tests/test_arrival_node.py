@@ -166,7 +166,7 @@ class TestArrivalNode(unittest.TestCase):
             'NoArrivals')
         self.assertEqual(AN.inter_arrival(1, 0), float('Inf'))
 
-    def test_rejection_dict(self):
+    def test_rejection(self):
         params = {'arrival_distributions':[ciw.dists.Deterministic(3.0),
                                            ciw.dists.Deterministic(4.0)],
                   'service_distributions':[ciw.dists.Deterministic(10.0),
@@ -175,10 +175,14 @@ class TestArrivalNode(unittest.TestCase):
                   'number_of_servers':[1, 1],
                   'queue_capacities':[1, 1]}
         Q = ciw.Simulation(ciw.create_network(**params))
-        self.assertEqual(Q.rejection_dict, {1: {0: []}, 2: {0:[]}})
         Q.simulate_until_max_time(20)
-        self.assertEqual(Q.rejection_dict,
-            {1: {0: [9.0, 12.0, 18.0]}, 2: {0: [12.0, 16.0]}})
+        recs = Q.get_all_records()
+        rejected_records = [r for r in recs if r.record_type=='rejection']
+        self.assertEqual(
+            [r.arrival_date for r in rejected_records],
+            [9.0, 12.0, 12.0, 16.0, 18.0]
+        )
+        self.assertEqual([r.node for r in rejected_records], [1, 1, 2, 2, 1])
 
     def test_send_individual(self):
         params = {'arrival_distributions':[ciw.dists.Exponential(3.0)],
@@ -205,13 +209,14 @@ class TestArrivalNode(unittest.TestCase):
                   'number_of_servers':[1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         AN = Q.nodes[0]
-        AN.next_event_date = 3.33
-        self.assertEqual(AN.rejection_dict, {1: {0: []}})
-        AN.record_rejection(Q.nodes[1])
-        self.assertEqual(AN.rejection_dict, {1: {0: [3.33]}})
-        AN.next_event_date = 4.44
-        AN.record_rejection(Q.nodes[1])
-        self.assertEqual(AN.rejection_dict, {1: {0: [3.33, 4.44]}})
+        Q.current_time = 3.33
+        ind1 = ciw.Individual(1)
+        ind2 = ciw.Individual(2)
+        AN.record_rejection(Q.nodes[1], ind1)
+        self.assertEqual(ind1.data_records[0].arrival_date, 3.33)
+        Q.current_time = 4.44
+        AN.record_rejection(Q.nodes[1], ind2)
+        self.assertEqual(ind2.data_records[0].arrival_date, 4.44)
 
     def test_update_next_event_date_passes(self):
         params = {'arrival_distributions':[ciw.dists.Exponential(3.0)],

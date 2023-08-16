@@ -56,8 +56,6 @@ class Simulation(object):
         self.statetracker.initialise(self)
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
-        self.rejection_dict = self.nodes[0].rejection_dict
-        self.baulked_dict = self.nodes[0].baulked_dict
         self.unchecked_blockage = False
 
     def __repr__(self):
@@ -260,7 +258,7 @@ class Simulation(object):
             self.progress_bar = tqdm.tqdm(total=max_customers)
 
         if method == 'Finish':
-            check = lambda : self.nodes[-1].number_of_individuals
+            check = lambda : self.nodes[-1].number_of_completed_individuals
         elif method == 'Arrive':
             check = lambda : self.nodes[0].number_of_individuals
         elif method == 'Accept':
