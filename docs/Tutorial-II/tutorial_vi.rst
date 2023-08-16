@@ -52,17 +52,16 @@ To illustrate, let's simulate for 20 minutes::
 
 Here we see that in 20 minutes the maximum time a stool was blocked at a workstation for was 1.4 seconds.
 
-We can get information about the stools that fell off the conveyor-belt using the Simulation's :code:`rejection_dict` attribute.
-This is a dictionary, that maps node numbers to dictionaries.
-These dictionaries map customer class numbers to a list of dates at which customers where rejected::
+The stools that fell of the conveyor-belt are also recorded, these are rejected customers, and so we can look at the data records of type :code:`"rejection"`.::
 
-    >>> Q.rejection_dict
-    {1: {0: [1020.0, 1184.0]}, 2: {0: []}, 3: {0: []}}
+    >>> rejected_stools = [r for r in recs if r.record_type=="rejection"]
+    >>> [r.arrival_date for r in rejected_stools]
+    [1020.0, 1184.0]
 
 In this run 2 stools were rejected (fell to the floor as there was no room on the conveyor-belt) at Node 1, at times 1020 and 1184.
 To get the number of stools rejected, take the length of this list::
 
-    >>> len(Q.rejection_dict[1][0])
+    >>> len(rejected_stools)
     2
 
 Now we'll run 8 trials, and get the average number of rejections in an hour.
@@ -74,7 +73,8 @@ A cool-down will be unnecessary as we are recording rejections, which happen at 
     ...     ciw.seed(trial)
     ...     Q = ciw.Simulation(N)
     ...     Q.simulate_until_max_time(4200)
-    ...     num_broken = len([r for r in Q.rejection_dict[1][0] if r > 600])
+    ...     recs = Q.get_all_records()
+    ...     num_broken = len([r for r in recs if r.record_type=="rejection" if r.arrival_date > 600])
     ...     broken_stools.append(num_broken)
 
     >>> broken_stools
@@ -109,7 +109,8 @@ First, under the new system how many broken stools per hour do we expect?::
     ...     ciw.seed(trial)
     ...     Q = ciw.Simulation(N)
     ...     Q.simulate_until_max_time(4200)
-    ...     num_broken = len([r for r in Q.rejection_dict[1][0] if r > 600])
+    ...     recs = Q.get_all_records()
+    ...     num_broken = len([r for r in recs if r.record_type=="rejection" if r.arrival_date > 600])
     ...     broken_stools.append(num_broken)
 
     >>> sum(broken_stools) / len(broken_stools)

@@ -27,7 +27,7 @@ Now we run the system for 100 time units, and see that we get 494 services at th
 	>>> Q = ciw.Simulation(N)
 	>>> Q.simulate_until_max_time(100)
 
-	>>> service_nodes = [r.node for r in Q.get_all_records()]
+	>>> service_nodes = [r.node for r in Q.get_all_records() if r.record_type=="service"]
 	>>> Counter(service_nodes)
 	Counter({1: 494})
 
@@ -66,6 +66,6 @@ We'll see nearly that the same amount of services take place at Node 1, however 
 	>>> Q = ciw.Simulation(N, arrival_node_class=CustomArrivalNode)
 	>>> Q.simulate_until_max_time(100)
 
-	>>> service_nodes = [r.node for r in Q.get_all_records()]
+	>>> service_nodes = [r.node for r in Q.get_all_records() if r.record_type=="service"]
 	>>> Counter(service_nodes)
 	Counter({1: 503, 2: 84})
