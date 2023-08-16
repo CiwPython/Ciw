@@ -770,7 +770,7 @@ class Node(object):
         individual.data_records.append(record)
 
 
-    def write_baulking_record(self, individual):
+    def write_baulking_or_rejection_record(self, individual, record_type):
         """
         Write a data record for an individual baulks.
         """
@@ -790,7 +790,7 @@ class Node(object):
             queue_size_at_arrival=self.number_of_individuals,
             queue_size_at_departure=nan,
             server_id=nan,
-            record_type='baulk')
+            record_type=record_type)
         individual.data_records.append(record)
 
 
