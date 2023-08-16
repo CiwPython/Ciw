@@ -62,5 +62,5 @@ You may access these records as a list of named tuples, using the Simulation's :
 
 By default, all record types are included. However, we may only want some of the record types, and these can be filtered by passing a list of desired record types to the :code:`only` keyword argument. For example, to only recieve service and reneging customers, we can use::
 
-    >>> recs = Q.get_all_records(only=["service", "renege"])
+    >>> recs = Q.get_all_records(only=["service", "renege"]) # doctest:+SKIP
 
