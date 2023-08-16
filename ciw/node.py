@@ -696,21 +696,7 @@ class Node(object):
 
     def write_individual_record(self, individual):
         """
-        Write a data record for an individual:
-            - Arrival date
-            - Wait
-            - Service start date
-            - Service time
-            - Service end date
-            - Blocked
-            - Exit date
-            - Node
-            - Destination
-            - Previous class
-            - Queue size at arrival
-            - Queue size at departure
-            - Server id
-            - Record type
+        Write a data record for an individual when leaving a node.
         """
         if isinf(self.c):
             server_id = False
@@ -718,97 +704,69 @@ class Node(object):
             server_id = individual.server.id_number
         
         record = DataRecord(
-            individual.id_number,
-            individual.previous_class,
-            individual.original_class,
-            self.id_number,
-            individual.arrival_date,
-            individual.service_start_date - individual.arrival_date,
-            individual.service_start_date,
-            individual.service_end_date - individual.service_start_date,
-            individual.service_end_date,
-            individual.exit_date - individual.service_end_date,
-            individual.exit_date,
-            individual.destination,
-            individual.queue_size_at_arrival,
-            individual.queue_size_at_departure,
-            server_id,
-            'service')
+            id_number=individual.id_number,
+            customer_class=individual.previous_class,
+            original_customer_class=individual.original_class,
+            node=self.id_number,
+            arrival_date=individual.arrival_date,
+            waiting_time=individual.service_start_date - individual.arrival_date,
+            service_start_date=individual.service_start_date,
+            service_time=individual.service_end_date - individual.service_start_date,
+            service_end_date=individual.service_end_date,
+            time_blocked=individual.exit_date - individual.service_end_date,
+            exit_date=individual.exit_date,
+            destination=individual.destination,
+            queue_size_at_arrival=individual.queue_size_at_arrival,
+            queue_size_at_departure=individual.queue_size_at_departure,
+            server_id=server_id,
+            record_type='service')
         individual.data_records.append(record)
 
     def write_interruption_record(self, individual):
         """
-        Write a data record for an individual:
-            - Arrival date
-            - Wait
-            - Service start date
-            - Service time
-            - Service end date
-            - Blocked
-            - Exit date
-            - Node
-            - Destination
-            - Previous class
-            - Queue size at arrival
-            - Queue size at departure
-            - Server id
-            - Record type
+        Write a data record for an individual when being interrupted.
         """
         record = DataRecord(
-            individual.id_number,
-            individual.previous_class,
-            individual.original_class,
-            self.id_number,
-            individual.arrival_date,
-            individual.service_start_date - individual.arrival_date,
-            individual.service_start_date,
-            individual.original_service_time,
-            nan,
-            nan,
-            self.get_now(),
-            nan,
-            individual.queue_size_at_arrival,
-            individual.queue_size_at_departure,
-            individual.server.id_number,
-            'interrupted service')
+            id_number=individual.id_number,
+            customer_class=individual.previous_class,
+            original_customer_class=individual.original_class,
+            node=self.id_number,
+            arrival_date=individual.arrival_date,
+            waiting_time=individual.service_start_date - individual.arrival_date,
+            service_start_date=individual.service_start_date,
+            service_time=individual.original_service_time,
+            service_end_date=nan,
+            time_blocked=nan,
+            exit_date=self.get_now(),
+            destination=nan,
+            queue_size_at_arrival=individual.queue_size_at_arrival,
+            queue_size_at_departure=individual.queue_size_at_departure,
+            server_id=individual.server.id_number,
+            record_type='interrupted service')
         individual.data_records.append(record)
 
 
     def write_reneging_record(self, individual):
         """
-        Write a data record for an individual:
-            - Arrival date
-            - Wait
-            - Service start date
-            - Service time
-            - Service end date
-            - Blocked
-            - Exit date
-            - Node
-            - Destination
-            - Previous class
-            - Queue size at arrival
-            - Queue size at departure
-            - Server id
-            - Record type
+        Write a data record for an individual when reneging.
         """        
         record = DataRecord(
-            individual.id_number,
-            individual.previous_class,
-            individual.original_class,
-            self.id_number,
-            individual.arrival_date,
-            individual.exit_date - individual.arrival_date,
-            nan,
-            nan,
-            nan,
-            nan,
-            individual.exit_date,
-            individual.destination,
-            individual.queue_size_at_arrival,
-            individual.queue_size_at_departure,
-            nan,
-            'renege')
+            id_number=individual.id_number,
+            customer_class=individual.previous_class,
+            original_customer_class=individual.original_class,
+            node=self.id_number,
+            arrival_date=individual.arrival_date,
+            waiting_time=individual.exit_date - individual.arrival_date,
+            service_start_date=nan,
+            service_time=nan,
+            service_end_date=nan,
+            time_blocked=nan,
+            exit_date=individual.exit_date,
+            destination=individual.destination,
+            queue_size_at_arrival=individual.queue_size_at_arrival,
+            queue_size_at_departure=individual.queue_size_at_departure,
+            server_id=nan,
+            record_type='renege')
         individual.data_records.append(record)
 
     def reset_individual_attributes(self, individual):
