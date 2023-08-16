@@ -928,9 +928,7 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(31.5)
-        recs = Q.get_all_records()
-        reneging_recs = [r for r in recs if r.record_type == 'renege']
-
+        reneging_recs = Q.get_all_records(only=["renege"])
         self.assertEqual([r.id_number for r in reneging_recs], [2, 4])
         self.assertEqual([r.arrival_date for r in reneging_recs], [14, 28])
         self.assertEqual([r.exit_date for r in reneging_recs], [17, 31])
@@ -1408,8 +1406,8 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
-        recs = Q.get_all_records()
-        r1, r2 = [r for r in recs if r.record_type == "service"]
+        recs = Q.get_all_records(only=["service"])
+        r1, r2 = recs
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
         self.assertEqual(r1.service_end_date, 13)
@@ -1435,8 +1433,8 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
-        recs = Q.get_all_records()
-        r1, r2 = [r for r in recs if r.record_type == "service"]
+        recs = Q.get_all_records(only=["service"])
+        r1, r2 = recs
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
         self.assertEqual(r1.service_end_date, 13)
@@ -1462,8 +1460,8 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
-        recs = Q.get_all_records()
-        r1, r2 = [r for r in recs if r.record_type == "service"]
+        recs = Q.get_all_records(only=["service"])
+        r1, r2 = recs
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
         self.assertEqual(r1.service_end_date, 13)
@@ -1541,8 +1539,8 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
-        recs = Q.get_all_records()
-        r2, r1 = [r for r in recs if r.record_type == "service"]
+        recs = Q.get_all_records(only=["service"])
+        r2, r1 = recs
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
         self.assertEqual(r1.service_end_date, 13)
@@ -1568,8 +1566,8 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
-        recs = Q.get_all_records()
-        r2, r1 = [r for r in recs if r.record_type == "service"]
+        recs = Q.get_all_records(only="service")
+        r2, r1 = recs
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
         self.assertEqual(r1.service_end_date, 13)
@@ -1595,8 +1593,8 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
-        recs = Q.get_all_records()
-        r2, r1 = [r for r in recs if r.record_type == "service"]
+        recs = Q.get_all_records(only=["service"])
+        r2, r1 = recs
         self.assertEqual(r1.arrival_date, 3)
         self.assertEqual(r1.service_start_date, 3)
         self.assertEqual(r1.service_end_date, 13)

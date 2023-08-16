@@ -2,7 +2,6 @@ import unittest
 import ciw
 from decimal import Decimal
 
-
 class TestScheduling(unittest.TestCase):
     def test_change_shift_method(self):
         Q = ciw.Simulation(ciw.create_network_from_yml(
@@ -271,10 +270,10 @@ class TestScheduling(unittest.TestCase):
         self.assertTrue(Q.nodes[1].schedule_preempt)
 
         Q.simulate_until_max_time(27.5)
-        recs = Q.get_all_records()
+        recs = Q.get_all_records(only=["service"])
         self.assertEqual(len(Q.nodes[1].interrupted_individuals), 1)
         self.assertEqual(len(Q.nodes[1].all_individuals), 7)
-        self.assertEqual([r.service_time for r in recs if r.record_type=='service'], [0.5, 3.5])
+        self.assertEqual([r.service_time for r in recs], [0.5, 3.5])
         # 0.5 due to the individual beginning service at time 3, and first service
         # finishing at time 12.5 (total: 9.5 time units). Then there is only 0.5
         # units left and only the final part is counted here.
@@ -336,8 +335,8 @@ class TestScheduling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(40)
-        recs = Q.get_all_records()
-        r1 = [r for r in recs if r.record_type == "service"][0]
+        recs = Q.get_all_records(only=["service"])
+        r1 = recs[0]
         self.assertEqual(r1.arrival_date, 1)
         self.assertEqual(r1.service_start_date, 9)
         self.assertEqual(r1.service_end_date, 19)
@@ -352,8 +351,8 @@ class TestScheduling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(40)
-        recs = Q.get_all_records()
-        r1 = [r for r in recs if r.record_type == "service"][0]
+        recs = Q.get_all_records(only=["service"])
+        r1 = recs[0]
         self.assertEqual(r1.arrival_date, 1)
         self.assertEqual(r1.service_start_date, 9)
         self.assertEqual(r1.service_end_date, 15)
@@ -368,8 +367,8 @@ class TestScheduling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(40)
-        recs = Q.get_all_records()
-        r1 = [r for r in recs if r.record_type == "service"][0]
+        recs = Q.get_all_records(only=["service"])
+        r1 = recs[0]
         self.assertEqual(r1.arrival_date, 1)
         self.assertEqual(r1.service_start_date, 9)
         self.assertEqual(r1.service_end_date, 29)

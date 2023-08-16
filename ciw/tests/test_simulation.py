@@ -9,7 +9,6 @@ import csv
 from itertools import cycle
 import types
 
-
 class TestSimulation(unittest.TestCase):
     def test_repr_method(self):
         N1 = ciw.create_network_from_yml(
@@ -124,8 +123,7 @@ class TestSimulation(unittest.TestCase):
         Q1 = ciw.Simulation(N)
         Q1.simulate_until_max_customers(10, method='Finish')
         self.assertEqual(Q1.nodes[-1].number_of_completed_individuals, 10)
-        recs = Q1.get_all_records()
-        completed_records = [r for r in recs if r.record_type=='service']
+        completed_records = Q1.get_all_records(only=["service"])
         self.assertEqual(len(completed_records), 10)
 
         # Test 'Finish' method
@@ -133,8 +131,7 @@ class TestSimulation(unittest.TestCase):
         Q2 = ciw.Simulation(N)
         Q2.simulate_until_max_customers(10)
         self.assertEqual(Q2.nodes[-1].number_of_completed_individuals, 10)
-        recs = Q2.get_all_records()
-        completed_records = [r for r in recs if r.record_type=='service']
+        completed_records = Q2.get_all_records(only=["service"])
         self.assertEqual(len(completed_records), 10)
 
         next_active_node = Q2.find_next_active_node()
@@ -146,8 +143,7 @@ class TestSimulation(unittest.TestCase):
         Q3.simulate_until_max_customers(10, method='Arrive')
         self.assertEqual(Q3.nodes[0].number_of_individuals, 10)
         all_inds = sum([len(nd.all_individuals) for nd in Q3.nodes[1:]])
-        recs = Q3.get_all_records()
-        rejected_records = [r for r in recs if r.record_type=='rejection']
+        rejected_records = Q3.get_all_records(only=["rejection"])
         number_of_losses = len(rejected_records)
         self.assertEqual(all_inds, 10)
         self.assertEqual(number_of_losses, 5)
@@ -161,10 +157,9 @@ class TestSimulation(unittest.TestCase):
         Q4.simulate_until_max_customers(10, method='Accept')
         self.assertEqual(Q4.nodes[0].number_accepted_individuals, 10)
         all_inds = sum([len(nd.all_individuals) for nd in Q4.nodes[1:]])
-        recs = Q4.get_all_records()
-        compleded_services = len([r for r in recs if r.record_type=='service'])
+        completed_services = len(Q4.get_all_records(only=["service"]))
         still_in_node = len(Q4.nodes[1].all_individuals)
-        self.assertEqual(compleded_services + still_in_node, 10)
+        self.assertEqual(completed_services + still_in_node, 10)
 
         next_active_node = Q4.find_next_active_node()
         end_time_accept = next_active_node.next_event_date

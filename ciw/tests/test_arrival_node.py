@@ -176,13 +176,12 @@ class TestArrivalNode(unittest.TestCase):
                   'queue_capacities':[1, 1]}
         Q = ciw.Simulation(ciw.create_network(**params))
         Q.simulate_until_max_time(20)
-        recs = Q.get_all_records()
-        rejected_records = [r for r in recs if r.record_type=='rejection']
+        recs = Q.get_all_records(only=["rejection"])
         self.assertEqual(
-            [r.arrival_date for r in rejected_records],
+            [r.arrival_date for r in recs],
             [9.0, 12.0, 12.0, 16.0, 18.0]
         )
-        self.assertEqual([r.node for r in rejected_records], [1, 1, 2, 2, 1])
+        self.assertEqual([r.node for r in recs], [1, 1, 2, 2, 1])
 
     def test_send_individual(self):
         params = {'arrival_distributions':[ciw.dists.Exponential(3.0)],

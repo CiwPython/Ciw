@@ -133,14 +133,15 @@ class Simulation(object):
         return [individual for node in self.nodes[1:] for individual in
         node.all_individuals if len(individual.data_records) > 0]
 
-    def get_all_records(self):
+    def get_all_records(self, only=["service", "baulk", "rejection", "renege", "interrupted service"]):
         """
         Gets all data records from all individuals.
         """
         records = []
         for individual in self.get_all_individuals():
             for record in individual.data_records:
-                records.append(record)
+                if record.record_type in only:
+                    records.append(record)
         self.all_records = records
         return records
 
