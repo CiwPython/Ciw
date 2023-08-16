@@ -1098,3 +1098,26 @@ class TestServiceDisciplines(unittest.TestCase):
         self.assertEqual([r.arrival_date for r in recs], [1.0, 2.0, 4.0, 5.0, 7.0])
         self.assertEqual([round(r.service_time, 10) for r in recs], [1.6, 1.6, 1.6, 1.6, 1.6])
         self.assertEqual([round(r.service_end_date, 10) for r in recs], [2.6, 4.2, 5.8, 7.4, 9.0])
+
+    def test_mixed_service_disciplines(self):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(1), ciw.dists.Deterministic(0.7)],
+            service_distributions=[ciw.dists.Deterministic(2.1), ciw.dists.Deterministic(3)],
+            service_disciplines=[ciw.disciplines.FIFO, ciw.disciplines.LIFO],
+            routing=[[0.0, 1.0], [0.0, 0.0]],
+            number_of_servers=[1, 1]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(9.9)
+        recs = sorted(Q.get_all_records(), key=lambda dr: dr.service_start_date)
+        recs_n1 = [r for r in recs if r.node==1]
+        recs_n2 = [r for r in recs if r.node==2]
+
+        self.assertEqual([r.id_number for r in recs_n1], [2, 4, 7, 9])
+        self.assertEqual([round(r.arrival_date, 10) for r in recs_n1], [1.0, 2.0, 3.0, 4.0])
+        self.assertEqual([round(r.service_end_date, 10) for r in recs_n1], [3.1, 5.2, 7.3, 9.4])
+
+        self.assertEqual([r.id_number for r in recs_n2], [1, 8, 15])
+        self.assertEqual([round(r.arrival_date, 10) for r in recs_n2], [0.7, 3.5, 6.3])
+        self.assertEqual([round(r.service_end_date, 10) for r in recs_n2], [3.7, 6.7, 9.7])
+
