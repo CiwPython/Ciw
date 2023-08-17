@@ -2,6 +2,7 @@ class Individual(object):
     """
     Class for an individual.
     """
+
     def __init__(self, id_number, customer_class=0, priority_class=0, simulation=False):
         """
         Initialise an individual.
@@ -31,4 +32,4 @@ class Individual(object):
         """
         Represents an Individual instance as a string.
         """
-        return 'Individual %s' % self.id_number
+        return "Individual %s" % self.id_number

@@ -2,6 +2,7 @@ class Server(object):
     """
     A class to contain server information.
     """
+
     def __init__(self, node, id_number, start_date=0.0):
         """
         Initialise the server object.
@@ -16,7 +17,7 @@ class Server(object):
         self.busy_time = False
         self.total_time = False
         self.shift_end = False
-        self.next_end_service_date = float('Inf')
+        self.next_end_service_date = float("Inf")
 
     @property
     def utilisation(self):
@@ -26,5 +27,4 @@ class Server(object):
         """
         Represents the Server instance as a string.
         """
-        return 'Server %s at Node %s' % (self.id_number,
-            self.node.id_number)
+        return "Server %s at Node %s" % (self.id_number, self.node.id_number)

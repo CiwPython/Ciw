@@ -3,104 +3,114 @@ import ciw
 
 N_params = ciw.create_network(
     arrival_distributions={
-        "Class 0": [ciw.dists.Exponential(3.0),
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Exponential(4.0),
-                    ciw.dists.Exponential(1.0)],
-        "Class 1": [ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(3.0),
-                    ciw.dists.Exponential(6.0),
-                    ciw.dists.Exponential(4.0)],
-        "Class 2": [ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(1.0),
-                    ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(0.5)]},
+        "Class 0": [
+            ciw.dists.Exponential(3.0),
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Exponential(4.0),
+            ciw.dists.Exponential(1.0),
+        ],
+        "Class 1": [
+            ciw.dists.Exponential(2.0),
+            ciw.dists.Exponential(3.0),
+            ciw.dists.Exponential(6.0),
+            ciw.dists.Exponential(4.0),
+        ],
+        "Class 2": [
+            ciw.dists.Exponential(2.0),
+            ciw.dists.Exponential(1.0),
+            ciw.dists.Exponential(2.0),
+            ciw.dists.Exponential(0.5),
+        ],
+    },
     number_of_servers=[9, 10, 8, 8],
     queue_capacities=[20, float("Inf"), 30, float("Inf")],
     service_distributions={
-        "Class 0": [ciw.dists.Exponential(7.0),
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Gamma(0.4, 0.6),
-                    ciw.dists.Deterministic(0.5)],
-        "Class 1": [ciw.dists.Exponential(7.0),
-                    ciw.dists.Triangular(0.1, 0.8, 0.85),
-                    ciw.dists.Exponential(8.0),
-                    ciw.dists.Exponential(5.0)],
-        "Class 2": [ciw.dists.Deterministic(0.3),
-                    ciw.dists.Deterministic(0.2),
-                    ciw.dists.Exponential(8.0),
-                    ciw.dists.Exponential(9.0)]},
-    routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
-                         [0.2, 0.2, 0.0, 0.1],
-                         [0.0, 0.8, 0.1, 0.1],
-                         [0.4, 0.1, 0.1, 0.0]],
-             "Class 1": [[0.6, 0.0, 0.0, 0.2],
-                         [0.1, 0.1, 0.2, 0.2],
-                         [0.9, 0.0, 0.0, 0.0],
-                         [0.2, 0.1, 0.1, 0.1]],
-             "Class 2": [[0.0, 0.0, 0.4, 0.3],
-                         [0.1, 0.1, 0.1, 0.1],
-                         [0.1, 0.3, 0.2, 0.2],
-                         [0.0, 0.0, 0.0, 0.3]]}
+        "Class 0": [
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Gamma(0.4, 0.6),
+            ciw.dists.Deterministic(0.5),
+        ],
+        "Class 1": [
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Triangular(0.1, 0.8, 0.85),
+            ciw.dists.Exponential(8.0),
+            ciw.dists.Exponential(5.0),
+        ],
+        "Class 2": [
+            ciw.dists.Deterministic(0.3),
+            ciw.dists.Deterministic(0.2),
+            ciw.dists.Exponential(8.0),
+            ciw.dists.Exponential(9.0),
+        ],
+    },
+    routing={
+        "Class 0": [
+            [0.1, 0.2, 0.1, 0.4],
+            [0.2, 0.2, 0.0, 0.1],
+            [0.0, 0.8, 0.1, 0.1],
+            [0.4, 0.1, 0.1, 0.0],
+        ],
+        "Class 1": [
+            [0.6, 0.0, 0.0, 0.2],
+            [0.1, 0.1, 0.2, 0.2],
+            [0.9, 0.0, 0.0, 0.0],
+            [0.2, 0.1, 0.1, 0.1],
+        ],
+        "Class 2": [
+            [0.0, 0.0, 0.4, 0.3],
+            [0.1, 0.1, 0.1, 0.1],
+            [0.1, 0.3, 0.2, 0.2],
+            [0.0, 0.0, 0.0, 0.3],
+        ],
+    },
 )
 
 N_classchange = ciw.create_network(
     arrival_distributions={
-        "Class 0": [ciw.dists.Exponential(0.05),
-                    ciw.dists.Exponential(0.04)],
-        "Class 1": [ciw.dists.Exponential(0.04),
-                    ciw.dists.Exponential(0.06)]},
+        "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+    },
     number_of_servers=[4, 3],
     queue_capacities=[float("Inf"), 10],
     service_distributions={
-        "Class 0": [ciw.dists.Deterministic(5.0),
-                    ciw.dists.Deterministic(5.0)],
-        "Class 1": [ciw.dists.Deterministic(10.0),
-                    ciw.dists.Deterministic(10.0)]},
-    routing={
-        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
-        "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
+        "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Deterministic(5.0)],
+        "Class 1": [ciw.dists.Deterministic(10.0), ciw.dists.Deterministic(10.0)],
+    },
+    routing={"Class 0": [[0.8, 0.1], [0.0, 0.0]], "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
     class_change_matrices={
         "Node 1": [[0.5, 0.5], [0.5, 0.5]],
-        "Node 2": [[1.0, 0.0], [0.0, 1.0]]},
+        "Node 2": [[1.0, 0.0], [0.0, 1.0]],
+    },
 )
 
 N_priorities = ciw.create_network(
     arrival_distributions={
-        "Class 0": [ciw.dists.Exponential(0.05),
-                    ciw.dists.Exponential(0.04)],
-        "Class 1": [ciw.dists.Exponential(0.04),
-                    ciw.dists.Exponential(0.06)]},
+        "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+    },
     number_of_servers=[4, 3],
-    queue_capacities=[float('inf'), 10],
+    queue_capacities=[float("inf"), 10],
     service_distributions={
-        "Class 0": [ciw.dists.Deterministic(5.0),
-                    ciw.dists.Deterministic(5.0)],
-        "Class 1": [ciw.dists.Deterministic(10.0),
-                    ciw.dists.Deterministic(10.0)]},
-    routing={
-        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
-        "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
-    priority_classes={"Class 0": 0, "Class 1": 1}
+        "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Deterministic(5.0)],
+        "Class 1": [ciw.dists.Deterministic(10.0), ciw.dists.Deterministic(10.0)],
+    },
+    routing={"Class 0": [[0.8, 0.1], [0.0, 0.0]], "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
+    priority_classes={"Class 0": 0, "Class 1": 1},
 )
 
 N_schedule = ciw.create_network(
     arrival_distributions={
-        "Class 0": [ciw.dists.Exponential(0.05),
-                    ciw.dists.Exponential(0.04)],
-        "Class 1": [ciw.dists.Exponential(0.04),
-                    ciw.dists.Exponential(0.06)]},
-    number_of_servers=[
-        [[1, 30], [2, 60], [1, 90], [3, 100]], 3],
+        "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+    },
+    number_of_servers=[[[1, 30], [2, 60], [1, 90], [3, 100]], 3],
     queue_capacities=[float("Inf"), 10],
     service_distributions={
-        "Class 0": [ciw.dists.Deterministic(5.0),
-                    ciw.dists.Exponential(0.2)],
-        "Class 1": [ciw.dists.Deterministic(10.0),
-                    ciw.dists.Exponential(0.1)]},
-    routing={
-        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
-        "Class 1": [[0.8, 0.1], [0.2, 0.0]]}
+        "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Exponential(0.2)],
+        "Class 1": [ciw.dists.Deterministic(10.0), ciw.dists.Exponential(0.1)],
+    },
+    routing={"Class 0": [[0.8, 0.1], [0.0, 0.0]], "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
 )
 
 
@@ -109,11 +119,12 @@ class TestProcessorSharing(unittest.TestCase):
         Q = ciw.Simulation(N_params, node_class=ciw.PSNode)
         N = ciw.PSNode(1, Q)
         self.assertEqual(N.ps_capacity, 9)
-        self.assertEqual(N.c, float('inf'))
-        self.assertEqual(N.transition_row, [[0.1, 0.2, 0.1, 0.4],
-                                            [0.6, 0.0, 0.0, 0.2],
-                                            [0.0, 0.0, 0.4, 0.3]])
-        self.assertEqual(N.next_event_date, float('inf'))
+        self.assertEqual(N.c, float("inf"))
+        self.assertEqual(
+            N.transition_row,
+            [[0.1, 0.2, 0.1, 0.4], [0.6, 0.0, 0.0, 0.2], [0.0, 0.0, 0.4, 0.3]],
+        )
+        self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
         self.assertEqual(N.id_number, 1)
         self.assertEqual(N.interrupted_individuals, [])
@@ -121,18 +132,16 @@ class TestProcessorSharing(unittest.TestCase):
 
         Q = ciw.Simulation(N_classchange, node_class=ciw.PSNode)
         N1 = Q.transitive_nodes[0]
-        self.assertEqual(N1.class_change, [[0.5, 0.5],
-                                           [0.5, 0.5]])
+        self.assertEqual(N1.class_change, [[0.5, 0.5], [0.5, 0.5]])
         N2 = Q.transitive_nodes[1]
-        self.assertEqual(N2.class_change, [[1.0, 0.0],
-                                           [0.0, 1.0]])
+        self.assertEqual(N2.class_change, [[1.0, 0.0], [0.0, 1.0]])
         self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(N_schedule, node_class=ciw.PSNode)
         N = Q.transitive_nodes[0]
         self.assertEqual(N.cyclelength, 100)
         self.assertEqual(N.ps_capacity, 1)
-        self.assertEqual(N.c, float('inf'))
+        self.assertEqual(N.c, float("inf"))
         self.assertEqual(N.schedule, [[0, 1], [30, 2], [60, 1], [90, 3]])
         self.assertEqual(N.next_event_date, 30)
         self.assertEqual(N.interrupted_individuals, [])
@@ -141,7 +150,7 @@ class TestProcessorSharing(unittest.TestCase):
         Q = ciw.Simulation(N_priorities, node_class=ciw.PSNode)
         N = Q.transitive_nodes[0]
         self.assertEqual(N.ps_capacity, 4)
-        self.assertEqual(N.c, float('inf'))
+        self.assertEqual(N.c, float("inf"))
         self.assertEqual(Q.network.priority_class_mapping, {0: 0, 1: 1})
         self.assertEqual(Q.number_of_priority_classes, 2)
         self.assertEqual(N.interrupted_individuals, [])
@@ -151,7 +160,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
-            number_of_servers=[float('inf')]
+            number_of_servers=[float("inf")],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         self.assertEqual(Q.current_time, 0.0)
@@ -212,7 +221,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Sequential([1.0, 2.0, 3.0])],
-            number_of_servers=[float('inf')]
+            number_of_servers=[float("inf")],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         self.assertEqual(Q.current_time, 0.0)
@@ -279,7 +288,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(lmbda)],
             service_distributions=[ciw.dists.Exponential(mu)],
-            number_of_servers=[float('inf')]
+            number_of_servers=[float("inf")],
         )
         average_service_times = []
         for trial in range(50):
@@ -298,7 +307,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(lmbda)],
             service_distributions=[ciw.dists.Exponential(mu)],
-            number_of_servers=[float('inf')]
+            number_of_servers=[float("inf")],
         )
         average_service_times = []
         for trial in range(50):
@@ -312,13 +321,12 @@ class TestProcessorSharing(unittest.TestCase):
         observed = sum(average_service_times) / len(average_service_times)
         self.assertAlmostEqual(observed, expected, places=1)
 
-
         lmbda = 3
         mu = 6
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(lmbda)],
             service_distributions=[ciw.dists.Exponential(mu)],
-            number_of_servers=[float('inf')]
+            number_of_servers=[float("inf")],
         )
         average_service_times = []
         for trial in range(50):
@@ -326,7 +334,11 @@ class TestProcessorSharing(unittest.TestCase):
             Q = ciw.Simulation(N, node_class=ciw.PSNode)
             Q.simulate_until_max_time(400)
             recs = Q.get_all_records()
-            obs_services = [r.service_time for r in recs if r.arrival_date > 30 and r.arrival_date < 370]
+            obs_services = [
+                r.service_time
+                for r in recs
+                if r.arrival_date > 30 and r.arrival_date < 370
+            ]
             average_service_times.append(sum(obs_services) / len(obs_services))
         expected = 1 / (mu - lmbda)
         observed = sum(average_service_times) / len(average_service_times)
@@ -336,7 +348,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
-            number_of_servers=[float('inf')]
+            number_of_servers=[float("inf")],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         ind1 = ciw.Individual(1, customer_class=0, priority_class=0, simulation=Q)
@@ -371,7 +383,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
-            number_of_servers=[4]
+            number_of_servers=[4],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         ind1 = ciw.Individual(1, customer_class=0, priority_class=0, simulation=Q)
@@ -406,7 +418,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
-            number_of_servers=[3]
+            number_of_servers=[3],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         ind1 = ciw.Individual(1, customer_class=0, priority_class=0, simulation=Q)
@@ -440,7 +452,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
-            number_of_servers=[2]
+            number_of_servers=[2],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         ind1 = ciw.Individual(1, customer_class=0, priority_class=0, simulation=Q)
@@ -472,7 +484,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
-            number_of_servers=[1]
+            number_of_servers=[1],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         ind1 = ciw.Individual(1, customer_class=0, priority_class=0, simulation=Q)
@@ -502,7 +514,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[None],
             service_distributions=[ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])],
-            number_of_servers=[3]
+            number_of_servers=[3],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
         self.assertEqual(Q.current_time, 0.0)
@@ -615,8 +627,8 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(10)],
             service_distributions=[ciw.dists.Exponential(12)],
-            number_of_servers=[float('inf')],
-            ps_thresholds=[3]
+            number_of_servers=[float("inf")],
+            ps_thresholds=[3],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N, node_class=ciw.PSNode, tracker=ciw.trackers.SystemPopulation())

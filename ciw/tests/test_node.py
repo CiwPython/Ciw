@@ -6,81 +6,91 @@ from math import nan, isnan
 
 N_params = ciw.create_network(
     arrival_distributions={
-        "Class 0": [ciw.dists.Exponential(3.0),
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Exponential(4.0),
-                    ciw.dists.Exponential(1.0)],
-        "Class 1": [ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(3.0),
-                    ciw.dists.Exponential(6.0),
-                    ciw.dists.Exponential(4.0)],
-        "Class 2": [ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(1.0),
-                    ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(0.5)]},
+        "Class 0": [
+            ciw.dists.Exponential(3.0),
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Exponential(4.0),
+            ciw.dists.Exponential(1.0),
+        ],
+        "Class 1": [
+            ciw.dists.Exponential(2.0),
+            ciw.dists.Exponential(3.0),
+            ciw.dists.Exponential(6.0),
+            ciw.dists.Exponential(4.0),
+        ],
+        "Class 2": [
+            ciw.dists.Exponential(2.0),
+            ciw.dists.Exponential(1.0),
+            ciw.dists.Exponential(2.0),
+            ciw.dists.Exponential(0.5),
+        ],
+    },
     number_of_servers=[9, 10, 8, 8],
     queue_capacities=[20, float("Inf"), 30, float("Inf")],
     service_distributions={
-        "Class 0": [ciw.dists.Exponential(7.0),
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Gamma(0.4, 0.6),
-                    ciw.dists.Deterministic(0.5)],
-        "Class 1": [ciw.dists.Exponential(7.0),
-                    ciw.dists.Triangular(0.1, 0.8, 0.85),
-                    ciw.dists.Exponential(8.0),
-                    ciw.dists.Exponential(5.0)],
-        "Class 2": [ciw.dists.Deterministic(0.3),
-                    ciw.dists.Deterministic(0.2),
-                    ciw.dists.Exponential(8.0),
-                    ciw.dists.Exponential(9.0)]},
-    routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
-                         [0.2, 0.2, 0.0, 0.1],
-                         [0.0, 0.8, 0.1, 0.1],
-                         [0.4, 0.1, 0.1, 0.0]],
-             "Class 1": [[0.6, 0.0, 0.0, 0.2],
-                         [0.1, 0.1, 0.2, 0.2],
-                         [0.9, 0.0, 0.0, 0.0],
-                         [0.2, 0.1, 0.1, 0.1]],
-             "Class 2": [[0.0, 0.0, 0.4, 0.3],
-                         [0.1, 0.1, 0.1, 0.1],
-                         [0.1, 0.3, 0.2, 0.2],
-                         [0.0, 0.0, 0.0, 0.3]]}
+        "Class 0": [
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Gamma(0.4, 0.6),
+            ciw.dists.Deterministic(0.5),
+        ],
+        "Class 1": [
+            ciw.dists.Exponential(7.0),
+            ciw.dists.Triangular(0.1, 0.8, 0.85),
+            ciw.dists.Exponential(8.0),
+            ciw.dists.Exponential(5.0),
+        ],
+        "Class 2": [
+            ciw.dists.Deterministic(0.3),
+            ciw.dists.Deterministic(0.2),
+            ciw.dists.Exponential(8.0),
+            ciw.dists.Exponential(9.0),
+        ],
+    },
+    routing={
+        "Class 0": [
+            [0.1, 0.2, 0.1, 0.4],
+            [0.2, 0.2, 0.0, 0.1],
+            [0.0, 0.8, 0.1, 0.1],
+            [0.4, 0.1, 0.1, 0.0],
+        ],
+        "Class 1": [
+            [0.6, 0.0, 0.0, 0.2],
+            [0.1, 0.1, 0.2, 0.2],
+            [0.9, 0.0, 0.0, 0.0],
+            [0.2, 0.1, 0.1, 0.1],
+        ],
+        "Class 2": [
+            [0.0, 0.0, 0.4, 0.3],
+            [0.1, 0.1, 0.1, 0.1],
+            [0.1, 0.3, 0.2, 0.2],
+            [0.0, 0.0, 0.0, 0.3],
+        ],
+    },
 )
 
 N_deadlock = ciw.create_network(
-    arrival_distributions=[
-        ciw.dists.Exponential(35.0),
-        ciw.dists.Exponential(35.0)],
+    arrival_distributions=[ciw.dists.Exponential(35.0), ciw.dists.Exponential(35.0)],
     number_of_servers=[5, 5],
     queue_capacities=[5, 5],
-    service_distributions=[
-        ciw.dists.Exponential(30.0),
-        ciw.dists.Exponential(30.0)],
-    routing=[
-        [0.3, 0.4],
-        [0.4, 0.3]
-    ]
+    service_distributions=[ciw.dists.Exponential(30.0), ciw.dists.Exponential(30.0)],
+    routing=[[0.3, 0.4], [0.4, 0.3]],
 )
 
 N_priorities = ciw.create_network(
     arrival_distributions={
-        "Class 0": [ciw.dists.Exponential(0.05),
-                    ciw.dists.Exponential(0.04)],
-        "Class 1": [ciw.dists.Exponential(0.04),
-                    ciw.dists.Exponential(0.06)]},
+        "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+    },
     number_of_servers=[4, 3],
-    queue_capacities=[float('inf'), 10],
+    queue_capacities=[float("inf"), 10],
     service_distributions={
-        "Class 0": [ciw.dists.Deterministic(5.0),
-                    ciw.dists.Deterministic(5.0)],
-        "Class 1": [ciw.dists.Deterministic(10.0),
-                    ciw.dists.Deterministic(10.0)]},
-    routing={
-        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
-        "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
-    priority_classes={"Class 0": 0, "Class 1": 1}
+        "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Deterministic(5.0)],
+        "Class 1": [ciw.dists.Deterministic(10.0), ciw.dists.Deterministic(10.0)],
+    },
+    routing={"Class 0": [[0.8, 0.1], [0.0, 0.0]], "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
+    priority_classes={"Class 0": 0, "Class 1": 1},
 )
-
 
 
 class TestNode(unittest.TestCase):
@@ -88,61 +98,61 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(N_params)
         N = ciw.Node(1, Q)
         self.assertEqual(N.c, 9)
-        self.assertEqual(N.transition_row, [[0.1, 0.2, 0.1, 0.4],
-                                            [0.6, 0.0, 0.0, 0.2],
-                                            [0.0, 0.0, 0.4, 0.3]])
-        self.assertEqual(N.next_event_date, float('inf'))
+        self.assertEqual(
+            N.transition_row,
+            [[0.1, 0.2, 0.1, 0.4], [0.6, 0.0, 0.0, 0.2], [0.0, 0.0, 0.4, 0.3]],
+        )
+        self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
         self.assertEqual(N.id_number, 1)
         self.assertEqual(N.interrupted_individuals, [])
         self.assertFalse(N.reneging)
-        
+
         Net = ciw.create_network(
             arrival_distributions={
-                "Class 0": [ciw.dists.Exponential(0.05),
-                            ciw.dists.Exponential(0.04)],
-                "Class 1": [ciw.dists.Exponential(0.04),
-                            ciw.dists.Exponential(0.06)]},
+                "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+                "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+            },
             number_of_servers=[4, 3],
             queue_capacities=[float("Inf"), 10],
             service_distributions={
-                "Class 0": [ciw.dists.Deterministic(5.0),
-                            ciw.dists.Deterministic(5.0)],
-                "Class 1": [ciw.dists.Deterministic(10.0),
-                            ciw.dists.Deterministic(10.0)]},
+                "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Deterministic(5.0)],
+                "Class 1": [
+                    ciw.dists.Deterministic(10.0),
+                    ciw.dists.Deterministic(10.0),
+                ],
+            },
             routing={
                 "Class 0": [[0.8, 0.1], [0.0, 0.0]],
-                "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
+                "Class 1": [[0.8, 0.1], [0.2, 0.0]],
+            },
             class_change_matrices={
                 "Node 1": [[0.5, 0.5], [0.5, 0.5]],
-                "Node 2": [[1.0, 0.0], [0.0, 1.0]]},
+                "Node 2": [[1.0, 0.0], [0.0, 1.0]],
+            },
         )
         Q = ciw.Simulation(Net)
         N1 = Q.transitive_nodes[0]
-        self.assertEqual(N1.class_change, [[0.5, 0.5],
-                                           [0.5, 0.5]])
+        self.assertEqual(N1.class_change, [[0.5, 0.5], [0.5, 0.5]])
         N2 = Q.transitive_nodes[1]
-        self.assertEqual(N2.class_change, [[1.0, 0.0],
-                                           [0.0, 1.0]])
+        self.assertEqual(N2.class_change, [[1.0, 0.0], [0.0, 1.0]])
         self.assertEqual(N.interrupted_individuals, [])
-        
+
         N_schedule = ciw.create_network(
             arrival_distributions={
-                "Class 0": [ciw.dists.Exponential(0.05),
-                            ciw.dists.Exponential(0.04)],
-                "Class 1": [ciw.dists.Exponential(0.04),
-                            ciw.dists.Exponential(0.06)]},
-            number_of_servers=[
-                [[1, 30], [2, 60], [1, 90], [3, 100]], 3],
+                "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+                "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+            },
+            number_of_servers=[[[1, 30], [2, 60], [1, 90], [3, 100]], 3],
             queue_capacities=[float("Inf"), 10],
             service_distributions={
-                "Class 0": [ciw.dists.Deterministic(5.0),
-                            ciw.dists.Exponential(0.2)],
-                "Class 1": [ciw.dists.Deterministic(10.0),
-                            ciw.dists.Exponential(0.1)]},
+                "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Exponential(0.2)],
+                "Class 1": [ciw.dists.Deterministic(10.0), ciw.dists.Exponential(0.1)],
+            },
             routing={
                 "Class 0": [[0.8, 0.1], [0.0, 0.0]],
-                "Class 1": [[0.8, 0.1], [0.2, 0.0]]}
+                "Class 1": [[0.8, 0.1], [0.2, 0.0]],
+            },
         )
         Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
@@ -152,7 +162,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.next_event_date, 30)
         self.assertEqual(N.interrupted_individuals, [])
         self.assertFalse(N.reneging)
-        
+
         Q = ciw.Simulation(N_priorities)
         N = Q.transitive_nodes[0]
         self.assertEqual(N.c, 4)
@@ -161,13 +171,12 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.interrupted_individuals, [])
         self.assertFalse(N.reneging)
 
-
     def test_repr_method(self):
         Q = ciw.Simulation(N_params)
         N1 = ciw.Node(1, Q)
         N2 = ciw.Node(2, Q)
-        self.assertEqual(str(N1), 'Node 1')
-        self.assertEqual(str(N2), 'Node 2')
+        self.assertEqual(str(N1), "Node 1")
+        self.assertEqual(str(N2), "Node 2")
 
     def test_finish_service_method(self):
         ciw.seed(4)
@@ -176,43 +185,51 @@ class TestNode(unittest.TestCase):
         inds = [ciw.Individual(i + 1) for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             Q.current_time = current_time
-            N.accept(inds[int(current_time*100 - 1)])
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 1', 'Individual 2', 'Individual 3'])
+            N.accept(inds[int(current_time * 100 - 1)])
+        self.assertEqual(
+            [str(obs) for obs in N.all_individuals],
+            ["Individual 1", "Individual 2", "Individual 3"],
+        )
         self.assertEqual(
             [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
-            [['Individual 1', 'Individual 2', 'Individual 3']])
+            [["Individual 1", "Individual 2", "Individual 3"]],
+        )
         Q.current_time = 0.03
         N.update_next_event_date()
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
         N.finish_service()
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 1', 'Individual 3'])
+        self.assertEqual(
+            [str(obs) for obs in N.all_individuals], ["Individual 1", "Individual 3"]
+        )
         self.assertEqual(
             [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
-            [['Individual 1', 'Individual 3']])
+            [["Individual 1", "Individual 3"]],
+        )
 
     def test_change_customer_class_method(self):
         ciw.seed(14)
         N = ciw.create_network(
             arrival_distributions={
-                "Class 0": [ciw.dists.Exponential(0.05),
-                            ciw.dists.Exponential(0.04)],
-                "Class 1": [ciw.dists.Exponential(0.04),
-                            ciw.dists.Exponential(0.06)]},
+                "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+                "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+            },
             number_of_servers=[4, 3],
             queue_capacities=[float("Inf"), 10],
             service_distributions={
-                "Class 0": [ciw.dists.Deterministic(5.0),
-                            ciw.dists.Deterministic(5.0)],
-                "Class 1": [ciw.dists.Deterministic(10.0),
-                            ciw.dists.Deterministic(10.0)]},
+                "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Deterministic(5.0)],
+                "Class 1": [
+                    ciw.dists.Deterministic(10.0),
+                    ciw.dists.Deterministic(10.0),
+                ],
+            },
             routing={
                 "Class 0": [[0.8, 0.1], [0.0, 0.0]],
-                "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
+                "Class 1": [[0.8, 0.1], [0.2, 0.0]],
+            },
             class_change_matrices={
                 "Node 1": [[0.5, 0.5], [0.5, 0.5]],
-                "Node 2": [[1.0, 0.0], [0.0, 1.0]]},
+                "Node 2": [[1.0, 0.0], [0.0, 1.0]],
+            },
         )
         Q = ciw.Simulation(N)
         N1 = Q.transitive_nodes[0]
@@ -240,19 +257,26 @@ class TestNode(unittest.TestCase):
 
         # Test for case of having priorities
         ciw.seed(14)
-        parameters_dictionary = {
-            'arrival_distributions': {'Class 0': [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
-                                      'Class 1': [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)]},
-            'service_distributions': {'Class 0': [ciw.dists.Deterministic(5), ciw.dists.Deterministic(5)],
-                                      'Class 1': [ciw.dists.Deterministic(10), ciw.dists.Deterministic(10)]},
-            'routing': {'Class 0': [[0.8, 0.1], [0.0, 0.0]],
-                        'Class 1': [[0.8, 0.1], [0.2, 0.0]]},
-            'number_of_servers': [4, 3],
-            'class_change_matrices': {'Node 1': [[.5, .5], [.25, .75]],
-                                      'Node 2': [[1, 0], [0, 1]]},
-            'priority_classes': {'Class 0': 0, 'Class 1': 1}
-        }
-        N = ciw.create_network_from_dictionary(parameters_dictionary)
+        N = ciw.create_network(
+            arrival_distributions={
+                "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
+                "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
+            },
+            service_distributions={
+                "Class 0": [ciw.dists.Deterministic(5), ciw.dists.Deterministic(5)],
+                "Class 1": [ciw.dists.Deterministic(10), ciw.dists.Deterministic(10)],
+            },
+            routing={
+                "Class 0": [[0.8, 0.1], [0.0, 0.0]],
+                "Class 1": [[0.8, 0.1], [0.2, 0.0]],
+            },
+            number_of_servers=[4, 3],
+            class_change_matrices={
+                "Node 1": [[0.5, 0.5], [0.25, 0.75]],
+                "Node 2": [[1, 0], [0, 1]],
+            },
+            priority_classes={"Class 0": 0, "Class 1": 1},
+        )
         Q = ciw.Simulation(N)
         N1 = Q.transitive_nodes[0]
         ind = ciw.Individual(254, 0)
@@ -302,8 +326,7 @@ class TestNode(unittest.TestCase):
 
     def test_block_individual_method(self):
         ciw.seed(4)
-        Q = ciw.Simulation(N_deadlock,
-            deadlock_detector=ciw.deadlock.StateDigraph())
+        Q = ciw.Simulation(N_deadlock, deadlock_detector=ciw.deadlock.StateDigraph())
         inds = [ciw.Individual(i + 1) for i in range(7)]
         N1 = Q.transitive_nodes[0]
         N1.individuals = [inds[:6]]
@@ -315,70 +338,85 @@ class TestNode(unittest.TestCase):
         self.assertEqual(set(Q.deadlock_detector.statedigraph.edges()), set([]))
         N2.block_individual(inds[6], N1)
         self.assertEqual(inds[6].is_blocked, True)
-        [(2, 7)]
-        self.assertEqual(set(Q.deadlock_detector.statedigraph.edges()),
-            set([('Server 1 at Node 2', 'Server 2 at Node 1'),
-                 ('Server 1 at Node 2', 'Server 5 at Node 1'),
-                 ('Server 1 at Node 2', 'Server 3 at Node 1'),
-                 ('Server 1 at Node 2', 'Server 1 at Node 1'),
-                 ('Server 1 at Node 2', 'Server 4 at Node 1')]))
+        self.assertEqual(
+            set(Q.deadlock_detector.statedigraph.edges()),
+            set(
+                [
+                    ("Server 1 at Node 2", "Server 2 at Node 1"),
+                    ("Server 1 at Node 2", "Server 5 at Node 1"),
+                    ("Server 1 at Node 2", "Server 3 at Node 1"),
+                    ("Server 1 at Node 2", "Server 1 at Node 1"),
+                    ("Server 1 at Node 2", "Server 4 at Node 1"),
+                ]
+            ),
+        )
 
     def test_release_method(self):
         ciw.seed(4)
         Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[0]
-        inds = [ciw.Individual(i+1) for i in range(3)]
+        inds = [ciw.Individual(i + 1) for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             Q.current_time = current_time
-            N.accept(inds[int(current_time*100 - 1)])
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 1', 'Individual 2', 'Individual 3'])
+            N.accept(inds[int(current_time * 100 - 1)])
+        self.assertEqual(
+            [str(obs) for obs in N.all_individuals],
+            ["Individual 1", "Individual 2", "Individual 3"],
+        )
         self.assertEqual(
             [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
-            [['Individual 1', 'Individual 2', 'Individual 3']])
+            [["Individual 1", "Individual 2", "Individual 3"]],
+        )
         Q.current_time = 0.03
         N.update_next_event_date()
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
 
-        N.servers[1].next_end_service_date = float('inf')
+        N.servers[1].next_end_service_date = float("inf")
         N.release(1, Q.transitive_nodes[1])
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 1', 'Individual 3'])
+        self.assertEqual(
+            [str(obs) for obs in N.all_individuals], ["Individual 1", "Individual 3"]
+        )
         self.assertEqual(
             [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
-            [['Individual 1', 'Individual 3']])
+            [["Individual 1", "Individual 3"]],
+        )
         N.update_next_event_date()
         self.assertEqual(round(N.next_event_date, 5), 0.03708)
 
-        N.servers[0].next_end_service_date = float('inf')
+        N.servers[0].next_end_service_date = float("inf")
         N.release(0, Q.transitive_nodes[1])
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 3'])
+        self.assertEqual([str(obs) for obs in N.all_individuals], ["Individual 3"])
         self.assertEqual(
             [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],
-            [['Individual 3']])
+            [["Individual 3"]],
+        )
         N.update_next_event_date()
         self.assertEqual(round(N.next_event_date, 5), 0.06447)
 
     def test_begin_service_if_possible_release_method(self):
         ciw.seed(50)
-        Q = ciw.Simulation(N_deadlock,
-            deadlock_detector=ciw.deadlock.StateDigraph())
+        Q = ciw.Simulation(N_deadlock, deadlock_detector=ciw.deadlock.StateDigraph())
         inds = [[ciw.Individual(i) for i in range(30)]]
         Q.transitive_nodes[0].individuals = inds
         ind = Q.transitive_nodes[0].individuals[0][0]
         ind.arrival_date = 100.0
-        self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
-            set(['Server 5 at Node 2',
-                 'Server 5 at Node 1',
-                 'Server 3 at Node 2',
-                 'Server 1 at Node 2',
-                 'Server 1 at Node 1',
-                 'Server 2 at Node 1',
-                 'Server 2 at Node 2',
-                 'Server 3 at Node 1',
-                 'Server 4 at Node 1',
-                 'Server 4 at Node 2']))
+        self.assertEqual(
+            set(Q.deadlock_detector.statedigraph.nodes()),
+            set(
+                [
+                    "Server 5 at Node 2",
+                    "Server 5 at Node 1",
+                    "Server 3 at Node 2",
+                    "Server 1 at Node 2",
+                    "Server 1 at Node 1",
+                    "Server 2 at Node 1",
+                    "Server 2 at Node 2",
+                    "Server 3 at Node 1",
+                    "Server 4 at Node 1",
+                    "Server 4 at Node 2",
+                ]
+            ),
+        )
         self.assertEqual(ind.arrival_date, 100.0)
         self.assertEqual(ind.service_time, False)
         self.assertEqual(ind.service_start_date, False)
@@ -391,8 +429,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(ind.service_end_date, 5), 200.03382)
 
     def test_release_blocked_individual_method(self):
-        Q = ciw.Simulation(N_deadlock,
-            deadlock_detector=ciw.deadlock.StateDigraph())
+        Q = ciw.Simulation(N_deadlock, deadlock_detector=ciw.deadlock.StateDigraph())
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
         N1.individuals = [[ciw.Individual(i) for i in range(N1.c + 3)]]
@@ -402,46 +439,62 @@ class TestNode(unittest.TestCase):
         for ind in N2.all_individuals[:1]:
             N2.attach_server(N2.find_free_server(ind), ind)
 
-        self.assertEqual([str(obs) for obs in N1.all_individuals],
-            ['Individual 0',
-             'Individual 1',
-             'Individual 2',
-             'Individual 3',
-             'Individual 4',
-             'Individual 5',
-             'Individual 6',
-             'Individual 7'])
-        self.assertEqual([str(obs) for obs in N2.all_individuals],
-            ['Individual 100',
-             'Individual 101',
-             'Individual 102',
-             'Individual 103',
-             'Individual 104',
-             'Individual 105',
-             'Individual 106',
-             'Individual 107',
-             'Individual 108'])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals],
+            [
+                "Individual 0",
+                "Individual 1",
+                "Individual 2",
+                "Individual 3",
+                "Individual 4",
+                "Individual 5",
+                "Individual 6",
+                "Individual 7",
+            ],
+        )
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals],
+            [
+                "Individual 100",
+                "Individual 101",
+                "Individual 102",
+                "Individual 103",
+                "Individual 104",
+                "Individual 105",
+                "Individual 106",
+                "Individual 107",
+                "Individual 108",
+            ],
+        )
         Q.current_time = 100
         N1.release_blocked_individual()
-        self.assertEqual([str(obs) for obs in N1.all_individuals],
-            ['Individual 0',
-             'Individual 1',
-             'Individual 2',
-             'Individual 3',
-             'Individual 4',
-             'Individual 5',
-             'Individual 6',
-             'Individual 7'])
-        self.assertEqual([str(obs) for obs in N2.all_individuals],
-            ['Individual 100',
-             'Individual 101',
-             'Individual 102',
-             'Individual 103',
-             'Individual 104',
-             'Individual 105',
-             'Individual 106',
-             'Individual 107',
-             'Individual 108'])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals],
+            [
+                "Individual 0",
+                "Individual 1",
+                "Individual 2",
+                "Individual 3",
+                "Individual 4",
+                "Individual 5",
+                "Individual 6",
+                "Individual 7",
+            ],
+        )
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals],
+            [
+                "Individual 100",
+                "Individual 101",
+                "Individual 102",
+                "Individual 103",
+                "Individual 104",
+                "Individual 105",
+                "Individual 106",
+                "Individual 107",
+                "Individual 108",
+            ],
+        )
 
         N1.blocked_queue = [(1, 1), (2, 100)]
         N1.len_blocked_queue = 2
@@ -450,24 +503,32 @@ class TestNode(unittest.TestCase):
 
         Q.current_time = 110
         N1.release_blocked_individual()
-        self.assertEqual([str(obs) for obs in N1.all_individuals],
-            ['Individual 2',
-             'Individual 3',
-             'Individual 4',
-             'Individual 5',
-             'Individual 6',
-             'Individual 7',
-             'Individual 1',
-             'Individual 100'])
-        self.assertEqual([str(obs) for obs in N2.all_individuals],
-            ['Individual 101',
-             'Individual 102',
-             'Individual 103',
-             'Individual 104',
-             'Individual 105',
-             'Individual 106',
-             'Individual 107',
-             'Individual 108'])
+        self.assertEqual(
+            [str(obs) for obs in N1.all_individuals],
+            [
+                "Individual 2",
+                "Individual 3",
+                "Individual 4",
+                "Individual 5",
+                "Individual 6",
+                "Individual 7",
+                "Individual 1",
+                "Individual 100",
+            ],
+        )
+        self.assertEqual(
+            [str(obs) for obs in N2.all_individuals],
+            [
+                "Individual 101",
+                "Individual 102",
+                "Individual 103",
+                "Individual 104",
+                "Individual 105",
+                "Individual 106",
+                "Individual 107",
+                "Individual 108",
+            ],
+        )
 
     def test_accept_method(self):
         ciw.seed(6)
@@ -488,8 +549,7 @@ class TestNode(unittest.TestCase):
 
         Q.current_time = 0.01
         N.accept(ind1)
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 1'])
+        self.assertEqual([str(obs) for obs in N.all_individuals], ["Individual 1"])
         self.assertEqual(ind1.arrival_date, 0.01)
         self.assertEqual(ind1.service_start_date, 0.01)
         self.assertEqual(round(ind1.service_time, 5), 0.18695)
@@ -501,11 +561,10 @@ class TestNode(unittest.TestCase):
         N.accept(ind3)
         Q.current_time = 0.04
         N.accept(ind4)
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 1',
-             'Individual 2',
-             'Individual 3',
-             'Individual 4'])
+        self.assertEqual(
+            [str(obs) for obs in N.all_individuals],
+            ["Individual 1", "Individual 2", "Individual 3", "Individual 4"],
+        )
         self.assertEqual(round(ind4.arrival_date, 5), 0.04)
         self.assertEqual(round(ind4.service_start_date, 5), 0.04)
         self.assertEqual(round(ind4.service_time, 5), 0.1637)
@@ -523,37 +582,46 @@ class TestNode(unittest.TestCase):
         N.accept(ind9)
         Q.current_time = 0.1
         N.accept(ind10)
-        self.assertEqual([str(obs) for obs in N.all_individuals],
-            ['Individual 1',
-             'Individual 2',
-             'Individual 3',
-             'Individual 4',
-             'Individual 5',
-             'Individual 6',
-             'Individual 7',
-             'Individual 8',
-             'Individual 9',
-             'Individual 10'])
+        self.assertEqual(
+            [str(obs) for obs in N.all_individuals],
+            [
+                "Individual 1",
+                "Individual 2",
+                "Individual 3",
+                "Individual 4",
+                "Individual 5",
+                "Individual 6",
+                "Individual 7",
+                "Individual 8",
+                "Individual 9",
+                "Individual 10",
+            ],
+        )
         self.assertEqual(round(ind10.arrival_date, 5), 0.1)
         self.assertEqual(ind10.service_start_date, False)
         self.assertEqual(ind10.service_time, False)
 
     def test_begin_service_if_possible_accept_method(self):
         ciw.seed(50)
-        Q = ciw.Simulation(N_deadlock,
-            deadlock_detector=ciw.deadlock.StateDigraph())
+        Q = ciw.Simulation(N_deadlock, deadlock_detector=ciw.deadlock.StateDigraph())
         ind = ciw.Individual(1)
-        self.assertEqual(set(Q.deadlock_detector.statedigraph.nodes()),
-            set(['Server 5 at Node 2',
-                 'Server 5 at Node 1',
-                 'Server 3 at Node 2',
-                 'Server 1 at Node 2',
-                 'Server 1 at Node 1',
-                 'Server 2 at Node 1',
-                 'Server 2 at Node 2',
-                 'Server 3 at Node 1',
-                 'Server 4 at Node 1',
-                 'Server 4 at Node 2']))
+        self.assertEqual(
+            set(Q.deadlock_detector.statedigraph.nodes()),
+            set(
+                [
+                    "Server 5 at Node 2",
+                    "Server 5 at Node 1",
+                    "Server 3 at Node 2",
+                    "Server 1 at Node 2",
+                    "Server 1 at Node 1",
+                    "Server 2 at Node 1",
+                    "Server 2 at Node 2",
+                    "Server 3 at Node 1",
+                    "Server 4 at Node 1",
+                    "Server 4 at Node 2",
+                ]
+            ),
+        )
         self.assertEqual(ind.arrival_date, False)
         self.assertEqual(ind.service_time, False)
         self.assertEqual(ind.service_start_date, False)
@@ -569,15 +637,15 @@ class TestNode(unittest.TestCase):
         Net = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(10.0)],
             service_distributions=[ciw.dists.Sequential([0.5, 0.2])],
-            number_of_servers=[5]
+            number_of_servers=[5],
         )
         Q = ciw.Simulation(Net)
         N = Q.transitive_nodes[0]
-        self.assertEqual(N.next_event_date, float('inf'))
+        self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
         Q.current_time = 0.0
         N.update_next_event_date()
-        self.assertEqual(N.next_event_date, float('inf'))
+        self.assertEqual(N.next_event_date, float("inf"))
 
         ind1 = ciw.Individual(1)
         ind1.arrival_date = 0.3
@@ -601,43 +669,43 @@ class TestNode(unittest.TestCase):
 
         N.finish_service()
         N.update_next_event_date()
-        self.assertEqual(N.next_event_date, float('inf'))
+        self.assertEqual(N.next_event_date, float("inf"))
 
     def test_next_node_method(self):
         ciw.seed(6)
         Q = ciw.Simulation(N_params)
         node = Q.transitive_nodes[0]
         ind = ciw.Individual(22)
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Exit Node')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Exit Node')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Exit Node")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Exit Node")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
 
         ciw.seed(54)
         Q = ciw.Simulation(N_params)
         node = Q.transitive_nodes[2]
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 4')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 3')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
-        self.assertEqual(str(node.next_node(ind)), 'Node 2')
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 4")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 3")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
+        self.assertEqual(str(node.next_node(ind)), "Node 2")
 
     def test_write_individual_record_method(self):
         ciw.seed(7)
@@ -658,7 +726,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.data_records[0].time_blocked, 3.5)
         self.assertEqual(ind.data_records[0].exit_date, 9)
         self.assertEqual(ind.data_records[0].customer_class, 0)
-
 
     def test_reset_individual_attributes(self):
         ciw.seed(7)
@@ -684,7 +751,6 @@ class TestNode(unittest.TestCase):
         self.assertFalse(ind.exit_date)
         self.assertFalse(ind.customer_class)
 
-
     def test_date_from_schedule_generator(self):
         Q = ciw.Simulation(N_params)
 
@@ -705,22 +771,18 @@ class TestNode(unittest.TestCase):
         N1.individuals = [[3, 6, 1], [1, 9]]
         self.assertEqual(N1.all_individuals, [3, 6, 1, 1, 9])
 
-        N1.individuals = [[3, 'help', 1], [], [1, 9]]
-        self.assertEqual(N1.all_individuals, [3, 'help', 1, 1, 9])
+        N1.individuals = [[3, "help", 1], [], [1, 9]]
+        self.assertEqual(N1.all_individuals, [3, "help", 1, 1, 9])
 
     def test_if_putting_individuals_in_correct_priority_queue(self):
         Q = ciw.Simulation(N_priorities)
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
 
-        self.assertEqual(
-            [[str(obs) for obs in lst] for lst in N1.individuals], [[], []])
-        self.assertEqual(
-            [str(obs) for obs in N1.all_individuals], [])
-        self.assertEqual(
-            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
-        self.assertEqual(
-            [str(obs) for obs in N2.all_individuals], [])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [[], []])
+        self.assertEqual([str(obs) for obs in N1.all_individuals], [])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 1
         Q.nodes[0].next_class = 0
@@ -728,14 +790,11 @@ class TestNode(unittest.TestCase):
 
         self.assertEqual(
             [[str(obs) for obs in lst] for lst in N1.individuals],
-            [['Individual 1'], []])
-        self.assertEqual(
-            [str(obs) for obs in N1.all_individuals],
-            ['Individual 1'])
-        self.assertEqual(
-            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
-        self.assertEqual(
-            [str(obs) for obs in N2.all_individuals], [])
+            [["Individual 1"], []],
+        )
+        self.assertEqual([str(obs) for obs in N1.all_individuals], ["Individual 1"])
+        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 1
         Q.nodes[0].next_class = 1
@@ -743,14 +802,15 @@ class TestNode(unittest.TestCase):
 
         self.assertEqual(
             [[str(obs) for obs in lst] for lst in N1.individuals],
-            [['Individual 1'], ['Individual 2']])
+            [["Individual 1"], ["Individual 2"]],
+        )
         self.assertEqual(
-            [str(obs) for obs in N1.all_individuals],
-            ['Individual 1', 'Individual 2'])
+            [str(obs) for obs in N1.all_individuals], ["Individual 1", "Individual 2"]
+        )
         self.assertEqual(
-            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
-        self.assertEqual(
-            [str(obs) for obs in N2.all_individuals], [])
+            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []]
+        )
+        self.assertEqual([str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 2
         Q.nodes[0].next_class = 0
@@ -758,16 +818,16 @@ class TestNode(unittest.TestCase):
 
         self.assertEqual(
             [[str(obs) for obs in lst] for lst in N1.individuals],
-            [['Individual 1'], ['Individual 2']])
+            [["Individual 1"], ["Individual 2"]],
+        )
         self.assertEqual(
-            [str(obs) for obs in N1.all_individuals],
-            ['Individual 1', 'Individual 2'])
+            [str(obs) for obs in N1.all_individuals], ["Individual 1", "Individual 2"]
+        )
         self.assertEqual(
             [[str(obs) for obs in lst] for lst in N2.individuals],
-            [['Individual 3'], []])
-        self.assertEqual(
-            [str(obs) for obs in N2.all_individuals],
-            ['Individual 3'])
+            [["Individual 3"], []],
+        )
+        self.assertEqual([str(obs) for obs in N2.all_individuals], ["Individual 3"])
 
         Q.nodes[0].next_node = 2
         Q.nodes[0].next_class = 1
@@ -775,16 +835,18 @@ class TestNode(unittest.TestCase):
 
         self.assertEqual(
             [[str(obs) for obs in lst] for lst in N1.individuals],
-            [['Individual 1'], ['Individual 2']])
+            [["Individual 1"], ["Individual 2"]],
+        )
         self.assertEqual(
-            [str(obs) for obs in N1.all_individuals],
-            ['Individual 1', 'Individual 2'])
+            [str(obs) for obs in N1.all_individuals], ["Individual 1", "Individual 2"]
+        )
         self.assertEqual(
             [[str(obs) for obs in lst] for lst in N2.individuals],
-            [['Individual 3'], ['Individual 4']])
+            [["Individual 3"], ["Individual 4"]],
+        )
         self.assertEqual(
-            [str(obs) for obs in N2.all_individuals],
-            ['Individual 3', 'Individual 4'])
+            [str(obs) for obs in N2.all_individuals], ["Individual 3", "Individual 4"]
+        )
 
     def test_server_utilisation(self):
         # Single server
@@ -805,24 +867,24 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20.0)
-        self.assertEqual(Q.transitive_nodes[0].server_utilisation, 4.0/15.0)
+        self.assertEqual(Q.transitive_nodes[0].server_utilisation, 4.0 / 15.0)
 
     def test_server_utilisation_with_schedules(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Sequential([2.0, 4.0, 4.0, 0.0, 7.0, 1000.0])],
             service_distributions=[ciw.dists.Sequential([4.0, 2.0, 6.0, 6.0, 3.0])],
-            number_of_servers=[[[1, 9], [2, 23]]]
+            number_of_servers=[[[1, 9], [2, 23]]],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(23)
         recs = Q.get_all_records()
-        self.assertEqual(Q.transitive_nodes[0].server_utilisation, 21.0/37.0)
+        self.assertEqual(Q.transitive_nodes[0].server_utilisation, 21.0 / 37.0)
 
     def test_server_utilisation_with_wrapup(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(7.14)],
             service_distributions=[ciw.dists.Exponential(0.04)],
-            number_of_servers=[70]
+            number_of_servers=[70],
         )
         ciw.seed(1)
         Q = ciw.Simulation(N)
@@ -830,16 +892,18 @@ class TestNode(unittest.TestCase):
         for srvr in Q.transitive_nodes[0].servers:
             self.assertGreaterEqual(srvr.total_time, srvr.busy_time)
 
-    @given(lmbda=floats(min_value=0.01, max_value=5),
-           mu=floats(min_value=0.01, max_value=5),
-           c=integers(min_value=1, max_value=10),
-           rm=random_module())
+    @given(
+        lmbda=floats(min_value=0.01, max_value=5),
+        mu=floats(min_value=0.01, max_value=5),
+        c=integers(min_value=1, max_value=10),
+        rm=random_module(),
+    )
     @settings(deadline=None)
     def test_utilisation_always_1_or_less(self, lmbda, mu, c, rm):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(lmbda)],
             service_distributions=[ciw.dists.Exponential(mu)],
-            number_of_servers=[c]
+            number_of_servers=[c],
         )
         ciw.seed(1)
         Q = ciw.Simulation(N)
@@ -863,7 +927,8 @@ class TestNode(unittest.TestCase):
                 for node in simself.transitive_nodes:
                     node.update_next_event_date()
                     self.assertEqual(
-                        node.number_of_individuals, len(node.all_individuals))
+                        node.number_of_individuals, len(node.all_individuals)
+                    )
                 return simself.find_next_active_node()
 
         # Now carry out the tests by running a simulation with this new
@@ -877,40 +942,41 @@ class TestNode(unittest.TestCase):
         Test the server priority function when we prioritise the server that was
         less busy throughout the simulation.
         """
+
         def get_server_busy_time(server, ind):
             return server.busy_time
 
         ciw.seed(0)
-        Q = ciw.Simulation(ciw.create_network(
-                arrival_distributions=[ciw.dists.Exponential(1)],
-                service_distributions=[ciw.dists.Exponential(2)],
-                number_of_servers=[2],
-                server_priority_functions=[get_server_busy_time]
-            )
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(1)],
+            service_distributions=[ciw.dists.Exponential(2)],
+            number_of_servers=[2],
+            server_priority_functions=[get_server_busy_time],
         )
+        Q = ciw.Simulation(N)
         Q.simulate_until_max_time(1000)
 
         expected_times = [245.07547532640024, 244.68396417751663]
         for i, srv in enumerate(Q.nodes[1].servers):
             self.assertEqual(srv.busy_time, expected_times[i])
 
-
     def test_server_priority_function_allocate_to_last_server_first(self):
         """
         Test the server priority function when we prioritise the server with the
         highest id number.
         """
+
         def get_server_busy_time(server, ind):
             return -server.id_number
 
         ciw.seed(0)
-        Q = ciw.Simulation(ciw.create_network(
-                arrival_distributions=[ciw.dists.Exponential(1)],
-                service_distributions=[ciw.dists.Exponential(2)],
-                number_of_servers=[2],
-                server_priority_functions=[get_server_busy_time]
-            )
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(1)],
+            service_distributions=[ciw.dists.Exponential(2)],
+            number_of_servers=[2],
+            server_priority_functions=[get_server_busy_time],
         )
+        Q = ciw.Simulation(N)
         Q.simulate_until_max_time(1000)
 
         expected_times = [158.68745586286119, 331.0719836410557]
@@ -919,9 +985,10 @@ class TestNode(unittest.TestCase):
 
     def test_server_priority_function_two_nodes(self):
         """
-        Test the server priority function with two nodes that each has a 
+        Test the server priority function with two nodes that each has a
         different priority rule.
         """
+
         def prioritise_less_busy(srv, ind):
             return srv.busy_time
 
@@ -934,7 +1001,7 @@ class TestNode(unittest.TestCase):
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
             number_of_servers=[2, 2],
             routing=[[0, 0], [0, 0]],
-            server_priority_functions=[prioritise_less_busy, prioritise_highest_id]
+            server_priority_functions=[prioritise_less_busy, prioritise_highest_id],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(1000)
@@ -949,9 +1016,10 @@ class TestNode(unittest.TestCase):
         """
         Test that the server id is recorded correctly.
         """
+
         def custom_server_priority(srv, ind):
             """
-            A custom server priority function that priortises server 1 for 
+            A custom server priority function that priortises server 1 for
             customer class 0 and server 2 for customer class 1.
             """
             if ind.customer_class == 0:
@@ -963,10 +1031,12 @@ class TestNode(unittest.TestCase):
 
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Exponential(rate=1.0)], 'Class 1': [ciw.dists.Exponential(rate=1.0)]
+                "Class 0": [ciw.dists.Exponential(rate=1.0)],
+                "Class 1": [ciw.dists.Exponential(rate=1.0)],
             },
             service_distributions={
-                'Class 0': [ciw.dists.Exponential(rate=200.0)], 'Class 1': [ciw.dists.Exponential(rate=200.0)]
+                "Class 0": [ciw.dists.Exponential(rate=200.0)],
+                "Class 1": [ciw.dists.Exponential(rate=200.0)],
             },
             number_of_servers=[2],
             server_priority_functions=[custom_server_priority],
@@ -975,12 +1045,23 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(50)
 
-        all_class_0_correct = all([rec.server_id == 1 for rec in Q.get_all_records() if rec.customer_class == 0])
-        all_class_1_correct = all([rec.server_id == 1 for rec in Q.get_all_records() if rec.customer_class == 0])
+        all_class_0_correct = all(
+            [
+                rec.server_id == 1
+                for rec in Q.get_all_records()
+                if rec.customer_class == 0
+            ]
+        )
+        all_class_1_correct = all(
+            [
+                rec.server_id == 1
+                for rec in Q.get_all_records()
+                if rec.customer_class == 0
+            ]
+        )
 
         self.assertTrue(all_class_0_correct)
         self.assertTrue(all_class_1_correct)
-
 
     def test_reneging_next_event(self):
         """
@@ -990,7 +1071,7 @@ class TestNode(unittest.TestCase):
             arrival_distributions=[ciw.dists.Deterministic(7)],
             service_distributions=[ciw.dists.Deterministic(11)],
             number_of_servers=[1],
-            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+            reneging_time_distributions=[ciw.dists.Deterministic(3)],
         )
         Q = ciw.Simulation(N)
         self.assertTrue(Q.nodes[1].reneging)
@@ -1005,12 +1086,12 @@ class TestNode(unittest.TestCase):
         # t=32 leave   cust 3
         Q.simulate_until_max_time(6)
         self.assertEqual(Q.nodes[0].next_event_date, 7)
-        self.assertEqual(Q.nodes[1].next_event_date, float('inf'))
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_event_date, float("inf"))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(13)
         self.assertEqual(Q.nodes[0].next_event_date, 14)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(16)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 17)
@@ -1018,15 +1099,15 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(17.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
-        self.assertEqual(Q.nodes[1].next_event_date, float('inf'))
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_event_date, float("inf"))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(27)
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 32)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(30)
         self.assertEqual(Q.nodes[0].next_event_date, 35)
         self.assertEqual(Q.nodes[1].next_event_date, 31)
@@ -1034,14 +1115,14 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(31.5)
         self.assertEqual(Q.nodes[0].next_event_date, 35)
         self.assertEqual(Q.nodes[1].next_event_date, 32)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
 
     def test_reneging_records(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7)],
             service_distributions=[ciw.dists.Deterministic(11)],
             number_of_servers=[1],
-            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+            reneging_time_distributions=[ciw.dists.Deterministic(3)],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(31.5)
@@ -1066,7 +1147,7 @@ class TestNode(unittest.TestCase):
             routing=[[0, 0], [0, 0]],
             number_of_servers=[1, 1],
             reneging_time_distributions=[ciw.dists.Deterministic(3), None],
-            reneging_destinations=[2, -1]
+            reneging_destinations=[2, -1],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1087,11 +1168,20 @@ class TestNode(unittest.TestCase):
 
     def test_reneging_none_dist(self):
         N = ciw.create_network(
-            arrival_distributions={'Class 0': [None], 'Class 1': [ciw.dists.Deterministic(7)]},
-            service_distributions={'Class 0': [ciw.dists.Deterministic(11)], 'Class 1': [ciw.dists.Deterministic(11)]},
+            arrival_distributions={
+                "Class 0": [None],
+                "Class 1": [ciw.dists.Deterministic(7)],
+            },
+            service_distributions={
+                "Class 0": [ciw.dists.Deterministic(11)],
+                "Class 1": [ciw.dists.Deterministic(11)],
+            },
             number_of_servers=[1],
-            reneging_time_distributions={'Class 0': [ciw.dists.Deterministic(3)], 'Class 1': [None]},
-            reneging_destinations={'Class 0': [-1], 'Class 1': [-1]}
+            reneging_time_distributions={
+                "Class 0": [ciw.dists.Deterministic(3)],
+                "Class 1": [None],
+            },
+            reneging_destinations={"Class 0": [-1], "Class 1": [-1]},
         )
         Q = ciw.Simulation(N)
         self.assertTrue(Q.nodes[1].reneging)
@@ -1101,27 +1191,27 @@ class TestNode(unittest.TestCase):
         # t=18 leave   cust 1
         Q.simulate_until_max_time(6)
         self.assertEqual(Q.nodes[0].next_event_date, 7)
-        self.assertEqual(Q.nodes[1].next_event_date, float('inf'))
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_event_date, float("inf"))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(13)
         self.assertEqual(Q.nodes[0].next_event_date, 14)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(17.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 29)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
 
     def test_reneging_with_schedules(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7)],
             service_distributions=[ciw.dists.Deterministic(11)],
             number_of_servers=[[[1, 16], [0, 10000]]],
-            reneging_time_distributions=[ciw.dists.Deterministic(3)]
+            reneging_time_distributions=[ciw.dists.Deterministic(3)],
         )
         Q = ciw.Simulation(N)
         self.assertTrue(Q.nodes[1].reneging)
@@ -1137,11 +1227,11 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(6)
         self.assertEqual(Q.nodes[0].next_event_date, 7)
         self.assertEqual(Q.nodes[1].next_event_date, 16)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(13)
         self.assertEqual(Q.nodes[0].next_event_date, 14)
         self.assertEqual(Q.nodes[1].next_event_date, 16)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(15.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 16)
@@ -1153,11 +1243,11 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(17.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 10000)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
         Q.simulate_until_max_time(23)
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 24)
@@ -1165,7 +1255,7 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(27)
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 10000)
-        self.assertEqual(Q.nodes[1].next_renege_date, float('inf'))
+        self.assertEqual(Q.nodes[1].next_renege_date, float("inf"))
 
     def test_class_change_while_waiting(self):
         """
@@ -1179,14 +1269,19 @@ class TestNode(unittest.TestCase):
         - next two customer wait 4.5 and 6 respectively. (Change to Class 1)
         """
         N = ciw.create_network(
-            arrival_distributions={'Class 0': [ciw.dists.Deterministic(3)],
-                                   'Class 1': [None]},
-            service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
-                                   'Class 1': [ciw.dists.Deterministic(4.5)]},
+            arrival_distributions={
+                "Class 0": [ciw.dists.Deterministic(3)],
+                "Class 1": [None],
+            },
+            service_distributions={
+                "Class 0": [ciw.dists.Deterministic(4.5)],
+                "Class 1": [ciw.dists.Deterministic(4.5)],
+            },
             number_of_servers=[1],
             class_change_time_distributions=[
                 [None, ciw.dists.Deterministic(4)],
-                [None, None]]
+                [None, None],
+            ],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(26)
@@ -1228,7 +1323,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[4].customer_class, 1)
         self.assertEqual(recs[4].original_customer_class, 0)
 
-
     def test_priority_change_while_waiting(self):
         """
         Customers of class 0 have priority over class 1.
@@ -1244,15 +1338,20 @@ class TestNode(unittest.TestCase):
         - (the customer who arrives at 6 was class 1, but changed to class 0 at time 13)
         """
         N = ciw.create_network(
-            arrival_distributions={'Class 0': [ciw.dists.Deterministic(4)],
-                                   'Class 1': [ciw.dists.Deterministic(3)]},
-            service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
-                                   'Class 1': [ciw.dists.Deterministic(4.5)]},
+            arrival_distributions={
+                "Class 0": [ciw.dists.Deterministic(4)],
+                "Class 1": [ciw.dists.Deterministic(3)],
+            },
+            service_distributions={
+                "Class 0": [ciw.dists.Deterministic(4.5)],
+                "Class 1": [ciw.dists.Deterministic(4.5)],
+            },
             number_of_servers=[1],
             class_change_time_distributions=[
                 [None, None],
-                [ciw.dists.Deterministic(7), None]],
-            priority_classes={'Class 0': 0, 'Class 1': 1}
+                [ciw.dists.Deterministic(7), None],
+            ],
+            priority_classes={"Class 0": 0, "Class 1": 1},
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(26)
@@ -1305,13 +1404,13 @@ class TestNode(unittest.TestCase):
         Class 1 arrive at times [7.5]
 
         Without preemption we would expect:
-        Class & Arrival & Wait & Service start & Service end 
+        Class & Arrival & Wait & Service start & Service end
         1     & 1.5     & 0    & 1.5           & 6.5
         1     & 5       & 1.5  & 6.5           & 11.5
         0     & 7.5     & 4    & 11.5          & 15.5
 
         With preemption we would expect:
-        Class & Arrival & Wait & Service start & Service end 
+        Class & Arrival & Wait & Service start & Service end
         1     & 1.5     & 0    & 1.5           & 6.5
         1     & 5       & 6.5  & 11.5          & 11.5
         0     & 7.5     & 0    & 7.5           & 11.5
@@ -1320,13 +1419,15 @@ class TestNode(unittest.TestCase):
         # First without preemption:
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([7.5, float('inf')])],
-                'Class 1': [ciw.dists.Sequential([1.5, 3.5, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([7.5, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1.5, 3.5, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(4)], 
-                'Class 1': [ciw.dists.Deterministic(5)]},
+                "Class 0": [ciw.dists.Deterministic(4)],
+                "Class 1": [ciw.dists.Deterministic(5)],
+            },
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, [False])
+            priority_classes=({"Class 0": 0, "Class 1": 1}, [False]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1348,18 +1449,20 @@ class TestNode(unittest.TestCase):
         # Now with preemption:
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([7.5, float('inf')])],
-                'Class 1': [ciw.dists.Sequential([1.5, 3.5, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([7.5, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1.5, 3.5, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(4)], 
-                'Class 1': [ciw.dists.Deterministic(5)]},
+                "Class 0": [ciw.dists.Deterministic(4)],
+                "Class 1": [ciw.dists.Deterministic(5)],
+            },
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["resample"])
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["resample"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
         all_recs = Q.get_all_records()
-        recs = [r for r in all_recs if r.record_type == 'service']
+        recs = [r for r in all_recs if r.record_type == "service"]
         recs.sort(key=lambda r: r.arrival_date)
         self.assertEqual(recs[0].arrival_date, 1.5)
         self.assertEqual(recs[1].arrival_date, 5)
@@ -1375,7 +1478,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[2].service_end_date, 11.5)
 
         # Test there are interrupted service data records
-        interrupted_recs = [r for r in all_recs if r.record_type == 'interrupted service']
+        interrupted_recs = [r for r in all_recs if r.record_type == "interrupted service"]
         self.assertEqual(len(interrupted_recs), 1)
         self.assertEqual(interrupted_recs[0].arrival_date, 5)
         self.assertEqual(interrupted_recs[0].service_start_date, 6.5)
@@ -1394,7 +1497,7 @@ class TestNode(unittest.TestCase):
         Class 1 turn into class 0 after waiting 1.2 time units
 
         Without preemption we would expect:
-        Arrival & Wait & Service start & Service end 
+        Arrival & Wait & Service start & Service end
         2       & 0    & 2             & 4.5
         4       & 0.5  & 4.5           & 7
         6       & 1    & 7             & 9.5
@@ -1402,7 +1505,7 @@ class TestNode(unittest.TestCase):
         10      & 2    & 12            & 14.5
 
         With preemption we would expect:
-        Arrival & Wait & Service start & Service end 
+        Arrival & Wait & Service start & Service end
         2       & 0    & 2             & 4.5
         4       & 0.5  & 4.5           & 7
         6       & 5.7  & 11.7          & 14.2
@@ -1412,14 +1515,19 @@ class TestNode(unittest.TestCase):
         # First without preemption:
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [None],
-                'Class 1': [ciw.dists.Sequential([2, 2, 2, 2, 2, float('inf')])]},
+                "Class 0": [None],
+                "Class 1": [ciw.dists.Sequential([2, 2, 2, 2, 2, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(2.5)], 
-                'Class 1': [ciw.dists.Deterministic(2.5)]},
+                "Class 0": [ciw.dists.Deterministic(2.5)],
+                "Class 1": [ciw.dists.Deterministic(2.5)],
+            },
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, [False]),
-            class_change_time_distributions=[[None, None], [ciw.dists.Deterministic(1.2), None]]
+            priority_classes=({"Class 0": 0, "Class 1": 1}, [False]),
+            class_change_time_distributions=[
+                [None, None],
+                [ciw.dists.Deterministic(1.2), None],
+            ],
         )
         Q = ciw.Simulation(N, exact=26)
         Q.simulate_until_max_time(20)
@@ -1449,19 +1557,24 @@ class TestNode(unittest.TestCase):
         # Now with preemption:
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [None],
-                'Class 1': [ciw.dists.Sequential([2, 2, 2, 2, 2, float('inf')])]},
+                "Class 0": [None],
+                "Class 1": [ciw.dists.Sequential([2, 2, 2, 2, 2, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(2.5)], 
-                'Class 1': [ciw.dists.Deterministic(2.5)]},
+                "Class 0": [ciw.dists.Deterministic(2.5)],
+                "Class 1": [ciw.dists.Deterministic(2.5)],
+            },
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["resample"]),
-            class_change_time_distributions=[[None, None], [ciw.dists.Deterministic(1.2), None]]
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["resample"]),
+            class_change_time_distributions=[
+                [None, None],
+                [ciw.dists.Deterministic(1.2), None],
+            ],
         )
         Q = ciw.Simulation(N, exact=26)
         Q.simulate_until_max_time(20)
         all_recs = Q.get_all_records()
-        recs = [r for r in all_recs if r.record_type == 'service']
+        recs = [r for r in all_recs if r.record_type == "service"]
         recs.sort(key=lambda r: r.arrival_date)
         self.assertEqual(float(recs[0].arrival_date), 2)
         self.assertEqual(float(recs[1].arrival_date), 4)
@@ -1485,7 +1598,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(float(recs[4].service_end_date), 16.7)
 
         # Test interrupted service data records
-        interrupted_recs = [r for r in all_recs if r.record_type == 'interrupted service']
+        interrupted_recs = [r for r in all_recs if r.record_type == "interrupted service"]
         self.assertEqual(len(interrupted_recs), 1)
         self.assertEqual(float(interrupted_recs[0].arrival_date), 6)
         self.assertEqual(float(interrupted_recs[0].service_start_date), 7)
@@ -1494,7 +1607,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(float(interrupted_recs[0].service_time), 2.5)
         self.assertTrue(isnan(interrupted_recs[0].service_end_date))
 
-
     def test_preemptive_priorities_resume_options(self):
         """
         One customer of class 1 arrives at date 1. Class 1 customers alternate
@@ -1502,24 +1614,26 @@ class TestNode(unittest.TestCase):
         date 3. They have deterministic service times of 10.
 
         The first customer would be displaced at time 3 and would restart
-        service at time 13. 
-            - Under "restart" we would expect customer 1 to leave at time 19 
+        service at time 13.
+            - Under "restart" we would expect customer 1 to leave at time 19
             (service time = 6)
             - Under "continue" we would expect customer 1 to leave at time 17
             (service time = 6 - 2 = 4)
             - Under "resample" we would expect the customer to leave at time 16
             (service time = 3)
-        """ 
+        """
         # Testing under restart
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
-                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([3, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(10)], 
-                'Class 1': [ciw.dists.Sequential([6, 3])]},
+                "Class 0": [ciw.dists.Deterministic(10)],
+                "Class 1": [ciw.dists.Sequential([6, 3])],
+            },
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["restart"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["restart"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1540,13 +1654,15 @@ class TestNode(unittest.TestCase):
         # Testing under continue
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
-                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([3, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(10)], 
-                'Class 1': [ciw.dists.Sequential([6, 3])]},
+                "Class 0": [ciw.dists.Deterministic(10)],
+                "Class 1": [ciw.dists.Sequential([6, 3])],
+            },
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["continue"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["continue"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1567,13 +1683,15 @@ class TestNode(unittest.TestCase):
         # Testing under resample
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
-                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([3, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(10)], 
-                'Class 1': [ciw.dists.Sequential([6, 3])]},
+                "Class 0": [ciw.dists.Deterministic(10)],
+                "Class 1": [ciw.dists.Sequential([6, 3])],
+            },
             number_of_servers=[1],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["resample"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["resample"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1591,7 +1709,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(r2.service_time, 3)
         self.assertEqual(r2.waiting_time, 12)
 
-
     def test_data_records_for_interrupted_individuals(self):
         """
         Customers arrive every 7 time units. Services last 4 time units.
@@ -1602,18 +1719,18 @@ class TestNode(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7)],
             service_distributions=[ciw.dists.Deterministic(4)],
-            number_of_servers=[([[1, 24], [0, 29], [1, 37]], "continue")]
+            number_of_servers=[([[1, 24], [0, 29], [1, 37]], "continue")],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(36)
         recs = Q.get_all_records()
 
-        recs_ind3 = [r for r in recs if r.id_number==3]
+        recs_ind3 = [r for r in recs if r.id_number == 3]
         self.assertEqual(len(recs_ind3), 2)
 
-        interrupted_record = [r for r in recs_ind3 if r.record_type == 'interrupted service'][0]
-        resumed_record = [r for r in recs_ind3 if r.record_type == 'service'][0]
+        interrupted_record = [r for r in recs_ind3 if r.record_type == "interrupted service"][0]
+        resumed_record = [r for r in recs_ind3 if r.record_type == "service"][0]
         self.assertEqual(interrupted_record.arrival_date, 21)
         self.assertEqual(interrupted_record.service_start_date, 21)
         self.assertEqual(interrupted_record.service_time, 4)
@@ -1623,7 +1740,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(resumed_record.service_time, 1)
         self.assertEqual(resumed_record.service_end_date, 30)
         self.assertEqual(resumed_record.exit_date, 30)
-
 
     def test_preemptive_priorities_resume_options_due_to_schedule(self):
         """
@@ -1635,24 +1751,26 @@ class TestNode(unittest.TestCase):
         servers are on duty from time 5 onwards.
 
         The first customer would be displaced at time 3. Then and would restart
-        service at time 5. 
-            - Under "restart" we would expect customer 1 to leave at time 11 
+        service at time 5.
+            - Under "restart" we would expect customer 1 to leave at time 11
             (service time = 6)
             - Under "continue" we would expect customer 1 to leave at time 9
             (service time = 6 - 2 = 4)
             - Under "resample" we would expect the customer to leave at time 8
             (service time = 3)
-        """ 
+        """
         # Testing under restart
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
-                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([3, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(10)], 
-                'Class 1': [ciw.dists.Sequential([6, 3])]},
+                "Class 0": [ciw.dists.Deterministic(10)],
+                "Class 1": [ciw.dists.Sequential([6, 3])],
+            },
             number_of_servers=[[[1, 5], [2, 100]]],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["restart"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["restart"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1673,13 +1791,15 @@ class TestNode(unittest.TestCase):
         # Testing under continue
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
-                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([3, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(10)], 
-                'Class 1': [ciw.dists.Sequential([6, 3])]},
+                "Class 0": [ciw.dists.Deterministic(10)],
+                "Class 1": [ciw.dists.Sequential([6, 3])],
+            },
             number_of_servers=[[[1, 5], [2, 100]]],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["continue"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["continue"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1700,13 +1820,15 @@ class TestNode(unittest.TestCase):
         # Testing under resample
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Sequential([3, float("inf")])],
-                'Class 1': [ciw.dists.Sequential([1, float('inf')])]},
+                "Class 0": [ciw.dists.Sequential([3, float("inf")])],
+                "Class 1": [ciw.dists.Sequential([1, float("inf")])],
+            },
             service_distributions={
-                'Class 0': [ciw.dists.Deterministic(10)], 
-                'Class 1': [ciw.dists.Sequential([6, 3])]},
+                "Class 0": [ciw.dists.Deterministic(10)],
+                "Class 1": [ciw.dists.Sequential([6, 3])],
+            },
             number_of_servers=[[[1, 5], [2, 100]]],
-            priority_classes=({'Class 0': 0, 'Class 1': 1}, ["resample"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["resample"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1726,14 +1848,27 @@ class TestNode(unittest.TestCase):
 
     def test_do_not_repeat_finish_service_for_blocked_individuals(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Sequential(sequence=[3.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), ciw.dists.Sequential(sequence=[1.0, 1.0, float('inf')])],
-            service_distributions=[ciw.dists.Deterministic(value=1.0), ciw.dists.Deterministic(value=300.0)],
-            routing=[[0.0, 1.0],
-                     [0.0, 0.0]],
+            arrival_distributions=[
+                ciw.dists.Sequential(sequence=[3.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]),
+                ciw.dists.Sequential(sequence=[1.0, 1.0, float("inf")]),
+            ],
+            service_distributions=[
+                ciw.dists.Deterministic(value=1.0),
+                ciw.dists.Deterministic(value=300.0),
+            ],
+            routing=[[0.0, 1.0], [0.0, 0.0]],
             number_of_servers=[10, 2],
-            queue_capacities=[float('inf'), 0]
+            queue_capacities=[float("inf"), 0],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(5)
-        expected_blocked_queue = [(1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9)]
+        expected_blocked_queue = [
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (1, 6),
+            (1, 7),
+            (1, 8),
+            (1, 9),
+        ]
         self.assertEqual(set(Q.nodes[2].blocked_queue), set(expected_blocked_queue))

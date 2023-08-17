@@ -3,17 +3,19 @@ from .arrival_node import ArrivalNode
 from decimal import Decimal, getcontext
 from .server import Server
 
+
 class ExactNode(Node):
     """
     Inherits from the Node class, implements a more
     precise version of addition to fix discrepencies
     with floating point numbers.
     """
+
     def create_starting_servers(self):
         """
         Initialise the servers
         """
-        return [Server(self, i + 1, Decimal('0.0')) for i in range(self.c)]
+        return [Server(self, i + 1, Decimal("0.0")) for i in range(self.c)]
 
     def increment_time(self, original, increment):
         """
@@ -25,7 +27,13 @@ class ExactNode(Node):
         """
         Returns a service time for the given customer class
         """
-        return Decimal(str(self.simulation.service_times[self.id_number][ind.customer_class]._sample(self.simulation.current_time, ind=ind)))
+        return Decimal(
+            str(
+                self.simulation.service_times[self.id_number][
+                    ind.customer_class
+                ]._sample(self.simulation.current_time, ind=ind)
+            )
+        )
 
     def get_now(self):
         """
@@ -40,6 +48,7 @@ class ExactArrivalNode(ArrivalNode):
     more precise version of addition to fix discrepencies
     with floating point numbers.
     """
+
     def increment_time(self, original, increment):
         """
         Increments the original time by the increment
@@ -50,5 +59,10 @@ class ExactArrivalNode(ArrivalNode):
         """
         Samples the inter-arrival time for next class and node.
         """
-        return Decimal(str(self.simulation.inter_arrival_times[nd][clss]._sample(self.simulation.current_time)))
-
+        return Decimal(
+            str(
+                self.simulation.inter_arrival_times[nd][clss]._sample(
+                    self.simulation.current_time
+                )
+            )
+        )

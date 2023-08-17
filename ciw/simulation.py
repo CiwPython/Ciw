@@ -11,19 +11,24 @@ from .server import Server
 from ciw import trackers
 from ciw import deadlock
 
+
 class Simulation(object):
     """
     The Simulation class, that is the engine of the simulation.
     """
-    def __init__(self, network,
-                 exact=False,
-                 name='Simulation',
-                 tracker=trackers.StateTracker(),
-                 deadlock_detector=deadlock.NoDetection(),
-                 node_class=None,
-                 arrival_node_class=None,
-                 individual_class=None,
-                 server_class=None):
+
+    def __init__(
+        self,
+        network,
+        exact=False,
+        name="Simulation",
+        tracker=trackers.StateTracker(),
+        deadlock_detector=deadlock.NoDetection(),
+        node_class=None,
+        arrival_node_class=None,
+        individual_class=None,
+        server_class=None,
+    ):
         """
         Initialise an instance of the simualation.
         """
@@ -43,7 +48,7 @@ class Simulation(object):
         self.show_simulation_to_distributions()
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [node_type(i + 1, self) for i, node_type in enumerate(self.NodeTypes)]
-        self.nodes = ([self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()])
+        self.nodes = [self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()]
         self.nodes[0].initialise()
         self.statetracker = tracker
         self.statetracker.initialise(self)
@@ -62,36 +67,36 @@ class Simulation(object):
         Create the dictionary of arrival time distribution
         objects for each node for each customer class.
         """
-        return {node + 1: {
-            clss: copy.deepcopy(
-                self.network.customer_classes[clss].arrival_distributions[node]
-            )
-            for clss in range(self.network.number_of_classes)}
-            for node in range(self.network.number_of_nodes)}
+        return {
+            node + 1: {
+                clss: copy.deepcopy(self.network.customer_classes[clss].arrival_distributions[node])
+                for clss in range(self.network.number_of_classes)
+            } for node in range(self.network.number_of_nodes)
+        }
 
     def find_service_dists(self):
         """
         Create the dictionary of service time distribution
         objects for each node for each customer class.
         """
-        return {node + 1: {
-            clss: copy.deepcopy(
-                self.network.customer_classes[clss].service_distributions[node]
-            )
-            for clss in range(self.network.number_of_classes)}
-            for node in range(self.network.number_of_nodes)}
+        return {
+            node + 1: {
+                clss: copy.deepcopy(self.network.customer_classes[clss].service_distributions[node])
+                for clss in range(self.network.number_of_classes)
+            } for node in range(self.network.number_of_nodes)
+        }
 
     def find_batching_dists(self):
         """
         Create the dictionary of batch size distribution
         objects for each node for each class.
         """
-        return {node + 1: {
-            clss: copy.deepcopy(
-                self.network.customer_classes[clss].batching_distributions[node]
-            )
-            for clss in range(self.network.number_of_classes)}
-            for node in range(self.network.number_of_nodes)}
+        return {
+            node + 1: {
+                clss: copy.deepcopy(self.network.customer_classes[clss].batching_distributions[node])
+                for clss in range(self.network.number_of_classes)
+            } for node in range(self.network.number_of_nodes)
+        }
 
     def show_simulation_to_distributions(self):
         """
@@ -124,10 +129,16 @@ class Simulation(object):
         """
         Returns list of all individuals with at least one data record.
         """
-        return [individual for node in self.nodes[1:] for individual in
-        node.all_individuals if len(individual.data_records) > 0]
+        return [
+            individual
+            for node in self.nodes[1:]
+            for individual in node.all_individuals
+            if len(individual.data_records) > 0
+        ]
 
-    def get_all_records(self, only=["service", "baulk", "rejection", "renege", "interrupted service"]):
+    def get_all_records(
+        self, only=["service", "baulk", "rejection", "renege", "interrupted service"]
+    ):
         """
         Gets all data records from all individuals.
         """
@@ -139,7 +150,9 @@ class Simulation(object):
         self.all_records = records
         return records
 
-    def set_classes(self, node_class, arrival_node_class, individual_class, server_class):
+    def set_classes(
+        self, node_class, arrival_node_class, individual_class, server_class
+    ):
         """
         Sets the type of ArrivalNode and Node classes being used
         in the Simulation model (if customer classes are used.)
@@ -154,7 +167,7 @@ class Simulation(object):
                 self.NodeTypes = [node_class for _ in range(self.network.number_of_nodes)]
             else:
                 if len(node_class) != self.network.number_of_nodes:
-                    raise ValueError('Ensure consistant number of nodes is used throughout.')
+                    raise ValueError("Ensure consistant number of nodes is used throughout.")
                 self.NodeTypes = node_class
         else:
             self.NodeTypes = [Node for _ in range(self.network.number_of_nodes)]
@@ -188,7 +201,6 @@ class Simulation(object):
         self.current_time = next_active_node.next_event_date
         while not deadlocked:
             next_active_node = self.event_and_return_nextnode(next_active_node)
-
             current_state = self.statetracker.hash_state()
             if current_state not in self.times_dictionary:
                 self.times_dictionary[current_state] = self.current_time
@@ -200,9 +212,10 @@ class Simulation(object):
             self.current_time = next_active_node.next_event_date
 
         self.wrap_up_servers(time_of_deadlock)
-        self.times_to_deadlock = {state:
-            time_of_deadlock - self.times_dictionary[state]
-            for state in self.times_dictionary.keys()}
+        self.times_to_deadlock = {
+            state: time_of_deadlock - self.times_dictionary[state]
+            for state in self.times_dictionary.keys()
+        }
 
     def simulate_until_max_time(self, max_simulation_time, progress_bar=False):
         """
@@ -231,10 +244,9 @@ class Simulation(object):
             self.progress_bar.update(remaining_time)
             self.progress_bar.close()
 
-    def simulate_until_max_customers(self,
-                                     max_customers,
-                                     progress_bar=False,
-                                     method='Finish'):
+    def simulate_until_max_customers(
+        self, max_customers, progress_bar=False, method="Finish"
+    ):
         """
         Runs the simulation until max_customers is reached:
 
@@ -252,12 +264,12 @@ class Simulation(object):
         if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_customers)
 
-        if method == 'Finish':
-            check = lambda : self.nodes[-1].number_of_completed_individuals
-        elif method == 'Arrive':
-            check = lambda : self.nodes[0].number_of_individuals
-        elif method == 'Accept':
-            check = lambda : self.nodes[0].number_accepted_individuals
+        if method == "Finish":
+            check = lambda: self.nodes[-1].number_of_completed_individuals
+        elif method == "Arrive":
+            check = lambda: self.nodes[0].number_of_individuals
+        elif method == "Accept":
+            check = lambda: self.nodes[0].number_accepted_individuals
         else:
             raise ValueError("Invalid 'method' for 'simulate_until_max_customers'.")
 
@@ -265,7 +277,7 @@ class Simulation(object):
             old_check = check()
             next_active_node = self.event_and_return_nextnode(next_active_node)
             self.statetracker.timestamp()
-            
+
             if progress_bar:
                 remaining_time = max_customers - self.progress_bar.n
                 time_increment = check() - old_check

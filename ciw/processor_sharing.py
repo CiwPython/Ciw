@@ -1,5 +1,6 @@
 from .node import Node
 
+
 class PSNode(Node):
     """
     Class for a Limited Processor Sharing node, used instead of the Node class.
@@ -11,6 +12,7 @@ class PSNode(Node):
         number of customers allowed to share the service load at a time.
         Customers arriving when the node is overcapacity wait in line.
     """
+
     def __init__(self, id_, simulation):
         """
         Initialises the node. Differs to the Node class by:
@@ -24,8 +26,8 @@ class PSNode(Node):
         super().__init__(id_, simulation)
         self.ps_threshold = self.simulation.network.service_centres[id_ - 1].ps_threshold
         self.ps_capacity = self.c
-        self.c = float('inf')
-        
+        self.c = float("inf")
+
     def update_all_service_end_dates(self):
         """
         For each individual reveiving service, calculates the projected end
@@ -45,7 +47,7 @@ class PSNode(Node):
 
         self.last_occupancy = next_occupancy
         self.date_last_update = self.simulation.current_time
-    
+
     def begin_service_if_possible_accept(self, next_individual):
         """
         Begins the service of the next individual (at acceptance point):
@@ -74,7 +76,7 @@ class PSNode(Node):
           - update all customers' service times
         """
         if self.number_of_individuals >= self.ps_capacity:
-            ind = self.all_individuals[self.ps_capacity-1]
+            ind = self.all_individuals[self.ps_capacity - 1]
             ind.service_start_date = self.get_now()
             ind.date_last_update = self.get_now()
             ind.service_time = self.get_service_time(ind)

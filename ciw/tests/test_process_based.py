@@ -3,11 +3,14 @@ import ciw
 import random
 from collections import Counter
 
+
 def generator_function_1(ind):
     return [1, 1, 1]
 
+
 def generator_function_2(ind):
     return [1, 1, 2, 1, 3]
+
 
 def generator_function_3(ind):
     rnd = random.random()
@@ -17,14 +20,18 @@ def generator_function_3(ind):
         return [1, 1]
     return [1, 3, 2, 3]
 
+
 def generator_function_4(ind):
     return [2, 1, 3, 1, 1]
+
 
 def generator_function_5(ind):
     return [3, 2, 3, 2, 3]
 
+
 def generator_function_6(ind):
     return [3]
+
 
 def generator_function_7(ind):
     rnd = random.random()
@@ -32,10 +39,12 @@ def generator_function_7(ind):
         return [2, 1, 2]
     return [2, 1, 1, 2]
 
+
 def generator_function_8(ind):
     if ind.customer_class == 0:
         return [1]
     return [1, 1, 1]
+
 
 class TestProcessBased(unittest.TestCase):
     def test_network_takes_routing_function(self):
@@ -43,18 +52,18 @@ class TestProcessBased(unittest.TestCase):
             arrival_distributions=[ciw.dists.Exponential(1)],
             service_distributions=[ciw.dists.Exponential(2)],
             number_of_servers=[1],
-            routing=[generator_function_1]
+            routing=[generator_function_1],
         )
         self.assertEqual(N.process_based, True)
         Q = ciw.Simulation(N)
-        self.assertEqual(str(Q), 'Simulation')
+        self.assertEqual(str(Q), "Simulation")
 
     def test_individuals_recieve_route(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(1)],
             service_distributions=[ciw.dists.Deterministic(1000)],
             number_of_servers=[1],
-            routing=[generator_function_1]
+            routing=[generator_function_1],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(4.5)
@@ -65,9 +74,13 @@ class TestProcessBased(unittest.TestCase):
     def test_routing_correct(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Sequential([1, 10000]), None, None],
-            service_distributions=[ciw.dists.Deterministic(2), ciw.dists.Deterministic(2), ciw.dists.Deterministic(2)],
+            service_distributions=[
+                ciw.dists.Deterministic(2),
+                ciw.dists.Deterministic(2),
+                ciw.dists.Deterministic(2),
+            ],
             number_of_servers=[1, 1, 1],
-            routing=[generator_function_2, ciw.no_routing, ciw.no_routing]
+            routing=[generator_function_2, ciw.no_routing, ciw.no_routing],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(4)
@@ -98,16 +111,25 @@ class TestProcessBased(unittest.TestCase):
     def test_probablistic_process_routes(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1), None, None],
-            service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
+            service_distributions=[
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+            ],
             number_of_servers=[1, 1, 1],
-            routing=[generator_function_3, ciw.no_routing, ciw.no_routing]
+            routing=[generator_function_3, ciw.no_routing, ciw.no_routing],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method='Finish')
+        Q.simulate_until_max_customers(1000, method="Finish")
         inds = Q.nodes[-1].all_individuals
-        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter,  Counter({(1, 3, 2, 3): 503, (1, 2, 2, 3, 2): 397, (1, 1): 100}))
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
+        self.assertEqual(
+            routes_counter,
+            Counter({(1, 3, 2, 3): 503, (1, 2, 2, 3, 2): 397, (1, 1): 100}),
+        )
 
     def test_error_when_ind_sent_wrong_place(self):
         N = ciw.create_network(
@@ -121,7 +143,11 @@ class TestProcessBased(unittest.TestCase):
 
         N = ciw.create_network(
             arrival_distributions=[None, ciw.dists.Exponential(1), None],
-            service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
+            service_distributions=[
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+            ],
             number_of_servers=[1, 1, 1],
             routing=[ciw.no_routing, generator_function_2, ciw.no_routing],
         )
@@ -130,86 +156,141 @@ class TestProcessBased(unittest.TestCase):
 
     def test_routing_from_different_starting_points(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), None],
-            service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
+            arrival_distributions=[
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+                None,
+            ],
+            service_distributions=[
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+            ],
             number_of_servers=[1, 1, 1],
-            routing=[generator_function_2, generator_function_4, ciw.no_routing]
+            routing=[generator_function_2, generator_function_4, ciw.no_routing],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method='Finish')
+        Q.simulate_until_max_customers(1000, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(1, 1, 2, 1, 3): 503, (2, 1, 3, 1, 1): 497}))
-
-        N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
-            service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
-            number_of_servers=[1,1,1],
-            routing=[generator_function_1, generator_function_4, generator_function_5]
+        self.assertEqual(
+            routes_counter,
+            Counter({(1, 1, 2, 1, 3): 503, (2, 1, 3, 1, 1): 497})
         )
-        ciw.seed(0)
-        Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method='Finish')
-        inds = Q.nodes[-1].all_individuals
-        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(3, 2, 3, 2, 3): 510, (1, 1, 1): 303, (2, 1, 3, 1, 1): 187}))
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
-            service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
+            arrival_distributions=[
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+            ],
+            service_distributions=[
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+            ],
             number_of_servers=[1, 1, 1],
-            routing=[generator_function_2, generator_function_4, generator_function_5]
+            routing=[generator_function_1, generator_function_4, generator_function_5],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method='Finish')
+        Q.simulate_until_max_customers(1000, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(3, 2, 3, 2, 3): 494, (1, 1, 2, 1, 3): 262, (2, 1, 3, 1, 1): 244}))
+        self.assertEqual(
+            routes_counter,
+            Counter({(3, 2, 3, 2, 3): 510, (1, 1, 1): 303, (2, 1, 3, 1, 1): 187}),
+        )
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
-            service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
+            arrival_distributions=[
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+            ],
+            service_distributions=[
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+            ],
             number_of_servers=[1, 1, 1],
-            routing=[generator_function_2, generator_function_4, generator_function_6]
+            routing=[generator_function_2, generator_function_4, generator_function_5],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method='Finish')
+        Q.simulate_until_max_customers(1000, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(3,): 779, (1, 1, 2, 1, 3): 106, (2, 1, 3, 1, 1): 115}))
+        self.assertEqual(
+            routes_counter,
+            Counter({(3, 2, 3, 2, 3): 494, (1, 1, 2, 1, 3): 262, (2, 1, 3, 1, 1): 244}),
+        )
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), None],
-            service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
-            number_of_servers=[1,1,1],
-            routing=[generator_function_1, generator_function_7, ciw.no_routing]
+            arrival_distributions=[
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+            ],
+            service_distributions=[
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+            ],
+            number_of_servers=[1, 1, 1],
+            routing=[generator_function_2, generator_function_4, generator_function_6],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method='Finish')
+        Q.simulate_until_max_customers(1000, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
-        self.assertEqual(routes_counter, Counter({(2, 1, 1, 2): 343, (2, 1, 2): 336, (1, 1, 1): 321}))
+        self.assertEqual(
+            routes_counter,
+            Counter({(3,): 779, (1, 1, 2, 1, 3): 106, (2, 1, 3, 1, 1): 115}),
+        )
+
+        N = ciw.create_network(
+            arrival_distributions=[
+                ciw.dists.Exponential(1),
+                ciw.dists.Exponential(1),
+                None,
+            ],
+            service_distributions=[
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+                ciw.dists.Exponential(2),
+            ],
+            number_of_servers=[1, 1, 1],
+            routing=[generator_function_1, generator_function_7, ciw.no_routing],
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(1000, method="Finish")
+        inds = Q.nodes[-1].all_individuals
+        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
+        self.assertEqual(
+            routes_counter,
+            Counter({(2, 1, 1, 2): 343, (2, 1, 2): 336, (1, 1, 1): 321})
+        )
 
     def test_customer_class_based_routing(self):
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.Exponential(1)],
-                'Class 1': [ciw.dists.Exponential(1)],
+                "Class 0": [ciw.dists.Exponential(1)],
+                "Class 1": [ciw.dists.Exponential(1)],
             },
             service_distributions={
-                'Class 0': [ciw.dists.Exponential(2)],
-                'Class 1': [ciw.dists.Exponential(2)],
+                "Class 0": [ciw.dists.Exponential(2)],
+                "Class 1": [ciw.dists.Exponential(2)],
             },
             number_of_servers=[1],
-            routing=[generator_function_8]
+            routing=[generator_function_8],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method='Finish')
+        Q.simulate_until_max_customers(1000, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = set([tuple([ind.customer_class, tuple(dr.node for dr in ind.data_records)]) for ind in inds])
         self.assertEqual(routes_counter, {(1, (1, 1, 1)), (0, (1,))})

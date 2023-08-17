@@ -1,26 +1,27 @@
 import unittest
 import ciw
 
+
 class TestExitNode(unittest.TestCase):
     def test_init_method(self):
         n = ciw.ExitNode()
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.all_individuals, [])
-        self.assertEqual(n.next_event_date, float('inf'))
-        self.assertEqual(n.node_capacity, float('inf'))
+        self.assertEqual(n.next_event_date, float("inf"))
+        self.assertEqual(n.node_capacity, float("inf"))
 
         n = ciw.ExitNode()
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.all_individuals, [])
-        self.assertEqual(n.next_event_date, float('inf'))
-        self.assertEqual(n.node_capacity, float('inf'))
+        self.assertEqual(n.next_event_date, float("inf"))
+        self.assertEqual(n.node_capacity, float("inf"))
 
     def test_repr_method(self):
         n = ciw.ExitNode()
-        self.assertEqual(str(n), 'Exit Node')
+        self.assertEqual(str(n), "Exit Node")
 
         n = ciw.ExitNode()
-        self.assertEqual(str(n), 'Exit Node')
+        self.assertEqual(str(n), "Exit Node")
 
     def test_accept_method(self):
         n = ciw.ExitNode()
@@ -36,13 +37,12 @@ class TestExitNode(unittest.TestCase):
         n = ciw.ExitNode()
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.all_individuals, [])
-        self.assertEqual(n.next_event_date, float('inf'))
-        self.assertEqual(n.node_capacity, float('inf'))
+        self.assertEqual(n.next_event_date, float("inf"))
+        self.assertEqual(n.node_capacity, float("inf"))
 
         n.update_next_event_date()
 
         self.assertEqual(n.id_number, -1)
         self.assertEqual(n.all_individuals, [])
-        self.assertEqual(n.next_event_date, float('inf'))
-        self.assertEqual(n.node_capacity, float('inf'))
-
+        self.assertEqual(n.next_event_date, float("inf"))
+        self.assertEqual(n.node_capacity, float("inf"))

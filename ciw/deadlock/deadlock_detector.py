@@ -1,11 +1,13 @@
 import networkx as nx
 
+
 class NoDetection(object):
     """
     A generic class for all deadlock detector classes to inherit from.
     Using this class is equivalent to having no deadlock detection
     capabilities.
     """
+
     def __init__(self):
         """
         Initialises the detection mechanism class.
@@ -23,7 +25,7 @@ class NoDetection(object):
         Returns True is deadlock is reached, False otherwise.
         """
         return False
-    
+
     def action_at_attach_server(self, node, server, individual):
         """
         The action taken at the 'attach_server' method of the node.
@@ -54,6 +56,7 @@ class StateDigraph(NoDetection):
           contains k.
     Deadlock is equivalent to a knot in the directed graph.
     """
+
     def __init__(self):
         """
         Initialises the state digraph detection mechanism class.
@@ -65,7 +68,7 @@ class StateDigraph(NoDetection):
         Initialises the state digraph when the node is created.
         Adds the servers of that node if c < Inf.
         """
-        if node.c < float('Inf'):
+        if node.c < float("Inf"):
             self.statedigraph.add_nodes_from([str(s) for s in node.servers])
 
     def detect_deadlock(self):
@@ -103,8 +106,10 @@ class StateDigraph(NoDetection):
             it needs to be added back in.
         """
         for blq in node.blocked_queue:
-            inds = [ind for ind in node.simulation.nodes[
-                blq[0]].all_individuals if ind.id_number == blq[1]]
+            inds = [
+                ind for ind in node.simulation.nodes[blq[0]].all_individuals
+                if ind.id_number == blq[1]
+            ]
             ind = inds[0]
             if ind != individual:
                 self.statedigraph.add_edge(str(ind.server), str(server))
@@ -123,8 +128,6 @@ class StateDigraph(NoDetection):
           - Remove any edges of servers who have been detatched.
         """
         self.statedigraph.remove_edges_from(
-            list(
-                self.statedigraph.in_edges(str(server))
-            ) + list(
-                self.statedigraph.out_edges(str(server)))
-            )
+            list(self.statedigraph.in_edges(str(server)))
+            + list(self.statedigraph.out_edges(str(server)))
+        )

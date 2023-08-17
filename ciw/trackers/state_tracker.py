@@ -1,9 +1,11 @@
 from __future__ import division
 
+
 class StateTracker(object):
     """
     A generic class to record system's state.
     """
+
     def initialise(self, simulation):
         """
         Initialises the state tracker class.
@@ -59,21 +61,21 @@ class StateTracker(object):
 
         Input:
             observation_period: tuple
-                A tuple given by the user to identify the observation period 
+                A tuple given by the user to identify the observation period
                 that the probabilities will be computed on, by default is from
                 0 to infinity
-            
+
         Returns:
             Dictionary of states as keys and probabilities as values
         """
         start = observation_period[0]
         end = observation_period[1]
         steady_state_dictionary = {}
-        prev_date = self.history[0][0]    
+        prev_date = self.history[0][0]
         prev_state = self.history[0][1]
 
         if start < 0 or end <= start:
-            raise ValueError('Observation period need to be a positive interval above zero')
+            raise ValueError("Observation period need to be a positive interval above zero")
 
         for event in self.history:
             date = event[0]
@@ -82,24 +84,24 @@ class StateTracker(object):
                 break
             date_diff = self.simulation.nodes[1].increment_time(date, -max(prev_date, start))
             if start < date < end:
-                if (prev_state not in steady_state_dictionary): 
+                if prev_state not in steady_state_dictionary:
                     steady_state_dictionary[prev_state] = date_diff
                 else:
-                    steady_state_dictionary[prev_state] += date_diff           
+                    steady_state_dictionary[prev_state] += date_diff
             prev_date = date
             prev_state = state
 
         if end != float("Inf"):
             date_diff = self.simulation.nodes[1].increment_time(end, -prev_date)
-        if (prev_state not in steady_state_dictionary): 
+        if prev_state not in steady_state_dictionary:
             steady_state_dictionary[prev_state] = date_diff
         else:
-            steady_state_dictionary[prev_state] += date_diff  
+            steady_state_dictionary[prev_state] += date_diff
 
         tot = sum(steady_state_dictionary.values())
         for state in steady_state_dictionary:
             steady_state_dictionary[state] /= tot
-            
+
         return steady_state_dictionary
 
 
@@ -112,6 +114,7 @@ class SystemPopulation(StateTracker):
         3
         This denotes 3 customers in the whole system.
     """
+
     def initialise(self, simulation):
         """
         Initialises the state tracker class.
@@ -154,13 +157,13 @@ class NodePopulation(StateTracker):
         This denotes 3 customers at the first node, and 1 customer at the
         second node.
     """
+
     def initialise(self, simulation):
         """
         Initialises the state tracker class.
         """
         self.simulation = simulation
-        self.state = [0 for i in range(
-            self.simulation.network.number_of_nodes)]
+        self.state = [0 for i in range(self.simulation.network.number_of_nodes)]
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node, ind):
@@ -198,6 +201,7 @@ class NodePopulationSubset(StateTracker):
         This denotes 3 customers at the first node, and 1 customer at the
         second node.
     """
+
     def __init__(self, observed_nodes):
         """
         Pre-initialises the object with keyward `observed_nodes`
@@ -241,9 +245,6 @@ class NodePopulationSubset(StateTracker):
         return tuple(self.state)
 
 
-
-
-
 class NodeClassMatrix(StateTracker):
     """
     The node-class matrix tracker records the number of customers of each
@@ -256,14 +257,16 @@ class NodeClassMatrix(StateTracker):
         Class 0), and 1 customer at the second node (0 of Class 0, 1 of
         Class 1).
     """
+
     def initialise(self, simulation):
         """
         Initialises the state tracker class.
         """
         self.simulation = simulation
-        self.state = [[0 for cls in range(
-            self.simulation.network.number_of_classes)] for i in range(
-            self.simulation.network.number_of_nodes)]
+        self.state = [
+            [0 for cls in range(self.simulation.network.number_of_classes)]
+            for i in range(self.simulation.network.number_of_nodes)
+        ]
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node, ind):
@@ -309,13 +312,13 @@ class NaiveBlocking(StateTracker):
         are blocked, 5 customers at the second node, 4 of which
         are blocked.
     """
+
     def initialise(self, simulation):
         """
         Initialises the naive blocking tracker class.
         """
         self.simulation = simulation
-        self.state = [[0, 0] for i in range(
-            self.simulation.network.number_of_nodes)]
+        self.state = [[0, 0] for i in range(self.simulation.network.number_of_nodes)]
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
     def change_state_accept(self, node, ind):
@@ -363,15 +366,20 @@ class MatrixBlocking(StateTracker):
         the second node to the first. The numbers denote the order
         at which they became blocked.
     """
+
     def initialise(self, simulation):
         """
         Initialises the matrix blocking tracker class.
         """
         self.simulation = simulation
-        self.state = [[[[] for i in range(
-            self.simulation.network.number_of_nodes)] for i in range(
-            self.simulation.network.number_of_nodes)], [0 for i in range(
-            self.simulation.network.number_of_nodes)]]
+        self.state = [
+            [
+                [
+                    [] for i in range(self.simulation.network.number_of_nodes)
+                ] for i in range(self.simulation.network.number_of_nodes)
+            ],
+            [0 for i in range(self.simulation.network.number_of_nodes)],
+        ]
         self.increment = 1
         self.history = [[self.simulation.current_time, self.hash_state()]]
 
@@ -395,8 +403,7 @@ class MatrixBlocking(StateTracker):
         if blocked:
             self.state[-1][node.id_number - 1] -= 1
             self.increment -= 1
-            position = self.find_blocked_position_and_pop(
-                node, destination)
+            position = self.find_blocked_position_and_pop(node, destination)
             self.adjust_positions(position)
         else:
             self.state[-1][node.id_number - 1] -= 1
@@ -424,6 +431,9 @@ class MatrixBlocking(StateTracker):
         Returns a hashable state.
         """
         naive = tuple(self.state[-1])
-        matrix = tuple(tuple(tuple(obs for obs in col)
-            for col in row) for row in self.state[0])
+        matrix = tuple(
+            tuple(
+                tuple(obs for obs in col) for col in row
+            ) for row in self.state[0]
+        )
         return (matrix, naive)

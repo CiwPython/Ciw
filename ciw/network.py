@@ -7,16 +7,19 @@ class ServiceCentre(object):
       - server schedules + preemtion status
       - class change matrix
     """
-    def __init__(self,
-                 number_of_servers,
-                 queueing_capacity,
-                 class_change_matrix=None,
-                 schedule=None,
-                 schedule_preempt=False,
-                 priority_preempt=False,
-                 ps_threshold=1,
-                 server_priority_function=None,
-                 service_discipline=None):
+
+    def __init__(
+        self,
+        number_of_servers,
+        queueing_capacity,
+        class_change_matrix=None,
+        schedule=None,
+        schedule_preempt=False,
+        priority_preempt=False,
+        ps_threshold=1,
+        server_priority_function=None,
+        service_discipline=None,
+    ):
         """
         Initialises the ServiceCentre object.
         """
@@ -31,6 +34,7 @@ class ServiceCentre(object):
         self.service_discipline = service_discipline
         self.class_change_time = False
 
+
 class CustomerClass(object):
     """
     An information store for each customer class in the queueing network.
@@ -42,16 +46,19 @@ class CustomerClass(object):
       - baulking functions
       - batching distributions
     """
-    def __init__(self,
-                 arrival_distributions,
-                 service_distributions,
-                 routing,
-                 priority_class,
-                 baulking_functions,
-                 batching_distributions,
-                 reneging_time_distributions,
-                 reneging_destinations,
-                 class_change_time_distributions):
+
+    def __init__(
+        self,
+        arrival_distributions,
+        service_distributions,
+        routing,
+        priority_class,
+        baulking_functions,
+        batching_distributions,
+        reneging_time_distributions,
+        reneging_destinations,
+        class_change_time_distributions,
+    ):
         """
         Initialises the CutomerCass object.
         """
@@ -65,6 +72,7 @@ class CustomerClass(object):
         self.reneging_destinations = reneging_destinations
         self.class_change_time_distributions = class_change_time_distributions
 
+
 class Network(object):
     """
     An information store the queueing network.
@@ -72,6 +80,7 @@ class Network(object):
     service centre, and a list of CustomerClass objects
     for each customer class.
     """
+
     def __init__(self, service_centres, customer_classes):
         """
         Initialises the Network object
@@ -80,7 +89,9 @@ class Network(object):
         self.customer_classes = customer_classes
         self.number_of_nodes = len(service_centres)
         self.number_of_classes = len(customer_classes)
-        self.number_of_priority_classes = len(set([clss.priority_class for clss in customer_classes]))
+        self.number_of_priority_classes = len(
+            set([clss.priority_class for clss in customer_classes])
+        )
         self.priority_class_mapping = {i: clss.priority_class for i, clss in enumerate(customer_classes)}
         for nd_id, node in enumerate(self.service_centres):
             if all(clss.reneging_time_distributions[nd_id] == None for clss in self.customer_classes):

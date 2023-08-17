@@ -57,7 +57,7 @@ class TestIndividual(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(7.0)],
             service_distributions=[ciw.dists.Exponential(14.0)],
-            number_of_servers=[1]
+            number_of_servers=[1],
         )
         Q = ciw.Simulation(N)
         i = ciw.Individual(5, 0, 2, simulation=Q)
@@ -77,11 +77,9 @@ class TestIndividual(unittest.TestCase):
 
     def test_repr_method(self):
         i = ciw.Individual(3, 6)
-        self.assertEqual(str(i), 'Individual 3')
+        self.assertEqual(str(i), "Individual 3")
 
-    @given(id_num = integers(),
-           customer_class = integers(),
-           priority_class=integers())
+    @given(id_num=integers(), customer_class=integers(), priority_class=integers())
     def test_init_method_1h(self, id_num, customer_class, priority_class):
         i = ciw.Individual(id_num, customer_class, priority_class)
         self.assertEqual(i.customer_class, customer_class)
@@ -97,7 +95,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.queue_size_at_departure, False)
         self.assertEqual(i.data_records, [])
 
-    @given(id_num = integers())
+    @given(id_num=integers())
     def test_init_method_2h(self, id_num):
         i = ciw.Individual(id_num)
         self.assertEqual(i.customer_class, 0)
@@ -113,8 +111,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.queue_size_at_departure, False)
         self.assertEqual(i.data_records, [])
 
-    @given(id_num = integers(),
-           customer_class = integers())
+    @given(id_num=integers(), customer_class=integers())
     def test_repr_methodh(self, id_num, customer_class):
         i = ciw.Individual(id_num, customer_class)
-        self.assertEqual(str(i), 'Individual ' + str(id_num))
+        self.assertEqual(str(i), "Individual " + str(id_num))

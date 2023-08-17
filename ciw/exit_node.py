@@ -2,6 +2,7 @@ class ExitNode(object):
     """
     Class for the exit node on our network.
     """
+
     def __init__(self):
         """
         Initialise the exit node.
@@ -17,7 +18,7 @@ class ExitNode(object):
         """
         Representation of the exit node.
         """
-        return 'Exit Node'
+        return "Exit Node"
 
     def accept(self, next_individual, completed=True):
         """
