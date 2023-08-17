@@ -1,11 +1,112 @@
 import unittest
 import ciw
 
+N_params = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(4.0),
+                    ciw.dists.Exponential(1.0)],
+        "Class 1": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(6.0),
+                    ciw.dists.Exponential(4.0)],
+        "Class 2": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(1.0),
+                    ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(0.5)]},
+    number_of_servers=[9, 10, 8, 8],
+    queue_capacities=[20, float("Inf"), 30, float("Inf")],
+    service_distributions={
+        "Class 0": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Gamma(0.4, 0.6),
+                    ciw.dists.Deterministic(0.5)],
+        "Class 1": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Triangular(0.1, 0.8, 0.85),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(5.0)],
+        "Class 2": [ciw.dists.Deterministic(0.3),
+                    ciw.dists.Deterministic(0.2),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(9.0)]},
+    routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
+                         [0.2, 0.2, 0.0, 0.1],
+                         [0.0, 0.8, 0.1, 0.1],
+                         [0.4, 0.1, 0.1, 0.0]],
+             "Class 1": [[0.6, 0.0, 0.0, 0.2],
+                         [0.1, 0.1, 0.2, 0.2],
+                         [0.9, 0.0, 0.0, 0.0],
+                         [0.2, 0.1, 0.1, 0.1]],
+             "Class 2": [[0.0, 0.0, 0.4, 0.3],
+                         [0.1, 0.1, 0.1, 0.1],
+                         [0.1, 0.3, 0.2, 0.2],
+                         [0.0, 0.0, 0.0, 0.3]]}
+)
+
+N_classchange = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(0.05),
+                    ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04),
+                    ciw.dists.Exponential(0.06)]},
+    number_of_servers=[4, 3],
+    queue_capacities=[float("Inf"), 10],
+    service_distributions={
+        "Class 0": [ciw.dists.Deterministic(5.0),
+                    ciw.dists.Deterministic(5.0)],
+        "Class 1": [ciw.dists.Deterministic(10.0),
+                    ciw.dists.Deterministic(10.0)]},
+    routing={
+        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
+        "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
+    class_change_matrices={
+        "Node 1": [[0.5, 0.5], [0.5, 0.5]],
+        "Node 2": [[1.0, 0.0], [0.0, 1.0]]},
+)
+
+N_priorities = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(0.05),
+                    ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04),
+                    ciw.dists.Exponential(0.06)]},
+    number_of_servers=[4, 3],
+    queue_capacities=[float('inf'), 10],
+    service_distributions={
+        "Class 0": [ciw.dists.Deterministic(5.0),
+                    ciw.dists.Deterministic(5.0)],
+        "Class 1": [ciw.dists.Deterministic(10.0),
+                    ciw.dists.Deterministic(10.0)]},
+    routing={
+        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
+        "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
+    priority_classes={"Class 0": 0, "Class 1": 1}
+)
+
+N_schedule = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(0.05),
+                    ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04),
+                    ciw.dists.Exponential(0.06)]},
+    number_of_servers=[
+        [[1, 30], [2, 60], [1, 90], [3, 100]], 3],
+    queue_capacities=[float("Inf"), 10],
+    service_distributions={
+        "Class 0": [ciw.dists.Deterministic(5.0),
+                    ciw.dists.Exponential(0.2)],
+        "Class 1": [ciw.dists.Deterministic(10.0),
+                    ciw.dists.Exponential(0.1)]},
+    routing={
+        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
+        "Class 1": [[0.8, 0.1], [0.2, 0.0]]}
+)
+
+
 class TestProcessorSharing(unittest.TestCase):
     def test_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'),
-            node_class=ciw.PSNode)
+        Q = ciw.Simulation(N_params, node_class=ciw.PSNode)
         N = ciw.PSNode(1, Q)
         self.assertEqual(N.ps_capacity, 9)
         self.assertEqual(N.c, float('inf'))
@@ -18,9 +119,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(N.interrupted_individuals, [])
         self.assertEqual(N.last_occupancy, 0)
 
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_change_class.yml'),
-            node_class=ciw.PSNode)
+        Q = ciw.Simulation(N_classchange, node_class=ciw.PSNode)
         N1 = Q.transitive_nodes[0]
         self.assertEqual(N1.class_change, [[0.5, 0.5],
                                            [0.5, 0.5]])
@@ -29,9 +128,7 @@ class TestProcessorSharing(unittest.TestCase):
                                            [0.0, 1.0]])
         self.assertEqual(N.interrupted_individuals, [])
 
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'),
-            node_class=ciw.PSNode)
+        Q = ciw.Simulation(N_schedule, node_class=ciw.PSNode)
         N = Q.transitive_nodes[0]
         self.assertEqual(N.cyclelength, 100)
         self.assertEqual(N.ps_capacity, 1)
@@ -41,9 +138,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(N.interrupted_individuals, [])
         self.assertEqual(N.last_occupancy, 0)
 
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_priorities.yml'),
-            node_class=ciw.PSNode)
+        Q = ciw.Simulation(N_priorities, node_class=ciw.PSNode)
         N = Q.transitive_nodes[0]
         self.assertEqual(N.ps_capacity, 4)
         self.assertEqual(N.c, float('inf'))

@@ -1,6 +1,51 @@
 import unittest
 import ciw
 
+N_params = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(4.0),
+                    ciw.dists.Exponential(1.0)],
+        "Class 1": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(6.0),
+                    ciw.dists.Exponential(4.0)],
+        "Class 2": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(1.0),
+                    ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(0.5)]},
+    number_of_servers=[9, 10, 8, 8],
+    queue_capacities=[20, float("Inf"), 30, float("Inf")],
+    service_distributions={
+        "Class 0": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Gamma(0.4, 0.6),
+                    ciw.dists.Deterministic(0.5)],
+        "Class 1": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Triangular(0.1, 0.8, 0.85),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(5.0)],
+        "Class 2": [ciw.dists.Deterministic(0.3),
+                    ciw.dists.Deterministic(0.2),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(9.0)]},
+    routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
+                         [0.2, 0.2, 0.0, 0.1],
+                         [0.0, 0.8, 0.1, 0.1],
+                         [0.4, 0.1, 0.1, 0.0]],
+             "Class 1": [[0.6, 0.0, 0.0, 0.2],
+                         [0.1, 0.1, 0.2, 0.2],
+                         [0.9, 0.0, 0.0, 0.0],
+                         [0.2, 0.1, 0.1, 0.1]],
+             "Class 2": [[0.0, 0.0, 0.4, 0.3],
+                         [0.1, 0.1, 0.1, 0.1],
+                         [0.1, 0.3, 0.2, 0.2],
+                         [0.0, 0.0, 0.0, 0.3]]}
+)
+
+
+
 class TimeDependentBatches(ciw.dists.Distribution):
     def sample(self, t, ind=None):
         if t < 11.0:
@@ -10,8 +55,7 @@ class TimeDependentBatches(ciw.dists.Distribution):
 class TestArrivalNode(unittest.TestCase):
     def test_init_method(self):
         ciw.seed(5)
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = ciw.ArrivalNode(Q)
         N.initialise()
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
@@ -29,8 +73,7 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_initialise_event_dates_dict_method(self):
         ciw.seed(6)
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = ciw.ArrivalNode(Q)
         N.initialise()
         dates_dict_1 = {1: {0: 0.4362282541, 1: 0.2672232406, 2: 0.3864256273},
@@ -50,15 +93,13 @@ class TestArrivalNode(unittest.TestCase):
             dates_dict_2)
 
     def test_repr_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = ciw.ArrivalNode(Q)
         self.assertEqual(str(N), 'Arrival Node')
 
     def test_find_next_event_date_method(self):
         ciw.seed(1)
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = ciw.ArrivalNode(Q)
         N.initialise()
         self.assertEqual(round(N.next_event_date, 5), 0.00105)
@@ -74,8 +115,7 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_have_event_method(self):
         ciw.seed(1)
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = ciw.ArrivalNode(Q)
         N.initialise()
         self.assertEqual(N.number_of_individuals, 0)
@@ -114,8 +154,7 @@ class TestArrivalNode(unittest.TestCase):
         self.assertEqual(N.next_node, 3)
 
         ciw.seed(12)
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = ciw.ArrivalNode(Q)
         N.initialise()
         self.assertEqual(N.number_of_individuals, 0)

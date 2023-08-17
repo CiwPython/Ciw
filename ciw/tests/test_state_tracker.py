@@ -2,18 +2,59 @@ import unittest
 import ciw
 from decimal import Decimal
 
+N_params = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(4.0),
+                    ciw.dists.Exponential(1.0)],
+        "Class 1": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(6.0),
+                    ciw.dists.Exponential(4.0)],
+        "Class 2": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(1.0),
+                    ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(0.5)]},
+    number_of_servers=[9, 10, 8, 8],
+    queue_capacities=[20, float("Inf"), 30, float("Inf")],
+    service_distributions={
+        "Class 0": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Gamma(0.4, 0.6),
+                    ciw.dists.Deterministic(0.5)],
+        "Class 1": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Triangular(0.1, 0.8, 0.85),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(5.0)],
+        "Class 2": [ciw.dists.Deterministic(0.3),
+                    ciw.dists.Deterministic(0.2),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(9.0)]},
+    routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
+                         [0.2, 0.2, 0.0, 0.1],
+                         [0.0, 0.8, 0.1, 0.1],
+                         [0.4, 0.1, 0.1, 0.0]],
+             "Class 1": [[0.6, 0.0, 0.0, 0.2],
+                         [0.1, 0.1, 0.2, 0.2],
+                         [0.9, 0.0, 0.0, 0.0],
+                         [0.2, 0.1, 0.1, 0.1]],
+             "Class 2": [[0.0, 0.0, 0.4, 0.3],
+                         [0.1, 0.1, 0.1, 0.1],
+                         [0.1, 0.3, 0.2, 0.2],
+                         [0.0, 0.0, 0.0, 0.3]]}
+)
+
 class TestStateTracker(unittest.TestCase):
     def test_base_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, None)
 
     def test_base_change_state_accept_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -23,8 +64,7 @@ class TestStateTracker(unittest.TestCase):
         self.assertEqual(B.state, None)
 
     def test_base_change_state_block_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -34,8 +74,7 @@ class TestStateTracker(unittest.TestCase):
         self.assertEqual(B.state, None)
 
     def test_base_change_state_release_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -45,16 +84,13 @@ class TestStateTracker(unittest.TestCase):
         self.assertEqual(B.state, None)
 
     def test_base_hash_state_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.StateTracker()
         B.initialise(Q)
         self.assertEqual(B.hash_state(), None)
 
     def test_base_release_method_within_simulation(self):
-        Net = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(Net)
+        Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -73,18 +109,14 @@ class TestStateTracker(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, None)
 
     def test_base_block_method_within_simulation(self):
-        Net = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(Net)
+        Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, None)
         N.block_individual(ciw.Individual(1), Q.nodes[1])
         self.assertEqual(Q.statetracker.state, None)
 
     def test_base_accept_method_within_simulation(self):
-        Net = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(Net)
+        Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, None)
         Q.current_time = 45.6
@@ -94,16 +126,14 @@ class TestStateTracker(unittest.TestCase):
 
 class TestSystemPopulation(unittest.TestCase):
     def test_systempop_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.SystemPopulation()
         B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, 0)
 
     def test_systempop_change_state_accept_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.SystemPopulation()
         N = Q.nodes[1]
         ind = ciw.Individual(1)
@@ -113,8 +143,7 @@ class TestSystemPopulation(unittest.TestCase):
         self.assertEqual(B.state, 1)
 
     def test_systempop_change_state_block_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.SystemPopulation()
         B.initialise(Q)
         N1 = Q.nodes[1]
@@ -125,8 +154,7 @@ class TestSystemPopulation(unittest.TestCase):
         self.assertEqual(B.state, 1)
 
     def test_systempop_change_state_release_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.SystemPopulation()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -139,17 +167,14 @@ class TestSystemPopulation(unittest.TestCase):
         self.assertEqual(B.state, 13)
 
     def test_systempop_hash_state_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.SystemPopulation()
         B.initialise(Q)
         B.state = 13
         self.assertEqual(B.hash_state(), 13)
 
     def test_systempop_release_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.SystemPopulation())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.SystemPopulation())
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -169,9 +194,7 @@ class TestSystemPopulation(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, 13)
 
     def test_systempop_block_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.SystemPopulation())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.SystemPopulation())
         N = Q.transitive_nodes[2]
         Q.statetracker.state = 14
         self.assertEqual(Q.statetracker.state, 14)
@@ -179,9 +202,7 @@ class TestSystemPopulation(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, 14)
 
     def test_systempop_accept_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.SystemPopulation())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.SystemPopulation())
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, 0)
         Q.current_time = 45.6
@@ -191,16 +212,14 @@ class TestSystemPopulation(unittest.TestCase):
 
 class TestNodePopulation(unittest.TestCase):
     def test_nodepop_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, [0, 0, 0, 0])
 
     def test_nodepop_change_state_accept_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -210,8 +229,7 @@ class TestNodePopulation(unittest.TestCase):
         self.assertEqual(B.state, [1, 0, 0, 0])
 
     def test_nodepop_change_state_block_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
         N1 = Q.nodes[1]
@@ -222,8 +240,7 @@ class TestNodePopulation(unittest.TestCase):
         self.assertEqual(B.state, [1, 0, 0, 0])
 
     def test_nodepop_change_state_release_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -237,17 +254,14 @@ class TestNodePopulation(unittest.TestCase):
         self.assertEqual(B.state, [1, 3, 1, 8])
 
     def test_nodepop_hash_state_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodePopulation()
         B.initialise(Q)
         B.state = [7, 3, 1, 0]
         self.assertEqual(B.hash_state(), (7, 3, 1, 0))
 
     def test_nodepop_release_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NodePopulation())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodePopulation())
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -267,9 +281,7 @@ class TestNodePopulation(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, [7, 3, 3, 0])
 
     def test_nodepop_block_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NodePopulation())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodePopulation())
         N = Q.transitive_nodes[2]
         Q.statetracker.state = [5, 3, 6, 0]
         self.assertEqual(Q.statetracker.state, [5, 3, 6, 0])
@@ -277,9 +289,7 @@ class TestNodePopulation(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, [5, 3, 6, 0])
 
     def test_nodepop_accept_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NodePopulation())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodePopulation())
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [0, 0, 0, 0])
         Q.current_time = 45.6
@@ -289,16 +299,14 @@ class TestNodePopulation(unittest.TestCase):
 
 class TestNodeClassMatrix(unittest.TestCase):
     def test_nodeclassmatrix_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
     def test_nodeclassmatrix_change_state_accept_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -308,8 +316,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
     def test_nodeclassmatrix_change_state_block_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -319,8 +326,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
     def test_nodeclassmatrix_change_state_release_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -333,17 +339,14 @@ class TestNodeClassMatrix(unittest.TestCase):
         self.assertEqual(B.state, [[0, 1, 0], [1, 1, 1], [0, 1, 0], [4, 3, 1]])
 
     def test_nodeclassmatrix_hash_state_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
         B.state = [[0, 2, 0], [1, 1, 1], [0, 1, 0], [4, 3, 1]]
         self.assertEqual(B.hash_state(), ((0, 2, 0), (1, 1, 1), (0, 1, 0), (4, 3, 1)))
 
     def test_nodeclassmatrix_release_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NodeClassMatrix())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodeClassMatrix())
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -363,9 +366,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, [[5, 2, 1], [1, 1, 1], [0, 1, 2], [0, 0, 0]])
 
     def test_nodeclassmatrix_block_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NodeClassMatrix())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodeClassMatrix())
         N = Q.transitive_nodes[2]
         Q.statetracker.state = [[3, 2, 1], [1, 1, 1], [3, 1, 2], [0, 0, 0]]
         self.assertEqual(Q.statetracker.state, [[3, 2, 1], [1, 1, 1], [3, 1, 2], [0, 0, 0]])
@@ -373,9 +374,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, [[3, 2, 1], [1, 1, 1], [3, 1, 2], [0, 0, 0]])
 
     def test_nodeclassmatrix_accept_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NodeClassMatrix())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodeClassMatrix())
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
         Q.current_time = 45.6
@@ -385,16 +384,14 @@ class TestNodeClassMatrix(unittest.TestCase):
 
 class TestNaiveBlocking(unittest.TestCase):
     def test_naive_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
         self.assertEqual(B.simulation, Q)
         self.assertEqual(B.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
 
     def test_naive_change_state_accept_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -404,8 +401,7 @@ class TestNaiveBlocking(unittest.TestCase):
         self.assertEqual(B.state, [[1, 0], [0, 0], [0, 0], [0, 0]])
 
     def test_naive_change_state_block_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -415,8 +411,7 @@ class TestNaiveBlocking(unittest.TestCase):
         self.assertEqual(B.state, [[0, 1], [0, 0], [0, 0], [0, 0]])
 
     def test_naive_change_state_release_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -428,17 +423,14 @@ class TestNaiveBlocking(unittest.TestCase):
         self.assertEqual(B.state, [[1, 0], [3, 0], [1, 0], [4, 4]])
 
     def test_naive_hash_state_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.NaiveBlocking()
         B.initialise(Q)
         B.state = [[3, 4], [1, 2], [0, 1], [0, 0]]
         self.assertEqual(B.hash_state(), ((3, 4), (1, 2), (0, 1), (0, 0)))
 
     def test_naive_release_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NaiveBlocking())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NaiveBlocking())
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -458,9 +450,7 @@ class TestNaiveBlocking(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [3, 0], [0, 0]])
 
     def test_naive_block_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NaiveBlocking())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NaiveBlocking())
         N = Q.transitive_nodes[2]
         Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
         self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
@@ -468,9 +458,7 @@ class TestNaiveBlocking(unittest.TestCase):
         self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [4, 2], [0, 0]])
 
     def test_naive_accept_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.NaiveBlocking())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.NaiveBlocking())
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
         Q.current_time = 45.6
@@ -480,8 +468,7 @@ class TestNaiveBlocking(unittest.TestCase):
 
 class TestMatrixBlocking(unittest.TestCase):
     def test_matrix_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
         self.assertEqual(B.simulation, Q)
@@ -492,8 +479,7 @@ class TestMatrixBlocking(unittest.TestCase):
                                     [0, 0, 0, 0]])
 
     def test_matrix_change_state_accept_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
         N = Q.nodes[1]
@@ -511,8 +497,7 @@ class TestMatrixBlocking(unittest.TestCase):
                                     [1, 0, 0, 0]])
 
     def test_matrix_change_state_block_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
         N1 = Q.nodes[1]
@@ -545,8 +530,7 @@ class TestMatrixBlocking(unittest.TestCase):
                                     [2, 3, 1, 0]])
 
     def test_matrix_change_state_release_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
         N1 = Q.nodes[1]
@@ -572,8 +556,7 @@ class TestMatrixBlocking(unittest.TestCase):
                                     [1, 3, 0, 0]])
 
     def test_matrix_hash_state_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         B = ciw.trackers.MatrixBlocking()
         B.initialise(Q)
         B.state = [[[[],  [], [1, 3], []],
@@ -588,9 +571,7 @@ class TestMatrixBlocking(unittest.TestCase):
                                            (2, 3, 0, 0)))
 
     def test_matrix_release_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.MatrixBlocking())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.MatrixBlocking())
         N = Q.transitive_nodes[2]
         inds = [ciw.Individual(i) for i in range(5)]
         N.individuals = [inds]
@@ -632,9 +613,7 @@ class TestMatrixBlocking(unittest.TestCase):
                                                  [7, 3, 3, 0]])
 
     def test_matrix_block_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.MatrixBlocking())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.MatrixBlocking())
         N = Q.transitive_nodes[2]
         Q.statetracker.state = [[[[],  [2], [], []],
                                  [[],  [],  [], []],
@@ -655,9 +634,7 @@ class TestMatrixBlocking(unittest.TestCase):
                                                  [5, 3, 6, 0]])
 
     def test_matrix_accept_method_within_simulation(self):
-        params = ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml')
-        Q = ciw.Simulation(params, tracker=ciw.trackers.MatrixBlocking())
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.MatrixBlocking())
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [[[[], [], [], []],
                                                  [[], [], [], []],

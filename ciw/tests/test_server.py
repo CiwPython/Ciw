@@ -3,11 +3,52 @@ import ciw
 from hypothesis import given
 from hypothesis.strategies import integers
 
+N_params = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(4.0),
+                    ciw.dists.Exponential(1.0)],
+        "Class 1": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(3.0),
+                    ciw.dists.Exponential(6.0),
+                    ciw.dists.Exponential(4.0)],
+        "Class 2": [ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(1.0),
+                    ciw.dists.Exponential(2.0),
+                    ciw.dists.Exponential(0.5)]},
+    number_of_servers=[9, 10, 8, 8],
+    queue_capacities=[20, float("Inf"), 30, float("Inf")],
+    service_distributions={
+        "Class 0": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Exponential(7.0),
+                    ciw.dists.Gamma(0.4, 0.6),
+                    ciw.dists.Deterministic(0.5)],
+        "Class 1": [ciw.dists.Exponential(7.0),
+                    ciw.dists.Triangular(0.1, 0.8, 0.85),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(5.0)],
+        "Class 2": [ciw.dists.Deterministic(0.3),
+                    ciw.dists.Deterministic(0.2),
+                    ciw.dists.Exponential(8.0),
+                    ciw.dists.Exponential(9.0)]},
+    routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
+                         [0.2, 0.2, 0.0, 0.1],
+                         [0.0, 0.8, 0.1, 0.1],
+                         [0.4, 0.1, 0.1, 0.0]],
+             "Class 1": [[0.6, 0.0, 0.0, 0.2],
+                         [0.1, 0.1, 0.2, 0.2],
+                         [0.9, 0.0, 0.0, 0.0],
+                         [0.2, 0.1, 0.1, 0.1]],
+             "Class 2": [[0.0, 0.0, 0.4, 0.3],
+                         [0.1, 0.1, 0.1, 0.1],
+                         [0.1, 0.3, 0.2, 0.2],
+                         [0.0, 0.0, 0.0, 0.3]]}
+)
 
 class TestServer(unittest.TestCase):
     def test_init_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[1]
         s = ciw.Server(N, 3)
         self.assertEqual(s.id_number, 3)
@@ -18,8 +59,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(s.offduty, False)
 
     def test_repr_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[0]
         s = ciw.Server(N, 4)
         self.assertEqual(str(s), 'Server 4 at Node 1')

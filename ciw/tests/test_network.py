@@ -309,8 +309,53 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.number_of_priority_classes, 1)
 
     def test_create_network_from_yml(self):
-        N = ciw.create_network_from_yml(
-          'ciw/tests/testing_parameters/params_change_class_dynamic.yml')
+        N = ciw.create_network(
+            arrival_distributions={
+                "Class 0": [ciw.dists.Exponential(3.0),
+                             ciw.dists.Exponential(7.0),
+                             ciw.dists.Exponential(4.0),
+                             ciw.dists.Exponential(1.0)],
+                "Class 1": [ciw.dists.Exponential(2.0),
+                            ciw.dists.Exponential(3.0),
+                            ciw.dists.Exponential(6.0),
+                            ciw.dists.Exponential(4.0)],
+                "Class 2": [ciw.dists.Exponential(2.0),
+                            ciw.dists.Exponential(1.0),
+                            ciw.dists.Exponential(2.0),
+                            ciw.dists.Exponential(0.5)]},
+            number_of_servers=[9, 10, 8, 8],
+            queue_capacities=[20, float("Inf"), 30, float("Inf")],
+            service_distributions={
+                "Class 0": [ciw.dists.Exponential(7.0),
+                            ciw.dists.Exponential(7.0),
+                            ciw.dists.Gamma(0.4, 0.6),
+                            ciw.dists.Deterministic(0.5)],
+                "Class 1": [ciw.dists.Exponential(7.0),
+                            ciw.dists.Triangular(0.1, 0.8, 0.85),
+                            ciw.dists.Exponential(8.0),
+                            ciw.dists.Exponential(5.0)],
+                "Class 2": [ciw.dists.Deterministic(0.3),
+                            ciw.dists.Deterministic(0.2),
+                            ciw.dists.Exponential(8.0),
+                            ciw.dists.Exponential(9.0)]},
+            routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
+                                 [0.2, 0.2, 0.0, 0.1],
+                                 [0.0, 0.8, 0.1, 0.1],
+                                 [0.4, 0.1, 0.1, 0.0]],
+                     "Class 1": [[0.6, 0.0, 0.0, 0.2],
+                                 [0.1, 0.1, 0.2, 0.2],
+                                 [0.9, 0.0, 0.0, 0.0],
+                                 [0.2, 0.1, 0.1, 0.1]],
+                     "Class 2": [[0.0, 0.0, 0.4, 0.3],
+                                 [0.1, 0.1, 0.1, 0.1],
+                                 [0.1, 0.3, 0.2, 0.2],
+                                 [0.0, 0.0, 0.0, 0.3]]},
+            class_change_time_distributions=[
+                [None, ciw.dists.Exponential(6.0), ciw.dists.Exponential(6.0)],
+                [None, None, ciw.dists.Exponential(6.0)],
+                [None, None, None]
+            ]
+        )
         self.assertEqual(N.number_of_nodes, 4)
         self.assertEqual(N.number_of_classes, 3)
         self.assertEqual(N.service_centres[0].queueing_capacity, 20)
@@ -713,8 +758,28 @@ class TestCreateNetworkKwargs(unittest.TestCase):
            Q.simulate_until_max_time(10)
 
     def test_read_dists_from_yml(self):
-        N = ciw.create_network_from_yml('ciw/tests/testing_parameters/params_dists.yml')
+        N = ciw.create_network(
+            arrival_distributions={
+                "Class 0": [ciw.dists.Uniform(1.4, 2.3),
+                            ciw.dists.Deterministic(3.0),
+                            ciw.dists.Triangular(0.5, 0.9, 1.4)],
+                "Class 1": [ciw.dists.Exponential(0.4),
+                            ciw.dists.Gamma(8.8, 9.9),
+                            None]},
+            number_of_servers=[4, 3, 4],
+            queue_capacities=[float('inf'), 10, float('inf')],
+            service_distributions={
+                "Class 0": [ciw.dists.Lognormal(5.5, 3.6),
+                            ciw.dists.Weibull(5.0, 8.4),
+                            ciw.dists.Deterministic(8.8)],
+                "Class 1": [ciw.dists.Exponential(0.5),
+                            ciw.dists.Pmf(values=[10.0, 9.5], probs=[0.5, 0.5]),
+                            ciw.dists.Normal(5.0, 0.6)]},
+            routing={
+                "Class 0": [[0.8, 0.1, 0.0], [0.0, 0.0, 0.4], [0.0, 0.3, 0.3]],
+                "Class 1": [[0.8, 0.1, 0.0], [0.2, 0.0, 0.2], [0.1, 0.4, 0.1]]},
+        )
         self.assertEqual([str(d) for d in N.customer_classes[0].arrival_distributions], ['Uniform: 1.4, 2.3', 'Deterministic: 3.0', 'Triangular: 0.5, 0.9, 1.4'])
         self.assertEqual([str(d) for d in N.customer_classes[1].arrival_distributions], ['Exponential: 0.4', 'Gamma: 8.8, 9.9', 'None'])
-        self.assertEqual([str(d) for d in N.customer_classes[0].service_distributions], ['Lognormal: 5.5, 3.6', 'Weibull: 5.0, 8.4', 'Distribution'])
+        self.assertEqual([str(d) for d in N.customer_classes[0].service_distributions], ['Lognormal: 5.5, 3.6', 'Weibull: 5.0, 8.4', 'Deterministic: 8.8'])
         self.assertEqual([str(d) for d in N.customer_classes[1].service_distributions], ['Exponential: 0.5', 'Pmf', 'Normal: 5.0, 0.6'])

@@ -494,8 +494,8 @@ class TestSampling(unittest.TestCase):
     def test_sampling_empirical_dist(self):
         my_empirical_dist = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
         params = {
-            'arrival_distributions': [ciw.dists.Empirical(import_empirical(
-                'ciw/tests/testing_parameters/sample_empirical_dist.csv'))],
+            'arrival_distributions': [ciw.dists.Empirical(
+                import_empirical('ciw/tests/sample_empirical_dist.csv'))],
             'service_distributions': [ciw.dists.Empirical(my_empirical_dist)],
             'number_of_servers': [1]
         }
@@ -520,8 +520,8 @@ class TestSampling(unittest.TestCase):
         my_empirical_dist = dist
         params = {
             'arrival_distributions': [ciw.dists.Empirical(my_empirical_dist)],
-            'service_distributions': [ciw.dists.Empirical(import_empirical(
-                'ciw/tests/testing_parameters/sample_empirical_dist.csv'))],
+            'service_distributions': [ciw.dists.Empirical(
+                import_empirical('ciw/tests//sample_empirical_dist.csv'))],
             'number_of_servers': [1]
         }
         Q = ciw.Simulation(ciw.create_network(**params))

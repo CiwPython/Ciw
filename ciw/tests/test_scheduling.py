@@ -2,10 +2,29 @@ import unittest
 import ciw
 from decimal import Decimal
 
+N_schedule = ciw.create_network(
+    arrival_distributions={
+        "Class 0": [ciw.dists.Exponential(0.05),
+                    ciw.dists.Exponential(0.04)],
+        "Class 1": [ciw.dists.Exponential(0.04),
+                    ciw.dists.Exponential(0.06)]},
+    number_of_servers=[
+        [[1, 30], [2, 60], [1, 90], [3, 100]], 3],
+    queue_capacities=[float("Inf"), 10],
+    service_distributions={
+        "Class 0": [ciw.dists.Deterministic(5.0),
+                    ciw.dists.Exponential(0.2)],
+        "Class 1": [ciw.dists.Deterministic(10.0),
+                    ciw.dists.Exponential(0.1)]},
+    routing={
+        "Class 0": [[0.8, 0.1], [0.0, 0.0]],
+        "Class 1": [[0.8, 0.1], [0.2, 0.0]]}
+)
+
+
 class TestScheduling(unittest.TestCase):
     def test_change_shift_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
+        Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
         N.next_event_date = 30
         self.assertEqual([str(obs) for obs in N.servers],
@@ -35,8 +54,7 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(N.c, 3)
 
     def test_take_servers_off_duty_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
+        Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
         N.add_new_servers(3)
         self.assertEqual([str(obs) for obs in N.servers],
@@ -75,16 +93,56 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(N.interrupted_individuals, [])
 
     def test_check_if_shiftchange_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
+        Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
         N.next_event_date = 12.0
         self.assertEqual(N.check_if_shiftchange(), False)
         N.next_event_date = 30.0
         self.assertEqual(N.check_if_shiftchange(), True)
-
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params.yml'))
+        
+        N_params = ciw.create_network(
+            arrival_distributions={
+                "Class 0": [ciw.dists.Exponential(3.0),
+                            ciw.dists.Exponential(7.0),
+                            ciw.dists.Exponential(4.0),
+                            ciw.dists.Exponential(1.0)],
+                "Class 1": [ciw.dists.Exponential(2.0),
+                            ciw.dists.Exponential(3.0),
+                            ciw.dists.Exponential(6.0),
+                            ciw.dists.Exponential(4.0)],
+                "Class 2": [ciw.dists.Exponential(2.0),
+                            ciw.dists.Exponential(1.0),
+                            ciw.dists.Exponential(2.0),
+                            ciw.dists.Exponential(0.5)]},
+            number_of_servers=[9, 10, 8, 8],
+            queue_capacities=[20, float("Inf"), 30, float("Inf")],
+            service_distributions={
+                "Class 0": [ciw.dists.Exponential(7.0),
+                            ciw.dists.Exponential(7.0),
+                            ciw.dists.Gamma(0.4, 0.6),
+                            ciw.dists.Deterministic(0.5)],
+                "Class 1": [ciw.dists.Exponential(7.0),
+                            ciw.dists.Triangular(0.1, 0.8, 0.85),
+                            ciw.dists.Exponential(8.0),
+                            ciw.dists.Exponential(5.0)],
+                "Class 2": [ciw.dists.Deterministic(0.3),
+                            ciw.dists.Deterministic(0.2),
+                            ciw.dists.Exponential(8.0),
+                            ciw.dists.Exponential(9.0)]},
+            routing={"Class 0": [[0.1, 0.2, 0.1, 0.4],
+                                 [0.2, 0.2, 0.0, 0.1],
+                                 [0.0, 0.8, 0.1, 0.1],
+                                 [0.4, 0.1, 0.1, 0.0]],
+                     "Class 1": [[0.6, 0.0, 0.0, 0.2],
+                                 [0.1, 0.1, 0.2, 0.2],
+                                 [0.9, 0.0, 0.0, 0.0],
+                                 [0.2, 0.1, 0.1, 0.1]],
+                     "Class 2": [[0.0, 0.0, 0.4, 0.3],
+                                 [0.1, 0.1, 0.1, 0.1],
+                                 [0.1, 0.3, 0.2, 0.2],
+                                 [0.0, 0.0, 0.0, 0.3]]}
+        )
+        Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[0]
         N.next_event_date = 12.0
         self.assertEqual(N.check_if_shiftchange(), False)
@@ -93,8 +151,7 @@ class TestScheduling(unittest.TestCase):
 
 
     def test_kill_server_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
+        Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
         s = N.servers[0]
         self.assertEqual([str(obs) for obs in N.servers],
@@ -117,8 +174,7 @@ class TestScheduling(unittest.TestCase):
             ['Server 3 at Node 1'])
 
     def test_add_new_servers_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
+        Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
         self.assertEqual([str(obs) for obs in N.servers],
             ['Server 1 at Node 1'])
@@ -157,8 +213,7 @@ class TestScheduling(unittest.TestCase):
 
 
     def test_take_servers_off_duty_preempt_method(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_schedule.yml'))
+        Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
         N.schedule_preempt = 'resample'
         N.add_new_servers(3)

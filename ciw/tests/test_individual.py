@@ -54,8 +54,12 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(i.simulation, False)
 
     def test_init_method_4(self):
-        Q = ciw.Simulation(ciw.create_network_from_yml(
-            'ciw/tests/testing_parameters/params_mm1.yml'))
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(7.0)],
+            service_distributions=[ciw.dists.Exponential(14.0)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N)
         i = ciw.Individual(5, 0, 2, simulation=Q)
         self.assertEqual(i.customer_class, 0)
         self.assertEqual(i.previous_class, 0)

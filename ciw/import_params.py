@@ -5,34 +5,6 @@ import types
 import ciw.dists
 from .network import *
 
-def get_distribution(dist):
-    """
-    For use when parameters are read in from a .yml file.
-    Returns instances of the distribution classes that
-    correspond to the indicator string in the .yml file.
-    """
-    if (dist is None) or (dist == 'None'):
-        return None
-    if dist[0] == 'Uniform':
-       return ciw.dists.Uniform(dist[1], dist[2])
-    if dist[0] == 'Deterministic':
-        return ciw.dists.Deterministic(dist[1])
-    if dist[0] == 'Triangular':
-        return ciw.dists.Triangular(dist[1], dist[2], dist[3])
-    if dist[0] == 'Exponential':
-        return ciw.dists.Exponential(dist[1])
-    if dist[0] == 'Gamma':
-        return ciw.dists.Gamma(dist[1], dist[2])
-    if dist[0] == 'Normal':
-        return ciw.dists.Normal(dist[1], dist[2])
-    if dist[0] == 'Lognormal':
-        return ciw.dists.Lognormal(dist[1], dist[2])
-    if dist[0] == 'Weibull':
-        return ciw.dists.Weibull(dist[1], dist[2])
-    if dist[0] == 'Pmf':
-        return ciw.dists.Pmf(dist[1], dist[2])
-    return ciw.dists.Distribution()
-
 def create_network(arrival_distributions=None,
                    baulking_functions=None,
                    class_change_matrices=None,
@@ -89,46 +61,6 @@ def create_network(arrival_distributions=None,
     return create_network_from_dictionary(params)
 
 
-def load_parameters(directory_name):
-    """
-    Loads the .yml file parameters to a dictionary.
-    """
-    root = os.getcwd()
-    directory = os.path.join(root, directory_name)
-    parameter_file_name = directory
-    parameter_file = open(parameter_file_name, 'r')
-    parameters = yaml.load(parameter_file, Loader=yaml.FullLoader)
-    parameter_file.close()
-    return parameters
-
-
-def create_network_from_yml(directory_name):
-    """
-    Creates a Network object form a yaml file.
-    """
-    params_input = load_parameters(directory_name)
-    params = fill_out_dictionary(params_input)
-    for clss in params['arrival_distributions']:
-        dists = []
-        for dist in params['arrival_distributions'][clss]:
-            dists.append(get_distribution(dist))
-        params['arrival_distributions'][clss] = dists
-    for clss in params['service_distributions']:
-        dists = []
-        for dist in params['service_distributions'][clss]:
-            dists.append(get_distribution(dist))
-        params['service_distributions'][clss] = dists
-    for clss in params['reneging_time_distributions']:
-        dists = [get_distribution(dist) for dist in params['reneging_time_distributions'][clss]]
-        params['reneging_time_distributions'][clss] = dists
-    if 'class_change_time_distributions' in params:
-        for clss, dist_original in enumerate(params['class_change_time_distributions']):
-            dists = [get_distribution(dist) for dist in dist_original]
-            params['class_change_time_distributions'][clss] = dists
-    validify_dictionary(params)
-    return create_network_from_dictionary(params)
-
-
 def create_network_from_dictionary(params_input):
     """
     Creates a Network object from a parameters dictionary.
@@ -176,10 +108,6 @@ def create_network_from_dictionary(params_input):
             number_of_servers.append('schedule')
             schedules.append(s)
             preempts.append(p)
-        elif c == 'Inf':
-            number_of_servers.append(float(c))
-            schedules.append(None)  
-            preempts.append(False)
         else:
             number_of_servers.append(c)
             schedules.append(None) 
