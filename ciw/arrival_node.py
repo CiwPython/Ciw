@@ -1,4 +1,3 @@
-from __future__ import division
 from random import random
 from .individual import Individual
 

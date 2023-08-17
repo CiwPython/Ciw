@@ -1,12 +1,6 @@
-from __future__ import division
-from pickle import FALSE
 from random import random
-import os
-from csv import writer
 from math import isinf, nan
-
 import networkx as nx
-
 from .auxiliary import random_choice, flatten_list
 from .data_record import DataRecord
 from .server import Server

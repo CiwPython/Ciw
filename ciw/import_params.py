@@ -1,5 +1,3 @@
-import os
-import yaml
 import copy
 import types
 import ciw.dists

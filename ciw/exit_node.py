@@ -1,5 +1,3 @@
-from __future__ import division
-
 class ExitNode(object):
     """
     Class for the exit node on our network.

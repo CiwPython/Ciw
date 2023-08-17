@@ -1,11 +1,6 @@
-from __future__ import division
 import tqdm
 import copy
-from random import (expovariate, uniform, triangular, gammavariate,
-                    lognormvariate, weibullvariate)
 from decimal import getcontext
-from itertools import cycle
-
 from .auxiliary import *
 from .node import Node
 from .exactnode import ExactNode, ExactArrivalNode
