@@ -523,17 +523,6 @@ class PoissonIntervals(Sequential):
             self.dates += interval_dates
 
 
-class NoArrivals(Distribution):
-    """
-    A placeholder distribution if there are no arrivals.
-    """
-    def __repr__(self):
-        return 'NoArrivals'
-
-    def sample(self, t=None, ind=None):
-        return float('Inf')
-
-
 class Poisson(Distribution):
     """
     The Poisson distribution.

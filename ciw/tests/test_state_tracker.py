@@ -879,7 +879,7 @@ class TestTrackHistory(unittest.TestCase):
 
     def test_no_state_change_when_blocking_subset(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Deterministic(1), ciw.dists.NoArrivals()],
+            arrival_distributions=[ciw.dists.Deterministic(1), None],
             service_distributions=[ciw.dists.Deterministic(0.1), ciw.dists.Deterministic(1.2)],
             number_of_servers=[1, 1],
             routing=[[0.0, 1.0], [0.0, 0.0]],
@@ -1435,7 +1435,7 @@ class TestStateProbabilities(unittest.TestCase):
     def test_state_tracker_with_classchange(self):
         N = ciw.create_network(
             arrival_distributions={'Class 0': [ciw.dists.Deterministic(3)],
-                                   'Class 1': [ciw.dists.NoArrivals()]},
+                                   'Class 1': [None]},
             service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
                                    'Class 1': [ciw.dists.Deterministic(4.5)]},
             number_of_servers=[1],

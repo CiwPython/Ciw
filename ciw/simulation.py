@@ -106,9 +106,10 @@ class Simulation(object):
         """
         for clss in range(self.network.number_of_classes):
             for nd in range(self.network.number_of_nodes):
-                self.inter_arrival_times[nd + 1][clss].simulation = self
-                self.service_times[nd + 1][clss].simulation = self
-                self.batch_sizes[nd + 1][clss].simulation = self
+                if self.inter_arrival_times[nd + 1][clss] is not None:
+                    self.inter_arrival_times[nd + 1][clss].simulation = self
+                    self.service_times[nd + 1][clss].simulation = self
+                    self.batch_sizes[nd + 1][clss].simulation = self
 
     def find_next_active_node(self):
         """

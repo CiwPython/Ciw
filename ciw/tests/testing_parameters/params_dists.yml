@@ -15,7 +15,7 @@ arrival_distributions:
   - - Gamma
     - 8.8
     - 9.9
-  - - NoArrivals
+  - None
 number_of_servers:
 - 4
 - 3

@@ -54,7 +54,7 @@ class TestProcessorSharing(unittest.TestCase):
 
     def test_update_service_end_dates_accept(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
             number_of_servers=[float('inf')]
         )
@@ -115,7 +115,7 @@ class TestProcessorSharing(unittest.TestCase):
 
     def test_update_service_end_dates_release(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Sequential([1.0, 2.0, 3.0])],
             number_of_servers=[float('inf')]
         )
@@ -239,7 +239,7 @@ class TestProcessorSharing(unittest.TestCase):
 
     def test_limited_processor_sharing(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
             number_of_servers=[float('inf')]
         )
@@ -274,7 +274,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(ind4.service_end_date, 4.0)
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
             number_of_servers=[4]
         )
@@ -309,7 +309,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(ind4.service_end_date, 4.0)
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
             number_of_servers=[3]
         )
@@ -343,7 +343,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(ind4.with_server, False)
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
             number_of_servers=[2]
         )
@@ -375,7 +375,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(ind4.with_server, False)
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Deterministic(1.0)],
             number_of_servers=[1]
         )
@@ -405,7 +405,7 @@ class TestProcessorSharing(unittest.TestCase):
 
     def test_ps_start_waitingcustomers_service_at_release(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals()],
+            arrival_distributions=[None],
             service_distributions=[ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])],
             number_of_servers=[3]
         )

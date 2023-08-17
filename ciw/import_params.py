@@ -31,8 +31,6 @@ def get_distribution(dist):
         return ciw.dists.Weibull(dist[1], dist[2])
     if dist[0] == 'Pmf':
         return ciw.dists.Pmf(dist[1], dist[2])
-    if dist[0] == 'NoArrivals':
-        return ciw.dists.NoArrivals()
     return ciw.dists.Distribution()
 
 def create_network(arrival_distributions=None,

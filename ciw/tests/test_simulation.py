@@ -379,7 +379,7 @@ class TestSimulation(unittest.TestCase):
         # Due to randomly choosing the order of events, the seed has
         # a big affect on this.
         params = {'arrival_distributions': [ciw.dists.Deterministic(10.0),
-                                            ciw.dists.NoArrivals()],
+                                            None],
                   'service_distributions': [ciw.dists.Deterministic(5.0),
                                             ciw.dists.Deterministic(5.0)],
                   'routing': [[1.0, 0.0], [0.0, 0.0]],
@@ -1029,7 +1029,7 @@ class TestSimulation(unittest.TestCase):
 
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Deterministic(1.0), ciw.dists.NoArrivals()],
+            arrival_distributions=[ciw.dists.Deterministic(1.0), None],
             service_distributions=[ciw.dists.Deterministic(0.1), ciw.dists.Deterministic(3.0)],
             number_of_servers=[([[1, 2.5], [0, 2.8]], 'resample'), 1],
             queue_capacities=[float('inf'), 0],

@@ -105,7 +105,10 @@ class ArrivalNode(object):
         """
         for nd in self.event_dates_dict:
             for clss in self.event_dates_dict[nd]:
-                self.event_dates_dict[nd][clss] = self.inter_arrival(nd, clss)
+                if self.simulation.inter_arrival_times[nd][clss] is not None:
+                    self.event_dates_dict[nd][clss] = self.inter_arrival(nd, clss)
+                else:
+                    self.event_dates_dict[nd][clss] = float('inf')
 
     def inter_arrival(self, nd, clss):
         """

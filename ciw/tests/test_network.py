@@ -715,6 +715,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
     def test_read_dists_from_yml(self):
         N = ciw.create_network_from_yml('ciw/tests/testing_parameters/params_dists.yml')
         self.assertEqual([str(d) for d in N.customer_classes[0].arrival_distributions], ['Uniform: 1.4, 2.3', 'Deterministic: 3.0', 'Triangular: 0.5, 0.9, 1.4'])
-        self.assertEqual([str(d) for d in N.customer_classes[1].arrival_distributions], ['Exponential: 0.4', 'Gamma: 8.8, 9.9', 'NoArrivals'])
+        self.assertEqual([str(d) for d in N.customer_classes[1].arrival_distributions], ['Exponential: 0.4', 'Gamma: 8.8, 9.9', 'None'])
         self.assertEqual([str(d) for d in N.customer_classes[0].service_distributions], ['Lognormal: 5.5, 3.6', 'Weibull: 5.0, 8.4', 'Distribution'])
         self.assertEqual([str(d) for d in N.customer_classes[1].service_distributions], ['Exponential: 0.5', 'Pmf', 'Normal: 5.0, 0.6'])

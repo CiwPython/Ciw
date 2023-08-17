@@ -85,7 +85,6 @@ class TestSampling(unittest.TestCase):
         Em = ciw.dists.Empirical([3.3, 3.3, 4.4, 3.3, 4.4])
         Sq = ciw.dists.Sequential([3.3, 3.3, 4.4, 3.3, 4.4])
         Pf = ciw.dists.Pmf([1.1, 2.2, 3.3], [0.3, 0.2, 0.5])
-        Na = ciw.dists.NoArrivals()
         Ph = ciw.dists.PhaseType([1, 0, 0], [[-3, 2, 1], [1, -5, 4], [0, 0, 0]])
         Er = ciw.dists.Erlang(4.5, 8)
         Hx = ciw.dists.HyperExponential([4, 7, 2], [0.3, 0.1, 0.6])
@@ -107,7 +106,6 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Em), 'Empirical')
         self.assertEqual(str(Sq), 'Sequential')
         self.assertEqual(str(Pf), 'Pmf')
-        self.assertEqual(str(Na), 'NoArrivals')
         self.assertEqual(str(Ph), 'PhaseType')
         self.assertEqual(str(Er), 'Erlang: 4.5, 8')
         self.assertEqual(str(Hx), 'HyperExponential')
@@ -626,25 +624,6 @@ class TestSampling(unittest.TestCase):
         samples = [round(N2.simulation.inter_arrival_times[N2.id_number][0]._sample(), 2) for _ in range(5)]
         expected = [0.29, 0.03, 0.43, 0.56, 0.46]
         self.assertEqual(samples, expected)
-
-    def test_noarrivals_object(self):
-        Na = ciw.dists.NoArrivals()
-        ciw.seed(5)
-        samples = [Na._sample() for _ in range(10)]
-        expected = [float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf'), float('inf')]
-        self.assertEqual(samples, expected)
-
-    def test_no_arrivals_dist(self):
-        params = {
-            'arrival_distributions': [ciw.dists.NoArrivals()],
-            'service_distributions': [ciw.dists.Deterministic(6.6)],
-            'number_of_servers': [1]
-        }
-        Q = ciw.Simulation(ciw.create_network(**params))
-        Na = Q.transitive_nodes[0]
-        ciw.seed(5)
-        self.assertEqual(
-            Na.simulation.inter_arrival_times[Na.id_number][0]._sample(), float('inf'))
 
     def test_timedependent_dist_object(self):
         TD1 = TimeDependentDist1()

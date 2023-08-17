@@ -155,7 +155,7 @@ class TestArrivalNode(unittest.TestCase):
 
     def test_no_arrivals_example(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals(), ciw.dists.Exponential(1)],
+            arrival_distributions=[None, ciw.dists.Exponential(1)],
             service_distributions=[ciw.dists.Exponential(4), ciw.dists.Exponential(4)],
             routing=[[0.5, 0.1], [0.1, 0.1]],
             number_of_servers=[1, 2])
@@ -163,8 +163,8 @@ class TestArrivalNode(unittest.TestCase):
         AN = Q.nodes[0]
         self.assertEqual(
             str(AN.simulation.network.customer_classes[0].arrival_distributions[0]),
-            'NoArrivals')
-        self.assertEqual(AN.inter_arrival(1, 0), float('Inf'))
+            'None')
+        self.assertEqual(AN.event_dates_dict[1][0], float('Inf'))
 
     def test_rejection(self):
         params = {'arrival_distributions':[ciw.dists.Deterministic(3.0),

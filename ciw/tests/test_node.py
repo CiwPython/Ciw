@@ -944,7 +944,7 @@ class TestNode(unittest.TestCase):
 
     def test_reneging_sends_to_destination(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Deterministic(7), ciw.dists.NoArrivals()],
+            arrival_distributions=[ciw.dists.Deterministic(7), None],
             service_distributions=[ciw.dists.Deterministic(11), ciw.dists.Deterministic(2)],
             routing=[[0, 0], [0, 0]],
             number_of_servers=[1, 1],
@@ -970,7 +970,7 @@ class TestNode(unittest.TestCase):
 
     def test_reneging_none_dist(self):
         N = ciw.create_network(
-            arrival_distributions={'Class 0': [ciw.dists.NoArrivals()], 'Class 1': [ciw.dists.Deterministic(7)]},
+            arrival_distributions={'Class 0': [None], 'Class 1': [ciw.dists.Deterministic(7)]},
             service_distributions={'Class 0': [ciw.dists.Deterministic(11)], 'Class 1': [ciw.dists.Deterministic(11)]},
             number_of_servers=[1],
             reneging_time_distributions={'Class 0': [ciw.dists.Deterministic(3)], 'Class 1': [None]},
@@ -1063,7 +1063,7 @@ class TestNode(unittest.TestCase):
         """
         N = ciw.create_network(
             arrival_distributions={'Class 0': [ciw.dists.Deterministic(3)],
-                                   'Class 1': [ciw.dists.NoArrivals()]},
+                                   'Class 1': [None]},
             service_distributions={'Class 0': [ciw.dists.Deterministic(4.5)],
                                    'Class 1': [ciw.dists.Deterministic(4.5)]},
             number_of_servers=[1],
@@ -1295,7 +1295,7 @@ class TestNode(unittest.TestCase):
         # First without preemption:
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.NoArrivals()],
+                'Class 0': [None],
                 'Class 1': [ciw.dists.Sequential([2, 2, 2, 2, 2, float('inf')])]},
             service_distributions={
                 'Class 0': [ciw.dists.Deterministic(2.5)], 
@@ -1332,7 +1332,7 @@ class TestNode(unittest.TestCase):
         # Now with preemption:
         N = ciw.create_network(
             arrival_distributions={
-                'Class 0': [ciw.dists.NoArrivals()],
+                'Class 0': [None],
                 'Class 1': [ciw.dists.Sequential([2, 2, 2, 2, 2, float('inf')])]},
             service_distributions={
                 'Class 0': [ciw.dists.Deterministic(2.5)], 

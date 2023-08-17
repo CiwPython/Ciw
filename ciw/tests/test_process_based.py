@@ -64,7 +64,7 @@ class TestProcessBased(unittest.TestCase):
 
     def test_routing_correct(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Sequential([1, 10000]), ciw.dists.NoArrivals(), ciw.dists.NoArrivals()],
+            arrival_distributions=[ciw.dists.Sequential([1, 10000]), None, None],
             service_distributions=[ciw.dists.Deterministic(2), ciw.dists.Deterministic(2), ciw.dists.Deterministic(2)],
             number_of_servers=[1, 1, 1],
             routing=[generator_function_2, ciw.no_routing, ciw.no_routing]
@@ -97,7 +97,7 @@ class TestProcessBased(unittest.TestCase):
 
     def test_probablistic_process_routes(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.NoArrivals(), ciw.dists.NoArrivals()],
+            arrival_distributions=[ciw.dists.Exponential(1), None, None],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
             number_of_servers=[1, 1, 1],
             routing=[generator_function_3, ciw.no_routing, ciw.no_routing]
@@ -120,7 +120,7 @@ class TestProcessBased(unittest.TestCase):
         self.assertRaises(ValueError, Q.simulate_until_max_time, 20)
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.NoArrivals(), ciw.dists.Exponential(1), ciw.dists.NoArrivals()],
+            arrival_distributions=[None, ciw.dists.Exponential(1), None],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
             number_of_servers=[1, 1, 1],
             routing=[ciw.no_routing, generator_function_2, ciw.no_routing],
@@ -130,7 +130,7 @@ class TestProcessBased(unittest.TestCase):
 
     def test_routing_from_different_starting_points(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.NoArrivals()],
+            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), None],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
             number_of_servers=[1, 1, 1],
             routing=[generator_function_2, generator_function_4, ciw.no_routing]
@@ -182,7 +182,7 @@ class TestProcessBased(unittest.TestCase):
         self.assertEqual(routes_counter, Counter({(3,): 779, (1, 1, 2, 1, 3): 106, (2, 1, 3, 1, 1): 115}))
 
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), ciw.dists.NoArrivals()],
+            arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1), None],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
             number_of_servers=[1,1,1],
             routing=[generator_function_1, generator_function_7, ciw.no_routing]
