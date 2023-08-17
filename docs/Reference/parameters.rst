@@ -5,7 +5,7 @@ List of Parameters
 ==================
 
 Below is a full list of the parameters that the :code:`create_network` function can take, along with a description of the values required.
-If using a parameters file then here are the arguments and values of the required :code:`.yml` file.
+
 
 arrival_distributions
 ~~~~~~~~~~~~~~~~~~~~~

@@ -54,7 +54,7 @@ Let's implement this into a one node infinite server queue::
     >>> N = ciw.create_network(
     ...     arrival_distributions=[TimeDependentDist()],
     ...     service_distributions=[ciw.dists.Deterministic(value=0.0)],
-    ...     number_of_servers=['Inf']
+    ...     number_of_servers=[float('Inf')]
     ... )
 
 We'll then simulate this for 1 day.
@@ -87,7 +87,7 @@ For example::
     >>> N = ciw.create_network(
     ...     arrival_distributions=[TimeDependentDist()],
     ...     service_distributions=[ciw.dists.Deterministic(value=0.0)],
-    ...     number_of_servers=['Inf']
+    ...     number_of_servers=[float('Inf')]
     ... )
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(101)
