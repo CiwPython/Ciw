@@ -14,9 +14,12 @@ The second node is redundant in this scenario::
 	>>> from collections import Counter
 
 	>>> N = ciw.create_network(
-	...     arrival_distributions=[ciw.dists.Exponential(rate=6.0), ciw.dists.NoArrivals()],
-	...     service_distributions=[ciw.dists.Exponential(rate=5.0), ciw.dists.Exponential(rate=5.0)],
-	...     routing=[[0.0, 0.0], [0.0, 0.0]],
+	...     arrival_distributions=[ciw.dists.Exponential(rate=6.0),
+	...                            None],
+	...     service_distributions=[ciw.dists.Exponential(rate=5.0),
+	...                            ciw.dists.Exponential(rate=5.0)],
+	...     routing=[[0.0, 0.0],
+	...              [0.0, 0.0]],
 	...     number_of_servers=[1, 1],
 	...     queue_capacities=[10, float('inf')]
 	... )
@@ -27,7 +30,7 @@ Now we run the system for 100 time units, and see that we get 494 services at th
 	>>> Q = ciw.Simulation(N)
 	>>> Q.simulate_until_max_time(100)
 
-	>>> service_nodes = [r.node for r in Q.get_all_records() if r.record_type=="service"]
+	>>> service_nodes = [r.node for r in Q.get_all_records(only=["service"])]
 	>>> Counter(service_nodes)
 	Counter({1: 494})
 
@@ -53,9 +56,12 @@ First create the :code:`CustomArrivalNode` that inherits from :code:`ciw.Arrival
 To run the same system, we need to remove the keyword :code:`queue_capacities` when creating a network, so that customers are not rejected before reaching the :code:`send_individual` method::
 
 	>>> N = ciw.create_network(
-	...     arrival_distributions=[ciw.dists.Exponential(rate=6.0), ciw.dists.NoArrivals()],
-	...     service_distributions=[ciw.dists.Exponential(rate=5.0), ciw.dists.Exponential(rate=5.0)],
-	...     routing=[[0.0, 0.0], [0.0, 0.0]],
+	...     arrival_distributions=[ciw.dists.Exponential(rate=6.0),
+	...                            None],
+	...     service_distributions=[ciw.dists.Exponential(rate=5.0),
+	...                            ciw.dists.Exponential(rate=5.0)],
+	...     routing=[[0.0, 0.0],
+	...              [0.0, 0.0]],
 	...     number_of_servers=[1, 1]
 	... )
 
@@ -66,6 +72,6 @@ We'll see nearly that the same amount of services take place at Node 1, however 
 	>>> Q = ciw.Simulation(N, arrival_node_class=CustomArrivalNode)
 	>>> Q.simulate_until_max_time(100)
 
-	>>> service_nodes = [r.node for r in Q.get_all_records() if r.record_type=="service"]
+	>>> service_nodes = [r.node for r in Q.get_all_records(only=["service"])]
 	>>> Counter(service_nodes)
 	Counter({1: 503, 2: 84})

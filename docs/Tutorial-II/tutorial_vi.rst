@@ -22,8 +22,8 @@ A restricted network such as this is represented by nearly the same Network obje
     >>> import ciw
     >>> N = ciw.create_network(
     ...     arrival_distributions=[ciw.dists.Deterministic(value=4.0),
-    ...                            ciw.dists.NoArrivals(),
-    ...                            ciw.dists.NoArrivals()],
+    ...                            None,
+    ...                            None],
     ...     service_distributions=[ciw.dists.Uniform(lower=3, upper=5),
     ...                            ciw.dists.Uniform(lower=3, upper=5),
     ...                            ciw.dists.Uniform(lower=3, upper=5)],
@@ -92,8 +92,8 @@ First, under the new system how many broken stools per hour do we expect?::
 
     >>> N = ciw.create_network(
     ...     arrival_distributions=[ciw.dists.Deterministic(value=4.0),
-    ...                            ciw.dists.NoArrivals(),
-    ...                            ciw.dists.NoArrivals()],
+    ...                            None,
+    ...                            None],
     ...     service_distributions=[ciw.dists.Uniform(lower=3.5, upper=4.5),
     ...                            ciw.dists.Uniform(lower=3.5, upper=4.5),
     ...                            ciw.dists.Uniform(lower=3.5, upper=4.5)],

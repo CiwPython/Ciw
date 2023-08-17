@@ -26,8 +26,8 @@ This is input into the simulation model by including :code:`class_change_matrice
     >>> import ciw
     >>> N = ciw.create_network(
     ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(rate=5)],
-    ...                            'Class 1': [ciw.dists.NoArrivals()],
-    ...                            'Class 2': [ciw.dists.NoArrivals()]},
+    ...                            'Class 1': [None],
+    ...                            'Class 2': [None]},
     ...     service_distributions={'Class 0': [ciw.dists.Exponential(rate=10)],
     ...                            'Class 1': [ciw.dists.Exponential(rate=10)],
     ...                            'Class 2': [ciw.dists.Exponential(rate=10)]},

@@ -90,7 +90,7 @@ As there are no arrivals at Node 3, no customer will need routing assigned here.
     >>> N = ciw.create_network(
     ...     arrival_distributions=[ciw.dists.Exponential(rate=1),
     ...                            ciw.dists.Deterministic(value=1),
-    ...                            ciw.dists.NoArrivals()],
+    ...                            None],
     ...     service_distributions=[ciw.dists.Exponential(rate=2),
     ...                            ciw.dists.Exponential(rate=2),
     ...                            ciw.dists.Exponential(rate=2)],

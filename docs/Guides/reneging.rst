@@ -46,11 +46,15 @@ Consider a two node network, the first node is an M/M/1, :math:`\lambda = 5` and
 
 
     >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(5), ciw.dists.NoArrivals()],
-    ...     service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(4)],
+    ...     arrival_distributions=[ciw.dists.Exponential(5),
+    ...                            None],
+    ...     service_distributions=[ciw.dists.Exponential(2),
+    ...                            ciw.dists.Exponential(4)],
     ...     number_of_servers=[1, 1],
-    ...     routing=[[0, 0], [0, 0]],
-    ...     reneging_time_distributions=[ciw.dists.Deterministic(6), None],
+    ...     routing=[[0, 0],
+    ...              [0, 0]],
+    ...     reneging_time_distributions=[ciw.dists.Deterministic(6),
+    ...                                  None],
     ...     reneging_destinations=[2, -1]
     ... )
 

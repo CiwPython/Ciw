@@ -29,8 +29,6 @@ The following are currently supported:
 - :ref:`poisson_dist`
 - :ref:`geometric_dist`
 - :ref:`binomial_dist`
-- :ref:`no_arrivals`
-
 
 
 .. _uniform_dist:
@@ -312,15 +310,3 @@ Write an Geometric distribution with success probability of `0.3` and `20` trial
 
     ciw.dists.Binomial(n=20, prob=0.3)
 
-
-.. _no_arrivals:
-
------------
-No Arrivals
------------
-
-If a node does not have any arrivals of a certain class, then the following may be input instead of a distribution::
-
-    ciw.dists.NoArrivals()
-
-Note that this is only valid for arrivals, and shouldn't be input into the :code:`Service_distributions` option.

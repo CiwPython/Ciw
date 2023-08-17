@@ -29,11 +29,11 @@ We assign different behaviour for different customer classes by replacing the va
     >>> import ciw
     >>> N = ciw.create_network(
     ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(rate=1.0),
-    ...                                        ciw.dists.NoArrivals(),
-    ...                                        ciw.dists.NoArrivals()],
+    ...                                        None,
+    ...                                        None],
     ...                            'Class 1': [ciw.dists.Exponential(rate=2.0),
-    ...                                        ciw.dists.NoArrivals(),
-    ...                                        ciw.dists.NoArrivals()]},
+    ...                                        None,
+    ...                                        None]},
     ...     service_distributions={'Class 0': [ciw.dists.Exponential(rate=4.0),
     ...                                        ciw.dists.Exponential(rate=1.0),
     ...                                        ciw.dists.Deterministic(value=0.0)],
