@@ -255,7 +255,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind3.service_start_date, 10), 0.5)
         self.assertEqual(round(ind3.service_end_date, 10), 9.5)
         Q.current_time = 3.5
-        Q.nodes[1].release(0, Q.nodes[-1])
+        Q.nodes[1].release(Q.nodes[1].all_individuals[0], Q.nodes[-1])
         self.assertEqual(round(ind2.arrival_date, 10), 0.5)
         self.assertEqual(round(ind2.service_time, 10), 2.0)
         self.assertEqual(round(ind2.time_left, 10), 1.0)
@@ -271,7 +271,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind3.service_start_date, 10), 0.5)
         self.assertEqual(round(ind3.service_end_date, 10), 7.5)
         Q.current_time = 5.5
-        Q.nodes[1].release(0, Q.nodes[-1])
+        Q.nodes[1].release(Q.nodes[1].all_individuals[0], Q.nodes[-1])
         self.assertEqual(round(ind3.arrival_date, 10), 0.5)
         self.assertEqual(round(ind3.service_time, 10), 3.0)
         self.assertEqual(round(ind3.time_left, 10), 1.0)
@@ -573,7 +573,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind3.service_end_date, 10), 9.5)
         self.assertEqual(ind4.with_server, False)
         Q.current_time = 3.5
-        Q.nodes[1].release(0, Q.nodes[-1])
+        Q.nodes[1].release(Q.nodes[1].all_individuals[0], Q.nodes[-1])
         self.assertEqual(round(ind2.arrival_date, 10), 0.5)
         self.assertEqual(round(ind2.service_time, 10), 2.0)
         self.assertEqual(round(ind2.time_left, 10), 1.0)
@@ -596,7 +596,7 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind4.service_start_date, 10), 3.5)
         self.assertEqual(round(ind4.service_end_date, 10), 15.5)
         Q.current_time = 6.5
-        Q.nodes[1].release(0, Q.nodes[-1])
+        Q.nodes[1].release(Q.nodes[1].all_individuals[0], Q.nodes[-1])
         self.assertEqual(round(ind3.arrival_date, 10), 0.5)
         self.assertEqual(round(ind3.service_time, 10), 3.0)
         self.assertEqual(round(ind3.time_left, 10), 1.0)

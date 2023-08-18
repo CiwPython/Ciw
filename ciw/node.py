@@ -406,7 +406,7 @@ class Node(object):
             next_individual_index = random_choice(next_individual_indices)
         else:
             next_individual_index = next_individual_indices[0]
-        return self.all_individuals[next_individual_index], next_individual_index
+        return self.all_individuals[next_individual_index]
 
     def find_server_utilisation(self):
         """
@@ -429,14 +429,14 @@ class Node(object):
           - release the individual if there is capacity at destination,
             otherwise cause blockage
         """
-        next_individual, next_individual_index = self.find_next_individual()
+        next_individual = self.find_next_individual()
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual)
         next_individual.destination = next_node.id_number
         if not isinf(self.c):
             next_individual.server.next_end_service_date = float("Inf")
         if next_node.number_of_individuals < next_node.node_capacity:
-            self.release(next_individual_index, next_node)
+            self.release(next_individual, next_node)
         else:
             self.block_individual(next_individual, next_node)
 
@@ -529,7 +529,7 @@ class Node(object):
         next_individual.service_end_date = self.increment_time(self.get_now(), next_individual.service_time)
         server.next_end_service_date = next_individual.service_end_date
 
-    def release(self, next_individual_index, next_node):
+    def release(self, next_individual, next_node):
         """
         Update node when an individual is released:
           - find the individual to release
@@ -542,7 +542,6 @@ class Node(object):
           - send individual to next destination
           - release any individuals blocked by this node
         """
-        next_individual = self.all_individuals[next_individual_index]
         self.individuals[next_individual.prev_priority_class].remove(next_individual)
         self.number_of_individuals -= 1
         next_individual.queue_size_at_departure = self.number_of_individuals
@@ -580,7 +579,7 @@ class Node(object):
                 individual_to_receive.interrupted = False
                 node_to_receive_from.interrupted_individuals.remove(individual_to_receive)
                 node_to_receive_from.number_interrupted_individuals -= 1
-            node_to_receive_from.release(individual_to_receive_index, self)
+            node_to_receive_from.release(individual_to_receive, self)
 
     def renege(self):
         """

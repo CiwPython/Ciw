@@ -372,7 +372,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(N.next_event_date, 5), 0.03604)
 
         N.servers[1].next_end_service_date = float("inf")
-        N.release(1, Q.transitive_nodes[1])
+        N.release(inds[1], Q.transitive_nodes[1])
         self.assertEqual(
             [str(obs) for obs in N.all_individuals], ["Individual 1", "Individual 3"]
         )
@@ -384,7 +384,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(round(N.next_event_date, 5), 0.03708)
 
         N.servers[0].next_end_service_date = float("inf")
-        N.release(0, Q.transitive_nodes[1])
+        N.release(inds[0], Q.transitive_nodes[1])
         self.assertEqual([str(obs) for obs in N.all_individuals], ["Individual 3"])
         self.assertEqual(
             [[str(obs) for obs in pr_cls] for pr_cls in N.individuals],

@@ -122,13 +122,13 @@ class TestStateTracker(unittest.TestCase):
             N.attach_server(srvr, ind)
         self.assertEqual(Q.statetracker.state, None)
         Q.current_time = 43.11
-        N.release(0, Q.nodes[1])
+        N.release(N.all_individuals[0], Q.nodes[1])
         self.assertEqual(Q.statetracker.state, None)
         N.all_individuals[1].is_blocked = True
         Q.current_time = 46.72
-        N.release(1, Q.nodes[1])
+        N.release(N.all_individuals[1], Q.nodes[1])
         self.assertEqual(Q.statetracker.state, None)
-        N.release(1, Q.nodes[-1])
+        N.release(N.all_individuals[1], Q.nodes[-1])
         self.assertEqual(Q.statetracker.state, None)
 
     def test_base_block_method_within_simulation(self):
@@ -207,13 +207,19 @@ class TestSystemPopulation(unittest.TestCase):
         Q.statetracker.state = 14
         self.assertEqual(Q.statetracker.state, 14)
         Q.current_time = 43.11
-        N.release(0, Q.nodes[1])
+        N.release(N.all_individuals[0]
+
+            , Q.nodes[1])
         self.assertEqual(Q.statetracker.state, 14)
         N.all_individuals[1].is_blocked = True
         Q.current_time = 46.72
-        N.release(1, Q.nodes[1])
+        N.release(N.all_individuals[1]
+
+            , Q.nodes[1])
         self.assertEqual(Q.statetracker.state, 14)
-        N.release(1, Q.nodes[-1])
+        N.release(N.all_individuals[1]
+
+            , Q.nodes[-1])
         self.assertEqual(Q.statetracker.state, 13)
 
     def test_systempop_block_method_within_simulation(self):
@@ -294,13 +300,13 @@ class TestNodePopulation(unittest.TestCase):
         Q.statetracker.state = [5, 3, 6, 0]
         self.assertEqual(Q.statetracker.state, [5, 3, 6, 0])
         Q.current_time = 43.11
-        N.release(0, Q.nodes[1])
+        N.release(N.all_individuals[0], Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [6, 3, 5, 0])
         N.all_individuals[1].is_blocked = True
         Q.current_time = 46.72
-        N.release(1, Q.nodes[1])
+        N.release(N.all_individuals[1], Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [7, 3, 4, 0])
-        N.release(1, Q.nodes[-1])
+        N.release(N.all_individuals[1], Q.nodes[-1])
         self.assertEqual(Q.statetracker.state, [7, 3, 3, 0])
 
     def test_nodepop_block_method_within_simulation(self):
@@ -385,7 +391,7 @@ class TestNodeClassMatrix(unittest.TestCase):
              [0, 0, 0]]
         )
         Q.current_time = 43.11
-        N.release(0, Q.nodes[1])
+        N.release(N.all_individuals[0], Q.nodes[1])
         self.assertEqual(
             Q.statetracker.state,
             [[4, 2, 1],
@@ -395,7 +401,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         )
         N.all_individuals[1].is_blocked = True
         Q.current_time = 46.72
-        N.release(1, Q.nodes[1])
+        N.release(N.all_individuals[1], Q.nodes[1])
         self.assertEqual(
             Q.statetracker.state,
             [[5, 2, 1],
@@ -403,7 +409,7 @@ class TestNodeClassMatrix(unittest.TestCase):
              [1, 1, 2],
              [0, 0, 0]]
         )
-        N.release(1, Q.nodes[-1])
+        N.release(N.all_individuals[1], Q.nodes[-1])
         self.assertEqual(
             Q.statetracker.state,
             [[5, 2, 1],
@@ -511,13 +517,13 @@ class TestNaiveBlocking(unittest.TestCase):
         Q.statetracker.state = [[4, 1], [3, 0], [5, 1], [0, 0]]
         self.assertEqual(Q.statetracker.state, [[4, 1], [3, 0], [5, 1], [0, 0]])
         Q.current_time = 43.11
-        N.release(0, Q.nodes[1])
+        N.release(N.all_individuals[0], Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [[5, 1], [3, 0], [4, 1], [0, 0]])
         N.all_individuals[1].is_blocked = True
         Q.current_time = 46.72
-        N.release(1, Q.nodes[1])
+        N.release(N.all_individuals[1], Q.nodes[1])
         self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [4, 0], [0, 0]])
-        N.release(1, Q.nodes[-1])
+        N.release(N.all_individuals[1], Q.nodes[-1])
         self.assertEqual(Q.statetracker.state, [[6, 1], [3, 0], [3, 0], [0, 0]])
 
     def test_naive_block_method_within_simulation(self):
@@ -737,7 +743,7 @@ class TestMatrixBlocking(unittest.TestCase):
             ],
         )
         Q.current_time = 43.11
-        N.release(0, Q.nodes[1])
+        N.release(N.all_individuals[0], Q.nodes[1])
         self.assertEqual(
             Q.statetracker.state,
             [
@@ -752,7 +758,7 @@ class TestMatrixBlocking(unittest.TestCase):
         )
         N.all_individuals[1].is_blocked = True
         Q.current_time = 46.72
-        N.release(1, Q.nodes[1])
+        N.release(N.all_individuals[1], Q.nodes[1])
         self.assertEqual(
             Q.statetracker.state,
             [
@@ -766,7 +772,7 @@ class TestMatrixBlocking(unittest.TestCase):
             ],
         )
         Q.current_time = 48.39
-        N.release(1, Q.nodes[-1])
+        N.release(N.all_individuals[1], Q.nodes[-1])
         self.assertEqual(
             Q.statetracker.state,
             [
