@@ -66,6 +66,7 @@ class Node(object):
         self.next_renege_date = float("Inf")
         self.dynamic_classes = node.class_change_time
         self.next_class_change_date = float("Inf")
+        self.next_individual = None
 
     @property
     def all_individuals(self):
@@ -247,7 +248,7 @@ class Node(object):
         """
         Finds the next individual to have a class change (while queueing) and changes their class.
         """
-        changing_individual = [ind for ind in self.all_individuals if ind.class_change_date == self.simulation.current_time][0]
+        changing_individual = self.next_individual
         changing_individual.customer_class = changing_individual.next_class
         changing_individual.priority_class = self.simulation.network.priority_class_mapping[changing_individual.next_class]
         if changing_individual.priority_class != changing_individual.prev_priority_class:
@@ -287,30 +288,6 @@ class Node(object):
         self.c = self.schedule[indx][1]
         self.next_shift_change = next(self.date_generator)
         self.begin_service_if_possible_change_shift()
-
-    def check_if_renege(self):
-        """
-        Checks whether the current time is a renege time.
-        """
-        if self.reneging is True:
-            return self.next_event_date == self.next_renege_date
-        return False
-
-    def check_if_shiftchange(self):
-        """
-        Check whether current time is a shift change.
-        """
-        if self.schedule:
-            return self.next_event_date == self.next_shift_change
-        return False
-
-    def check_if_classchange(self):
-        """
-        Checks whether the current time is a class change time.
-        """
-        if self.dynamic_classes is True:
-            return self.next_event_date == self.next_class_change_date
-        return False
 
     def choose_next_customer(self):
         """
@@ -393,20 +370,15 @@ class Node(object):
                 return svr
         return None
 
-    def find_next_individual(self):
+    def decide_between_simultaneous_individuals(self):
         """
         Finds the next individual that should now finish service.
         """
-        next_individual_indices = [
-            i for i, ind in enumerate(self.all_individuals)
-            if ind.service_end_date == self.next_event_date
-            if ind.is_blocked == False
-        ]
-        if len(next_individual_indices) > 1:
-            next_individual_index = random_choice(next_individual_indices)
+        if len(self.next_individual) > 1:
+            next_individual = random_choice(self.next_individual)
         else:
-            next_individual_index = next_individual_indices[0]
-        return self.all_individuals[next_individual_index]
+            next_individual = self.next_individual[0]
+        return next_individual
 
     def find_server_utilisation(self):
         """
@@ -429,7 +401,7 @@ class Node(object):
           - release the individual if there is capacity at destination,
             otherwise cause blockage
         """
-        next_individual = self.find_next_individual()
+        next_individual = self.decide_between_simultaneous_individuals()
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual)
         next_individual.destination = next_node.id_number
@@ -461,11 +433,11 @@ class Node(object):
         """
         Has an event
         """
-        if self.check_if_shiftchange() is True:
+        if self.next_event_type == 'shift_change':
             self.change_shift()
-        elif self.check_if_renege() is True:
+        elif self.next_event_type == 'renege':
             self.renege()
-        elif self.check_if_classchange() is True:
+        elif self.next_event_type == 'class_change':
             self.change_customer_class_while_waiting()
         else:
             self.finish_service()
@@ -587,10 +559,7 @@ class Node(object):
         Resets that customer's reneging date;
         Send customer to their reneging destination.
         """
-        reneging_individual = [
-            ind for ind in self.all_individuals
-            if ind.reneging_date == self.simulation.current_time
-        ][0]
+        reneging_individual = self.next_individual
         reneging_individual.reneging_date = float("Inf")
         next_node_number = self.simulation.network.customer_classes[
             reneging_individual.customer_class
@@ -659,37 +628,66 @@ class Node(object):
           - otherwise return minimum of next shift change, and time for
             next individual (who isn't blocked) to end service, or Inf
         """
-        next_end_service = float("Inf")
-        next_renege_date = float("Inf")
-        next_class_change_date = float("Inf")
+        next_end_service = ([None], float("Inf"), 'end_service')
+        next_renege = (None, float("Inf"), 'renege')
+        next_class_change = (None, float("Inf"), 'class_change')
+        possible_next_events = {}
         if not isinf(self.c):
             for s in self.servers:
-                if s.next_end_service_date < next_end_service:
-                    next_end_service = s.next_end_service_date
+                if s.next_end_service_date < next_end_service[1]:
+                    next_end_service = ([s.cust], s.next_end_service_date)
+                elif s.next_end_service_date == next_end_service[1]:
+                    next_end_service[0].append(s.cust)
+            possible_next_events['end_service'] = next_end_service
             if self.reneging is True:
                 for ind in self.all_individuals:
-                    if (ind.reneging_date < next_renege_date) and not ind.server:
-                        next_renege_date = ind.reneging_date
-                self.next_renege_date = next_renege_date
+                    if (ind.reneging_date < next_renege[1]) and not ind.server:
+                        next_renege = (ind, ind.reneging_date)
+                self.next_renege_date = next_renege[1]
+                possible_next_events['renege'] = next_renege
             if self.dynamic_classes is True:
                 for ind in self.all_individuals:
-                    if (ind.class_change_date < next_class_change_date) and not ind.server:
-                        next_class_change_date = ind.class_change_date
-                self.next_class_change_date = next_class_change_date
+                    if (ind.class_change_date < next_class_change[1]) and not ind.server:
+                        next_class_change = (ind, ind.class_change_date)
+                self.next_class_change_date = next_class_change[1]
+                possible_next_events['class_change'] = next_class_change
+            if self.schedule is not None:
+                possible_next_events['shift_change'] = (None, self.next_shift_change)
         else:
             for ind in self.all_individuals:
                 if not ind.is_blocked and ind.service_end_date >= self.get_now():
-                    if ind.service_end_date < next_end_service:
-                        next_end_service = ind.service_end_date
+                    if ind.service_end_date < next_end_service[1]:
+                        next_end_service = ([ind], ind.service_end_date, 'end_service')
+                possible_next_events['end_service'] = next_end_service
         if self.reneging or self.dynamic_classes or self.schedule:
-            self.next_event_date = min(
-                next_end_service,
-                self.next_shift_change,
-                self.next_renege_date,
-                self.next_class_change_date,
-            )
+            next_event, self.next_event_type = self.decide_next_event(possible_next_events)
+            self.next_event_date = next_event[1]
+            self.next_individual = next_event[0]
         else:
-            self.next_event_date = next_end_service
+            self.next_event_date = next_end_service[1]
+            self.next_individual = next_end_service[0]
+            self.next_event_type = 'end_service'
+
+    def decide_next_event(self, possible_next_events):
+        """
+        Decides the next event. Chooses the next service end,
+        renege, shift change, or class change. In the case of
+        a tie, prioritise as follows:
+            1) shift change
+            2) end service
+            3) class change
+            4) renege
+        """
+        next_date = float('inf')
+        next_event = (None, float('inf'))
+        next_event_type = None
+        for event_type in ['shift_change', 'end_service', 'class_change', 'renege']:
+            possible_next_event = possible_next_events.get(event_type, (None, float('inf')))
+            if possible_next_event[1] < next_date:
+                next_event = possible_next_event
+                next_event_type = event_type
+                next_date = next_event[1]
+        return next_event, next_event_type
 
     def wrap_up_servers(self, current_time):
         """

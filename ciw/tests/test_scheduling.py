@@ -91,87 +91,8 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(ind1.service_end_date, 7895.876)
         self.assertEqual(ind2.service_time, 7.2)
         self.assertEqual(ind2.service_end_date, 0.4321)
-
         self.assertEqual(N.interrupted_individuals, [])
 
-    def test_check_if_shiftchange_method(self):
-        Q = ciw.Simulation(N_schedule)
-        N = Q.transitive_nodes[0]
-        N.next_event_date = 12.0
-        self.assertEqual(N.check_if_shiftchange(), False)
-        N.next_event_date = 30.0
-        self.assertEqual(N.check_if_shiftchange(), True)
-
-        N_params = ciw.create_network(
-            arrival_distributions={
-                "Class 0": [
-                    ciw.dists.Exponential(3.0),
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Exponential(4.0),
-                    ciw.dists.Exponential(1.0),
-                ],
-                "Class 1": [
-                    ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(3.0),
-                    ciw.dists.Exponential(6.0),
-                    ciw.dists.Exponential(4.0),
-                ],
-                "Class 2": [
-                    ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(1.0),
-                    ciw.dists.Exponential(2.0),
-                    ciw.dists.Exponential(0.5),
-                ],
-            },
-            number_of_servers=[9, 10, 8, 8],
-            queue_capacities=[20, float("Inf"), 30, float("Inf")],
-            service_distributions={
-                "Class 0": [
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Gamma(0.4, 0.6),
-                    ciw.dists.Deterministic(0.5),
-                ],
-                "Class 1": [
-                    ciw.dists.Exponential(7.0),
-                    ciw.dists.Triangular(0.1, 0.8, 0.85),
-                    ciw.dists.Exponential(8.0),
-                    ciw.dists.Exponential(5.0),
-                ],
-                "Class 2": [
-                    ciw.dists.Deterministic(0.3),
-                    ciw.dists.Deterministic(0.2),
-                    ciw.dists.Exponential(8.0),
-                    ciw.dists.Exponential(9.0),
-                ],
-            },
-            routing={
-                "Class 0": [
-                    [0.1, 0.2, 0.1, 0.4],
-                    [0.2, 0.2, 0.0, 0.1],
-                    [0.0, 0.8, 0.1, 0.1],
-                    [0.4, 0.1, 0.1, 0.0],
-                ],
-                "Class 1": [
-                    [0.6, 0.0, 0.0, 0.2],
-                    [0.1, 0.1, 0.2, 0.2],
-                    [0.9, 0.0, 0.0, 0.0],
-                    [0.2, 0.1, 0.1, 0.1],
-                ],
-                "Class 2": [
-                    [0.0, 0.0, 0.4, 0.3],
-                    [0.1, 0.1, 0.1, 0.1],
-                    [0.1, 0.3, 0.2, 0.2],
-                    [0.0, 0.0, 0.0, 0.3],
-                ],
-            },
-        )
-        Q = ciw.Simulation(N_params)
-        N = Q.transitive_nodes[0]
-        N.next_event_date = 12.0
-        self.assertEqual(N.check_if_shiftchange(), False)
-        N.next_event_date = 30.0
-        self.assertEqual(N.check_if_shiftchange(), False)
 
     def test_kill_server_method(self):
         Q = ciw.Simulation(N_schedule)
@@ -181,6 +102,7 @@ class TestScheduling(unittest.TestCase):
         N.kill_server(s)
         self.assertEqual(N.servers, [])
         N.next_event_date = 30
+        N.next_event_type = "shift_change"
         N.have_event()
         self.assertEqual(
             [str(obs) for obs in N.servers],
