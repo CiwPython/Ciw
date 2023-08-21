@@ -1573,6 +1573,7 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N, exact=26)
         Q.simulate_until_max_time(20)
+        self.assertTrue(Q.nodes[1].dynamic_classes)
         all_recs = Q.get_all_records()
         recs = [r for r in all_recs if r.record_type == "service"]
         recs.sort(key=lambda r: r.arrival_date)

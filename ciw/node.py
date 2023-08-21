@@ -127,8 +127,7 @@ class Node(object):
         next_individual.arrival_date = self.get_now()
         if self.reneging is True:
             next_individual.reneging_date = self.get_reneging_date(next_individual)
-        if self.dynamic_classes is True:
-            self.decide_class_change(next_individual)
+        self.decide_class_change(next_individual)
 
         free_server = self.find_free_server(next_individual)
         if free_server is None and isinf(self.c) is False and self.c > 0:
@@ -139,6 +138,7 @@ class Node(object):
             next_individual.service_start_date = self.get_now()
             next_individual.service_time = self.get_service_time(next_individual)
             next_individual.service_end_date = self.increment_time(self.get_now(), next_individual.service_time)
+            self.reset_class_change(next_individual)
             if not isinf(self.c):
                 free_server.next_end_service_date = next_individual.service_end_date
 
@@ -185,6 +185,7 @@ class Node(object):
                     else:
                         self.give_service_time_after_preemption(ind)
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
+                    self.reset_class_change(ind)
                     srvr.next_end_service_date = ind.service_end_date
 
     def begin_service_if_possible_release(self, next_individual, newly_free_server):
@@ -211,6 +212,7 @@ class Node(object):
                     else:
                         self.give_service_time_after_preemption(ind)
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
+                    self.reset_class_change(ind)
                     newly_free_server.next_end_service_date = ind.service_end_date
 
     def block_individual(self, individual, next_node):
@@ -305,16 +307,18 @@ class Node(object):
         """
         Decides on the next_individual's next class and class change date
         """
-        class_change_times = [
-            float("Inf") if dist is None else dist.sample()
-            for dist in self.simulation.network.customer_classes[
-                next_individual.customer_class
-            ].class_change_time_distributions
-        ]
-        next_class = min(range(len(class_change_times)), key=class_change_times.__getitem__)
-        time = class_change_times[next_class]
-        next_individual.next_class = next_class
-        next_individual.class_change_date = self.increment_time(self.get_now(), time)
+        if self.dynamic_classes is True:
+            next_time = float('inf')
+            next_class = next_individual.customer_class
+            for clss, dist in enumerate(self.simulation.network.customer_classes[next_individual.customer_class].class_change_time_distributions):
+                if dist is not None:
+                    t = dist.sample()
+                    if t < next_time:
+                        next_time = t
+                        next_class = clss
+            next_individual.next_class = next_class
+            next_individual.class_change_date = self.increment_time(self.get_now(), next_time)
+            self.find_next_class_change()
 
     def decide_preempt(self, individual):
         """
@@ -373,6 +377,18 @@ class Node(object):
         else:
             next_individual = self.next_individual[0]
         return next_individual
+
+    def find_next_class_change(self):
+        """
+        Updates the next_class_change_date and next_class_change_ind
+        """
+        self.next_class_change_date = float('inf')
+        self.next_class_change_ind = None
+        for ind in self.all_individuals:
+            if (ind.class_change_date < self.next_class_change_date) and not ind.server:
+                next_class_change = (ind, ind.class_change_date)
+                self.next_class_change_ind = ind
+                self.next_class_change_date = ind.class_change_date
 
     def find_server_utilisation(self):
         """
@@ -549,6 +565,15 @@ class Node(object):
                 node_to_receive_from.number_interrupted_individuals -= 1
             node_to_receive_from.release(individual_to_receive, self)
 
+    def reset_class_change(self, individual):
+        """
+        Resets the individual's change_class date when beginning service.
+        """
+        if self.dynamic_classes:
+            individual.class_change_date = float('inf')
+            if individual == self.next_class_change_ind:
+                self.find_next_class_change()
+
     def renege(self):
         """
         Removes the appropriate customer from the queue;
@@ -626,7 +651,6 @@ class Node(object):
         """
         next_end_service = ([None], float("Inf"), 'end_service')
         next_renege = (None, float("Inf"), 'renege')
-        next_class_change = (None, float("Inf"), 'class_change')
         possible_next_events = {}
         if not isinf(self.c):
             for s in self.servers:
@@ -642,11 +666,7 @@ class Node(object):
                 self.next_renege_date = next_renege[1]
                 possible_next_events['renege'] = next_renege
             if self.dynamic_classes is True:
-                for ind in self.all_individuals:
-                    if (ind.class_change_date < next_class_change[1]) and not ind.server:
-                        next_class_change = (ind, ind.class_change_date)
-                self.next_class_change_date = next_class_change[1]
-                possible_next_events['class_change'] = next_class_change
+                possible_next_events['class_change'] = (self.next_class_change_ind, self.next_class_change_date)
             if self.schedule is not None:
                 possible_next_events['shift_change'] = (None, self.next_shift_change)
         else:
@@ -683,6 +703,7 @@ class Node(object):
                 next_event = possible_next_event
                 next_event_type = event_type
                 next_date = next_event[1]
+        # print(self.get_now(), next_event_type, next_event)
         return next_event, next_event_type
 
     def wrap_up_servers(self, current_time):
