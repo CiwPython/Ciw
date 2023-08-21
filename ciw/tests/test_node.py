@@ -99,8 +99,8 @@ class TestNode(unittest.TestCase):
         N = ciw.Node(1, Q)
         self.assertEqual(N.c, 9)
         self.assertEqual(
-            N.transition_row,
-            [[0.1, 0.2, 0.1, 0.4], [0.6, 0.0, 0.0, 0.2], [0.0, 0.0, 0.4, 0.3]],
+            [[round(p, 10) for p in row] for row in N.transition_row],
+            [[0.1, 0.2, 0.1, 0.4, 0.2], [0.6, 0.0, 0.0, 0.2, 0.2], [0.0, 0.0, 0.4, 0.3, 0.3]],
         )
         self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
@@ -422,7 +422,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.service_start_date, False)
         self.assertEqual(ind.service_end_date, False)
         Q.current_time = 200.0
-        Q.transitive_nodes[0].begin_service_if_possible_release(ind)
+        Q.transitive_nodes[0].begin_service_if_possible_release(ind, Q.nodes[1].servers[0])
         self.assertEqual(ind.arrival_date, 100.0)
         self.assertEqual(round(ind.service_time, 5), 0.03382)
         self.assertEqual(ind.service_start_date, 200.0)

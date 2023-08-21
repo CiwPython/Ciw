@@ -121,8 +121,8 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(N.ps_capacity, 9)
         self.assertEqual(N.c, float("inf"))
         self.assertEqual(
-            N.transition_row,
-            [[0.1, 0.2, 0.1, 0.4], [0.6, 0.0, 0.0, 0.2], [0.0, 0.0, 0.4, 0.3]],
+            [[round(p, 10) for p in row] for row in N.transition_row],
+            [[0.1, 0.2, 0.1, 0.4, 0.2], [0.6, 0.0, 0.0, 0.2, 0.2], [0.0, 0.0, 0.4, 0.3, 0.3]],
         )
         self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])

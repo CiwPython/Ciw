@@ -38,7 +38,7 @@ class Node(object):
         self.node_capacity = node.queueing_capacity + self.c
         if not self.simulation.network.process_based:
             self.transition_row = [
-                self.simulation.network.customer_classes[clss].routing[id_ - 1]
+                self.simulation.network.customer_classes[clss].routing[id_ - 1] + [1.0 - sum(self.simulation.network.customer_classes[clss].routing[id_ - 1])]
                 for clss in range(self.simulation.network.number_of_classes)
             ]
         self.class_change = node.class_change_matrix
@@ -187,7 +187,7 @@ class Node(object):
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
                     srvr.next_end_service_date = ind.service_end_date
 
-    def begin_service_if_possible_release(self, next_individual):
+    def begin_service_if_possible_release(self, next_individual, newly_free_server):
         """
         Begins the service of the next individual (at point
         of previous individual's release)
@@ -197,21 +197,21 @@ class Node(object):
           - give a start date and end date
           - attach server to individual
         """
-        srvr = self.find_free_server(next_individual)
-        if srvr is not None:
+
+        if newly_free_server is not None and newly_free_server in self.servers:
             if self.number_interrupted_individuals > 0:
-                self.begin_interrupted_individuals_service(srvr)
+                self.begin_interrupted_individuals_service(newly_free_server)
             else:
                 ind = self.choose_next_customer()
                 if ind is not None:
-                    self.attach_server(srvr, ind)
+                    self.attach_server(newly_free_server, ind)
                     ind.service_start_date = self.get_now()
                     if ind.service_time is False:
                         ind.service_time = self.get_service_time(ind)
                     else:
                         self.give_service_time_after_preemption(ind)
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
-                    srvr.next_end_service_date = ind.service_end_date
+                    newly_free_server.next_end_service_date = ind.service_end_date
 
     def block_individual(self, individual, next_node):
         """
@@ -273,18 +273,15 @@ class Node(object):
          - begin any new services if free servers
         """
         shift = self.next_event_date % self.cyclelength
-
         try:
             indx = self.schedule.index(shift)
         except:
             tms = [obs[0] for obs in self.schedule]
             diffs = [abs(x - float(shift)) for x in tms]
             indx = diffs.index(min(diffs))
-
         num_servers = self.schedule[indx][1]
         self.take_servers_off_duty()
         self.add_new_servers(num_servers)
-
         self.c = self.schedule[indx][1]
         self.next_shift_change = next(self.date_generator)
         self.begin_service_if_possible_change_shift()
@@ -345,10 +342,7 @@ class Node(object):
         server.cust = False
         server.busy = False
         individual.server = False
-        if not server.busy_time:
-            server.busy_time = individual.exit_date - individual.service_start_date
-        else:
-            server.busy_time += individual.exit_date - individual.service_start_date
+        server.busy_time = self.increment_time(server.busy_time, individual.exit_date - individual.service_start_date)
         server.total_time = self.increment_time(self.get_now(), -server.start_date)
         if server.offduty:
             self.kill_server(server)
@@ -433,14 +427,14 @@ class Node(object):
         """
         Has an event
         """
-        if self.next_event_type == 'shift_change':
+        if self.next_event_type == 'end_service':
+            self.finish_service()
+        elif self.next_event_type == 'shift_change':
             self.change_shift()
         elif self.next_event_type == 'renege':
             self.renege()
         elif self.next_event_type == 'class_change':
             self.change_customer_class_while_waiting()
-        else:
-            self.finish_service()
 
     def increment_time(self, original, increment):
         """
@@ -470,17 +464,17 @@ class Node(object):
             customer_class = ind.customer_class
             return random_choice(
                 self.simulation.nodes[1:],
-                self.transition_row[customer_class]
-                + [1.0 - sum(self.transition_row[customer_class])],
+                self.transition_row[customer_class],
             )
-        if ind.route == [] or ind.route[0] != self.id_number:
-            raise ValueError("Individual process route sent to wrong node")
-        ind.route.pop(0)
-        if len(ind.route) == 0:
-            next_node_number = -1
         else:
-            next_node_number = ind.route[0]
-        return self.simulation.nodes[next_node_number]
+            if ind.route == [] or ind.route[0] != self.id_number:
+                raise ValueError("Individual process route sent to wrong node")
+            ind.route.pop(0)
+            if len(ind.route) == 0:
+                next_node_number = -1
+            else:
+                next_node_number = ind.route[0]
+            return self.simulation.nodes[next_node_number]
 
     def preempt(self, individual_to_preempt, next_individual):
         """
@@ -519,13 +513,15 @@ class Node(object):
         next_individual.queue_size_at_departure = self.number_of_individuals
         next_individual.exit_date = self.get_now()
         self.write_individual_record(next_individual)
+        newly_free_server = None
         if not isinf(self.c):
-            self.detatch_server(next_individual.server, next_individual)
+            newly_free_server = next_individual.server
+            self.detatch_server(newly_free_server, next_individual)
         self.reset_individual_attributes(next_individual)
         self.simulation.statetracker.change_state_release(
             self, next_node, next_individual, next_individual.is_blocked
         )
-        self.begin_service_if_possible_release(next_individual)
+        self.begin_service_if_possible_release(next_individual, newly_free_server)
         next_node.accept(next_individual)
         self.release_blocked_individual()
 

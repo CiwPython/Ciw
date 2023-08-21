@@ -49,6 +49,7 @@ class Simulation(object):
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [node_type(i + 1, self) for i, node_type in enumerate(self.NodeTypes)]
         self.nodes = [self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()]
+        self.active_nodes = self.nodes[:-1]
         self.nodes[0].initialise()
         self.statetracker = tracker
         self.statetracker.initialise(self)
@@ -115,7 +116,7 @@ class Simulation(object):
         """
         mindate = float("Inf")
         next_active_nodes = []
-        for nd in self.nodes:
+        for nd in self.active_nodes:
             if nd.next_event_date < mindate:
                 mindate = nd.next_event_date
                 next_active_nodes = [nd]
