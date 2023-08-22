@@ -1,6 +1,17 @@
 History
 -------
 
++ **v3.0.0 (2023-08-2023)**
+    + Adds service disciplines - FIFO, LIFO, SIRO and ability for custom disciplines.
+    + Removes baulking and rejection dictionaries, these are recorded as DataRecords.
+    + Adds an optional filter to `Q.get_all_records` to filter only records of given types.
+    + Removes `ciw.dists.NoArrivals`, can just use `None`.
+    + Removes ability to write to file and read from file.
+    + Allows any string to represent customer classes.
+    + Api changes to `class_change_matrices` and `class_change_distributions`
+    + `ciw.trackers.NodeClassMatrix` now required a `class_ordering` keyword to ordet the arbitrary customer class string names.
+    + Performance improvements.
+
 + **v2.3.7 (2023-04-06)**
     + Adds Poisson, Geometric, and Binomial distributions fro batching.
 
