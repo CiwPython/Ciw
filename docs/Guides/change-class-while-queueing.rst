@@ -30,9 +30,8 @@ This is input into the simulation as follows::
      ...         'C2': [ciw.dists.Exponential(rate=6)]},
      ...     number_of_servers=[1],
      ...     class_change_time_distributions={
-     ...         'C0': {'C0': None, 'C1': None, 'C2': ciw.dists.Deterministic(value=0.5)},
-     ...         'C1': {'C0': None, 'C1': None, 'C2': ciw.dists.Exponential(rate=1)},
-     ...         'C2': {'C0': None, 'C1': None, 'C2': None}
+     ...         'C0': {'C2': ciw.dists.Deterministic(value=0.5)},
+     ...         'C1': {'C2': ciw.dists.Exponential(rate=1)}
      ...     }
      ... )
 
@@ -51,8 +50,7 @@ As a further example, consider a one node queue with two servers, with two class
     ...         'P0': 0,
     ...         'P1': 1},
     ...     class_change_time_distributions={
-    ...         'P0': {'P0': None, 'P1': None},
-    ...         'P1': {'P0': ciw.dists.Deterministic(1.5), 'P1': None}
+    ...         'P1': {'P0': ciw.dists.Deterministic(1.5)}
     ...     }
     ... )
 

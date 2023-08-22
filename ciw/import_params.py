@@ -91,11 +91,15 @@ def create_network_from_dictionary(params_input):
         "class_change_matrices",
         [None for nd in range(number_of_nodes)],
     )
-    class_change_time_distributions = params.get(
-        "class_change_time_distributions",
-        {clss2: {clss1: None for clss1 in params['customer_class_names']} for clss2 in params['customer_class_names']
-        },
-    )
+    class_change_time_distributions = {clss2: {clss1: None for clss1 in params['customer_class_names']} for clss2 in params['customer_class_names']}
+    if 'class_change_time_distributions' in params:
+        for clss1 in params['customer_class_names']:
+            for clss2 in params['customer_class_names']:
+                try:
+                    class_change_time_distributions[clss1][clss2] = params['class_change_time_distributions'][clss1][clss2]
+                except:
+                    pass
+
     number_of_servers, schedules, nodes, classes, preempts = [], [], [], {}, []
     for c in params["number_of_servers"]:
         if isinstance(c, (tuple, list)):
@@ -327,6 +331,7 @@ def validify_dictionary(params):
         raise ValueError("Number of servers must be positive integers.")
     if not valid_capacities:
         raise ValueError("Queue capacities must be positive integers or zero.")
+    
     if "class_change_matrices" in params:
         if not isinstance(params['class_change_matrices'], list):
             raise ValueError("class_change_matrices should be a list of dictionaries for each node in the network.")
@@ -340,17 +345,19 @@ def validify_dictionary(params):
         class_change_names = set([k for matrix in params['class_change_matrices'] for k in matrix.keys()])
         if not class_change_names.issubset(set(params['arrival_distributions'])):
             raise ValueError("Ensure consistant names for customer classes.")
+    
     if "class_change_time_distributions" in params:
-        wrong_num_classes = any(
-            len(row.values()) != params["number_of_classes"]
-            for row in params["class_change_time_distributions"].values()
+        class_change_from_names = set(list(params['class_change_time_distributions'].keys()))
+        class_change_to_names = set([clss for row in params['class_change_time_distributions'].values() for clss in row.keys()])
+        wrong_class_names = (
+            not class_change_from_names.issubset(set(params['customer_class_names']))
         ) or (
-            len(params["class_change_time_distributions"])
-            != params["number_of_classes"]
+        
+            not class_change_to_names.issubset(set(params['customer_class_names']))
         )
-        if wrong_num_classes:
+        if wrong_class_names:
             raise ValueError(
-                "Ensure correct number of customer classes used in class_change_time_distributions."
+                "Ensure consistant customer classes used in class_change_time_distributions."
             )
     for n in params["number_of_servers"]:
         if isinstance(n, str) and n != "Inf":
