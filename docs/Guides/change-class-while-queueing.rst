@@ -7,7 +7,14 @@ How to Change Customer Class While Queueing
 Ciw allows customers to change their class while waiting in the queue.
 It does this by sampling times that the customer will wait in their current class before changing to other classes.
 
-To do this a matrix of :code:`class_change_time_distributions` is defined. This is an :math:`n \times n` matrix, where :math:`n` is the number of customer classes in the simulation. Each entry is a :ref:`distribution <refs-dists>` object, where the distribution at the :math:`(i, j)^{\text{th}}` entry samples the time that customer of class :math:`i` will wait before changing to class :math:`j`.
+To do this a dictionary of :code:`class_change_time_distributions` is defined. This is a dictionary of dictionaries, mapping pairs of customer classes to :ref:`distribution <refs-dists>` objects::
+    
+    >>> import ciw
+    >>> class_change_dist_dict = {
+    ...     'Class 0': {'Class 1': ciw.dists.Exponential(rate=5)}
+    ... }
+
+In the above example, the time a customer of class :code:`'Class 0'` will wait before becoming a customer of class :code:`'Class 1'` will be samples from an Exponential distribution with rate 5. Any other pairs of classes are assumed not to change into one another if they are not present in the dictionary.
 
 This :code:`class_change_time_distributions` matrix is applied to every node in the queueing network.
 
