@@ -1,6 +1,3 @@
-from __future__ import division
-
-
 class StateTracker(object):
     """
     A generic class to record system's state.
@@ -204,7 +201,7 @@ class NodePopulationSubset(StateTracker):
 
     def __init__(self, observed_nodes):
         """
-        Pre-initialises the object with keyward `observed_nodes`
+        Pre-initialises the object with keyword `observed_nodes`
         """
         self.observed_nodes = observed_nodes
 
@@ -257,12 +254,23 @@ class NodeClassMatrix(StateTracker):
         Class 0), and 1 customer at the second node (0 of Class 0, 1 of
         Class 1).
     """
+    def __init__(self, class_ordering=None):
+        """
+        Pre-initialises the object with keyword `class_ordering`
+        """
+        self.class_ordering = class_ordering
 
     def initialise(self, simulation):
         """
         Initialises the state tracker class.
         """
         self.simulation = simulation
+        
+        if self.class_ordering is not None:
+            self.class_ordering = {clss: i for i, clss in enumerate(self.class_ordering)}
+        else:
+            self.class_ordering = {clss: i for i, clss in enumerate(self.simulation.network.customer_class_names)}
+        
         self.state = [
             [0 for cls in range(self.simulation.network.number_of_classes)]
             for i in range(self.simulation.network.number_of_nodes)
@@ -273,7 +281,7 @@ class NodeClassMatrix(StateTracker):
         """
         Changes the state of the system when a customer is accepted.
         """
-        self.state[node.id_number - 1][ind.customer_class] += 1
+        self.state[node.id_number - 1][self.class_ordering[ind.customer_class]] += 1
 
     def change_state_block(self, node, destination, ind):
         """
@@ -285,14 +293,14 @@ class NodeClassMatrix(StateTracker):
         """
         Changes the state of the system when a customer is released.
         """
-        self.state[node.id_number - 1][ind.customer_class] -= 1
+        self.state[node.id_number - 1][self.class_ordering[ind.customer_class]] -= 1
 
     def change_state_classchange(self, node, ind):
         """
         Changes the state of the system when a customer changes class while queueing.
         """
-        self.state[node.id_number - 1][ind.previous_class] -= 1
-        self.state[node.id_number - 1][ind.customer_class] += 1
+        self.state[node.id_number - 1][self.class_ordering[ind.previous_class]] -= 1
+        self.state[node.id_number - 1][self.class_ordering[ind.customer_class]] += 1
 
     def hash_state(self):
         """
@@ -366,7 +374,6 @@ class MatrixBlocking(StateTracker):
         the second node to the first. The numbers denote the order
         at which they became blocked.
     """
-
     def initialise(self, simulation):
         """
         Initialises the matrix blocking tracker class.

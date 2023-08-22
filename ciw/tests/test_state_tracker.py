@@ -115,7 +115,7 @@ class TestStateTracker(unittest.TestCase):
     def test_base_release_method_within_simulation(self):
         Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in range(5)]
+        inds = [ciw.Individual(i, 'Class 0') for i in range(5)]
         N.individuals = [inds]
         for ind in N.all_individuals:
             srvr = N.find_free_server(ind)
@@ -143,7 +143,7 @@ class TestStateTracker(unittest.TestCase):
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, None)
         Q.current_time = 45.6
-        N.accept(ciw.Individual(3, 2))
+        N.accept(ciw.Individual(3, 'Class 2'))
         self.assertEqual(Q.statetracker.state, None)
 
 
@@ -199,7 +199,7 @@ class TestSystemPopulation(unittest.TestCase):
     def test_systempop_release_method_within_simulation(self):
         Q = ciw.Simulation(N_params, tracker=ciw.trackers.SystemPopulation())
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in range(5)]
+        inds = [ciw.Individual(i, 'Class 0') for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
             srvr = N.find_free_server(ind)
@@ -235,7 +235,7 @@ class TestSystemPopulation(unittest.TestCase):
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, 0)
         Q.current_time = 45.6
-        N.accept(ciw.Individual(3, 2))
+        N.accept(ciw.Individual(3, 'Class 2'))
         self.assertEqual(Q.statetracker.state, 1)
 
 
@@ -292,7 +292,7 @@ class TestNodePopulation(unittest.TestCase):
     def test_nodepop_release_method_within_simulation(self):
         Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodePopulation())
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in range(5)]
+        inds = [ciw.Individual(i, 'Class 0') for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
             srvr = N.find_free_server(ind)
@@ -322,7 +322,7 @@ class TestNodePopulation(unittest.TestCase):
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [0, 0, 0, 0])
         Q.current_time = 45.6
-        N.accept(ciw.Individual(3, 2))
+        N.accept(ciw.Individual(3, 'Class 2'))
         self.assertEqual(Q.statetracker.state, [0, 0, 1, 0])
 
 
@@ -339,7 +339,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
         N = Q.nodes[1]
-        ind = ciw.Individual(1, customer_class=1)
+        ind = ciw.Individual(1, customer_class='Class 1')
         self.assertEqual(B.state, [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
         B.change_state_accept(N, ind)
         self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
@@ -349,7 +349,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         B = ciw.trackers.NodeClassMatrix()
         B.initialise(Q)
         N = Q.nodes[1]
-        ind = ciw.Individual(1)
+        ind = ciw.Individual(1, 'Class 0')
         B.state = [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
         B.change_state_block(N, N, ind)
         self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
@@ -360,7 +360,7 @@ class TestNodeClassMatrix(unittest.TestCase):
         B.initialise(Q)
         N = Q.nodes[1]
         Nex = Q.nodes[-1]
-        ind = ciw.Individual(1, customer_class=2)
+        ind = ciw.Individual(1, customer_class='Class 2')
         B.state = [[0, 1, 2], [1, 1, 1], [0, 1, 0], [4, 3, 1]]
         B.change_state_release(N, Nex, ind, False)
         self.assertEqual(B.state, [[0, 1, 1], [1, 1, 1], [0, 1, 0], [4, 3, 1]])
@@ -377,7 +377,7 @@ class TestNodeClassMatrix(unittest.TestCase):
     def test_nodeclassmatrix_release_method_within_simulation(self):
         Q = ciw.Simulation(N_params, tracker=ciw.trackers.NodeClassMatrix())
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in range(5)]
+        inds = [ciw.Individual(i, 'Class 0') for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
             srvr = N.find_free_server(ind)
@@ -449,7 +449,7 @@ class TestNodeClassMatrix(unittest.TestCase):
              [0, 0, 0]]
         )
         Q.current_time = 45.6
-        N.accept(ciw.Individual(3, 2))
+        N.accept(ciw.Individual(3, 'Class 2'))
         self.assertEqual(
             Q.statetracker.state,
             [[0, 0, 0],
@@ -509,7 +509,7 @@ class TestNaiveBlocking(unittest.TestCase):
     def test_naive_release_method_within_simulation(self):
         Q = ciw.Simulation(N_params, tracker=ciw.trackers.NaiveBlocking())
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in range(5)]
+        inds = [ciw.Individual(i, 'Class 0') for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
             srvr = N.find_free_server(ind)
@@ -539,7 +539,7 @@ class TestNaiveBlocking(unittest.TestCase):
         N = Q.transitive_nodes[2]
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [0, 0], [0, 0]])
         Q.current_time = 45.6
-        N.accept(ciw.Individual(3, 2))
+        N.accept(ciw.Individual(3, 'Class 2'))
         self.assertEqual(Q.statetracker.state, [[0, 0], [0, 0], [1, 0], [0, 0]])
 
 
@@ -720,7 +720,7 @@ class TestMatrixBlocking(unittest.TestCase):
     def test_matrix_release_method_within_simulation(self):
         Q = ciw.Simulation(N_params, tracker=ciw.trackers.MatrixBlocking())
         N = Q.transitive_nodes[2]
-        inds = [ciw.Individual(i) for i in range(5)]
+        inds = [ciw.Individual(i, 'Class 0') for i in range(5)]
         N.individuals = [inds]
         for ind in N.individuals[0]:
             srvr = N.find_free_server(ind)
@@ -836,7 +836,7 @@ class TestMatrixBlocking(unittest.TestCase):
             ],
         )
         Q.current_time = 45.6
-        N.accept(ciw.Individual(3, 2))
+        N.accept(ciw.Individual(3, 'Class 2'))
         self.assertEqual(
             Q.statetracker.state,
             [
@@ -1661,10 +1661,11 @@ class TestStateProbabilities(unittest.TestCase):
                 "Class 1": [ciw.dists.Deterministic(4.5)],
             },
             number_of_servers=[1],
-            class_change_time_distributions=[
-                [None, ciw.dists.Deterministic(4)],
-                [None, None],
-            ],
+            class_change_time_distributions={
+                'Class 0': {'Class 0': None, 'Class 1': ciw.dists.Deterministic(4)}
+                ,
+                'Class 1': {'Class 0': None, 'Class 1': None}
+            },
         )
         Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix())
         #### We would expect:
@@ -1706,3 +1707,218 @@ class TestStateProbabilities(unittest.TestCase):
         self.assertEqual(Q.statetracker.history[15], [24.0, ((2, 2),)])
         self.assertEqual(Q.statetracker.history[16], [25.0, ((1, 3),)])
         self.assertEqual(Q.statetracker.history[17], [25.5, ((1, 2),)])
+
+
+
+
+class TestNodeClassMatrixWithCustomerClassNames(unittest.TestCase):
+    N_paramscustomnames = ciw.create_network(
+        arrival_distributions={
+            "Child": [
+                ciw.dists.Exponential(3.0),
+                ciw.dists.Exponential(7.0),
+                ciw.dists.Exponential(4.0),
+                ciw.dists.Exponential(1.0),
+            ],
+            "Adult": [
+                ciw.dists.Exponential(2.0),
+                ciw.dists.Exponential(3.0),
+                ciw.dists.Exponential(6.0),
+                ciw.dists.Exponential(4.0),
+            ],
+            "Pensioner": [
+                ciw.dists.Exponential(2.0),
+                ciw.dists.Exponential(1.0),
+                ciw.dists.Exponential(2.0),
+                ciw.dists.Exponential(0.5),
+            ],
+        },
+        number_of_servers=[9, 10, 8, 8],
+        queue_capacities=[20, float("Inf"), 30, float("Inf")],
+        service_distributions={
+            "Child": [
+                ciw.dists.Exponential(7.0),
+                ciw.dists.Exponential(7.0),
+                ciw.dists.Gamma(0.4, 0.6),
+                ciw.dists.Deterministic(0.5),
+            ],
+            "Adult": [
+                ciw.dists.Exponential(7.0),
+                ciw.dists.Triangular(0.1, 0.8, 0.85),
+                ciw.dists.Exponential(8.0),
+                ciw.dists.Exponential(5.0),
+            ],
+            "Pensioner": [
+                ciw.dists.Deterministic(0.3),
+                ciw.dists.Deterministic(0.2),
+                ciw.dists.Exponential(8.0),
+                ciw.dists.Exponential(9.0),
+            ],
+        },
+        routing={
+            "Child": [
+                [0.1, 0.2, 0.1, 0.4],
+                [0.2, 0.2, 0.0, 0.1],
+                [0.0, 0.8, 0.1, 0.1],
+                [0.4, 0.1, 0.1, 0.0],
+            ],
+            "Adult": [
+                [0.6, 0.0, 0.0, 0.2],
+                [0.1, 0.1, 0.2, 0.2],
+                [0.9, 0.0, 0.0, 0.0],
+                [0.2, 0.1, 0.1, 0.1],
+            ],
+            "Pensioner": [
+                [0.0, 0.0, 0.4, 0.3],
+                [0.1, 0.1, 0.1, 0.1],
+                [0.1, 0.3, 0.2, 0.2],
+                [0.0, 0.0, 0.0, 0.3],
+            ],
+        },
+    )
+
+    def test_nodeclassmatrix_init_method_custnames(self):
+        Q = ciw.Simulation(self.N_paramscustomnames)
+        B = ciw.trackers.NodeClassMatrix(class_ordering=['Child', 'Adult', 'Pensioner'])
+        B.initialise(Q)
+        self.assertEqual(B.simulation, Q)
+        self.assertEqual(B.state, [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+
+    def test_nodeclassmatrix_change_state_accept_method_custnames(self):
+        Q = ciw.Simulation(self.N_paramscustomnames)
+        B = ciw.trackers.NodeClassMatrix(class_ordering=['Child', 'Adult', 'Pensioner'])
+        B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1, customer_class='Adult')
+        self.assertEqual(B.state, [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+        B.change_state_accept(N, ind)
+        self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+
+    def test_nodeclassmatrix_change_state_block_method_custnames(self):
+        Q = ciw.Simulation(self.N_paramscustomnames)
+        B = ciw.trackers.NodeClassMatrix(class_ordering=['Child', 'Adult', 'Pensioner'])
+        B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1, 'Child')
+        B.state = [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        B.change_state_block(N, N, ind)
+        self.assertEqual(B.state, [[0, 1, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]])
+
+    def test_nodeclassmatrix_change_state_release_method_custnames(self):
+        Q = ciw.Simulation(self.N_paramscustomnames)
+        B = ciw.trackers.NodeClassMatrix(class_ordering=['Child', 'Adult', 'Pensioner'])
+        B.initialise(Q)
+        N = Q.nodes[1]
+        Nex = Q.nodes[-1]
+        ind = ciw.Individual(1, customer_class='Pensioner')
+        B.state = [[0, 1, 2], [1, 1, 1], [0, 1, 0], [4, 3, 1]]
+        B.change_state_release(N, Nex, ind, False)
+        self.assertEqual(B.state, [[0, 1, 1], [1, 1, 1], [0, 1, 0], [4, 3, 1]])
+        B.change_state_release(N, Nex, ind, True)
+        self.assertEqual(B.state, [[0, 1, 0], [1, 1, 1], [0, 1, 0], [4, 3, 1]])
+
+    def test_nodeclassmatrix_hash_state_method_custnames(self):
+        Q = ciw.Simulation(self.N_paramscustomnames)
+        B = ciw.trackers.NodeClassMatrix(class_ordering=['Child', 'Adult', 'Pensioner'])
+        B.initialise(Q)
+        B.state = [[0, 2, 0], [1, 1, 1], [0, 1, 0], [4, 3, 1]]
+        self.assertEqual(B.hash_state(), ((0, 2, 0), (1, 1, 1), (0, 1, 0), (4, 3, 1)))
+
+    def test_nodeclassmatrix_release_method_within_simulation_custnames(self):
+        Q = ciw.Simulation(
+            self.N_paramscustomnames,
+            tracker=ciw.trackers.NodeClassMatrix(
+                class_ordering=['Child', 'Adult', 'Pensioner']
+            )
+        )
+        N = Q.transitive_nodes[2]
+        inds = [ciw.Individual(i, 'Child') for i in range(5)]
+        N.individuals = [inds]
+        for ind in N.individuals[0]:
+            srvr = N.find_free_server(ind)
+            N.attach_server(srvr, ind)
+        Q.statetracker.state = [[3, 2, 1], [1, 1, 1], [3, 1, 2], [0, 0, 0]]
+        self.assertEqual(
+            Q.statetracker.state,
+            [[3, 2, 1],
+             [1, 1, 1],
+             [3, 1, 2],
+             [0, 0, 0]]
+        )
+        Q.current_time = 43.11
+        N.release(N.all_individuals[0], Q.nodes[1])
+        self.assertEqual(
+            Q.statetracker.state,
+            [[4, 2, 1],
+             [1, 1, 1],
+             [2, 1, 2],
+             [0, 0, 0]]
+        )
+        N.all_individuals[1].is_blocked = True
+        Q.current_time = 46.72
+        N.release(N.all_individuals[1], Q.nodes[1])
+        self.assertEqual(
+            Q.statetracker.state,
+            [[5, 2, 1],
+             [1, 1, 1],
+             [1, 1, 2],
+             [0, 0, 0]]
+        )
+        N.release(N.all_individuals[1], Q.nodes[-1])
+        self.assertEqual(
+            Q.statetracker.state,
+            [[5, 2, 1],
+             [1, 1, 1],
+             [0, 1, 2],
+             [0, 0, 0]]
+        )
+
+    def test_nodeclassmatrix_block_method_within_simulation_custnames(self):
+        Q = ciw.Simulation(
+            self.N_paramscustomnames,
+            tracker=ciw.trackers.NodeClassMatrix(
+                class_ordering=['Child', 'Adult', 'Pensioner']
+            )
+        )
+        N = Q.transitive_nodes[2]
+        Q.statetracker.state = [[3, 2, 1], [1, 1, 1], [3, 1, 2], [0, 0, 0]]
+        self.assertEqual(
+            Q.statetracker.state,
+            [[3, 2, 1],
+             [1, 1, 1],
+             [3, 1, 2],
+             [0, 0, 0]]
+        )
+        N.block_individual(ciw.Individual(1), Q.nodes[1])
+        self.assertEqual(
+            Q.statetracker.state,
+            [[3, 2, 1],
+             [1, 1, 1],
+             [3, 1, 2],
+             [0, 0, 0]]
+        )
+
+    def test_nodeclassmatrix_accept_method_within_simulation_custnames(self):
+        Q = ciw.Simulation(
+            self.N_paramscustomnames,
+            tracker=ciw.trackers.NodeClassMatrix(
+                class_ordering=['Child', 'Adult', 'Pensioner']
+            )
+        )
+        N = Q.transitive_nodes[2]
+        self.assertEqual(
+            Q.statetracker.state,
+            [[0, 0, 0],
+             [0, 0, 0],
+             [0, 0, 0],
+             [0, 0, 0]]
+        )
+        Q.current_time = 45.6
+        N.accept(ciw.Individual(3, 'Pensioner'))
+        self.assertEqual(
+            Q.statetracker.state,
+            [[0, 0, 0],
+             [0, 0, 0],
+             [0, 0, 1],
+             [0, 0, 0]]
+        )

@@ -71,7 +71,7 @@ class Simulation(object):
         return {
             node + 1: {
                 clss: copy.deepcopy(self.network.customer_classes[clss].arrival_distributions[node])
-                for clss in range(self.network.number_of_classes)
+                for clss in self.network.customer_class_names
             } for node in range(self.network.number_of_nodes)
         }
 
@@ -83,7 +83,7 @@ class Simulation(object):
         return {
             node + 1: {
                 clss: copy.deepcopy(self.network.customer_classes[clss].service_distributions[node])
-                for clss in range(self.network.number_of_classes)
+                for clss in self.network.customer_class_names
             } for node in range(self.network.number_of_nodes)
         }
 
@@ -95,7 +95,7 @@ class Simulation(object):
         return {
             node + 1: {
                 clss: copy.deepcopy(self.network.customer_classes[clss].batching_distributions[node])
-                for clss in range(self.network.number_of_classes)
+                for clss in self.network.customer_class_names
             } for node in range(self.network.number_of_nodes)
         }
 
@@ -103,7 +103,7 @@ class Simulation(object):
         """
         Adds the simulation object as an attribute of the distribution objects
         """
-        for clss in range(self.network.number_of_classes):
+        for clss in self.network.customer_class_names:
             for nd in range(self.network.number_of_nodes):
                 if self.inter_arrival_times[nd + 1][clss] is not None:
                     self.inter_arrival_times[nd + 1][clss].simulation = self

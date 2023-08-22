@@ -175,8 +175,8 @@ class TestSimulation(unittest.TestCase):
                 "Class 1": [[0.8, 0.1], [0.2, 0.0]],
             },
             class_change_matrices={
-                "Node 1": [[0.5, 0.5], [0.5, 0.5]],
-                "Node 2": [[1.0, 0.0], [0.0, 1.0]],
+                "Node 1": {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
+                "Node 2": {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}},
             },
         )
         Q = ciw.Simulation(N)
@@ -185,7 +185,7 @@ class TestSimulation(unittest.TestCase):
         drl = []
         for dr in L[0].data_records:
             drl.append((dr.customer_class, dr.service_time))
-        self.assertEqual(drl, [(1, 10.0), (0, 5.0), (0, 5.0)])
+        self.assertEqual(drl, [('Class 1', 10.0), ('Class 0', 5.0), ('Class 0', 5.0)])
 
     def test_simulate_until_max_time_with_pbar_method(self):
         Q = ciw.Simulation(N_params)
@@ -825,7 +825,7 @@ class TestSimulation(unittest.TestCase):
         recs = Q.get_all_records()
         waits = [
             sum([r.waiting_time for r in recs if r.customer_class == cls])
-            for cls in range(2)
+            for cls in ['Class 0', 'Class 1']
         ]
         # Because of high traffic intensity: the low
         # priority individuals have a large wait
@@ -849,7 +849,7 @@ class TestSimulation(unittest.TestCase):
         recs = Q.get_all_records()
         waits = [
             sum([r.waiting_time for r in recs if r.customer_class == cls])
-            for cls in range(2)
+            for cls in ['Class 0', 'Class 1']
         ]
         # Both total waits are now comparable. Total wait is higher
         # because more more individuals have gone through the system.
@@ -882,13 +882,13 @@ class TestSimulation(unittest.TestCase):
             throughput_c0 = [
                 r.waiting_time + r.service_time
                 for r in recs
-                if r.customer_class == 0
+                if r.customer_class == 'Class 0'
                 if r.arrival_date > 100
             ]
             throughput_c1 = [
                 r.waiting_time + r.service_time
                 for r in recs
-                if r.customer_class == 1
+                if r.customer_class == 'Class 1'
                 if r.arrival_date > 100
             ]
             throughput_class0.append(sum(throughput_c0) / len(throughput_c0))
@@ -981,8 +981,8 @@ class TestSimulation(unittest.TestCase):
             },
             priority_classes={"Class 1": 0, "Class 0": 1},
             class_change_matrices={
-                "Node 1": [[0.0, 1.0], [1.0, 0.0]],
-                "Node 2": [[0.0, 1.0], [1.0, 0.0]],
+                "Node 1": {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}},
+                "Node 2": {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}},
             },
         )
         ciw.seed(1)
@@ -1002,9 +1002,9 @@ class TestSimulation(unittest.TestCase):
             key=lambda r: r.arrival_date
         )
 
-        self.assertEqual([0, 1, 0, 1, 0, 1], [r.customer_class for r in recs_cust1])
-        self.assertEqual([1, 0, 1, 0, 1], [r.customer_class for r in recs_cust2])
-        self.assertEqual([0, 1, 0, 1], [r.customer_class for r in recs_cust3])
+        self.assertEqual(['Class 0', 'Class 1', 'Class 0', 'Class 1', 'Class 0', 'Class 1'], [r.customer_class for r in recs_cust1])
+        self.assertEqual(['Class 1', 'Class 0', 'Class 1', 'Class 0', 'Class 1'], [r.customer_class for r in recs_cust2])
+        self.assertEqual(['Class 0', 'Class 1', 'Class 0', 'Class 1'], [r.customer_class for r in recs_cust3])
 
         self.assertEqual([1, 2, 1, 2, 1, 2], [r.node for r in recs_cust1])
         self.assertEqual([2, 1, 2, 1, 2], [r.node for r in recs_cust2])
@@ -1012,19 +1012,19 @@ class TestSimulation(unittest.TestCase):
 
         self.assertEqual(
             set([r.customer_class for r in Q.nodes[1].individuals[0]]),
-            set([1])
+            set(['Class 1'])
         )
         self.assertEqual(
             set([r.customer_class for r in Q.nodes[1].individuals[1]]),
-            set([0])
+            set(['Class 0'])
         )
         self.assertEqual(
             set([r.customer_class for r in Q.nodes[2].individuals[0]]),
-            set([1])
+            set(['Class 1'])
         )
         self.assertEqual(
             set([r.customer_class for r in Q.nodes[2].individuals[1]]),
-            set([0])
+            set(['Class 0'])
         )
 
     def test_allow_zero_servers(self):
@@ -1068,8 +1068,8 @@ class TestSimulation(unittest.TestCase):
                 "Class 1": [[0.0, 0.6], [0.2, 0.1]],
             },
             class_change_matrices={
-                "Node 1": [[0.8, 0.2], [0.5, 0.5]],
-                "Node 2": [[1.0, 0.0], [0.1, 0.9]],
+                "Node 1": {'Class 0': {'Class 0': 0.8, 'Class 1': 0.2}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
+                "Node 2": {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.1, 'Class 1': 0.9}},
             },
             queue_capacities=[2, 2],
         )
@@ -1206,3 +1206,31 @@ class TestServiceDisciplines(unittest.TestCase):
             [round(r.service_end_date, 10) for r in recs_n2],
             [3.7, 6.7, 9.7]
         )
+
+
+    def test_names_for_customer_classes(self):
+        N = ciw.create_network(
+            arrival_distributions={
+                'Adult': [ciw.dists.Exponential(3), None],
+                'Child': [ciw.dists.Exponential(2), ciw.dists.Exponential(0.5)]
+            },
+            service_distributions={
+                'Adult': [ciw.dists.Exponential(6), ciw.dists.Exponential(6)],
+                'Child': [ciw.dists.Exponential(4), ciw.dists.Exponential(4)]
+            },
+            routing={
+                'Adult': [[0.0, 1.0], [0.0, 0.0]],
+                'Child': [[0.0, 0.5], [0.0, 0.0]]
+            },
+            number_of_servers=[3, 4]
+        )
+        ciw.seed(5)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        adult_waits = [r.waiting_time for r in recs if r.customer_class=='Adult']
+        child_waits = [r.waiting_time for r in recs if r.customer_class=='Child']
+        mean_adult_wait = sum(adult_waits) / len(adult_waits)
+        mean_child_wait = sum(child_waits) / len(child_waits)
+        self.assertEqual(round(mean_adult_wait, 8), 0.00301455)
+        self.assertEqual(round(mean_child_wait, 8), 0.00208601)

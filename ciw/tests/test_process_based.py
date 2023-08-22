@@ -41,7 +41,7 @@ def generator_function_7(ind):
 
 
 def generator_function_8(ind):
-    if ind.customer_class == 0:
+    if ind.customer_class == 'Class 0':
         return [1]
     return [1, 1, 1]
 
@@ -293,4 +293,4 @@ class TestProcessBased(unittest.TestCase):
         Q.simulate_until_max_customers(1000, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = set([tuple([ind.customer_class, tuple(dr.node for dr in ind.data_records)]) for ind in inds])
-        self.assertEqual(routes_counter, {(1, (1, 1, 1)), (0, (1,))})
+        self.assertEqual(routes_counter, {('Class 1', (1, 1, 1)), ('Class 0', (1,))})

@@ -13,11 +13,11 @@ class ArrivalNode(object):
         """
         self.simulation = simulation
         self.number_of_individuals = 0
-        self.number_of_individuals_per_class = [0] * self.simulation.network.number_of_classes
+        self.number_of_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
         self.number_accepted_individuals = 0
-        self.number_accepted_individuals_per_class = [0] * self.simulation.network.number_of_classes
+        self.number_accepted_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
         self.event_dates_dict = {
-            nd + 1: {clss: False for clss in range(self.simulation.network.number_of_classes)
+            nd + 1: {clss: False for clss in self.simulation.network.customer_class_names
             } for nd in range(self.simulation.network.number_of_nodes)
         }
 

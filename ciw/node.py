@@ -37,18 +37,18 @@ class Node(object):
             self.next_shift_change = float("Inf")
         self.node_capacity = node.queueing_capacity + self.c
         if not self.simulation.network.process_based:
-            self.transition_row = [
-                self.simulation.network.customer_classes[clss].routing[id_ - 1] + [1.0 - sum(self.simulation.network.customer_classes[clss].routing[id_ - 1])]
-                for clss in range(self.simulation.network.number_of_classes)
-            ]
+            self.transition_row = {
+                clss: self.simulation.network.customer_classes[clss].routing[id_ - 1] + [1.0 - sum(self.simulation.network.customer_classes[clss].routing[id_ - 1])]
+                for clss in self.simulation.network.customer_class_names
+            }
         self.class_change = node.class_change_matrix
         self.individuals = [[] for _ in range(simulation.number_of_priority_classes)]
         self.number_of_individuals = 0
         self.id_number = id_
-        self.baulking_functions = [
-            self.simulation.network.customer_classes[clss].baulking_functions[id_ - 1]
-            for clss in range(self.simulation.network.number_of_classes)
-        ]
+        self.baulking_functions = {
+            clss: self.simulation.network.customer_classes[clss].baulking_functions[id_ - 1]
+            for clss in self.simulation.network.customer_class_names
+        }
         self.overtime = []
         self.blocked_queue = []
         self.len_blocked_queue = 0
@@ -240,8 +240,8 @@ class Node(object):
         if self.class_change:
             individual.previous_class = individual.customer_class
             individual.customer_class = random_choice(
-                range(self.simulation.network.number_of_classes),
-                self.class_change[individual.previous_class],
+                self.simulation.network.customer_class_names,
+                [self.class_change[individual.previous_class][clss_name] for clss_name in self.simulation.network.customer_class_names],
             )
             individual.prev_priority_class = individual.priority_class
             individual.priority_class = self.simulation.network.priority_class_mapping[individual.customer_class]
@@ -310,7 +310,7 @@ class Node(object):
         if self.dynamic_classes is True:
             next_time = float('inf')
             next_class = next_individual.customer_class
-            for clss, dist in enumerate(self.simulation.network.customer_classes[next_individual.customer_class].class_change_time_distributions):
+            for clss, dist in self.simulation.network.customer_classes[next_individual.customer_class].class_change_time_distributions.items():
                 if dist is not None:
                     t = dist.sample()
                     if t < next_time:

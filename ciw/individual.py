@@ -3,7 +3,7 @@ class Individual(object):
     Class for an individual.
     """
 
-    def __init__(self, id_number, customer_class=0, priority_class=0, simulation=False):
+    def __init__(self, id_number, customer_class='Customer', priority_class=0, simulation=False):
         """
         Initialise an individual.
         """

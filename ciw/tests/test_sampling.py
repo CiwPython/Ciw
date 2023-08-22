@@ -151,14 +151,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nu.simulation.service_times[Nu.id_number][0]._sample(), 2)
+            round(Nu.simulation.service_times[Nu.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [2.89, 3.02, 3.07, 3.24, 3.01]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nu.simulation.inter_arrival_times[Nu.id_number][0]._sample(), 2)
+            round(Nu.simulation.inter_arrival_times[Nu.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [3.21, 2.23, 2.71, 3.24, 2.91]
@@ -181,10 +181,10 @@ class TestSampling(unittest.TestCase):
         Nu = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
             self.assertTrue(
-                ul <= Nu.simulation.service_times[Nu.id_number][0]._sample() <= uh
+                ul <= Nu.simulation.service_times[Nu.id_number]['Customer']._sample() <= uh
             )
             self.assertTrue(
-                ul <= Nu.simulation.inter_arrival_times[Nu.id_number][0]._sample() <= uh
+                ul <= Nu.simulation.inter_arrival_times[Nu.id_number]['Customer']._sample() <= uh
             )
 
     def test_deterministic_dist_object(self):
@@ -207,14 +207,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nd.simulation.service_times[Nd.id_number][0]._sample(), 2)
+            round(Nd.simulation.service_times[Nd.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [4.40, 4.40, 4.40, 4.40, 4.40]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nd.simulation.inter_arrival_times[Nd.id_number][0]._sample(), 2)
+            round(Nd.simulation.inter_arrival_times[Nd.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [4.40, 4.40, 4.40, 4.40, 4.40]
@@ -230,9 +230,9 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(N)
         Nd = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
-            self.assertEqual(Nd.simulation.service_times[Nd.id_number][0]._sample(), d)
+            self.assertEqual(Nd.simulation.service_times[Nd.id_number]['Customer']._sample(), d)
             self.assertEqual(
-                Nd.simulation.inter_arrival_times[Nd.id_number][0]._sample(), d
+                Nd.simulation.inter_arrival_times[Nd.id_number]['Customer']._sample(), d
             )
 
     def test_triangular_dist_object(self):
@@ -256,14 +256,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nt.simulation.service_times[Nt.id_number][0]._sample(), 2)
+            round(Nt.simulation.service_times[Nt.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [3.35, 3.91, 4.20, 5.33, 3.90]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nt.simulation.inter_arrival_times[Nt.id_number][0]._sample(), 2)
+            round(Nt.simulation.inter_arrival_times[Nt.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [5.12, 1.35, 2.73, 5.34, 3.46]
@@ -283,8 +283,8 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(N)
         Nt = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
-            self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number][0]._sample() <= th)
-            self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number][0]._sample() <= th)
+            self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number]['Customer']._sample() <= th)
+            self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number]['Customer']._sample() <= th)
 
     def test_exponential_dist_object(self):
         E = ciw.dists.Exponential(4.4)
@@ -307,14 +307,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Ne.simulation.service_times[Ne.id_number][0]._sample(), 2)
+            round(Ne.simulation.service_times[Ne.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.22, 0.31, 0.36, 0.65, 0.31]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Ne.simulation.inter_arrival_times[Ne.id_number][0]._sample(), 2)
+            round(Ne.simulation.inter_arrival_times[Ne.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.58, 0.01, 0.14, 0.65, 0.24]
@@ -331,10 +331,10 @@ class TestSampling(unittest.TestCase):
         Ne = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
             self.assertTrue(
-                Ne.simulation.service_times[Ne.id_number][0]._sample() >= 0.0
+                Ne.simulation.service_times[Ne.id_number]['Customer']._sample() >= 0.0
             )
             self.assertTrue(
-                Ne.simulation.inter_arrival_times[Ne.id_number][0]._sample() >= 0.0
+                Ne.simulation.inter_arrival_times[Ne.id_number]['Customer']._sample() >= 0.0
             )
 
     def test_gamma_dist_object(self):
@@ -355,14 +355,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Ng.simulation.service_times[Ng.id_number][0]._sample(), 2)
+            round(Ng.simulation.service_times[Ng.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.0, 2.59, 1.92, 0.47, 0.61]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Ng.simulation.inter_arrival_times[Ng.id_number][0]._sample(), 2)
+            round(Ng.simulation.inter_arrival_times[Ng.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.00, 1.07, 1.15, 0.75, 0.00]
@@ -383,10 +383,10 @@ class TestSampling(unittest.TestCase):
         Ng = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
             self.assertTrue(
-                Ng.simulation.service_times[Ng.id_number][0]._sample() >= 0.0
+                Ng.simulation.service_times[Ng.id_number]['Customer']._sample() >= 0.0
             )
             self.assertTrue(
-                Ng.simulation.inter_arrival_times[Ng.id_number][0]._sample() >= 0.0
+                Ng.simulation.inter_arrival_times[Ng.id_number]['Customer']._sample() >= 0.0
             )
 
     def test_lognormal_dist_object(self):
@@ -407,14 +407,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nl.simulation.service_times[Nl.id_number][0]._sample(), 2)
+            round(Nl.simulation.service_times[Nl.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [2.62, 1.64, 2.19, 2.31, 2.48]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nl.simulation.inter_arrival_times[Nl.id_number][0]._sample(), 2)
+            round(Nl.simulation.inter_arrival_times[Nl.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [2.51, 2.33, 1.96, 2.32, 2.70]
@@ -434,8 +434,8 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(N)
         Nl = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
-            self.assertTrue(Nl.simulation.service_times[Nl.id_number][0]._sample() >= 0.0)
-            self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number][0]._sample() >= 0.0)
+            self.assertTrue(Nl.simulation.service_times[Nl.id_number]['Customer']._sample() >= 0.0)
+            self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number]['Customer']._sample() >= 0.0)
 
     def test_weibull_dist_object(self):
         W = ciw.dists.Weibull(0.9, 0.8)
@@ -455,14 +455,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nw.simulation.service_times[Nw.id_number][0]._sample(), 2)
+            round(Nw.simulation.service_times[Nw.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.87, 1.31, 1.60, 3.34, 1.31]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nw.simulation.inter_arrival_times[Nw.id_number][0]._sample(), 2)
+            round(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [2.91, 0.01, 0.50, 3.36, 0.95]
@@ -483,10 +483,10 @@ class TestSampling(unittest.TestCase):
         Nw = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
             self.assertTrue(
-                Nw.simulation.service_times[Nw.id_number][0]._sample() >= 0.0
+                Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0
             )
             self.assertTrue(
-                Nw.simulation.inter_arrival_times[Nw.id_number][0]._sample() >= 0.0
+                Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0
             )
 
     def test_normal_dist_object(self):
@@ -508,14 +508,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.service_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.58, 0.35, 0.49, 0.52, 0.55]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.inter_arrival_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.56, 0.52, 0.44, 0.52, 0.60]
@@ -536,8 +536,8 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(N)
         Nw = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
-            self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]._sample() >= 0.0)
-            self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]._sample() >= 0.0)
+            self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
+            self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
 
     def test_empirical_dist_object(self):
         Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
@@ -559,14 +559,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nem.simulation.service_times[Nem.id_number][0]._sample(), 2)
+            round(Nem.simulation.service_times[Nem.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [8.8, 8.8, 8.8, 12.3, 8.8]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nem.simulation.inter_arrival_times[Nem.id_number][0]._sample(), 2)
+            round(Nem.simulation.inter_arrival_times[Nem.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [7.3, 7.0, 7.7, 7.3, 7.1]
@@ -587,11 +587,11 @@ class TestSampling(unittest.TestCase):
         Nem = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
             self.assertTrue(
-                Nem.simulation.service_times[Nem.id_number][0]._sample()
+                Nem.simulation.service_times[Nem.id_number]['Customer']._sample()
                 in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8])
             )
             self.assertTrue(
-                Nem.simulation.inter_arrival_times[Nem.id_number][0]._sample()
+                Nem.simulation.inter_arrival_times[Nem.id_number]['Customer']._sample()
                 in set(my_empirical_dist)
             )
 
@@ -619,14 +619,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nc.simulation.service_times[Nc.id_number][0]._sample(), 2)
+            round(Nc.simulation.service_times[Nc.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [3.8, 4.1, 4.1, 4.1, 4.1]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nc.simulation.inter_arrival_times[Nc.id_number][0]._sample(), 2)
+            round(Nc.simulation.inter_arrival_times[Nc.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [4.1, 3.7, 3.8, 4.1, 3.8]
@@ -649,8 +649,8 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(N)
         Nc = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
-            self.assertTrue(Nc.simulation.service_times[Nc.id_number][0]._sample() in set(cust_vals))
-            self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number][0]._sample() in set(cust_vals))
+            self.assertTrue(Nc.simulation.service_times[Nc.id_number]['Customer']._sample() in set(cust_vals))
+            self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number]['Customer']._sample() in set(cust_vals))
 
     def test_custom_dist_object(self):
         CD = CustomDist()
@@ -672,28 +672,28 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(N1.simulation.service_times[N1.id_number][0]._sample(), 2)
+            round(N1.simulation.service_times[N1.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [1.25, 0.37, 0.4, 0.47, 0.37]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(N2.simulation.service_times[N2.id_number][0]._sample(), 2)
+            round(N2.simulation.service_times[N2.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.46, 0.06, 0.93, 0.47, 1.30]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(N1.simulation.inter_arrival_times[N1.id_number][0]._sample(), 2)
+            round(N1.simulation.inter_arrival_times[N1.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.45, 0.06, 0.94, 0.49, 0.27]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(N2.simulation.inter_arrival_times[N2.id_number][0]._sample(), 2)
+            round(N2.simulation.inter_arrival_times[N2.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.29, 0.03, 0.43, 0.56, 0.46]
@@ -731,13 +731,13 @@ class TestSampling(unittest.TestCase):
 
         samples = []
         for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
-            samples.append(round(N1.simulation.service_times[N1.id_number][0]._sample(t), 2))
+            samples.append(round(N1.simulation.service_times[N1.id_number]['Customer']._sample(t), 2))
         expected = [3.0, 3.0, 3.0, 5.0, 5.0]
         self.assertEqual(samples, expected)
 
         samples = []
         for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
-            samples.append(round(N2.simulation.service_times[N2.id_number][0]._sample(t), 2))
+            samples.append(round(N2.simulation.service_times[N2.id_number]['Customer']._sample(t), 2))
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 
@@ -757,13 +757,13 @@ class TestSampling(unittest.TestCase):
 
         samples = []
         for t in [3.0, 9.0, 9.0, 11.0, 11.0]:
-            samples.append(round(N1.simulation.inter_arrival_times[N1.id_number][0]._sample(t), 2))
+            samples.append(round(N1.simulation.inter_arrival_times[N1.id_number]['Customer']._sample(t), 2))
         expected = [3.0, 3.0, 3.0, 5.0, 5.0]
         self.assertEqual(samples, expected)
 
         samples = []
         for t in [4.0, 4.0, 17.0, 22.0, 22.0]:
-            samples.append(round(N2.simulation.inter_arrival_times[N2.id_number][0]._sample(t), 2))
+            samples.append(round(N2.simulation.inter_arrival_times[N2.id_number]['Customer']._sample(t), 2))
         expected = [2.0, 2.0, 8.5, 8.0, 8.0]
         self.assertEqual(samples, expected)
 
@@ -824,7 +824,7 @@ class TestSampling(unittest.TestCase):
         Ns = Q.transitive_nodes[0]
 
         samples = [
-            round(Ns.simulation.service_times[Ns.id_number][0]._sample(), 2)
+            round(Ns.simulation.service_times[Ns.id_number]['Customer']._sample(), 2)
             for _ in range(7)
         ]
         expected = [0.9, 0.7, 0.5, 0.3, 0.1, 0.9, 0.7]
@@ -833,7 +833,7 @@ class TestSampling(unittest.TestCase):
         # First arrival will be offset by 1, as first customer's inter-arrival
         # time has already been sampled by the arrival node
         samples = [
-            round(Ns.simulation.inter_arrival_times[Ns.id_number][0]._sample(), 2)
+            round(Ns.simulation.inter_arrival_times[Ns.id_number]['Customer']._sample(), 2)
             for _ in range(6)
         ]
         expected = [0.4, 0.6, 0.8, 0.2, 0.4, 0.6]
@@ -864,11 +864,11 @@ class TestSampling(unittest.TestCase):
         expected_service_times = 3 * sequential_dist_2
 
         inter_arrivals = [
-            Ns.simulation.inter_arrival_times[Ns.id_number][0]._sample()
+            Ns.simulation.inter_arrival_times[Ns.id_number]['Customer']._sample()
             for _ in range(3 * len1)
         ]
         services = [
-            Ns.simulation.service_times[Ns.id_number][0]._sample()
+            Ns.simulation.service_times[Ns.id_number]['Customer']._sample()
             for _ in range(3 * len2)
         ]
         self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
@@ -1121,14 +1121,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.service_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [2.07, 1.21, 1.28, 1.75, 2.56]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.inter_arrival_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.5, 1.06, 1.72, 1.17, 1.49]
@@ -1149,8 +1149,8 @@ class TestSampling(unittest.TestCase):
         Q = ciw.Simulation(N)
         Nw = Q.transitive_nodes[0]
         for itr in range(10):  # Because repition happens in the simulation
-            self.assertTrue(Nw.simulation.service_times[Nw.id_number][0]._sample() >= 0.0)
-            self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number][0]._sample() >= 0.0)
+            self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
+            self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
 
     def test_hyperexponential_dist_object(self):
         Hx = ciw.dists.HyperExponential([5, 7, 2, 1], [0.4, 0.1, 0.3, 0.2])
@@ -1211,14 +1211,14 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.service_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.68, 1.43, 1.28, 0.13, 1.05]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.inter_arrival_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.12, 0.04, 0.43, 0.05, 0.5]
@@ -1300,7 +1300,7 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.service_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.42, 3.71, 0.35, 0.38, 0.61]
@@ -1308,7 +1308,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.inter_arrival_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [0.25, 0.22, 3.46, 3.07, 1.69]
@@ -1375,7 +1375,7 @@ class TestSampling(unittest.TestCase):
         ciw.seed(5)
 
         samples = [
-            round(Nn.simulation.service_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.service_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [1.01, 0.53, 0.18, 0.17, 0.04]
@@ -1383,7 +1383,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nn.simulation.inter_arrival_times[Nn.id_number][0]._sample(), 2)
+            round(Nn.simulation.inter_arrival_times[Nn.id_number]['Customer']._sample(), 2)
             for _ in range(5)
         ]
         expected = [1.09, 0.77, 0.81, 0.08, 0.43]
@@ -1628,14 +1628,14 @@ class TestSampling(unittest.TestCase):
         Nt = Q.transitive_nodes[0]
 
         samples = [
-            round(Nt.simulation.service_times[Nt.id_number][0]._sample(), 4)
+            round(Nt.simulation.service_times[Nt.id_number]['Customer']._sample(), 4)
             for _ in range(10)
         ]
         expected = [0.0108, 0.0623, 0.1092, 0.026, 0.2578, 0.0648, 0.4333, 0.0275, 0.0187, 0.0707,]
         self.assertEqual(samples, expected)
 
         samples = [
-            round(Nt.simulation.inter_arrival_times[Nt.id_number][0]._sample(), 4)
+            round(Nt.simulation.inter_arrival_times[Nt.id_number]['Customer']._sample(), 4)
             for _ in range(10)
         ]
         expected = [0.2694, 0.4268, 0.701, 0.011, 0.239, 0.0966, 0.1567, 0.0834, 0.291, 0.006,]
