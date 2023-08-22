@@ -98,7 +98,7 @@ exclude_patterns = ["_build"]
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "trac"
+pygments_style = "colorful"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -123,17 +123,19 @@ html_theme_options = {
     "footerbgcolor": "white",
     "footertextcolor": "black",
     "sidebarbgcolor": "#ffbe00",
-    "sidebarwidth": "350",
-    "sidebartextcolor": "#df6c20",
+    "sidebarwidth": "300",
+    "sidebartextcolor": "#ba7002",
     "sidebarlinkcolor": "black",
-    "relbarbgcolor": "#16BAC5",
-    "headbgcolor": "#9DD6F9",
+    "relbarbgcolor": "#d19d00",
+    "headbgcolor": "#e0e0e0",
     "headtextcolor": "black",
-    "linkcolor": "#cc5200",
-    "visitedlinkcolor": "#cc5200",
-    "bodyfont": "Verdana",
-    "headfont": "Verdana",
+    "linkcolor": "#ba7002",
+    "visitedlinkcolor": "#ba7002",
+    "bodyfont": "Arial",
+    "headfont": "Arial",
     "codebgcolor": "#F7F7F7",
+    "body_min_width": 0,
+    "body_max_width": '92%',
 }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []

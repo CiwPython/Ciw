@@ -3,15 +3,15 @@
 }
 
 pre {
-    border-top: 1px solid #16BAC5;
-    border-bottom: 1px solid #16BAC5;
+    border-top: 1px solid #ffbe00;
+    border-bottom: 1px solid #ffbe00;
 }
 
 th {
     background-color: #FFE085;
-    font-size: 65%;
+    font-size: 100%;
 }
 
 td {
-    font-size: 65%;
+    font-size: 100%;
 }
