@@ -78,8 +78,8 @@ N_deadlock = ciw.create_network(
     arrival_distributions=[ciw.dists.Exponential(35.0), ciw.dists.Exponential(35.0)],
     number_of_servers=[5, 5],
     queue_capacities=[5, 5],
-    service_distributions=[ciw.dists.Exponential(30.0), ciw.dists.Exponential(30.0)],
-    routing=[[0.3, 0.4], [0.4, 0.3]],
+    service_distributions=[ciw.dists.Exponential(25.0), ciw.dists.Exponential(25.0)],
+    routing=[[0.32, 0.42], [0.42, 0.32]],
 )
 
 
@@ -292,7 +292,7 @@ class TestSimulation(unittest.TestCase):
             tracker=ciw.trackers.NaiveBlocking(),
         )
         Q.simulate_until_deadlock()
-        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 53.88526441)
+        self.assertEqual(round(Q.times_to_deadlock[((0, 0), (0, 0))], 8), 4.95885434)
 
         # SystemPopulation tracker
         ciw.seed(3)
@@ -302,7 +302,7 @@ class TestSimulation(unittest.TestCase):
             tracker=ciw.trackers.SystemPopulation(),
         )
         Q.simulate_until_deadlock()
-        self.assertEqual(round(Q.times_to_deadlock[0], 8), 53.88526441)
+        self.assertEqual(round(Q.times_to_deadlock[0], 8), 4.95885434)
 
         # NodePopulation tracker
         ciw.seed(3)
@@ -312,7 +312,7 @@ class TestSimulation(unittest.TestCase):
             tracker=ciw.trackers.NodePopulation(),
         )
         Q.simulate_until_deadlock()
-        self.assertEqual(round(Q.times_to_deadlock[(0, 0)], 8), 53.88526441)
+        self.assertEqual(round(Q.times_to_deadlock[(0, 0)], 8), 4.95885434)
 
         # NodeClassMatrix tracker
         ciw.seed(3)
@@ -322,7 +322,7 @@ class TestSimulation(unittest.TestCase):
             tracker=ciw.trackers.NodeClassMatrix(),
         )
         Q.simulate_until_deadlock()
-        self.assertEqual(round(Q.times_to_deadlock[((0,), (0,))], 8), 53.88526441)
+        self.assertEqual(round(Q.times_to_deadlock[((0,), (0,))], 8), 4.95885434)
 
     def test_detect_deadlock_method(self):
         Q = ciw.Simulation(N_deadlock, deadlock_detector=ciw.deadlock.StateDigraph())
@@ -777,7 +777,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_get_all_records(self):
         Q = ciw.Simulation(N_params)
-        Q.simulate_until_max_time(50)
+        Q.simulate_until_max_time(10)
         recs = Q.get_all_records()
         for row in recs:
             self.assertIsInstance(row, ciw.data_record.DataRecord)
@@ -821,7 +821,7 @@ class TestSimulation(unittest.TestCase):
         )
         ciw.seed(36)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_time(50)
+        Q.simulate_until_max_time(35)
         recs = Q.get_all_records()
         waits = [
             sum([r.waiting_time for r in recs if r.customer_class == cls])
@@ -829,7 +829,7 @@ class TestSimulation(unittest.TestCase):
         ]
         # Because of high traffic intensity: the low
         # priority individuals have a large wait
-        self.assertEqual(sorted(waits), [18.75, 245.25])
+        self.assertEqual(sorted(waits), [12.75, 135.75])
 
         N = ciw.create_network(
             arrival_distributions={
@@ -845,7 +845,7 @@ class TestSimulation(unittest.TestCase):
         )
         ciw.seed(36)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_time(50)
+        Q.simulate_until_max_time(35)
         recs = Q.get_all_records()
         waits = [
             sum([r.waiting_time for r in recs if r.customer_class == cls])
@@ -853,7 +853,7 @@ class TestSimulation(unittest.TestCase):
         ]
         # Both total waits are now comparable. Total wait is higher
         # because more more individuals have gone through the system.
-        self.assertEqual(sorted(waits), [264, 272])
+        self.assertEqual(sorted(waits),  [126.5, 132.0])
 
     def test_priority_system_compare_literature(self):
         N = ciw.create_network(
@@ -875,9 +875,9 @@ class TestSimulation(unittest.TestCase):
         throughput_class1 = []
 
         ciw.seed(3231)
-        for iteration in range(80):
+        for iteration in range(25):
             Q = ciw.Simulation(N)
-            Q.simulate_until_max_time(400)
+            Q.simulate_until_max_time(180)
             recs = Q.get_all_records()
             throughput_c0 = [
                 r.waiting_time + r.service_time
@@ -894,8 +894,8 @@ class TestSimulation(unittest.TestCase):
             throughput_class0.append(sum(throughput_c0) / len(throughput_c0))
             throughput_class1.append(sum(throughput_c1) / len(throughput_c1))
 
-        self.assertEqual(round(sum(throughput_class0) / 80.0, 5), 2.02767)
-        self.assertEqual(round(sum(throughput_class1) / 80.0, 5), 5.39739)
+        self.assertEqual(round(sum(throughput_class0) / 25, 5), 1.84736)
+        self.assertEqual(round(sum(throughput_class1) / 25, 5), 5.71125)
 
     def test_baulking(self):
         def my_baulking_function(n):

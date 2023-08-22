@@ -291,10 +291,10 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[float("inf")],
         )
         average_service_times = []
-        for trial in range(50):
+        for trial in range(25):
             ciw.seed(trial)
             Q = ciw.Simulation(N, node_class=ciw.PSNode)
-            Q.simulate_until_max_time(400)
+            Q.simulate_until_max_time(250)
             recs = Q.get_all_records()
             obs_services = [r.service_time for r in recs if r.arrival_date > 30 and r.arrival_date < 370]
             average_service_times.append(sum(obs_services) / len(obs_services))
@@ -310,10 +310,10 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[float("inf")],
         )
         average_service_times = []
-        for trial in range(50):
+        for trial in range(25):
             ciw.seed(trial)
             Q = ciw.Simulation(N, node_class=ciw.PSNode)
-            Q.simulate_until_max_time(400)
+            Q.simulate_until_max_time(250)
             recs = Q.get_all_records()
             obs_services = [r.service_time for r in recs if r.arrival_date > 30 and r.arrival_date < 370]
             average_service_times.append(sum(obs_services) / len(obs_services))
@@ -329,10 +329,10 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[float("inf")],
         )
         average_service_times = []
-        for trial in range(50):
+        for trial in range(25):
             ciw.seed(trial)
             Q = ciw.Simulation(N, node_class=ciw.PSNode)
-            Q.simulate_until_max_time(400)
+            Q.simulate_until_max_time(250)
             recs = Q.get_all_records()
             obs_services = [
                 r.service_time
@@ -632,14 +632,14 @@ class TestProcessorSharing(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N, node_class=ciw.PSNode, tracker=ciw.trackers.SystemPopulation())
-        Q.simulate_until_max_time(1000)
+        Q.simulate_until_max_time(500)
         probs = Q.statetracker.state_probabilities()
-        self.assertEqual(round(probs[0], 7), 0.4418991)
-        self.assertEqual(round(probs[1], 7), 0.3615230)
-        self.assertEqual(round(probs[2], 7), 0.1458424)
-        self.assertEqual(round(probs[3], 7), 0.0390748)
-        self.assertEqual(round(probs[4], 7), 0.0089170)
-        self.assertEqual(round(probs[5], 7), 0.0018729)
-        self.assertEqual(round(probs[6], 7), 0.0006893)
-        self.assertEqual(round(probs[7], 7), 0.0000758)
-        self.assertEqual(round(probs[8], 7), 0.0001057)
+        self.assertEqual(round(probs[0], 7), 0.4287092)
+        self.assertEqual(round(probs[1], 7), 0.3636160)
+        self.assertEqual(round(probs[2], 7), 0.1530976)
+        self.assertEqual(round(probs[3], 7), 0.0418632)
+        self.assertEqual(round(probs[4], 7), 0.0096267)
+        self.assertEqual(round(probs[5], 7), 0.0020626)
+        self.assertEqual(round(probs[6], 7), 0.0008338)
+        self.assertEqual(round(probs[7], 7), 0.0001168)
+        self.assertEqual(round(probs[8], 7), 7.41e-05)

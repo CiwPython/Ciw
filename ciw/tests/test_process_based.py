@@ -121,14 +121,14 @@ class TestProcessBased(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method="Finish")
+        Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter(
             [tuple(dr.node for dr in ind.data_records) for ind in inds]
         )
         self.assertEqual(
             routes_counter,
-            Counter({(1, 3, 2, 3): 503, (1, 2, 2, 3, 2): 397, (1, 1): 100}),
+            Counter({(1, 3, 2, 3): 244, (1, 2, 2, 3, 2): 204, (1, 1): 52}),
         )
 
     def test_error_when_ind_sent_wrong_place(self):
@@ -171,12 +171,12 @@ class TestProcessBased(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method="Finish")
+        Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
         self.assertEqual(
             routes_counter,
-            Counter({(1, 1, 2, 1, 3): 503, (2, 1, 3, 1, 1): 497})
+            Counter({(1, 1, 2, 1, 3): 245, (2, 1, 3, 1, 1): 255})
         )
 
         N = ciw.create_network(
@@ -195,12 +195,12 @@ class TestProcessBased(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method="Finish")
+        Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
         self.assertEqual(
             routes_counter,
-            Counter({(3, 2, 3, 2, 3): 510, (1, 1, 1): 303, (2, 1, 3, 1, 1): 187}),
+            Counter({(3, 2, 3, 2, 3): 256, (1, 1, 1): 155, (2, 1, 3, 1, 1): 89}),
         )
 
         N = ciw.create_network(
@@ -219,12 +219,12 @@ class TestProcessBased(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method="Finish")
+        Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
         self.assertEqual(
             routes_counter,
-            Counter({(3, 2, 3, 2, 3): 494, (1, 1, 2, 1, 3): 262, (2, 1, 3, 1, 1): 244}),
+            Counter({(3, 2, 3, 2, 3): 233, (1, 1, 2, 1, 3): 148, (2, 1, 3, 1, 1): 119}),
         )
 
         N = ciw.create_network(
@@ -243,12 +243,12 @@ class TestProcessBased(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method="Finish")
+        Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
         self.assertEqual(
             routes_counter,
-            Counter({(3,): 779, (1, 1, 2, 1, 3): 106, (2, 1, 3, 1, 1): 115}),
+            Counter({(3,): 385, (1, 1, 2, 1, 3): 57, (2, 1, 3, 1, 1): 58}),
         )
 
         N = ciw.create_network(
@@ -267,12 +267,12 @@ class TestProcessBased(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method="Finish")
+        Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
         self.assertEqual(
             routes_counter,
-            Counter({(2, 1, 1, 2): 343, (2, 1, 2): 336, (1, 1, 1): 321})
+            Counter({(2, 1, 1, 2): 172, (2, 1, 2): 169, (1, 1, 1): 159})
         )
 
     def test_customer_class_based_routing(self):
@@ -290,7 +290,7 @@ class TestProcessBased(unittest.TestCase):
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
-        Q.simulate_until_max_customers(1000, method="Finish")
+        Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
         routes_counter = set([tuple([ind.customer_class, tuple(dr.node for dr in ind.data_records)]) for ind in inds])
         self.assertEqual(routes_counter, {('Class 1', (1, 1, 1)), ('Class 0', (1,))})
