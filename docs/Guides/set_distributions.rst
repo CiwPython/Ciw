@@ -56,14 +56,14 @@ The system uses the following eight distribution objects:
 
 From the records, collect the service times and arrival dates for each node and each customer class::
 
-    >>> servicetimes_n1c0 = [r.service_time for r in recs if r.node==1 and r.customer_class==0]
-    >>> servicetimes_n2c0 = [r.service_time for r in recs if r.node==2 and r.customer_class==0]
-    >>> servicetimes_n1c1 = [r.service_time for r in recs if r.node==1 and r.customer_class==1]
-    >>> servicetimes_n2c1 = [r.service_time for r in recs if r.node==2 and r.customer_class==1]
-    >>> arrivals_n1c0 = sorted([r.arrival_date for r in recs if r.node==1 and r.customer_class==0])
-    >>> arrivals_n2c0 = sorted([r.arrival_date for r in recs if r.node==2 and r.customer_class==0])
-    >>> arrivals_n1c1 = sorted([r.arrival_date for r in recs if r.node==1 and r.customer_class==1])
-    >>> arrivals_n2c1 = sorted([r.arrival_date for r in recs if r.node==2 and r.customer_class==1])
+    >>> servicetimes_n1c0 = [r.service_time for r in recs if r.node==1 and r.customer_class=='Class 0']
+    >>> servicetimes_n2c0 = [r.service_time for r in recs if r.node==2 and r.customer_class=='Class 0']
+    >>> servicetimes_n1c1 = [r.service_time for r in recs if r.node==1 and r.customer_class=='Class 1']
+    >>> servicetimes_n2c1 = [r.service_time for r in recs if r.node==2 and r.customer_class=='Class 1']
+    >>> arrivals_n1c0 = sorted([r.arrival_date for r in recs if r.node==1 and r.customer_class=='Class 0'])
+    >>> arrivals_n2c0 = sorted([r.arrival_date for r in recs if r.node==2 and r.customer_class=='Class 0'])
+    >>> arrivals_n1c1 = sorted([r.arrival_date for r in recs if r.node==1 and r.customer_class=='Class 1'])
+    >>> arrivals_n2c1 = sorted([r.arrival_date for r in recs if r.node==2 and r.customer_class=='Class 1'])
 
 Now let's see if the mean service time and inter-arrival times of the simulation matches the distributions::
 

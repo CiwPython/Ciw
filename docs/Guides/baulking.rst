@@ -40,7 +40,7 @@ When the system is simulated, the baulked customers are recorded as data records
 	>>> baulked_recs = [r for r in recs if r.record_type=="baulk"]
 	>>> r = baulked_recs[0]
 	>>> (r.id_number, r.customer_class, r.node, r.arrival_date)
-	(44, 0, 1, 9.45892050639243)
+	(44, 'Class 0', 1, 9.45892050639243)
 
 Note that baulking works and behaves differently to simply setting a queue capacity.
 Filling a queue's capacity results in arriving customers being *rejected* (and recorded as data records of type :code:`"rejection"`), and transitioning customers to be blocked.

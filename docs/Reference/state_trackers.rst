@@ -86,9 +86,9 @@ This denotes that there are:
   + One customer at the second node - none of Class 0, and one of Class 1
   + Five customers at the third node - four of Class 0, and one of Class 1.
 
-The Simulation object takes in the optional argument :code:`tracker` used as follows::
+The Simulation object takes in the optional argument :code:`tracker`,  which takes an argument :code:`class_ordering`, an ordered list of customerclass names to order the customer classes, used as follows::
 
-    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix()) # doctest:+SKIP
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NodeClassMatrix(['Class 0', 'Class 1'])) # doctest:+SKIP
 
 
 .. _naiveblock:

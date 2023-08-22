@@ -68,10 +68,10 @@ For example, consider the case where we have two classes of individuals and we w
 The server priority function for this example would be::
 
     >>> def custom_server_priority(srv, ind):
-    ...     if ind.customer_class == 0:
+    ...     if ind.customer_class == 'Class 0':
     ...         priorities = {1: 0, 2: 2, 3: 1}
     ...         return priorities[srv.id_number]
-    ...     if ind.customer_class == 1:
+    ...     if ind.customer_class == 'Class 1':
     ...         priorities = {1: 2, 2: 0, 3: 1}
     ...         return priorities[srv.id_number]
 

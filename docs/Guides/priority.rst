@@ -42,11 +42,11 @@ Now let's run the simulation, comparing the waiting times for Class 0 and Class 
     >>> Q.simulate_until_max_time(100.0)
     >>> recs = Q.get_all_records()
 
-    >>> waits_0 = [r.waiting_time for r in recs if r.customer_class==0]
+    >>> waits_0 = [r.waiting_time for r in recs if r.customer_class=='Class 0']
     >>> sum(waits_0)/len(waits_0)
     0.1866109...
 
-    >>> waits_1 = [r.waiting_time for r in recs if r.customer_class==1]
+    >>> waits_1 = [r.waiting_time for r in recs if r.customer_class=='Class 1']
     >>> sum(waits_1)/len(waits_1)
     7.6103100...
 

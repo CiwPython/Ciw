@@ -15,11 +15,11 @@ Imagine a 24 hour paediatricians clinic:
 + Babies arrive randomly at a rate of one per hour, children at a rate two per hour.
 
 In this set-up we have a scenario where two different types of customer are accessing the same resources, but may use them in different ways.
-Ciw handles this by assigning **customer classes** to customers.
+Ciw handles this by assigning **customer classes** to customers, labelled with strings.
 In this set-up:
 
-+ Babies are assigned customer :code:`'Class 0'`.
-+ Children are assigned customer :code:`'Class 1'`.
++ Babies are assigned customer class with string :code:`'Baby'`.
++ Children are assigned customer class with string :code:`'Child'`.
 + The receptionist's desk is Node 1.
 + The baby specialist clinic is Node 2.
 + The children's specialist clinic is Node 3.
@@ -28,24 +28,29 @@ We assign different behaviour for different customer classes by replacing the va
 
     >>> import ciw
     >>> N = ciw.create_network(
-    ...     arrival_distributions={'Class 0': [ciw.dists.Exponential(rate=1.0),
-    ...                                        None,
-    ...                                        None],
-    ...                            'Class 1': [ciw.dists.Exponential(rate=2.0),
-    ...                                        None,
-    ...                                        None]},
-    ...     service_distributions={'Class 0': [ciw.dists.Exponential(rate=4.0),
-    ...                                        ciw.dists.Exponential(rate=1.0),
-    ...                                        ciw.dists.Deterministic(value=0.0)],
-    ...                            'Class 1': [ciw.dists.Exponential(rate=6.0),
-    ...                                        ciw.dists.Deterministic(value=0.0),
-    ...                                        ciw.dists.Exponential(rate=1.0)]},
-    ...     routing={'Class 0': [[0.0, 1.0, 0.0],
-    ...                          [0.0, 0.0, 0.0],
-    ...                          [0.0, 0.0, 0.0]],
-    ...              'Class 1': [[0.0, 0.0, 1.0],
-    ...                          [0.0, 0.0, 0.0],
-    ...                          [0.0, 0.0, 0.0]]}, 
+    ...     arrival_distributions={
+    ...         'Baby': [ciw.dists.Exponential(rate=1.0),
+    ...                  None,
+    ...                  None],
+    ...         'Child': [ciw.dists.Exponential(rate=2.0),
+    ...                   None,
+    ...                   None]
+    ...     },
+    ...     service_distributions={
+    ...         'Baby': [ciw.dists.Exponential(rate=4.0),
+    ...                  ciw.dists.Exponential(rate=1.0),
+    ...                  ciw.dists.Deterministic(value=0.0)],
+    ...         'Child': [ciw.dists.Exponential(rate=6.0),
+    ...                   ciw.dists.Deterministic(value=0.0),
+    ...                   ciw.dists.Exponential(rate=1.0)]
+    ...     },
+    ...     routing={'Baby': [[0.0, 1.0, 0.0],
+    ...                       [0.0, 0.0, 0.0],
+    ...                       [0.0, 0.0, 0.0]],
+    ...              'Child': [[0.0, 0.0, 1.0],
+    ...                        [0.0, 0.0, 0.0],
+    ...                        [0.0, 0.0, 0.0]]
+    ...     }, 
     ...     number_of_servers=[1, 2, 3],
     ... )
 
@@ -57,14 +62,14 @@ Let's simulate this clinic for 9 hours::
     >>> Q.simulate_until_max_time(9)
     >>> recs = Q.get_all_records()
 
-Now we should see that no customer of Class 0 ever reached Node 3; and no customer of Class 1 ever reached Node 2::
+Now we should see that no baby ever reached Node 3; and no child ever reached Node 2::
 
     >>> visited_by_babies = {1, 2}
-    >>> set([r.node for r in recs if r.customer_class==0]) == visited_by_babies
+    >>> set([r.node for r in recs if r.customer_class=='Baby']) == visited_by_babies
     True
 
     >>> visited_by_children = {1, 3}
-    >>> set([r.node for r in recs if r.customer_class==1]) == visited_by_children
+    >>> set([r.node for r in recs if r.customer_class=='Child']) == visited_by_children
     True
 
 Now say we'd like to find the average waiting time at the reception, baby specialist's clinic, and children's specialist's clinic. We'll simulate for 24 hours, using 3 hour warm-up and 3 hour cool-down, for 16 trials. Let's collect the average waiting times for each class at each node every time::
@@ -78,8 +83,8 @@ Now say we'd like to find the average waiting time at the reception, baby specia
     ...     Q = ciw.Simulation(N)
     ...     Q.simulate_until_max_time(30)
     ...     recs = Q.get_all_records()
-    ...     waits1_babies = [r.waiting_time for r in recs if r.node==1 and r.arrival_date > 3 and r.arrival_date < 27 and r.customer_class == 0]
-    ...     waits1_children = [r.waiting_time for r in recs if r.node==1 and r.arrival_date > 3 and r.arrival_date < 27 and r.customer_class == 1]
+    ...     waits1_babies = [r.waiting_time for r in recs if r.node==1 and r.arrival_date > 3 and r.arrival_date < 27 and r.customer_class == 'Baby']
+    ...     waits1_children = [r.waiting_time for r in recs if r.node==1 and r.arrival_date > 3 and r.arrival_date < 27 and r.customer_class == 'Child']
     ...     waits2 = [r.waiting_time for r in recs if r.node==2 and r.arrival_date > 3 and r.arrival_date < 27]
     ...     waits3 = [r.waiting_time for r in recs if r.node==3 and r.arrival_date > 3 and r.arrival_date < 27]
     ...     average_waits_1_babies.append(sum(waits1_babies) / len(waits1_babies))
