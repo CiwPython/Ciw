@@ -14,7 +14,7 @@ This :code:`class_change_time_distributions` matrix is applied to every node in 
 As an example, consider an M/M/1 queue with three classes of customer, :code:`C0`, :code:`C1` and :code:`C2`. Each class arrives with Exponential inter-arrival rates 2, 4 and 6 respectively; and have Exponential service rates 5, 5, and 4 respectively. Now say that:
 
  - :code:`C0` customers will change to :code:`C2` customers if they have waited in the queue for longer than 0.5 time units.
- - :code:`C1` customers will change to :code:`C2`customers Exponentially at rate 1.
+ - :code:`C1` customers will change to :code:`C2` customers Exponentially at rate 1.
 
 This is input into the simulation as follows::
 
