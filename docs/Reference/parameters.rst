@@ -80,12 +80,14 @@ For more details see :ref:`dynamic-classes`.
 
 An example for a two node network with two classes of customer::
 
-    class_change_matrices={'Node 0': [[0.3, 0.4, 0.3],
-                                      [0.1, 0.9, 0.0],
-                                      [0.5, 0.1, 0.4]],
-                           'Node 1': [[1.0, 0.0, 0.0],
-                                      [0.4, 0.5, 0.1],
-                                      [0.2, 0.2, 0.6]]}
+    class_change_matrices=[
+        {'Class 0': {'Class 0': 0.3, 'Class 1': 0.4, 'Class 2': 0.3},
+         'Class 1': {'Class 0': 0.1, 'Class 1': 0.9, 'Class 2': 0.0},
+         'Class 2': {'Class 0': 0.5, 'Class 1': 0.1, 'Class 2': 0.4}},
+        {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0, 'Class 2': 0.0},
+         'Class 1': {'Class 0': 0.4, 'Class 1': 0.5, 'Class 2': 0.1},
+         'Class 2': {'Class 0': 0.2, 'Class 1': 0.2, 'Class 2': 0.6}}
+    ]
 
 
 
