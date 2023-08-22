@@ -89,7 +89,7 @@ def create_network_from_dictionary(params_input):
         }
     class_change_matrices = params.get(
         "class_change_matrices",
-        {"Node " + str(nd + 1): None for nd in range(number_of_nodes)},
+        [None for nd in range(number_of_nodes)],
     )
     class_change_time_distributions = params.get(
         "class_change_time_distributions",
@@ -117,7 +117,7 @@ def create_network_from_dictionary(params_input):
             ServiceCentre(
                 number_of_servers[nd],
                 params["queue_capacities"][nd],
-                class_change_matrices["Node " + str(nd + 1)],
+                class_change_matrices[nd],
                 schedules[nd],
                 preempts[nd],
                 preempt_priorities[nd],
@@ -328,16 +328,18 @@ def validify_dictionary(params):
     if not valid_capacities:
         raise ValueError("Queue capacities must be positive integers or zero.")
     if "class_change_matrices" in params:
+        if not isinstance(params['class_change_matrices'], list):
+            raise ValueError("class_change_matrices should be a list of dictionaries for each node in the network.")
         num_nodes = len(params["class_change_matrices"]) == params["number_of_nodes"]
-        node_names = set(params["class_change_matrices"]) == set(
-            ["Node " + str(i + 1) for i in range(params["number_of_nodes"])]
-        )
-        if not (num_nodes and node_names):
+        if not num_nodes:
             raise ValueError("Ensure correct nodes used in class_change_matrices.")
-        for nd in params["class_change_matrices"].values():
+        for nd in params["class_change_matrices"]:
             for row in nd.values():
                 if sum(row.values()) > 1.0 or min(row.values()) < 0.0 or max(row.values()) > 1.0:
                     raise ValueError("Ensure that class change matrix is valid.")
+        class_change_names = set([k for matrix in params['class_change_matrices'] for k in matrix.keys()])
+        if not class_change_names.issubset(set(params['arrival_distributions'])):
+            raise ValueError("Ensure consistant names for customer classes.")
     if "class_change_time_distributions" in params:
         wrong_num_classes = any(
             len(row.values()) != params["number_of_classes"]

@@ -174,10 +174,10 @@ class TestSimulation(unittest.TestCase):
                 "Class 0": [[0.8, 0.1], [0.0, 0.0]],
                 "Class 1": [[0.8, 0.1], [0.2, 0.0]],
             },
-            class_change_matrices={
-                "Node 1": {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-                "Node 2": {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}},
-            },
+            class_change_matrices=[
+                {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
+                {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}}
+            ],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(50)
@@ -980,10 +980,10 @@ class TestSimulation(unittest.TestCase):
                 "Class 1": [[0.0, 1.0], [1.0, 0.0]],
             },
             priority_classes={"Class 1": 0, "Class 0": 1},
-            class_change_matrices={
-                "Node 1": {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}},
-                "Node 2": {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}},
-            },
+            class_change_matrices=[
+                {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}},
+                {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}}
+            ],
         )
         ciw.seed(1)
         Q = ciw.Simulation(N)
@@ -1067,10 +1067,10 @@ class TestSimulation(unittest.TestCase):
                 "Class 0": [[0.1, 0.3], [0.2, 0.2]],
                 "Class 1": [[0.0, 0.6], [0.2, 0.1]],
             },
-            class_change_matrices={
-                "Node 1": {'Class 0': {'Class 0': 0.8, 'Class 1': 0.2}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-                "Node 2": {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.1, 'Class 1': 0.9}},
-            },
+            class_change_matrices=[
+                {'Class 0': {'Class 0': 0.8, 'Class 1': 0.2}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
+                {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.1, 'Class 1': 0.9}}
+            ],
             queue_capacities=[2, 2],
         )
         ciw.seed(11)

@@ -78,10 +78,10 @@ N_classchange = ciw.create_network(
         "Class 1": [ciw.dists.Deterministic(10.0), ciw.dists.Deterministic(10.0)],
     },
     routing={"Class 0": [[0.8, 0.1], [0.0, 0.0]], "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
-    class_change_matrices={
-        "Node 1": {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-        "Node 2": {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}},
-    },
+    class_change_matrices=[
+        {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
+        {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}}
+    ],
 )
 
 N_priorities = ciw.create_network(

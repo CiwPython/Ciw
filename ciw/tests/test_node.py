@@ -126,10 +126,10 @@ class TestNode(unittest.TestCase):
                 "Class 0": [[0.8, 0.1], [0.0, 0.0]],
                 "Class 1": [[0.8, 0.1], [0.2, 0.0]],
             },
-            class_change_matrices={
-                "Node 1": {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-                "Node 2": {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}},
-            },
+            class_change_matrices=[
+                {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
+                {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}}
+            ],
         )
         Q = ciw.Simulation(Net)
         N1 = Q.transitive_nodes[0]
@@ -226,10 +226,10 @@ class TestNode(unittest.TestCase):
                 "Class 0": [[0.8, 0.1], [0.0, 0.0]],
                 "Class 1": [[0.8, 0.1], [0.2, 0.0]],
             },
-            class_change_matrices={
-                "Node 1": {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-                "Node 2": {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}},
-            },
+            class_change_matrices=[
+                {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
+                {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}}
+            ],
         )
         Q = ciw.Simulation(N)
         N1 = Q.transitive_nodes[0]
@@ -271,10 +271,10 @@ class TestNode(unittest.TestCase):
                 "Class 1": [[0.8, 0.1], [0.2, 0.0]],
             },
             number_of_servers=[4, 3],
-            class_change_matrices={
-                "Node 1": {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.25, 'Class 1': 0.75}},
-                "Node 2": {'Class 0': {'Class 0': 1, 'Class 1': 0}, 'Class 1': {'Class 0': 0, 'Class 1': 1}},
-            },
+            class_change_matrices=[
+                {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.25, 'Class 1': 0.75}},
+                {'Class 0': {'Class 0': 1, 'Class 1': 0}, 'Class 1': {'Class 0': 0, 'Class 1': 1}}
+            ],
             priority_classes={"Class 0": 0, "Class 1": 1},
         )
         Q = ciw.Simulation(N)

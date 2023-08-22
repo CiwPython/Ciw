@@ -43,10 +43,10 @@ class TestServiceCentre(unittest.TestCase):
         class_change_prob1,
         class_change_prob2,
     ):
-        class_change_matrix = [
-            [class_change_prob1, 1 - class_change_prob1],
-            [class_change_prob2, 1 - class_change_prob2],
-        ]
+        class_change_matrix = {
+            'Class 0': {'Class 0': class_change_prob1, 'Class 1': 1 - class_change_prob1},
+            'Class 1': {'Class 0': class_change_prob2, 'Class 1': 1 - class_change_prob2}
+        }
         schedule = None
         SC = ciw.ServiceCentre(
             number_of_servers,
@@ -122,7 +122,7 @@ class TestNetwork(unittest.TestCase):
         number_of_servers = 2
         queueing_capacity = float("inf")
         schedule = None
-        class_change_matrix = [[0.2, 0.8], [1.0, 0.0]]
+        class_change_matrix = {'Class 0': {'Class 0': 0.2, 'Class 1': 0.8}, 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}}
         arrival_distributions = [
             ciw.dists.Uniform(4.0, 9.0),
             ciw.dists.Exponential(5.0),
@@ -257,7 +257,7 @@ class TestNetwork(unittest.TestCase):
             "number_of_servers": [9],
             "routing": {"Class 0": [[0.5]], "Class 1": [[0.0]]},
             "queue_capacities": [float("inf")],
-            "class_change_matrices": {"Node 1": {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 0.2, 'Class 1': 0.8}}},
+            "class_change_matrices": [{'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 0.2, 'Class 1': 0.8}}],
         }
         N = ciw.create_network_from_dictionary(params)
         self.assertEqual(N.number_of_nodes, 1)
@@ -580,23 +580,22 @@ class TestNetwork(unittest.TestCase):
             ciw.create_network_from_dictionary,
             params_list[18]
         )
-        params_list[19]["class_change_matrices"] = {
-            "Node 1": {'Class 0': {'Class 0': 0.0, 'Class 1': 0.0}},
-            "Node 2": {'Class 0': {'Class 0': 0.0, 'Class 1': 0.0}},
-        }
+        params_list[19]["class_change_matrices"] = [
+            {'Class 0': {'Class 0': 0.0, 'Class 1': 0.0}},
+            {'Class 0': {'Class 0': 0.0, 'Class 1': 0.0}},
+        ]
         self.assertRaises(
             ValueError,
             ciw.create_network_from_dictionary,
             params_list[19]
         )
-        params_list[20]["class_change_matrices"] = {"Patient 0": [[0.0]]}
+        params_list[20]["class_change_matrices"] = {"Class 0": 0.0}
         self.assertRaises(
             ValueError,
             ciw.create_network_from_dictionary,
             params_list[20]
         )
-
-        params_list[20]["class_change_matrices"] = {"Patient 0": [[0.0]]}
+        params_list[20]["class_change_matrices"] = [{"Class 7": {'Class 0': 0.0}}]
         self.assertRaises(
             ValueError,
             ciw.create_network_from_dictionary,
@@ -751,7 +750,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             number_of_servers=[9],
             routing={"Class 0": [[0.5]], "Class 1": [[0.0]]},
             queue_capacities=[float("inf")],
-            class_change_matrices={"Node 1": {'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 0.2, 'Class 1': 0.8}}},
+            class_change_matrices=[{'Class 0': {'Class 0': 0.0, 'Class 1': 1.0}, 'Class 1': {'Class 0': 0.2, 'Class 1': 0.8}}],
         )
 
         self.assertEqual(N.number_of_nodes, 1)
@@ -1046,11 +1045,10 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 'Class 1': [ciw.dists.Exponential(20.0)]
             },
             'number_of_servers': [2],
-            'class_change_matrices': {
-                'Node 1': {
-                    'Class 0': {'Class 0': 0.7, 'Class 1': 0.5},
-                    'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}}
-            }
+            'class_change_matrices': [
+                {'Class 0': {'Class 0': 0.7, 'Class 1': 0.5},
+                 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}}
+            ]
         }
         params_neg = {
             'arrival_distributions': {
@@ -1062,11 +1060,10 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 'Class 1': [ciw.dists.Exponential(20.0)]
             },
             'number_of_servers': [2],
-            'class_change_matrices': {
-                'Node 1': {
-                    'Class 0': {'Class 0': 0.0, 'Class 1': -0.5},
-                    'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}}
-            }
+            'class_change_matrices': [
+                {'Class 0': {'Class 0': 0.0, 'Class 1': -0.5},
+                 'Class 1': {'Class 0': 1.0, 'Class 1': 0.0}}
+            ]
         }
         with self.assertRaises(ValueError):
             ciw.create_network(**params_geq1)
