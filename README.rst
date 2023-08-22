@@ -35,6 +35,8 @@ Current supported version of Python:
 - Python 3.7
 - Python 3.8
 - Python 3.9
+- Python 3.10
+- Python 3.11
 
 Usage
 -----
@@ -84,6 +86,7 @@ A number of other features are also implemented, including:
 + `Multiple customer classes <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vii.html>`_
 + `Priorities <https://ciw.readthedocs.io/en/latest/Guides/priority.html>`_
 + `Server priorities <https://ciw.readthedocs.io/en/latest/Guides/server_priority.html>`_
++ `Service disciplines <https://ciw.readthedocs.io/en/latest/Guides/service_disciplines.html>`_
 + `Customers changing classes <https://ciw.readthedocs.io/en/latest/Guides/dynamic_customerclasses.html>`_
 + `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/server_schedule.html>`_
 + `State tracking <https://ciw.readthedocs.io/en/latest/Guides/state_trackers.html>`_
