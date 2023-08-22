@@ -12,7 +12,7 @@ detection.
 The name **Ciw** is the Welsh word for a queue.
 
 Ciw is currently supported for and regularly tested on Python versions 3.7,
-3.8 and 3.9.
+3.8, 3.9, 3.10 and 3.11.
 
 Contents:
 
