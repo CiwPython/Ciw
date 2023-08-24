@@ -1,7 +1,7 @@
 History
 -------
 
-+ **v3.0.0 (2023-08-2023)**
++ **v3.0.0 (2023-08-22)**
     + Adds service disciplines - FIFO, LIFO, SIRO and ability for custom disciplines.
     + Removes baulking and rejection dictionaries, these are recorded as DataRecords.
     + Adds an optional filter to `Q.get_all_records` to filter only records of given types.
@@ -13,7 +13,7 @@ History
     + Performance improvements.
 
 + **v2.3.7 (2023-04-06)**
-    + Adds Poisson, Geometric, and Binomial distributions fro batching.
+    + Adds Poisson, Geometric, and Binomial distributions for batching.
 
 + **v2.3.6 (2023-02-16)**
     + Writes a data record for interrupted services caused by server schedules.
