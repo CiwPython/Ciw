@@ -40,7 +40,7 @@ This returns a list of named tuples. Each named tuple contains the following inf
 
 More information on each of these is given in :ref:`refs-results`.
 
-Using list comprehension, we can get lists on whichever statistic we like::
+Using a list comprehension, we can get lists on whichever statistic we like::
 
     >>> # A list of service times
     >>> servicetimes = [r.service_time for r in recs]
