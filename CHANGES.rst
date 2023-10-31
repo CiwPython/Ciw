@@ -1,6 +1,9 @@
 History
 -------
 
++ **v3.0.1 (2023-10-31)**
+    + Fix bug where class change individual not resit after preemption.
+
 + **v3.0.0 (2023-08-22)**
     + Adds service disciplines - FIFO, LIFO, SIRO and ability for custom disciplines.
     + Removes baulking and rejection dictionaries, these are recorded as DataRecords.
