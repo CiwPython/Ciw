@@ -509,6 +509,7 @@ class Node(object):
         next_individual.service_start_date = self.get_now()
         next_individual.service_time = self.get_service_time(next_individual)
         next_individual.service_end_date = self.increment_time(self.get_now(), next_individual.service_time)
+        self.reset_class_change(next_individual)
         server.next_end_service_date = next_individual.service_end_date
 
     def release(self, next_individual, next_node):

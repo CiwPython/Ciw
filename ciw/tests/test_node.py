@@ -1673,6 +1673,32 @@ class TestNode(unittest.TestCase):
         self.assertEqual(float(interrupted_recs[0].service_time), 2.5)
         self.assertTrue(isnan(interrupted_recs[0].service_end_date))
 
+    def test_preemptive_priorities_reset_class_change(self):
+        N = ciw.create_network(
+            arrival_distributions={
+                "Class 0": [ciw.dists.Exponential(1)],
+                "Class 1": [ciw.dists.Exponential(1)],
+                "Class 2": [ciw.dists.Exponential(1)]
+            },
+            service_distributions={
+                "Class 0": [ciw.dists.Exponential(7)],
+                "Class 1": [ciw.dists.Exponential(6)],
+                "Class 2": [ciw.dists.Exponential(2)]
+            },
+            number_of_servers=[4],
+            class_change_time_distributions={
+                "Class 0": {"Class 1": ciw.dists.Exponential(1), "Class 2": ciw.dists.Exponential(2)},
+                "Class 1": {"Class 0": ciw.dists.Exponential(3), "Class 2": ciw.dists.Exponential(1)},
+                "Class 2": {"Class 0": ciw.dists.Exponential(3), "Class 1": ciw.dists.Exponential(3)}
+            },
+            priority_classes=({"Class 0": 0, "Class 1": 1, "Class 2": 2}, ["resample"]),
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(1000)
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 3070)
+
+
     def test_preemptive_priorities_resume_options(self):
         """
         One customer of class 1 arrives at date 1. Class 1 customers alternate
