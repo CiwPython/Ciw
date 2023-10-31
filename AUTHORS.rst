@@ -19,3 +19,4 @@ Ciw has been developed by the following contributors:
 + `Jorge Martín Pérez <https://github.com/MartinPJorge/>`_
 + `KernelA <https://github.com/KernelA>`_
 + `Matthew Howells <https://github.com/MHowells>`_
++ `Galen Seilis <https://github.com/galenseilis>`_
