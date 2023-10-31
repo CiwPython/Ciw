@@ -16,15 +16,15 @@ class Individual(object):
 
     Attributes
     ----------
-    arrival_date : bool
+    arrival_date : bool or float
         Timestamp for the arrival of the individual.
-    service_start_date : bool
+    service_start_date : bool or float
         Timestamp for the start of service for the individual.
-    service_time : bool
+    service_time : bool or float
         Time taken for the service.
-    service_end_date : bool
+    service_end_date : bool or float
         Timestamp for the end of service for the individual.
-    exit_date : bool
+    exit_date : bool or float
         Timestamp when the individual exits the system.
     id_number : int
         Unique identifier for the individual.
@@ -42,19 +42,19 @@ class Individual(object):
         The original customer class of the individual.
     is_blocked : bool
         Indicates if the individual is blocked.
-    server : bool
+    server : bool or Server object
         Indicates whether the individual is assigned to a server.
-    queue_size_at_arrival : bool
+    queue_size_at_arrival : bool or int
         Size of the queue at the time of arrival.
-    queue_size_at_departure : bool
+    queue_size_at_departure : bool or int
         Size of the queue at the time of departure.
-    destination : bool
+    destination : bool or int
         The destination node in the network.
     interrupted : bool
         Indicates if the individual's service was interrupted.
-    node : bool
+    node : bool or int
         The node in the network where the individual is located.
-    simulation : bool
+    simulation : bool or Simulation object
         A flag indicating whether the individual is part of a simulation.
 
     Methods
