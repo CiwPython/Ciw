@@ -22,7 +22,7 @@ class Simulation(object):
         network,
         exact=False,
         name="Simulation",
-        tracker=trackers.StateTracker(),
+        tracker=None,
         deadlock_detector=deadlock.NoDetection(),
         node_class=None,
         arrival_node_class=None,
@@ -51,7 +51,10 @@ class Simulation(object):
         self.nodes = [self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()]
         self.active_nodes = self.nodes[:-1]
         self.nodes[0].initialise()
-        self.statetracker = tracker
+        if tracker is None:
+            self.statetracker = trackers.StateTracker()
+        else:
+            self.statetracker = tracker
         self.statetracker.initialise(self)
         self.times_dictionary = {self.statetracker.hash_state(): 0.0}
         self.times_to_deadlock = {}
