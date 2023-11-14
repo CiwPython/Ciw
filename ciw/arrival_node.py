@@ -3,13 +3,25 @@ from .individual import Individual
 
 
 class ArrivalNode(object):
-    """
-    Class for the arrival node of the network
+    """Class for the arrival node of the network.
+    
+    See Also
+    --------
+    ciw.Simulation : Main simulation class.
+
+    Notes
+    -----
+    This class handles arrivals, baulking, and rejections of individuals.
     """
 
     def __init__(self, simulation):
         """
         Initialise the arrvial node.
+
+        Parameters
+        ----------
+        simulation : object
+            The simulation to which this arrival node belongs.
         """
         self.simulation = simulation
         self.number_of_individuals = 0
