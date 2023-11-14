@@ -30,6 +30,7 @@ class Node(object):
             self.date_generator = self.date_from_schedule_generator(raw_schedule_boundaries)
             self.next_shift_change = next(self.date_generator)
             self.next_event_date = self.next_shift_change
+            self.next_event_type = 'shift_change'
         else:
             self.c = node.number_of_servers
             self.schedule = None

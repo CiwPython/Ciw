@@ -1964,3 +1964,14 @@ class TestNode(unittest.TestCase):
             (1, 9),
         ]
         self.assertEqual(set(Q.nodes[2].blocked_queue), set(expected_blocked_queue))
+
+    def test_shift_change_before_arrival(self):
+         N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential(sequence=[2.0, float('inf')])],
+            service_distributions=[ciw.dists.Deterministic(value=1.0)],
+            number_of_servers=[([[1, 1.0], [2, 10.0]], False)]
+         )
+         Q = ciw.Simulation(N)
+         Q.simulate_until_max_time(10.5)
+         recs = Q.get_all_records()
+         self.assertEqual(len(recs), 1)
