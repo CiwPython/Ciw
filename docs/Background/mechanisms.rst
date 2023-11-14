@@ -8,7 +8,7 @@ General
 ~~~~~~~
 
 Ciw uses the *event scheduling* approach [SW14]_ , similar to the three phase approach.
-In the event scheduling approach, three types of event take place: **A Events** move the clock forward, **B Events** are pre scheduled events, and **C Events** are events that arise because a **B Event** has happened.
+In the event scheduling approach, three types of event take place: **A Events** move the clock forward, **B Events** are prescheduled events, and **C Events** are events that arise because a **B Event** has happened.
 
 Here **A-events** correspond to moving the clock forward to the next **B-event**.
 **B-events** correspond to either an external arrival, a customer finishing service, or a server shift change.

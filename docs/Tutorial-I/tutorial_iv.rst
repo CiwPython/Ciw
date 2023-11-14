@@ -41,7 +41,7 @@ Therefore each trial we will run for 1 day + 200 minutes (1640 minutes)::
     ...     mean_wait = sum(waits) / len(waits)
     ...     average_waits.append(mean_wait)
 
-The list :code:`average_waits` will now contain ten numbers, the mean waiting time from each of the trials.
+The list :code:`average_waits` will now contain ten numbers and the mean waiting time from each of the trials.
 Notice that we set a different seed every time, so each trial will yield different results::
 
     >>> average_waits
