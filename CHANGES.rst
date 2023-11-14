@@ -1,8 +1,13 @@
 History
 -------
 
++ **v3.0.2 (2023-11-14)**
+    + Fix bug where simulation errors if fist event of a node is a shift change.
+    + Minor docstring and documentation changes.
+    + Default statetracker is now None.
+
 + **v3.0.1 (2023-10-31)**
-    + Fix bug where class change individual not resit after preemption.
+    + Fix bug where class change individual not reset after preemption.
 
 + **v3.0.0 (2023-08-22)**
     + Adds service disciplines - FIFO, LIFO, SIRO and ability for custom disciplines.
