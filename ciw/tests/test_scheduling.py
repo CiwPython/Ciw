@@ -645,7 +645,6 @@ class TestScheduling(unittest.TestCase):
 
         self.assertEqual(len(Q.nodes[-1].all_individuals), 8)
 
-        expected_service_dates = [1.5, 4.4, 4.4, 4.4, 5.9, 8.8, 8.8, 17.6
-        ]
+        expected_service_dates = [1.5, 4.4, 4.4, 4.4, 5.9, 8.8, 8.8, 17.6]
         observed_service_dates = [r.service_start_date for r in recs]
         self.assertEqual(observed_service_dates, expected_service_dates)

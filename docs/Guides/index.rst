@@ -23,6 +23,7 @@ Contents:
    baulking.rst
    reneging.rst
    server_schedule.rst
+   slotted.rst
    server_priority.rst
    dynamic_customerclasses.rst
    state_trackers.rst
