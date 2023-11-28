@@ -43,8 +43,29 @@ class Schedule:
         self.next_c = c
 
 
-# class Slotted(Schedule):
-#     def __init__(self, slots, slot_sizes):
-#         self.schedule_type = 'slotted'
-#         self.slots = slots
-#         self.slot_sizes = slot_sizes
+class Slotted(Schedule):
+    def __init__(self, slots, slot_sizes):
+        """
+        Initialises the instance of the Slotted Schedule object
+        """
+        self.schedule_type = 'slotted'
+        self.slots = slots
+        self.slot_sizes = slot_sizes
+        self.cyclelength = self.slots[-1]
+        self.c = 0
+
+
+    def initialise(self):
+        """
+        Initialises the generator object at the beginning of a simulation
+        """
+        self.schedule_generator = self.get_schedule_generator(self.slots, [self.slot_sizes[-1]] + self.slot_sizes[:-1])
+        self.get_next_slot()
+
+    def get_next_slot(self):
+        """
+        Updates the next slot time and size from the generator
+        """
+        date, size = next(self.schedule_generator)
+        self.next_slot_date = date
+        self.slot_size = size

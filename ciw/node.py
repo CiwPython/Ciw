@@ -24,12 +24,19 @@ class Node(object):
             self.schedule = node.number_of_servers
             self.schedule.initialise()
             self.c = self.schedule.c
-            self.next_event_date = self.schedule.next_shift_change_date
-            self.next_shift_change = self.schedule.next_shift_change_date
-            self.next_event_type = 'shift_change'
+            if self.schedule.schedule_type == 'slotted':
+                self.slotted = True
+                self.next_event_date = self.schedule.next_slot_date
+                self.next_event_type = 'slotted_service'
+            else:
+                self.slotted = False
+                self.next_event_date = self.schedule.next_shift_change_date
+                self.next_shift_change = self.schedule.next_shift_change_date
+                self.next_event_type = 'shift_change'
         else:
             self.c = node.number_of_servers
             self.schedule = None
+            self.slotted = False
             self.next_event_date = float("Inf")
             self.next_shift_change = float("Inf")
         self.node_capacity = node.queueing_capacity + self.c
@@ -277,6 +284,20 @@ class Node(object):
         self.add_new_servers(self.schedule.c)
         self.begin_service_if_possible_change_shift()
 
+    def slotted_service(self):
+        """
+        Allows only a set amount of customers to have service at the exacxt time the method is called.
+        """
+        number_of_slotted_services = min(self.schedule.slot_size, len(self.all_individuals))
+        for i in range(number_of_slotted_services):
+            ind = self.choose_next_customer()
+            ind.service_start_date = self.get_now()
+            ind.service_time = self.get_service_time(ind)
+            ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
+            ind.server = True
+            self.reset_class_change(ind)
+        self.schedule.get_next_slot()
+
     def choose_next_customer(self):
         """
         Chooses which customer will be next to be served.
@@ -404,7 +425,7 @@ class Node(object):
         self.change_customer_class(next_individual)
         next_node = self.next_node(next_individual)
         next_individual.destination = next_node.id_number
-        if not isinf(self.c):
+        if not isinf(self.c) and self.c > 0:
             next_individual.server.next_end_service_date = float("Inf")
         if next_node.number_of_individuals < next_node.node_capacity:
             self.release(next_individual, next_node)
@@ -440,6 +461,8 @@ class Node(object):
             self.renege()
         elif self.next_event_type == 'class_change':
             self.change_customer_class_while_waiting()
+        elif self.next_event_type == 'slotted_service':
+            self.slotted_service()
 
     def increment_time(self, original, increment):
         """
@@ -520,7 +543,7 @@ class Node(object):
         next_individual.exit_date = self.get_now()
         self.write_individual_record(next_individual)
         newly_free_server = None
-        if not isinf(self.c):
+        if not isinf(self.c) and not self.slotted:
             newly_free_server = next_individual.server
             self.detatch_server(newly_free_server, next_individual)
         self.reset_individual_attributes(next_individual)
@@ -646,6 +669,12 @@ class Node(object):
         next_renege = (None, float("Inf"), 'renege')
         possible_next_events = {}
         if not isinf(self.c):
+            if self.slotted:
+                for ind in self.all_individuals:
+                    if not ind.is_blocked and ind.service_end_date >= self.get_now():
+                        if ind.service_end_date < next_end_service[1]:
+                            next_end_service = ([ind], ind.service_end_date, 'end_service')
+                    possible_next_events['end_service'] = next_end_service
             for s in self.servers:
                 if s.next_end_service_date < next_end_service[1]:
                     next_end_service = ([s.cust], s.next_end_service_date)
@@ -661,7 +690,10 @@ class Node(object):
             if self.dynamic_classes is True:
                 possible_next_events['class_change'] = (self.next_class_change_ind, self.next_class_change_date)
             if self.schedule is not None:
-                possible_next_events['shift_change'] = (None, self.next_shift_change)
+                if self.schedule.schedule_type == 'schedule':
+                    possible_next_events['shift_change'] = (None, self.next_shift_change)
+                if self.schedule.schedule_type == 'slotted':
+                    possible_next_events['slotted_service'] = (None, self.schedule.next_slot_date)
         else:
             for ind in self.all_individuals:
                 if not ind.is_blocked and ind.service_end_date >= self.get_now():
@@ -682,15 +714,16 @@ class Node(object):
         Decides the next event. Chooses the next service end,
         renege, shift change, or class change. In the case of
         a tie, prioritise as follows:
-            1) shift change
-            2) end service
-            3) class change
-            4) renege
+            1) slotted service
+            2) shift change
+            3) end service
+            4) class change
+            5) renege
         """
         next_date = float('inf')
         next_event = (None, float('inf'))
         next_event_type = None
-        for event_type in ['shift_change', 'end_service', 'class_change', 'renege']:
+        for event_type in ['slotted_service', 'shift_change', 'end_service', 'class_change', 'renege']:
             possible_next_event = possible_next_events.get(event_type, (None, float('inf')))
             if possible_next_event[1] < next_date:
                 next_event = possible_next_event
@@ -713,7 +746,7 @@ class Node(object):
         """
         Write a data record for an individual when leaving a node.
         """
-        if isinf(self.c):
+        if isinf(self.c) or self.slotted:
             server_id = False
         else:
             server_id = individual.server.id_number

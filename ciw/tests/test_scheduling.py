@@ -582,23 +582,70 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(C2.data_records[2].exit_date, 19)
         self.assertEqual(C2.data_records[2].time_blocked, 0)
 
-    # def test_slotted_services(self):
-    #     """
-    #     Arrivals occur at times [0.3, 0.5, 0.7, 1.3, 1.4, 1.9, 2.7, 2.8, 3.1]
-    #     All services last 0.5 time units
-    #     Services are slotted at times [1, 2, 3, 4]
-    #     Slotted services have capacities [3, 2, 5, 3]
-    #     """
-    #     N = ciw.create_network(
-    #         arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, 0.2, 0.5, 0.1, 0.5, 0.8, 0.1, 0.3, float('inf')])],
-    #         service_distributions=[ciw.dists.Deterministic(0.5)],
-    #         number_of_servers=[ciw.schedules.Slotted(slots=[1, 2, 3, 4], slot_sizes=[3, 2, 5, 3])]
-    #     )
-    #     Q = ciw.Simulation(N)
-    #     Q.simulate_until_max_time(5.5)
-    #     recs = Q.get_all_records()
-    #     recs = sorted(recs, key=lambda rec: rec.id_number)
+    def test_slotted_object(self):
+        S = ciw.Slotted(slots=[1, 2, 3, 4], slot_sizes=[3, 2, 5, 3])
+        S.initialise()
+        self.assertEqual((S.next_slot_date, S.slot_size), (1, 3))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (2, 2))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (3, 5))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (4, 3))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (5, 3))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (6, 2))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (7, 5))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (8, 3))
+        S.get_next_slot()
+        self.assertEqual((S.next_slot_date, S.slot_size), (9, 3))
 
-    #     expected_service_dates = [1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0]
-    #     for i, rec in enumerate(recs):
-    #         self.assertEqual(rec.service_start_date, expected_service_dates[i])
+    def test_slotted_services(self):
+        """
+        Arrivals occur at times [0.3, 0.5, 0.7, 1.2, 1.3, 1.8, 2.6, 2.7, 3.1]
+        All services last 0.5 time units
+        Services are slotted at times [1, 2, 3, 4]
+        Slotted services have capacities [3, 2, 5, 3]
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, 0.2, 0.5, 0.1, 0.5, 0.8, 0.1, 0.4, float('inf')])],
+            service_distributions=[ciw.dists.Deterministic(0.5)],
+            number_of_servers=[ciw.Slotted(slots=[1, 2, 3, 4], slot_sizes=[3, 2, 5, 3])]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(5.6)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 9)
+
+        expected_service_dates = [1, 1, 1, 2, 2, 3, 3, 3, 4]
+        observed_service_dates = [r.service_start_date for r in recs]
+        self.assertEqual(observed_service_dates, expected_service_dates)
+
+    def test_slotted_services_repeat(self):
+        """
+        Arrivals occur at times [0.7, 1.4, 2.6, 2.9, 4.3, 5.5, 6.1, 15.0]
+        All services last 0.2 time units
+        Services are slotted at times [1.5, 4.4, 5.9, 8.8, 10.3, 13.2, 14.7, 17.6, etc...]
+        Slotted services have capacities [1, 3, 1, 3, 1, 3, 1, 3 etc....]
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.7, 0.7, 1.2, 0.3, 1.4, 1.2, 0.6, 8.9, float('inf')])],
+            service_distributions=[ciw.dists.Deterministic(0.2)],
+            number_of_servers=[ciw.Slotted(slots=[1.5, 4.4], slot_sizes=[1, 3])]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 8)
+
+        expected_service_dates = [1.5, 4.4, 4.4, 4.4, 5.9, 8.8, 8.8, 17.6
+        ]
+        observed_service_dates = [r.service_start_date for r in recs]
+        self.assertEqual(observed_service_dates, expected_service_dates)
