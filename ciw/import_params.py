@@ -2,6 +2,7 @@ import copy
 import types
 import ciw.dists
 from .network import *
+from .schedules import *
 
 
 def create_network(
@@ -100,30 +101,13 @@ def create_network_from_dictionary(params_input):
                 except:
                     pass
 
-    number_of_servers, schedules, nodes, classes, preempts = [], [], [], {}, []
-    for c in params["number_of_servers"]:
-        if isinstance(c, (tuple, list)):
-            if isinstance(c, tuple):
-                s = c[0]
-                p = c[1]
-            if isinstance(c, list):
-                s = c
-                p = False
-            number_of_servers.append("schedule")
-            schedules.append(s)
-            preempts.append(p)
-        else:
-            number_of_servers.append(c)
-            schedules.append(None)
-            preempts.append(False)
+    nodes, classes = [], {}
     for nd in range(number_of_nodes):
         nodes.append(
             ServiceCentre(
-                number_of_servers[nd],
+                params['number_of_servers'][nd],
                 params["queue_capacities"][nd],
                 class_change_matrices[nd],
-                schedules[nd],
-                preempts[nd],
                 preempt_priorities[nd],
                 params["ps_thresholds"][nd],
                 params["server_priority_functions"][nd],
@@ -163,12 +147,11 @@ def create_network_from_dictionary(params_input):
     return n
 
 
-def fill_out_dictionary(params_input):
+def fill_out_dictionary(params):
     """
     Fills out the parameters dictionary with the
     default values of the optional arguments.
     """
-    params = copy.deepcopy(params_input)
     if isinstance(params["arrival_distributions"], list):
         arr_dists = params["arrival_distributions"]
         params["arrival_distributions"] = {"Customer": arr_dists}
@@ -329,6 +312,9 @@ def validify_dictionary(params):
     )
     if neg_numservers:
         raise ValueError("Number of servers must be positive integers.")
+    for c in params["number_of_servers"]:
+        if not (isinstance(c, int) or isinstance(c, Schedule) or c == float('inf')):
+            raise ValueError("Number of servers must be positive integers or instances of ciw.schedules.Schedule.")
     if not valid_capacities:
         raise ValueError("Queue capacities must be positive integers or zero.")
     
@@ -359,10 +345,6 @@ def validify_dictionary(params):
             raise ValueError(
                 "Ensure consistant customer classes used in class_change_time_distributions."
             )
-    for n in params["number_of_servers"]:
-        if isinstance(n, str) and n != "Inf":
-            if n not in params:
-                raise ValueError("No schedule " + str(n) + " defined.")
     possible_destinations = list(range(1, params["number_of_nodes"] + 1)) + [-1]
     for dests in params["reneging_destinations"]:
         correct_destinations = all(

@@ -13,6 +13,7 @@ from .processor_sharing import PSNode
 from .exactnode import *
 from .import_params import *
 from .network import *
+from .schedules import *
 import ciw.dists
 import ciw.deadlock
 import ciw.trackers

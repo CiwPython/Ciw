@@ -4,6 +4,7 @@ import networkx as nx
 from .auxiliary import random_choice, flatten_list
 from .data_record import DataRecord
 from .server import Server
+from .schedules import *
 
 
 class Node(object):
@@ -19,17 +20,12 @@ class Node(object):
         node = self.simulation.network.service_centres[id_ - 1]
         self.server_priority_function = node.server_priority_function
         self.service_discipline = node.service_discipline
-        if node.schedule:
-            raw_schedule = node.schedule
-            self.cyclelength = self.increment_time(0, raw_schedule[-1][1])
-            boundaries = [0] + [row[1] for row in raw_schedule[:-1]]
-            servers = [row[0] for row in raw_schedule]
-            self.schedule = [list(pair) for pair in zip(boundaries, servers)]
-            self.c = self.schedule[0][1]
-            raw_schedule_boundaries = [row[1] for row in raw_schedule]
-            self.date_generator = self.date_from_schedule_generator(raw_schedule_boundaries)
-            self.next_shift_change = next(self.date_generator)
-            self.next_event_date = self.next_shift_change
+        if isinstance(node.number_of_servers, Schedule):
+            self.schedule = node.number_of_servers
+            self.schedule.initialise()
+            self.c = self.schedule.c
+            self.next_event_date = self.schedule.next_shift_change_date
+            self.next_shift_change = self.schedule.next_shift_change_date
             self.next_event_type = 'shift_change'
         else:
             self.c = node.number_of_servers
@@ -57,7 +53,6 @@ class Node(object):
             self.servers = self.create_starting_servers()
         self.highest_id = self.c
         self.simulation.deadlock_detector.initialise_at_node(self)
-        self.schedule_preempt = node.schedule_preempt
         self.priority_preempt = node.priority_preempt
         self.interrupted_individuals = []
         self.number_interrupted_individuals = 0
@@ -275,18 +270,11 @@ class Node(object):
          - adds / deletes servers, or indicates which servers should go off duty
          - begin any new services if free servers
         """
-        shift = self.next_event_date % self.cyclelength
-        try:
-            indx = self.schedule.index(shift)
-        except:
-            tms = [obs[0] for obs in self.schedule]
-            diffs = [abs(x - float(shift)) for x in tms]
-            indx = diffs.index(min(diffs))
-        num_servers = self.schedule[indx][1]
+        self.schedule.get_next_shift()
+        self.next_shift_change = self.schedule.next_shift_change_date
+        self.c = self.schedule.c
         self.take_servers_off_duty()
-        self.add_new_servers(num_servers)
-        self.c = self.schedule[indx][1]
-        self.next_shift_change = next(self.date_generator)
+        self.add_new_servers(self.schedule.c)
         self.begin_service_if_possible_change_shift()
 
     def choose_next_customer(self):
@@ -563,6 +551,8 @@ class Node(object):
             self.len_blocked_queue -= 1
             if individual_to_receive.interrupted:
                 individual_to_receive.interrupted = False
+                individual_to_receive.service_start_date = individual_to_receive.original_service_start_date
+                individual_to_receive.service_end_date = individual_to_receive.service_start_date + individual_to_receive.original_service_time
                 node_to_receive_from.interrupted_individuals.remove(individual_to_receive)
                 node_to_receive_from.number_interrupted_individuals -= 1
             node_to_receive_from.release(individual_to_receive, self)
@@ -617,7 +607,7 @@ class Node(object):
         """
         Gathers servers that should be deleted.
         """
-        if self.schedule_preempt == False:
+        if self.schedule.preemption == False:
             to_delete = []
             for srvr in self.servers:
                 srvr.shift_end = self.next_event_date
@@ -633,11 +623,12 @@ class Node(object):
                     self.interrupted_individuals.append(s.cust)
                     s.cust.interrupted = True
                     self.number_interrupted_individuals += 1
-                    s.cust.original_service_time = self.interrupted_individuals[-1].service_time
+                    s.cust.original_service_time = s.cust.service_time
                     self.write_interruption_record(s.cust)
+                    s.cust.original_service_start_date = s.cust.service_start_date
                     s.cust.service_start_date = False
-                    s.cust.time_left = self.interrupted_individuals[-1].service_end_date - self.get_now()
-                    s.cust.service_time = self.schedule_preempt
+                    s.cust.time_left = s.cust.service_end_date - self.get_now()
+                    s.cust.service_time = self.schedule.preemption
                     s.cust.service_end_date = False
             self.interrupted_individuals.sort(key=lambda x: (x.priority_class, x.arrival_date))
         for obs in to_delete:
@@ -705,7 +696,6 @@ class Node(object):
                 next_event = possible_next_event
                 next_event_type = event_type
                 next_date = next_event[1]
-        # print(self.get_now(), next_event_type, next_event)
         return next_event, next_event_type
 
     def wrap_up_servers(self, current_time):
@@ -832,18 +822,3 @@ class Node(object):
         individual.queue_size_at_arrival = False
         individual.queue_size_at_departure = False
         individual.destination = False
-
-    def date_from_schedule_generator(self, boundaries):
-        """
-        A generator that yields the next time according to a given schedule.
-        """
-        boundaries_len = len(boundaries)
-        index = 0
-        date = 0
-        while True:
-            date = self.increment_time(
-                boundaries[index % boundaries_len],
-                (index) // boundaries_len * boundaries[-1],
-            )
-            index += 1
-            yield date

@@ -104,7 +104,7 @@ N_schedule = ciw.create_network(
         "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
         "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
     },
-    number_of_servers=[[[1, 30], [2, 60], [1, 90], [3, 100]], 3],
+    number_of_servers=[ciw.Schedule(schedule=[[1, 30], [2, 60], [1, 90], [3, 100]]), 3],
     queue_capacities=[float("Inf"), 10],
     service_distributions={
         "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Exponential(0.2)],
@@ -139,10 +139,11 @@ class TestProcessorSharing(unittest.TestCase):
 
         Q = ciw.Simulation(N_schedule, node_class=ciw.PSNode)
         N = Q.transitive_nodes[0]
-        self.assertEqual(N.cyclelength, 100)
+        self.assertEqual(N.schedule.cyclelength, 100)
         self.assertEqual(N.ps_capacity, 1)
         self.assertEqual(N.c, float("inf"))
-        self.assertEqual(N.schedule, [[0, 1], [30, 2], [60, 1], [90, 3]])
+        self.assertEqual(N.schedule.schedule_dates, [30, 60, 90, 100])
+        self.assertEqual(N.schedule.schedule_servers, [1, 2, 1, 3])
         self.assertEqual(N.next_event_date, 30)
         self.assertEqual(N.interrupted_individuals, [])
         self.assertEqual(N.last_occupancy, 0)
