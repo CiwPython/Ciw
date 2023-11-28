@@ -211,7 +211,7 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(ind1.service_end_date, 7895.876)
         self.assertEqual(ind2.service_time, 7.2)
         self.assertEqual(ind2.service_end_date, 0.4321)
-        N.take_servers_off_duty()
+        N.take_servers_off_duty(preemption='resample')
         self.assertEqual([str(obs) for obs in N.servers], [])
         self.assertEqual([obs.busy for obs in N.servers], [])
         self.assertEqual([obs.offduty for obs in N.servers], [])

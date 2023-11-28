@@ -273,7 +273,7 @@ class Node(object):
         self.schedule.get_next_shift()
         self.next_shift_change = self.schedule.next_shift_change_date
         self.c = self.schedule.c
-        self.take_servers_off_duty()
+        self.take_servers_off_duty(preemption=self.schedule.preemption)
         self.add_new_servers(self.schedule.c)
         self.begin_service_if_possible_change_shift()
 
@@ -603,11 +603,11 @@ class Node(object):
         """
         return self.simulation.service_times[self.id_number][ind.customer_class].sample(t=self.simulation.current_time, ind=ind)
 
-    def take_servers_off_duty(self):
+    def take_servers_off_duty(self, preemption=False):
         """
         Gathers servers that should be deleted.
         """
-        if self.schedule.preemption == False:
+        if preemption == False:
             to_delete = []
             for srvr in self.servers:
                 srvr.shift_end = self.next_event_date

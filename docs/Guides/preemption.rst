@@ -43,18 +43,18 @@ Pre-emption & Server Schedules
 During a non-pre-emptive schedule, customers cannot be interrupted. Therefore servers finish the current customer's service before disappearing. This of course may mean that when new servers arrive the old servers are still there.
 During a pre-emptive schedule, that server will immediately stop service and leave. Whenever more servers come on duty, they will prioritise the interrupted customers and continue their service.
 
-In order to implement pre-emptive or non-pre-emptive schedules, put the schedule in a tuple with the pre-emption option. For example::
+In order to implement pre-emptive or non-pre-emptive schedules, the :code:`ciw.Schedule` object takes in a keywords argument :code:`preemption` the chosen pre-emption option. For example::
 
     number_of_servers=[
-        ([[2, 10], [0, 30], [1, 100]], False)      # non-preemptive
-        ([[2, 10], [0, 30], [1, 100]], "resample") # preemptive and resamples service time
-        ([[2, 10], [0, 30], [1, 100]], "restart")  # preemptive and restarts origional service time
-        ([[2, 10], [0, 30], [1, 100]], "continue") # preemptive continutes services where left off
+        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption=False)      # non-preemptive
+        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="resample") # preemptive and resamples service time
+        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="restart")  # preemptive and restarts origional service time
+        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="continue") # preemptive continutes services where left off
     ]
 
 Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
 
-    number_of_servers=[[[2, 10], [0, 30], [1, 100]]] # non-preemptive
+    number_of_servers=[ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]])] # non-preemptive
 
 
 Records of Interrupted Services

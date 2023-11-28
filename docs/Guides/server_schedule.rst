@@ -15,12 +15,16 @@ An example cyclic work schedule is shown in the table below:
 
 This schedule is cyclic, therefore after the last shift (30-100), schedule begins again with the shift (0-10).
 The cycle length for this schedule is 100.
-This is defines by a list of lists indicating the number of servers that should be on duty during that shift, and the end date of that shift::
+The schedule itself is defined by a list of lists indicating the number of servers that should be on duty during that shift, and the end date of that shift::
 
     [[2, 10], [0, 30], [1, 100]]
 
 Here we are saying that there will be 2 servers scheduled between times 0 and 10, 0 between 10 and 30, etc.
 This fully defines the cyclic work schedule.
+
+From this we create a schedule object in Ciw::
+
+    ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]])
 
 To tell Ciw to use this schedule for a given node, in the :code:`number_of_servers` keyword we replace an integer with the schedule::
 
@@ -28,7 +32,7 @@ To tell Ciw to use this schedule for a given node, in the :code:`number_of_serve
     >>> N = ciw.create_network(
     ...     arrival_distributions=[ciw.dists.Exponential(rate=5)],
     ...     service_distributions=[ciw.dists.Exponential(rate=10)],
-    ...     number_of_servers=[[[2, 10], [0, 30], [1, 100]]]
+    ...     number_of_servers=[ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]])]
     ... )
 
 Simulating this system, we'll see that no services begin between dates 10 and 30, nor between dates 110 and 130::
@@ -72,7 +76,7 @@ Consider the following example::
     >>> N = ciw.create_network(
     ...     arrival_distributions=[ciw.dists.Deterministic(value=3.0)],
     ...     service_distributions=[ciw.dists.Deterministic(value=5.0)],
-    ...     number_of_servers=[[[1, 4.0], [2, 10.0], [0, 100.0]]]
+    ...     number_of_servers=[ciw.Schedule(schedule=[[1, 4.0], [2, 10.0], [0, 100.0]])]
     ... )
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(20.0)
