@@ -44,13 +44,14 @@ class Schedule:
 
 
 class Slotted(Schedule):
-    def __init__(self, slots, slot_sizes):
+    def __init__(self, slots, slot_sizes, capacitated=False):
         """
         Initialises the instance of the Slotted Schedule object
         """
         self.schedule_type = 'slotted'
         self.slots = slots
         self.slot_sizes = slot_sizes
+        self.capacitated = capacitated
         self.cyclelength = self.slots[-1]
         self.c = 0
 

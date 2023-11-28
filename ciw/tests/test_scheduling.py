@@ -648,3 +648,46 @@ class TestScheduling(unittest.TestCase):
         expected_service_dates = [1.5, 4.4, 4.4, 4.4, 5.9, 8.8, 8.8, 17.6]
         observed_service_dates = [r.service_start_date for r in recs]
         self.assertEqual(observed_service_dates, expected_service_dates)
+
+    def test_slotted_services_capacitated(self):
+        """
+        Tests when the service times of slotted services last longer
+        than the gap between the slots.
+        Two options
+          - capacitated=False : allows `slot_size` to be served, even if previous customers are still in service
+          - capacitated=True  : only allows `slot_size` customers to be served, at a time, so if previous customers are still in service, less than `slot_size` new customers will be served.
+
+        Example:
+          - Arrival times = [0.5, 1.1, 1.5, 1.7, 2.5]
+          - Service times = [0.2, 0.2, 1.2, 0.2, 0.5]
+          - Slot times = [2, 3, 5, 6, ...]
+          - Slot sizes = [4, 1, 4, 1, ...]
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.5, 0.6, 0.4, 0.3, 0.8, float('inf')])],
+            service_distributions=[ciw.dists.Sequential([0.2, 0.2, 1.2, 0.2, 0.5])],
+            number_of_servers=[ciw.Slotted(slots=[2, 3], slot_sizes=[4, 1], capacitated=False)]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(10)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 5)
+        expected_service_dates = [2, 2, 2, 2, 3]
+        observed_service_dates = [r.service_start_date for r in recs]
+        self.assertEqual(observed_service_dates, expected_service_dates)
+
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.5, 0.6, 0.4, 0.3, 0.8, float('inf')])],
+            service_distributions=[ciw.dists.Sequential([0.2, 0.2, 1.2, 0.2, 0.5])],
+            number_of_servers=[ciw.Slotted(slots=[2, 3], slot_sizes=[4, 1], capacitated=True)]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(10)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 5)
+        expected_service_dates = [2, 2, 2, 2, 5]
+        observed_service_dates = [r.service_start_date for r in recs]
+        self.assertEqual(observed_service_dates, expected_service_dates)

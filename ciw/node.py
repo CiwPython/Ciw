@@ -48,6 +48,7 @@ class Node(object):
         self.class_change = node.class_change_matrix
         self.individuals = [[] for _ in range(simulation.number_of_priority_classes)]
         self.number_of_individuals = 0
+        self.number_in_service = 0
         self.id_number = id_
         self.baulking_functions = {
             clss: self.simulation.network.customer_classes[clss].baulking_functions[id_ - 1]
@@ -141,6 +142,7 @@ class Node(object):
             next_individual.service_start_date = self.get_now()
             next_individual.service_time = self.get_service_time(next_individual)
             next_individual.service_end_date = self.increment_time(self.get_now(), next_individual.service_time)
+            self.number_in_service += 1
             self.reset_class_change(next_individual)
             if not isinf(self.c):
                 free_server.next_end_service_date = next_individual.service_end_date
@@ -162,6 +164,7 @@ class Node(object):
         ind.service_start_date = self.get_now()
         ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
         ind.interrupted = False
+        self.number_in_service += 1
         srvr.next_end_service_date = ind.service_end_date
         self.interrupted_individuals.remove(ind)
         self.number_interrupted_individuals -= 1
@@ -188,6 +191,7 @@ class Node(object):
                     else:
                         self.give_service_time_after_preemption(ind)
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
+                    self.number_in_service += 1
                     self.reset_class_change(ind)
                     srvr.next_end_service_date = ind.service_end_date
 
@@ -215,6 +219,7 @@ class Node(object):
                     else:
                         self.give_service_time_after_preemption(ind)
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
+                    self.number_in_service += 1
                     self.reset_class_change(ind)
                     newly_free_server.next_end_service_date = ind.service_end_date
 
@@ -288,13 +293,17 @@ class Node(object):
         """
         Allows only a set amount of customers to have service at the exacxt time the method is called.
         """
-        number_of_slotted_services = min(self.schedule.slot_size, len(self.all_individuals))
+        if self.schedule.capacitated:
+            number_of_slotted_services = min(max(self.schedule.slot_size - self.number_in_service, 0), len(self.all_individuals))
+        else:
+            number_of_slotted_services = min(self.schedule.slot_size, len(self.all_individuals))
         for i in range(number_of_slotted_services):
             ind = self.choose_next_customer()
             ind.service_start_date = self.get_now()
             ind.service_time = self.get_service_time(ind)
             ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
             ind.server = True
+            self.number_in_service += 1
             self.reset_class_change(ind)
         self.schedule.get_next_slot()
 
@@ -539,6 +548,7 @@ class Node(object):
         """
         self.individuals[next_individual.prev_priority_class].remove(next_individual)
         self.number_of_individuals -= 1
+        self.number_in_service -= 1
         next_individual.queue_size_at_departure = self.number_of_individuals
         next_individual.exit_date = self.get_now()
         self.write_individual_record(next_individual)

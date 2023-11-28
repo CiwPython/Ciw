@@ -8,19 +8,19 @@ Slotted services are a schedule services that happen at specific times, and spec
 
 They are defined similarly to server schedules. Consider the slotted schedule below:
 
-    +----------------+------+------+------+
-    |   Slot Times   |  1.5 |  2.3 |  2.8 |
-    +----------------+------+------+------+
-    |   Slot Sizes   |    2 |    5 |    3 |
-    +----------------+------+------+------+
+    +----------------------------+------+------+------+
+    |   Slot Times :math:`t`     |  1.5 |  2.3 |  2.8 |
+    +----------------------------+------+------+------+
+    |   Slot Sizes :math:`s_t`   |    2 |    5 |    3 |
+    +----------------------------+------+------+------+
 
 Here 2 customers can be served at time 1.5, 5 can be served at time 2.3, and 3 can be served at time 3. Between these times no services can occur. If customers arrive between two slots, they wait for the next slot. Like server schedules, these repeat, e.g.:
 
-    +----------------+------+------+------+------+------+------+------+------+
-    |   Slot Times   |  1.5 |  2.3 |  2.8 |  4.3 |  5.1 |  5.6 |  7.1 |  ... |
-    +----------------+------+------+------+------+------+------+------+------+
-    |   Slot Sizes   |    2 |    5 |    3 |    2 |    5 |    3 |    2 |  ... |
-    +----------------+------+------+------+------+------+------+------+------+
+    +----------------------------+------+------+------+------+------+------+------+------+
+    |   Slot Times :math:`t`     |  1.5 |  2.3 |  2.8 |  4.3 |  5.1 |  5.6 |  7.1 |  ... |
+    +----------------------------+------+------+------+------+------+------+------+------+
+    |   Slot Sizes :math:`s_t`   |    2 |    5 |    3 |    2 |    5 |    3 |    2 |  ... |
+    +----------------------------+------+------+------+------+------+------+------+------+
 
 In Ciw, they are defined with a :code:`ciw.Slotted` object, like so::
 
@@ -45,3 +45,27 @@ Simulating this system, we'll see that services only begin between during the sl
     
     >>> set([r.service_start_date for r in recs])
     {1.5, 2.3, 2.8, 4.3, 5.1, 5.6}
+
+
+
+Capacitated & Non-capacitated Slots
+-----------------------------------
+
+Slots can be capacitated or non-capacitated. This effects their behaviour when service times last longer than the gaps between slots:
+
+  +  **Capacitated**: At each slot :math:`t`, only :math:`s_t` customers are allowed in service. That means that if any customers are still being served at time :math:`t`, then less than :math:`s_t` customers will begin service, ensuring only :math:`s_t` customers are in service at a time.
+  + **Non-capacitated**: At each time slot :math:`t`, :math:`s_t` customers *begin* service, regardless of any pervious customers still being in service.
+
+This is shown visually below:
+
+.. image:: ../_static/slotted.svg
+   :scale: 20 %
+   :alt: Comparing capacitated and non-capacitated slotted schedules.
+   :align: center
+
+In order to specify capacitated or non-capacitated slotted schedules, use the keyword :code:`capacitated` when creating the :code:`ciw.Slotted` object. Non-capacitated is the default::
+
+    ciw.Slotted(slots=[1.5, 2.3, 2.8], slot_sizes=[2, 5, 3])  # Non-capacitated
+    ciw.Slotted(slots=[1.5, 2.3, 2.8], slot_sizes=[2, 5, 3], capacitated=False)  # Non-capacitated
+    ciw.Slotted(slots=[1.5, 2.3, 2.8], slot_sizes=[2, 5, 3], capacitated=True)  # Capacitated
+
