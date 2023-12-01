@@ -2,6 +2,7 @@ import unittest
 import ciw
 from decimal import Decimal
 from collections import Counter
+import math
 
 N_schedule = ciw.create_network(
     arrival_distributions={
@@ -691,3 +692,151 @@ class TestScheduling(unittest.TestCase):
         expected_service_dates = [2, 2, 2, 2, 5]
         observed_service_dates = [r.service_start_date for r in recs]
         self.assertEqual(observed_service_dates, expected_service_dates)
+
+    def test_invalid_preemption_options(self):
+        self.assertRaises(ValueError, lambda: ciw.Schedule(schedule=[[2, 10], [1, 12]], preemption='something'))
+        self.assertRaises(ValueError, lambda: ciw.Slotted(slots=[2, 3], slot_sizes=[4, 1], capacitated=False, preemption='continue'))
+        self.assertRaises(ValueError, lambda: ciw.Slotted(slots=[2, 3], slot_sizes=[4, 1], capacitated=True, preemption='something'))
+
+    def test_slotted_services_capacitated_preemption(self):
+        """
+        Tests when the service times of slotted services last longer
+        than the gap between the slots, and jobs are pre-empted
+
+        Example:
+          - Arrival times = [0.3, 0.5]
+          - Service times = [10, 10]
+          - Slot times = [4, 11, 15, 27, ...]
+          - Slot sizes = [3, 1, 3, 1, ...]
+        """
+        # No preemption
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, float('inf')])],
+            service_distributions=[ciw.dists.Sequential([10, 10, 1])],
+            number_of_servers=[ciw.Slotted(slots=[4, 11], slot_sizes=[3, 1], capacitated=True)]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(50)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 2)
+
+        self.assertEqual(recs[0].id_number, 1)
+        self.assertEqual(recs[0].arrival_date, 0.3)
+        self.assertEqual(recs[0].service_start_date, 4)
+        self.assertEqual(recs[0].service_end_date, 14)
+        self.assertEqual(recs[0].exit_date, 14)
+        self.assertEqual(recs[0].record_type, 'service')
+
+        self.assertEqual(recs[1].id_number, 2)
+        self.assertEqual(recs[1].arrival_date, 0.5)
+        self.assertEqual(recs[1].service_start_date, 4)
+        self.assertEqual(recs[1].service_end_date, 14)
+        self.assertEqual(recs[1].exit_date, 14)
+        self.assertEqual(recs[1].record_type, 'service')
+
+        # preemption='continue'
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, float('inf')])],
+            service_distributions=[ciw.dists.Sequential([10, 10, 1])],
+            number_of_servers=[ciw.Slotted(slots=[4, 11], slot_sizes=[3, 1], capacitated=True, preemption='continue')]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(50)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 2)
+
+        self.assertEqual(recs[0].id_number, 1)
+        self.assertEqual(recs[0].arrival_date, 0.3)
+        self.assertEqual(recs[0].service_start_date, 4)
+        self.assertEqual(recs[0].service_end_date, 14)
+        self.assertEqual(recs[0].exit_date, 14)
+        self.assertEqual(recs[0].record_type, 'service')
+
+        self.assertEqual(recs[1].id_number, 2)
+        self.assertEqual(recs[1].arrival_date, 0.5)
+        self.assertEqual(recs[1].service_start_date, 4)
+        self.assertEqual(recs[1].service_time, 10)
+        self.assertTrue(math.isnan(recs[1].service_end_date))
+        self.assertEqual(recs[1].exit_date, 11)
+        self.assertEqual(recs[1].record_type, 'interrupted service')
+
+        self.assertEqual(recs[2].id_number, 2)
+        self.assertEqual(recs[2].arrival_date, 0.5)
+        self.assertEqual(recs[2].service_start_date, 15)
+        self.assertEqual(recs[2].service_time, 3)
+        self.assertEqual(recs[2].service_end_date, 18)
+        self.assertEqual(recs[2].exit_date, 18)
+        self.assertEqual(recs[2].record_type, 'service')
+
+        # preemption='resample'
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, float('inf')])],
+            service_distributions=[ciw.dists.Sequential([10, 10, 1])],
+            number_of_servers=[ciw.Slotted(slots=[4, 11], slot_sizes=[3, 1], capacitated=True, preemption='resample')]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(50)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 2)
+
+        self.assertEqual(recs[0].id_number, 1)
+        self.assertEqual(recs[0].arrival_date, 0.3)
+        self.assertEqual(recs[0].service_start_date, 4)
+        self.assertEqual(recs[0].service_end_date, 14)
+        self.assertEqual(recs[0].exit_date, 14)
+        self.assertEqual(recs[0].record_type, 'service')
+
+        self.assertEqual(recs[1].id_number, 2)
+        self.assertEqual(recs[1].arrival_date, 0.5)
+        self.assertEqual(recs[1].service_start_date, 4)
+        self.assertEqual(recs[1].service_time, 10)
+        self.assertTrue(math.isnan(recs[1].service_end_date))
+        self.assertEqual(recs[1].exit_date, 11)
+        self.assertEqual(recs[1].record_type, 'interrupted service')
+
+        self.assertEqual(recs[2].id_number, 2)
+        self.assertEqual(recs[2].arrival_date, 0.5)
+        self.assertEqual(recs[2].service_start_date, 15)
+        self.assertEqual(recs[2].service_time, 1)
+        self.assertEqual(recs[2].service_end_date, 16)
+        self.assertEqual(recs[2].exit_date, 16)
+        self.assertEqual(recs[2].record_type, 'service')
+
+        # preemption='restart'
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, float('inf')])],
+            service_distributions=[ciw.dists.Sequential([10, 10, 1])],
+            number_of_servers=[ciw.Slotted(slots=[4, 11], slot_sizes=[3, 1], capacitated=True, preemption='restart')]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(50)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 2)
+
+        self.assertEqual(recs[0].id_number, 1)
+        self.assertEqual(recs[0].arrival_date, 0.3)
+        self.assertEqual(recs[0].service_start_date, 4)
+        self.assertEqual(recs[0].service_end_date, 14)
+        self.assertEqual(recs[0].exit_date, 14)
+        self.assertEqual(recs[0].record_type, 'service')
+
+        self.assertEqual(recs[1].id_number, 2)
+        self.assertEqual(recs[1].arrival_date, 0.5)
+        self.assertEqual(recs[1].service_start_date, 4)
+        self.assertEqual(recs[1].service_time, 10)
+        self.assertTrue(math.isnan(recs[1].service_end_date))
+        self.assertEqual(recs[1].exit_date, 11)
+        self.assertEqual(recs[1].record_type, 'interrupted service')
+
+        self.assertEqual(recs[2].id_number, 2)
+        self.assertEqual(recs[2].arrival_date, 0.5)
+        self.assertEqual(recs[2].service_start_date, 15)
+        self.assertEqual(recs[2].service_time, 10)
+        self.assertEqual(recs[2].service_end_date, 25)
+        self.assertEqual(recs[2].exit_date, 25)
+        self.assertEqual(recs[2].record_type, 'service')
+

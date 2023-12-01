@@ -173,7 +173,7 @@ class Node(object):
         """
         If there are free servers after a shift change:
           - restart interrupted customers' services
-          - begin service of any waiting cutsomers
+          - begin service of any waiting customers
             - give a start date and end date
             - attach servers to individual
         """
@@ -278,7 +278,7 @@ class Node(object):
 
     def change_shift(self):
         """
-        Implment a server shift change:
+        Implement a server shift change:
          - adds / deletes servers, or indicates which servers should go off duty
          - begin any new services if free servers
         """
@@ -291,16 +291,34 @@ class Node(object):
 
     def slotted_service(self):
         """
-        Allows only a set amount of customers to have service at the exacxt time the method is called.
+        Allows only a set amount of customers to have service at the exact time the method is called.
         """
         if self.schedule.capacitated:
-            number_of_slotted_services = min(max(self.schedule.slot_size - self.number_in_service, 0), len(self.all_individuals))
+            if self.schedule.preemption is not False:
+                if self.schedule.slot_size < self.number_in_service:
+                    number_of_slotted_services = 0
+                    number_to_interrupt = self.number_in_service - self.schedule.slot_size
+                    individuals_to_interrupt = sorted([ind for ind in self.all_individuals if ind.service_start_date is not False], key=lambda x: (x.priority_class, x.arrival_date))
+                    for i in range(number_to_interrupt):
+                        self.interrupt_service(individuals_to_interrupt[-i-1])
+                else:
+                    number_of_slotted_services = min(self.schedule.slot_size - self.number_in_service, len(self.all_individuals))
+            else:
+                number_of_slotted_services = min(max(self.schedule.slot_size - self.number_in_service, 0), len(self.all_individuals))
         else:
             number_of_slotted_services = min(self.schedule.slot_size, len(self.all_individuals))
         for i in range(number_of_slotted_services):
-            ind = self.choose_next_customer()
+            if self.number_interrupted_individuals > 0:
+                ind = self.interrupted_individuals[0]
+                self.interrupted_individuals.remove(ind)
+                self.number_interrupted_individuals -= 1
+            else:
+                ind = self.choose_next_customer()
             ind.service_start_date = self.get_now()
-            ind.service_time = self.get_service_time(ind)
+            if ind.interrupted:
+                self.give_service_time_after_preemption(ind)
+            else:
+                ind.service_time = self.get_service_time(ind)
             ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
             ind.server = True
             self.number_in_service += 1
@@ -653,19 +671,33 @@ class Node(object):
             for s in self.servers:
                 s.shift_end = self.next_event_date
                 if s.cust is not False:
-                    self.interrupted_individuals.append(s.cust)
-                    s.cust.interrupted = True
-                    self.number_interrupted_individuals += 1
-                    s.cust.original_service_time = s.cust.service_time
-                    self.write_interruption_record(s.cust)
-                    s.cust.original_service_start_date = s.cust.service_start_date
-                    s.cust.service_start_date = False
-                    s.cust.time_left = s.cust.service_end_date - self.get_now()
-                    s.cust.service_time = self.schedule.preemption
-                    s.cust.service_end_date = False
-            self.interrupted_individuals.sort(key=lambda x: (x.priority_class, x.arrival_date))
+                    self.interrupt_service(s.cust)
+            self.sort_interrupted_individuals()
         for obs in to_delete:
             self.kill_server(obs)
+
+    def interrupt_service(self, individual):
+        """
+        Interrupts the service of an individual and places them in an
+        interrupted queue, and writes an interruption record for them.
+        """
+        self.interrupted_individuals.append(individual)
+        individual.interrupted = True
+        self.number_interrupted_individuals += 1
+        individual.original_service_time = individual.service_time
+        self.write_interruption_record(individual)
+        individual.original_service_start_date = individual.service_start_date
+        individual.service_start_date = False
+        individual.time_left = individual.service_end_date - self.get_now()
+        individual.service_time = self.schedule.preemption
+        individual.service_end_date = False
+        self.number_in_service -= 1
+
+    def sort_interrupted_individuals(self):
+        """
+        Sorts the list of interrupted individuals by priority class and arrival date.
+        """
+        self.interrupted_individuals.sort(key=lambda x: (x.priority_class, x.arrival_date))
 
     def update_next_event_date(self):
         """
@@ -785,6 +817,11 @@ class Node(object):
         """
         Write a data record for an individual when being interrupted.
         """
+        if self.slotted:
+            server_id = False
+        else:
+            server_id = individual.server.id_number
+
         record = DataRecord(
             id_number=individual.id_number,
             customer_class=individual.previous_class,
@@ -800,7 +837,7 @@ class Node(object):
             destination=nan,
             queue_size_at_arrival=individual.queue_size_at_arrival,
             queue_size_at_departure=individual.queue_size_at_departure,
-            server_id=individual.server.id_number,
+            server_id=server_id,
             record_type="interrupted service",
         )
         individual.data_records.append(record)

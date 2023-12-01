@@ -7,6 +7,8 @@ class Schedule:
         """
         Initialises the instance of the Schedule object
         """
+        if preemption not in [False, 'continue', 'restart', 'resample']:
+            raise ValueError("Pre-emption options should be either 'continue', 'restart', 'resample', or False.")
         self.schedule_type = 'schedule'
         self.schedule_dates = [shift[1] for shift in schedule]
         self.schedule_servers = [shift[0] for shift in schedule]
@@ -44,14 +46,20 @@ class Schedule:
 
 
 class Slotted(Schedule):
-    def __init__(self, slots, slot_sizes, capacitated=False):
+    def __init__(self, slots, slot_sizes, capacitated=False, preemption=False):
         """
         Initialises the instance of the Slotted Schedule object
         """
+        if not capacitated:
+            if preemption is not False:
+                raise ValueError("Pre-emption options not availale for non-capacitated slots.")
+        if preemption not in [False, 'continue', 'restart', 'resample']:
+            raise ValueError("Pre-emption options should be either 'continue', 'restart', 'resample', or False.")
         self.schedule_type = 'slotted'
         self.slots = slots
         self.slot_sizes = slot_sizes
         self.capacitated = capacitated
+        self.preemption = preemption
         self.cyclelength = self.slots[-1]
         self.c = 0
 
