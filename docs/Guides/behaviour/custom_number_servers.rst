@@ -43,10 +43,10 @@ First create the :code:`AdaptiveNode` that inherits from the :code:`ciw.Node` cl
     >>> class AdaptiveNode(ciw.Node):
     ...     def have_event(self):
     ...         if (len(self.all_individuals) > 10) and (len(self.servers) == 1):
-    ...             print(f'Adding servers at {self.get_now():.3f}')
+    ...             print(f'Adding servers at {self.now():.3f}')
     ...             self.add_new_servers(2)
     ...         elif (len(self.all_individuals) < 4) and (len([s for s in self.servers if not s.offduty]) == 3):
-    ...             print(f'Removing servers at {self.get_now():.3f}')
+    ...             print(f'Removing servers at {self.now():.3f}')
     ...             self.take_servers_off_duty()
     ...             self.add_new_servers(1)
     ...         super().have_event()

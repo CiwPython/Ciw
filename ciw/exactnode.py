@@ -35,7 +35,7 @@ class ExactNode(Node):
             )
         )
 
-    def get_now(self):
+    def now(self):
         """
         Gets the current time
         """

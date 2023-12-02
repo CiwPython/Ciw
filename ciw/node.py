@@ -128,7 +128,7 @@ class Node(object):
             - Get service start time, service time, service end time
             - Update the server's end date (only when servers are not infinite)
         """
-        next_individual.arrival_date = self.get_now()
+        next_individual.arrival_date = self.now()
         if self.reneging is True:
             next_individual.reneging_date = self.get_reneging_date(next_individual)
         self.decide_class_change(next_individual)
@@ -139,9 +139,9 @@ class Node(object):
         if free_server is not None or isinf(self.c):
             if isinf(self.c) is False:
                 self.attach_server(free_server, next_individual)
-            next_individual.service_start_date = self.get_now()
+            next_individual.service_start_date = self.now()
             next_individual.service_time = self.get_service_time(next_individual)
-            next_individual.service_end_date = self.increment_time(self.get_now(), next_individual.service_time)
+            next_individual.service_end_date = self.increment_time(self.now(), next_individual.service_time)
             self.number_in_service += 1
             self.reset_class_change(next_individual)
             if not isinf(self.c):
@@ -161,8 +161,8 @@ class Node(object):
             ind.is_blocked = False
         self.attach_server(srvr, ind)
         self.give_service_time_after_preemption(ind)
-        ind.service_start_date = self.get_now()
-        ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
+        ind.service_start_date = self.now()
+        ind.service_end_date = self.increment_time(self.now(), ind.service_time)
         ind.interrupted = False
         self.number_in_service += 1
         srvr.next_end_service_date = ind.service_end_date
@@ -185,11 +185,8 @@ class Node(object):
                 ind = self.choose_next_customer()
                 if ind is not None:
                     self.attach_server(srvr, ind)
-                    ind.service_start_date = self.get_now()
-                    if ind.service_time is False:
-                        ind.service_time = self.get_service_time(ind)
-                    else:
-                        self.give_service_time_after_preemption(ind)
+                    ind.service_start_date = self.now()
+                    self.give_individual_a_service_time(ind)
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
                     self.number_in_service += 1
                     self.reset_class_change(ind)
@@ -213,11 +210,8 @@ class Node(object):
                 ind = self.choose_next_customer()
                 if ind is not None:
                     self.attach_server(newly_free_server, ind)
-                    ind.service_start_date = self.get_now()
-                    if ind.service_time is False:
-                        ind.service_time = self.get_service_time(ind)
-                    else:
-                        self.give_service_time_after_preemption(ind)
+                    ind.service_start_date = self.now()
+                    self.give_individual_a_service_time(ind)
                     ind.service_end_date = self.increment_time(ind.service_start_date, ind.service_time)
                     self.number_in_service += 1
                     self.reset_class_change(ind)
@@ -289,24 +283,37 @@ class Node(object):
         self.add_new_servers(self.schedule.c)
         self.begin_service_if_possible_change_shift()
 
-    def slotted_service(self):
+    def find_number_of_slotted_services(self):
         """
-        Allows only a set amount of customers to have service at the exact time the method is called.
+        Finds the number of slotted services to start in this slot
         """
         if self.schedule.capacitated:
-            if self.schedule.preemption is not False:
-                if self.schedule.slot_size < self.number_in_service:
-                    number_of_slotted_services = 0
-                    number_to_interrupt = self.number_in_service - self.schedule.slot_size
-                    individuals_to_interrupt = sorted([ind for ind in self.all_individuals if ind.service_start_date is not False], key=lambda x: (x.priority_class, x.arrival_date))
-                    for i in range(number_to_interrupt):
-                        self.interrupt_service(individuals_to_interrupt[-i-1])
-                else:
-                    number_of_slotted_services = min(self.schedule.slot_size - self.number_in_service, len(self.all_individuals))
-            else:
-                number_of_slotted_services = min(max(self.schedule.slot_size - self.number_in_service, 0), len(self.all_individuals))
-        else:
-            number_of_slotted_services = min(self.schedule.slot_size, len(self.all_individuals))
+            return min(max(self.schedule.slot_size - self.number_in_service, 0), len(self.all_individuals))
+        return min(self.schedule.slot_size, len(self.all_individuals))
+
+    def interrupt_slotted_services(self):
+        """
+        Finds the amount of customers that need their slotted services interrupted
+        due to not enough capacity at the current slot, and interrupt their services
+        """
+        if self.schedule.capacitated and self.schedule.preemption is not False:
+            number_to_interrupt = self.number_in_service - self.schedule.slot_size
+            if number_to_interrupt > 0:
+                inds_to_interrupt = sorted(
+                    [ind for ind in self.all_individuals if ind.service_start_date is not False],
+                    key=lambda x: (x.priority_class, x.arrival_date),
+                    reverse=True
+                )[:number_to_interrupt]
+                for ind in inds_to_interrupt:
+                    self.interrupt_service(ind)
+
+    def slotted_service(self):
+        """
+        Allows only a set amount of customers to have service at the exact
+        time the method is called.
+        """
+        number_of_slotted_services = self.find_number_of_slotted_services()
+        self.interrupt_slotted_services()
         for i in range(number_of_slotted_services):
             if self.number_interrupted_individuals > 0:
                 ind = self.interrupted_individuals[0]
@@ -314,12 +321,9 @@ class Node(object):
                 self.number_interrupted_individuals -= 1
             else:
                 ind = self.choose_next_customer()
-            ind.service_start_date = self.get_now()
-            if ind.interrupted:
-                self.give_service_time_after_preemption(ind)
-            else:
-                ind.service_time = self.get_service_time(ind)
-            ind.service_end_date = self.increment_time(self.get_now(), ind.service_time)
+            ind.service_start_date = self.now()
+            self.give_individual_a_service_time(ind)
+            ind.service_end_date = self.increment_time(self.now(), ind.service_time)
             ind.server = True
             self.number_in_service += 1
             self.reset_class_change(ind)
@@ -354,7 +358,7 @@ class Node(object):
                         next_time = t
                         next_class = clss
             next_individual.next_class = next_class
-            next_individual.class_change_date = self.increment_time(self.get_now(), next_time)
+            next_individual.class_change_date = self.increment_time(self.now(), next_time)
             self.find_next_class_change()
 
     def decide_preempt(self, individual):
@@ -377,14 +381,14 @@ class Node(object):
 
     def detatch_server(self, server, individual):
         """
-        Detatches a server from an individual, and vice versa.
+        Detaches a server from an individual, and vice versa.
         """
         self.simulation.deadlock_detector.action_at_detatch_server(server)
         server.cust = False
         server.busy = False
         individual.server = False
         server.busy_time = self.increment_time(server.busy_time, individual.exit_date - individual.service_start_date)
-        server.total_time = self.increment_time(self.get_now(), -server.start_date)
+        server.total_time = self.increment_time(self.now(), -server.start_date)
         if server.offduty:
             self.kill_server(server)
 
@@ -459,11 +463,22 @@ class Node(object):
         else:
             self.block_individual(next_individual, next_node)
 
-    def get_now(self):
+    def now(self):
         """
         Gets the current time.
         """
         return self.simulation.current_time
+
+    def give_individual_a_service_time(self, individual):
+        """
+        Gives a service time to an individual, either a new
+        service time, or after pre-emption.
+        """
+        if individual.service_time is False:
+            individual.service_time = self.get_service_time(individual)
+        else:
+            self.give_service_time_after_preemption(individual)
+
 
     def give_service_time_after_preemption(self, individual):
         """
@@ -511,7 +526,7 @@ class Node(object):
     def next_node(self, ind):
         """
         Finds the next node according the routing method:
-          - if not process-based then sample from transtition matrix
+          - if not process-based then sample from transition matrix
           - if process-based then take the next value from the predefined route,
             removing the current node from the route
         """
@@ -539,15 +554,15 @@ class Node(object):
         individual_to_preempt.original_service_time = individual_to_preempt.service_time
         self.write_interruption_record(individual_to_preempt)
         individual_to_preempt.service_start_date = False
-        individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.get_now()
+        individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.now()
         individual_to_preempt.service_time = self.priority_preempt
         individual_to_preempt.service_end_date = False
         self.detatch_server(server, individual_to_preempt)
         self.decide_class_change(individual_to_preempt)
         self.attach_server(server, next_individual)
-        next_individual.service_start_date = self.get_now()
+        next_individual.service_start_date = self.now()
         next_individual.service_time = self.get_service_time(next_individual)
-        next_individual.service_end_date = self.increment_time(self.get_now(), next_individual.service_time)
+        next_individual.service_end_date = self.increment_time(self.now(), next_individual.service_time)
         self.reset_class_change(next_individual)
         server.next_end_service_date = next_individual.service_end_date
 
@@ -568,7 +583,7 @@ class Node(object):
         self.number_of_individuals -= 1
         self.number_in_service -= 1
         next_individual.queue_size_at_departure = self.number_of_individuals
-        next_individual.exit_date = self.get_now()
+        next_individual.exit_date = self.now()
         self.write_individual_record(next_individual)
         newly_free_server = None
         if not isinf(self.c) and not self.slotted:
@@ -632,7 +647,7 @@ class Node(object):
         self.individuals[reneging_individual.prev_priority_class].remove(reneging_individual)
         self.number_of_individuals -= 1
         reneging_individual.queue_size_at_departure = self.number_of_individuals
-        reneging_individual.exit_date = self.get_now()
+        reneging_individual.exit_date = self.now()
         self.write_reneging_record(reneging_individual)
         self.reset_individual_attributes(reneging_individual)
         self.simulation.statetracker.change_state_renege(self, next_node, reneging_individual, False)
@@ -646,13 +661,13 @@ class Node(object):
         dist = self.simulation.network.customer_classes[ind.customer_class].reneging_time_distributions[self.id_number - 1]
         if dist is None:
             return float("inf")
-        return self.simulation.current_time + dist.sample(t=self.simulation.current_time, ind=ind)
+        return self.now() + dist.sample(t=self.now(), ind=ind)
 
     def get_service_time(self, ind):
         """
         Returns a service time for the given customer class.
         """
-        return self.simulation.service_times[self.id_number][ind.customer_class].sample(t=self.simulation.current_time, ind=ind)
+        return self.simulation.service_times[self.id_number][ind.customer_class].sample(t=self.now(), ind=ind)
 
     def take_servers_off_duty(self, preemption=False):
         """
@@ -688,7 +703,7 @@ class Node(object):
         self.write_interruption_record(individual)
         individual.original_service_start_date = individual.service_start_date
         individual.service_start_date = False
-        individual.time_left = individual.service_end_date - self.get_now()
+        individual.time_left = individual.service_end_date - self.now()
         individual.service_time = self.schedule.preemption
         individual.service_end_date = False
         self.number_in_service -= 1
@@ -713,7 +728,7 @@ class Node(object):
         if not isinf(self.c):
             if self.slotted:
                 for ind in self.all_individuals:
-                    if not ind.is_blocked and ind.service_end_date >= self.get_now():
+                    if not ind.is_blocked and ind.service_end_date >= self.now():
                         if ind.service_end_date < next_end_service[1]:
                             next_end_service = ([ind], ind.service_end_date, 'end_service')
                     possible_next_events['end_service'] = next_end_service
@@ -738,7 +753,7 @@ class Node(object):
                     possible_next_events['slotted_service'] = (None, self.schedule.next_slot_date)
         else:
             for ind in self.all_individuals:
-                if not ind.is_blocked and ind.service_end_date >= self.get_now():
+                if not ind.is_blocked and ind.service_end_date >= self.now():
                     if ind.service_end_date < next_end_service[1]:
                         next_end_service = ([ind], ind.service_end_date, 'end_service')
                 possible_next_events['end_service'] = next_end_service
@@ -833,7 +848,7 @@ class Node(object):
             service_time=individual.original_service_time,
             service_end_date=nan,
             time_blocked=nan,
-            exit_date=self.get_now(),
+            exit_date=self.now(),
             destination=nan,
             queue_size_at_arrival=individual.queue_size_at_arrival,
             queue_size_at_departure=individual.queue_size_at_departure,
@@ -875,13 +890,13 @@ class Node(object):
             customer_class=individual.previous_class,
             original_customer_class=individual.original_class,
             node=self.id_number,
-            arrival_date=self.get_now(),
+            arrival_date=self.now(),
             waiting_time=nan,
             service_start_date=nan,
             service_time=nan,
             service_end_date=nan,
             time_blocked=nan,
-            exit_date=self.get_now(),
+            exit_date=self.now(),
             destination=nan,
             queue_size_at_arrival=self.number_of_individuals,
             queue_size_at_departure=nan,
