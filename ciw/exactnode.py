@@ -10,6 +10,13 @@ class ExactNode(Node):
     precise version of addition to fix discrepencies
     with floating point numbers.
     """
+    
+    @property
+    def now(self):
+        """
+        Gets the current time
+        """
+        return Decimal(self.simulation.current_time)
 
     def create_starting_servers(self):
         """
@@ -34,12 +41,6 @@ class ExactNode(Node):
                 ]._sample(self.simulation.current_time, ind=ind)
             )
         )
-
-    def now(self):
-        """
-        Gets the current time
-        """
-        return Decimal(self.simulation.current_time)
 
 
 class ExactArrivalNode(ArrivalNode):

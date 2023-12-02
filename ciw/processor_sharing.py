@@ -56,11 +56,11 @@ class PSNode(Node):
           - mark individual as 'with server'
           - update all customers' service times
         """
-        next_individual.arrival_date = self.now()
+        next_individual.arrival_date = self.now
         next_individual.with_server = False
         if self.number_of_individuals <= self.ps_capacity:
-            next_individual.service_start_date = self.now()
-            next_individual.date_last_update = self.now()
+            next_individual.service_start_date = self.now
+            next_individual.date_last_update = self.now
             next_individual.service_time = self.get_service_time(next_individual)
             next_individual.time_left = next_individual.service_time
             next_individual.with_server = True
@@ -77,8 +77,8 @@ class PSNode(Node):
         """
         if self.number_of_individuals >= self.ps_capacity:
             ind = self.all_individuals[self.ps_capacity - 1]
-            ind.service_start_date = self.now()
-            ind.date_last_update = self.now()
+            ind.service_start_date = self.now
+            ind.date_last_update = self.now
             ind.service_time = self.get_service_time(ind)
             ind.time_left = ind.service_time
             ind.with_server = True
