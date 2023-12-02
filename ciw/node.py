@@ -20,6 +20,7 @@ class Node(object):
         node = self.simulation.network.service_centres[id_ - 1]
         self.server_priority_function = node.server_priority_function
         self.service_discipline = node.service_discipline
+        self.next_event_type = None
         if isinstance(node.number_of_servers, Schedule):
             self.schedule = node.number_of_servers
             self.schedule.initialise()
@@ -67,7 +68,6 @@ class Node(object):
         self.all_servers_total = []
         self.all_servers_busy = []
         self.reneging = node.reneging
-        self.next_renege_date = float("Inf")
         self.dynamic_classes = node.class_change_time
         self.next_class_change_date = float("Inf")
         self.next_individual = None
@@ -715,6 +715,59 @@ class Node(object):
         """
         self.interrupted_individuals.sort(key=lambda x: (x.priority_class, x.arrival_date))
 
+    def update_next_end_service_without_server(self):
+        """
+        Updates the next end of a slotted service in the `possible_next_events` dictionary.
+        """
+        if self.slotted or isinf(self.c):
+            next_end_service_date = float("Inf")
+            for ind in self.all_individuals:
+                if not ind.is_blocked and ind.service_end_date >= self.now:
+                    if ind.service_end_date < next_end_service_date:
+                        self.possible_next_events['end_service'] = ([ind], ind.service_end_date)
+                        next_end_service_date = ind.service_end_date
+
+    def update_next_end_service_with_server(self):
+        """
+        Updates the next end service with a server in the `possible_next_events` dictionary.
+        """
+        if not self.slotted and not isinf(self.c):
+            next_end_service_date = float("Inf")
+            for s in self.servers:
+                if s.next_end_service_date < next_end_service_date:
+                    self.possible_next_events['end_service'] = ([s.cust], s.next_end_service_date)
+                    next_end_service_date = s.next_end_service_date
+                elif (s.next_end_service_date == next_end_service_date) and (not isinf(next_end_service_date)):
+                    self.possible_next_events['end_service'][0].append(s.cust)
+
+    def update_next_renege_time(self):
+        """
+        Updates the next renege time in the `possible_next_events` dictionary.
+        """
+        if not isinf(self.c) and self.reneging is True:
+            next_renege_date = float('Inf')
+            for ind in self.all_individuals:
+                if (ind.reneging_date < next_renege_date) and not ind.server:
+                    self.possible_next_events['renege'] = (ind, ind.reneging_date)
+                    next_renege_date = ind.reneging_date
+
+    def update_next_class_change_while_waiting(self):
+        """
+        Updates the next time to change a customer's class while waiting in the `possible_next_events` dictionary.
+        """
+        if self.dynamic_classes is True and not isinf(self.c):
+            self.possible_next_events['class_change'] = (self.next_class_change_ind, self.next_class_change_date)
+
+    def update_next_shift_change_or_slot_time(self):
+        """
+        Updates the `possible_next_events` dictionary with the time of the next shift change or the next slotted service time.
+        """
+        if self.schedule is not None:
+            if self.schedule.schedule_type == 'schedule':
+                self.possible_next_events['shift_change'] = (None, self.next_shift_change)
+            if self.schedule.schedule_type == 'slotted':
+                self.possible_next_events['slotted_service'] = (None, self.schedule.next_slot_date)
+
     def update_next_event_date(self):
         """
         Finds the time of the next event at this node:
@@ -723,51 +776,23 @@ class Node(object):
           - otherwise return minimum of next shift change, and time for
             next individual (who isn't blocked) to end service, or Inf
         """
-        next_end_service = ([None], float("Inf"), 'end_service')
-        next_renege = (None, float("Inf"), 'renege')
-        possible_next_events = {}
-        if not isinf(self.c):
-            if self.slotted:
-                for ind in self.all_individuals:
-                    if not ind.is_blocked and ind.service_end_date >= self.now:
-                        if ind.service_end_date < next_end_service[1]:
-                            next_end_service = ([ind], ind.service_end_date, 'end_service')
-                    possible_next_events['end_service'] = next_end_service
-            for s in self.servers:
-                if s.next_end_service_date < next_end_service[1]:
-                    next_end_service = ([s.cust], s.next_end_service_date)
-                elif s.next_end_service_date == next_end_service[1]:
-                    next_end_service[0].append(s.cust)
-            possible_next_events['end_service'] = next_end_service
-            if self.reneging is True:
-                for ind in self.all_individuals:
-                    if (ind.reneging_date < next_renege[1]) and not ind.server:
-                        next_renege = (ind, ind.reneging_date)
-                self.next_renege_date = next_renege[1]
-                possible_next_events['renege'] = next_renege
-            if self.dynamic_classes is True:
-                possible_next_events['class_change'] = (self.next_class_change_ind, self.next_class_change_date)
-            if self.schedule is not None:
-                if self.schedule.schedule_type == 'schedule':
-                    possible_next_events['shift_change'] = (None, self.next_shift_change)
-                if self.schedule.schedule_type == 'slotted':
-                    possible_next_events['slotted_service'] = (None, self.schedule.next_slot_date)
-        else:
-            for ind in self.all_individuals:
-                if not ind.is_blocked and ind.service_end_date >= self.now:
-                    if ind.service_end_date < next_end_service[1]:
-                        next_end_service = ([ind], ind.service_end_date, 'end_service')
-                possible_next_events['end_service'] = next_end_service
+        self.possible_next_events = {}
+        self.update_next_end_service_without_server()
+        self.update_next_end_service_with_server()
+        self.update_next_renege_time()
+        self.update_next_class_change_while_waiting()
+        self.update_next_shift_change_or_slot_time()
         if self.reneging or self.dynamic_classes or self.schedule:
-            next_event, self.next_event_type = self.decide_next_event(possible_next_events)
+            next_event, self.next_event_type = self.decide_next_event()
             self.next_event_date = next_event[1]
             self.next_individual = next_event[0]
         else:
+            next_end_service = self.possible_next_events.get('end_service', (None, float('inf')))
             self.next_event_date = next_end_service[1]
             self.next_individual = next_end_service[0]
             self.next_event_type = 'end_service'
 
-    def decide_next_event(self, possible_next_events):
+    def decide_next_event(self):
         """
         Decides the next event. Chooses the next service end,
         renege, shift change, or class change. In the case of
@@ -782,7 +807,7 @@ class Node(object):
         next_event = (None, float('inf'))
         next_event_type = None
         for event_type in ['slotted_service', 'shift_change', 'end_service', 'class_change', 'renege']:
-            possible_next_event = possible_next_events.get(event_type, (None, float('inf')))
+            possible_next_event = self.possible_next_events.get(event_type, (None, float('inf')))
             if possible_next_event[1] < next_date:
                 next_event = possible_next_event
                 next_event_type = event_type
