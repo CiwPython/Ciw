@@ -1,6 +1,13 @@
 History
 -------
 
++ **v3.1.0 (2023-12-03)**
+    + Server schedules now defined with objects.
+    + Slotted services feature added, with capacitated and non-capacitated slots, and pre-emption options.
+    + Rename 'continue' pre-emption option to 'resume'.
+    + Allows simultaneous renegeing customers.
+    + Internal refactoring.
+
 + **v3.0.2 (2023-11-14)**
     + Fix bug where simulation errors if fist event of a node is a shift change.
     + Minor docstring and documentation changes.
