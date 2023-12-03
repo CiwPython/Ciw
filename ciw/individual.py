@@ -7,7 +7,7 @@ class Individual(object):
     ----------
     id_number : int
         A unique identifier for the individual.
-    customer_class : str, optional
+    customer_class : collections.abc.Hashable, optional
         The customer class to which the individual belongs (default is 'Customer').
     priority_class : int, optional
         The priority class of the individual (default is 0).
@@ -30,7 +30,7 @@ class Individual(object):
         Unique identifier for the individual.
     data_records : list
         A list to store additional data records.
-    customer_class : str
+    customer_class : collections.abc.Hashable
         The customer class to which the individual belongs.
     previous_class : str
         The previous customer class of the individual.
