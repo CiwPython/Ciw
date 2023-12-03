@@ -115,7 +115,7 @@ class Node(object):
         """
         for i in range(num_servers):
             self.highest_id += 1
-            self.servers.append(self.simulation.ServerType(self, self.highest_id, self.next_event_date))
+            self.servers.append(self.simulation.ServerType(self, self.highest_id, self.now))
 
     def attach_server(self, server, individual):
         """
@@ -148,7 +148,7 @@ class Node(object):
                 self.attach_server(free_server, next_individual)
             next_individual.service_start_date = self.now
             next_individual.service_time = self.get_service_time(next_individual)
-            next_individual.service_end_date = self.increment_time(self.now, next_individual.service_time)
+            next_individual.service_end_date = self.now + next_individual.service_time
             self.number_in_service += 1
             self.reset_class_change(next_individual)
             if not isinf(self.c):
@@ -169,7 +169,7 @@ class Node(object):
         self.attach_server(srvr, ind)
         self.give_service_time_after_preemption(ind)
         ind.service_start_date = self.now
-        ind.service_end_date = self.increment_time(self.now, ind.service_time)
+        ind.service_end_date = self.now + ind.service_time
         ind.interrupted = False
         self.number_in_service += 1
         srvr.next_end_service_date = ind.service_end_date
@@ -331,7 +331,7 @@ class Node(object):
             if ind is not None:
                 ind.service_start_date = self.now
                 self.give_individual_a_service_time(ind)
-                ind.service_end_date = self.increment_time(self.now, ind.service_time)
+                ind.service_end_date = self.now + ind.service_time
                 ind.server = True
                 self.number_in_service += 1
                 self.reset_class_change(ind)
@@ -396,7 +396,7 @@ class Node(object):
         server.busy = False
         individual.server = False
         server.busy_time = self.increment_time(server.busy_time, individual.exit_date - individual.service_start_date)
-        server.total_time = self.increment_time(self.now, -server.start_date)
+        server.total_time = self.now - server.start_date
         if server.offduty:
             self.kill_server(server)
 
@@ -564,7 +564,7 @@ class Node(object):
         self.attach_server(server, next_individual)
         next_individual.service_start_date = self.now
         next_individual.service_time = self.get_service_time(next_individual)
-        next_individual.service_end_date = self.increment_time(self.now, next_individual.service_time)
+        next_individual.service_end_date = self.now + next_individual.service_time
         self.reset_class_change(next_individual)
         server.next_end_service_date = next_individual.service_end_date
 

@@ -433,7 +433,6 @@ class TestSimulation(unittest.TestCase):
             set([0.50, 0.51, 0.52, 0.53, 0.54, 0.55])
         )
 
-
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(20)],
             service_distributions=[ciw.dists.Deterministic(0.01)],
