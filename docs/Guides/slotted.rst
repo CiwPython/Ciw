@@ -69,5 +69,5 @@ In order to specify capacitated or non-capacitated slotted schedules, use the ke
     ciw.Slotted(slots=[1.5, 2.3, 2.8], slot_sizes=[2, 5, 3], capacitated=False)  # Non-capacitated
     ciw.Slotted(slots=[1.5, 2.3, 2.8], slot_sizes=[2, 5, 3], capacitated=True)  # Capacitated
 
-Capacitated slots are subject to :ref:`pre-emption<preemption>`, when a service so long that there is not enough capacity for it to continue being served in the next slot. In this case, the three pre-emption options can be give: :code:`'continue'`, :code:`'restart'`, and :code:`'resample'`, as well as :code:`False` when no pre-emption is required.
+Capacitated slots are subject to :ref:`pre-emption<preemption>`, when a service so long that there is not enough capacity for it to continue being served in the next slot. In this case, the three pre-emption options can be give: :code:`'resume'`, :code:`'restart'`, and :code:`'resample'`, as well as :code:`False` when no pre-emption is required.
 
