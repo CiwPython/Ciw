@@ -639,7 +639,7 @@ class Node(object):
         Resets that customer's reneging date;
         Send customer to their reneging destination.
         """
-        reneging_individual = self.next_individual
+        reneging_individual = self.decide_between_simultaneous_individuals()
         reneging_individual.reneging_date = float("Inf")
         next_node_number = self.simulation.network.customer_classes[
             reneging_individual.customer_class
@@ -726,6 +726,8 @@ class Node(object):
                     if ind.service_end_date < next_end_service_date:
                         self.possible_next_events['end_service'] = ([ind], ind.service_end_date)
                         next_end_service_date = ind.service_end_date
+                    elif (ind.service_end_date == next_end_service_date) and (not isinf(next_end_service_date)):
+                        self.possible_next_events['end_service'][0].append(ind)
 
     def update_next_end_service_with_server(self):
         """
@@ -748,8 +750,10 @@ class Node(object):
             next_renege_date = float('Inf')
             for ind in self.all_individuals:
                 if (ind.reneging_date < next_renege_date) and not ind.server:
-                    self.possible_next_events['renege'] = (ind, ind.reneging_date)
+                    self.possible_next_events['renege'] = ([ind], ind.reneging_date)
                     next_renege_date = ind.reneging_date
+                elif (ind.reneging_date == next_renege_date) and (not ind.server) and (not isinf(next_renege_date)):
+                    self.possible_next_events['renege'][0].append(ind)
 
     def update_next_class_change_while_waiting(self):
         """

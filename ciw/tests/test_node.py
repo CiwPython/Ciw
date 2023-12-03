@@ -1268,6 +1268,38 @@ class TestNode(unittest.TestCase):
         self.assertEqual(Q.nodes[1].next_event_date, 10000)
         self.assertEqual(Q.nodes[1].next_event_type, 'shift_change')
 
+    def test_simultaneous_reneging(self):
+        """
+        Tests that both customers renege when they should renege simultaneously.
+        Arrivals at [3, 4, 5, 20]
+          t=3 Cust 1 arrives, enters service
+          t=4 Cust 2 arrives
+          t=5 Cust 3 arrives
+          t=11 Custs 2 & 3 renege
+          t=20 Cust 4 arrives
+          t=23 Cust 1 leaves, Cust 4 enters service
+          t=43 Cust 4 leaves
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([3, 1, 1, 15, float('inf')])],
+            service_distributions=[ciw.dists.Deterministic(20)],
+            number_of_servers=[1],
+            reneging_time_distributions=[ciw.dists.Sequential([100, 7, 6, 100])],
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(50)
+        recs_services = sorted(Q.get_all_records(only=['service']), key=lambda x: x.id_number)
+        recs_reneges = sorted(Q.get_all_records(only=['renege']), key=lambda x: x.id_number)
+        self.assertEqual(len(recs_services), 2)
+        self.assertEqual([r.id_number for r in recs_services], [1, 4])
+        self.assertEqual([r.service_start_date for r in recs_services], [3, 23])
+        self.assertEqual([r.service_end_date for r in recs_services], [23, 43])
+        self.assertEqual(len(recs_reneges), 2)
+        self.assertEqual([r.id_number for r in recs_reneges], [2, 3])
+        self.assertEqual([r.arrival_date for r in recs_reneges], [4, 5])
+        self.assertEqual([r.exit_date for r in recs_reneges], [11, 11])
+
     def test_class_change_while_waiting(self):
         """
         Only one type of customer arrive (Class 0),
