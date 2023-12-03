@@ -483,13 +483,13 @@ class Node(object):
 
     def give_service_time_after_preemption(self, individual):
         """
-        Either resample, restart or continue service time where it was left off
+        Either resample, restart or resume service time where it was left off
         """
         if individual.service_time == "resample":
             individual.service_time = self.get_service_time(individual)
         if individual.service_time == "restart":
             individual.service_time = individual.original_service_time
-        if individual.service_time == "continue":
+        if individual.service_time == "resume":
             individual.service_time = individual.time_left
 
     def have_event(self):

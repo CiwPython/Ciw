@@ -7,8 +7,8 @@ class Schedule:
         """
         Initialises the instance of the Schedule object
         """
-        if preemption not in [False, 'continue', 'restart', 'resample']:
-            raise ValueError("Pre-emption options should be either 'continue', 'restart', 'resample', or False.")
+        if preemption not in [False, 'resume', 'restart', 'resample']:
+            raise ValueError("Pre-emption options should be either 'resume', 'restart', 'resample', or False.")
         self.schedule_type = 'schedule'
         self.schedule_dates = [shift[1] for shift in schedule]
         self.schedule_servers = [shift[0] for shift in schedule]
@@ -53,8 +53,8 @@ class Slotted(Schedule):
         if not capacitated:
             if preemption is not False:
                 raise ValueError("Pre-emption options not availale for non-capacitated slots.")
-        if preemption not in [False, 'continue', 'restart', 'resample']:
-            raise ValueError("Pre-emption options should be either 'continue', 'restart', 'resample', or False.")
+        if preemption not in [False, 'resume', 'restart', 'resample']:
+            raise ValueError("Pre-emption options should be either 'resume', 'restart', 'resample', or False.")
         self.schedule_type = 'slotted'
         self.slots = slots
         self.slot_sizes = slot_sizes

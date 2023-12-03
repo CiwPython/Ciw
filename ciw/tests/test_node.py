@@ -1753,7 +1753,7 @@ class TestNode(unittest.TestCase):
         service at time 13.
             - Under "restart" we would expect customer 1 to leave at time 19
             (service time = 6)
-            - Under "continue" we would expect customer 1 to leave at time 17
+            - Under "resume" we would expect customer 1 to leave at time 17
             (service time = 6 - 2 = 4)
             - Under "resample" we would expect the customer to leave at time 16
             (service time = 3)
@@ -1787,7 +1787,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(r2.service_time, 6)
         self.assertEqual(r2.waiting_time, 12)
 
-        # Testing under continue
+        # Testing under resume
         N = ciw.create_network(
             arrival_distributions={
                 "Class 0": [ciw.dists.Sequential([3, float("inf")])],
@@ -1798,7 +1798,7 @@ class TestNode(unittest.TestCase):
                 "Class 1": [ciw.dists.Sequential([6, 3])],
             },
             number_of_servers=[1],
-            priority_classes=({"Class 0": 0, "Class 1": 1}, ["continue"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["resume"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1855,7 +1855,7 @@ class TestNode(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7)],
             service_distributions=[ciw.dists.Deterministic(4)],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 24], [0, 29], [1, 37]], preemption="continue")],
+            number_of_servers=[ciw.Schedule(schedule=[[1, 24], [0, 29], [1, 37]], preemption="resume")],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
@@ -1890,7 +1890,7 @@ class TestNode(unittest.TestCase):
         service at time 5.
             - Under "restart" we would expect customer 1 to leave at time 11
             (service time = 6)
-            - Under "continue" we would expect customer 1 to leave at time 9
+            - Under "resume" we would expect customer 1 to leave at time 9
             (service time = 6 - 2 = 4)
             - Under "resample" we would expect the customer to leave at time 8
             (service time = 3)
@@ -1924,7 +1924,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(r2.service_time, 6)
         self.assertEqual(r2.waiting_time, 4)
 
-        # Testing under continue
+        # Testing under resume
         N = ciw.create_network(
             arrival_distributions={
                 "Class 0": [ciw.dists.Sequential([3, float("inf")])],
@@ -1935,7 +1935,7 @@ class TestNode(unittest.TestCase):
                 "Class 1": [ciw.dists.Sequential([6, 3])],
             },
             number_of_servers=[ciw.Schedule(schedule=[[1, 5], [2, 100]])],
-            priority_classes=({"Class 0": 0, "Class 1": 1}, ["continue"]),
+            priority_classes=({"Class 0": 0, "Class 1": 1}, ["resume"]),
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)

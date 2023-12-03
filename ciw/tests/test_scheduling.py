@@ -257,11 +257,11 @@ class TestScheduling(unittest.TestCase):
             arrival_distributions=[ciw.dists.Deterministic(7.0)],
             service_distributions=[ciw.dists.Deterministic(5.0)],
             routing=[[0.0]],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 15], [0, 17], [2, 100]], preemption="continue")],
+            number_of_servers=[ciw.Schedule(schedule=[[1, 15], [0, 17], [2, 100]], preemption="resume")],
         )
         Q = ciw.Simulation(N)
 
-        self.assertEqual(Q.nodes[1].schedule.preemption, 'continue')
+        self.assertEqual(Q.nodes[1].schedule.preemption, 'resume')
 
         Q.simulate_until_max_time(22.5)
         recs = Q.get_all_records()
@@ -277,10 +277,10 @@ class TestScheduling(unittest.TestCase):
             arrival_distributions=[ciw.dists.Deterministic(3.0)],
             service_distributions=[ciw.dists.Deterministic(10.0)],
             routing=[[0.0]],
-            number_of_servers=[ciw.Schedule(schedule=[[4, 12.5], [0, 17], [1, 100]], preemption="continue")],
+            number_of_servers=[ciw.Schedule(schedule=[[4, 12.5], [0, 17], [1, 100]], preemption="resume")],
         )
         Q = ciw.Simulation(N)
-        self.assertEqual(Q.nodes[1].schedule.preemption, 'continue')
+        self.assertEqual(Q.nodes[1].schedule.preemption, 'resume')
 
         Q.simulate_until_max_time(27.5)
         recs = Q.get_all_records(only=["service"])
@@ -342,7 +342,7 @@ class TestScheduling(unittest.TestCase):
         service at time 9.
             - Under "restart" we would expect them to leave at time 19
             (service time = 10)
-            - Under "continue" we would expect them to leave at time 15
+            - Under "resume" we would expect them to leave at time 15
             (service time = 10 - 4 = 6)
             - Under "resample" we would expect them to leave at time 29
             (service time = 20)
@@ -363,11 +363,11 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(r1.service_time, 10)
         self.assertEqual(r1.waiting_time, 8)
 
-        # Testing under continue
+        # Testing under resume
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Sequential([1, float("inf")])],
             service_distributions=[ciw.dists.Sequential([10, 20])],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 5], [0, 9], [1, 100]], preemption="continue")],
+            number_of_servers=[ciw.Schedule(schedule=[[1, 5], [0, 9], [1, 100]], preemption="resume")],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(40)
@@ -414,7 +414,7 @@ class TestScheduling(unittest.TestCase):
                 "Class 1": [ciw.dists.Deterministic(1.5)],
             },
             number_of_servers=[ciw.Schedule(schedule=[[1, 20.3], [0, 20.6], [1, 100]])],
-            priority_classes=({"Class 0": 1, "Class 1": 0}, ["continue"]),
+            priority_classes=({"Class 0": 1, "Class 1": 0}, ["resume"]),
         )
 
         Q = ciw.Simulation(N)
@@ -481,7 +481,7 @@ class TestScheduling(unittest.TestCase):
                 "Class 1": [ciw.dists.Deterministic(1.5)],
             },
             number_of_servers=[ciw.Schedule(schedule=[[1, 20.3], [0, 22], [1, 100]])],
-            priority_classes=({"Class 0": 1, "Class 1": 0}, ["continue"]),
+            priority_classes=({"Class 0": 1, "Class 1": 0}, ["resume"]),
         )
 
         Q = ciw.Simulation(N)
@@ -541,7 +541,7 @@ class TestScheduling(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Sequential([5, float('inf')]), ciw.dists.Sequential([1, float('inf')])],
             service_distributions=[ciw.dists.Deterministic(1), ciw.dists.Deterministic(9)],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 8], [0, 200]], preemption='continue'), 1],
+            number_of_servers=[ciw.Schedule(schedule=[[1, 8], [0, 200]], preemption='resume'), 1],
             queue_capacities=[float('inf'), 0],
             routing=[[0.0, 1.0], [0.0, 0.0]]
         )
@@ -695,7 +695,7 @@ class TestScheduling(unittest.TestCase):
 
     def test_invalid_preemption_options(self):
         self.assertRaises(ValueError, lambda: ciw.Schedule(schedule=[[2, 10], [1, 12]], preemption='something'))
-        self.assertRaises(ValueError, lambda: ciw.Slotted(slots=[2, 3], slot_sizes=[4, 1], capacitated=False, preemption='continue'))
+        self.assertRaises(ValueError, lambda: ciw.Slotted(slots=[2, 3], slot_sizes=[4, 1], capacitated=False, preemption='resume'))
         self.assertRaises(ValueError, lambda: ciw.Slotted(slots=[2, 3], slot_sizes=[4, 1], capacitated=True, preemption='something'))
 
     def test_slotted_services_capacitated_preemption(self):
@@ -735,11 +735,11 @@ class TestScheduling(unittest.TestCase):
         self.assertEqual(recs[1].exit_date, 14)
         self.assertEqual(recs[1].record_type, 'service')
 
-        # preemption='continue'
+        # preemption='resume'
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, float('inf')])],
             service_distributions=[ciw.dists.Sequential([10, 10, 1])],
-            number_of_servers=[ciw.Slotted(slots=[4, 11], slot_sizes=[3, 1], capacitated=True, preemption='continue')]
+            number_of_servers=[ciw.Slotted(slots=[4, 11], slot_sizes=[3, 1], capacitated=True, preemption='resume')]
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(50)

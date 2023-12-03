@@ -13,7 +13,7 @@ In Ciw they can either:
     
 + Have their service resampled (:code:`"resample"`);
 + Restart the exact same service (:code:`"restart"`);
-+ Continue the original service from where they left off (:code:`"continue"`).
++ Continue the original service from where they left off (:code:`"resume"`).
 
 
 
@@ -24,7 +24,7 @@ During non-pre-emptive priorities, customers cannot be interrupted. Therefore th
 
 In order to implement pre-emptive or non-pre-emptive priorities, put the priority class mapping in a tuple with a list of the chosen pre-emption options for each node in the network. For example::
 
-    priority_classes=({'Class 0': 0, 'Class 1': 1}, [False, "resample", "restart", "continue"])
+    priority_classes=({'Class 0': 0, 'Class 1': 1}, [False, "resample", "restart", "resume"])
 
 This indicates that non-pre-emptive priorities will be used at the first node, and pre-emptive priorities will be used at the second, third and fourth nodes. Interrupted individuals will have their services resampled at the second node, they will restart their original service time at the third node, and they will continue where they left off at the fourth node.
 
@@ -49,7 +49,7 @@ In order to implement pre-emptive or non-pre-emptive schedules, the :code:`ciw.S
         ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption=False)      # non-preemptive
         ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="resample") # preemptive and resamples service time
         ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="restart")  # preemptive and restarts origional service time
-        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="continue") # preemptive continutes services where left off
+        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="resume") # preemptive continutes services where left off
     ]
 
 Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
