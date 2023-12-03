@@ -89,7 +89,7 @@ A number of other features are also implemented, including:
 + `Service disciplines <https://ciw.readthedocs.io/en/latest/Guides/service_disciplines.html>`_
 + `Customers changing classes <https://ciw.readthedocs.io/en/latest/Guides/dynamic_customerclasses.html>`_
 + `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/server_schedule.html>`_
-+ `Slotted servicess <https://ciw.readthedocs.io/en/latest/Guides/slotted.html>`_
++ `Slotted services <https://ciw.readthedocs.io/en/latest/Guides/slotted.html>`_
 + `State tracking <https://ciw.readthedocs.io/en/latest/Guides/state_trackers.html>`_
 + `Stopping the simulation after a certain amount of customers <https://ciw.readthedocs.io/en/latest/Guides/sim_numcusts.html>`_
 + `Process-based routing <https://ciw.readthedocs.io/en/latest/Guides/process_based.html>`_
