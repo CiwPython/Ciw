@@ -650,6 +650,29 @@ class TestScheduling(unittest.TestCase):
         observed_service_dates = [r.service_start_date for r in recs]
         self.assertEqual(observed_service_dates, expected_service_dates)
 
+    def test_noncapacitated_slotted_services_with_overruns(self):
+        """
+        Arrivals occur at times [0.3, 0.5, 10.1]
+        Service times are [2.5, 4.5, 0.5]
+        Services are slotted at times [1, 3, 5, 11]
+        Slotted services have capacities [2, 1, 1, 1]
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential([0.3, 0.2, 9.6, float('inf')])],
+            service_distributions=[ciw.dists.Sequential([2.5, 4.5, 0.5, 1000])],
+            number_of_servers=[ciw.Slotted(slots=[1, 3, 5, 11], slot_sizes=[2, 1, 1, 1])]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        recs = sorted(recs, key=lambda rec: rec.id_number)
+
+        self.assertEqual(len(Q.nodes[-1].all_individuals), 3)
+
+        expected_service_dates = [1, 1, 11]
+        observed_service_dates = [r.service_start_date for r in recs]
+        self.assertEqual(observed_service_dates, expected_service_dates)
+
     def test_slotted_services_capacitated(self):
         """
         Tests when the service times of slotted services last longer
@@ -677,7 +700,6 @@ class TestScheduling(unittest.TestCase):
         expected_service_dates = [2, 2, 2, 2, 3]
         observed_service_dates = [r.service_start_date for r in recs]
         self.assertEqual(observed_service_dates, expected_service_dates)
-
 
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Sequential([0.5, 0.6, 0.4, 0.3, 0.8, float('inf')])],

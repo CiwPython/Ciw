@@ -328,12 +328,13 @@ class Node(object):
                 self.number_interrupted_individuals -= 1
             else:
                 ind = self.choose_next_customer()
-            ind.service_start_date = self.now
-            self.give_individual_a_service_time(ind)
-            ind.service_end_date = self.increment_time(self.now, ind.service_time)
-            ind.server = True
-            self.number_in_service += 1
-            self.reset_class_change(ind)
+            if ind is not None:
+                ind.service_start_date = self.now
+                self.give_individual_a_service_time(ind)
+                ind.service_end_date = self.increment_time(self.now, ind.service_time)
+                ind.server = True
+                self.number_in_service += 1
+                self.reset_class_change(ind)
         self.schedule.get_next_slot()
 
     def choose_next_customer(self):
