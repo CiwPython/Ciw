@@ -1,14 +1,21 @@
 import random
+from typing import NoReturn # TODO: Change `typing.NoReturn` to `typing.Never` when Python 3.11 is oldest LTS.
+
 import numpy as np
 import ciw
 
-
-def seed(z):
-    """
-    Sets all seeds used to generate random number streams.
+# TODO: Rename `seed` to `set_seed` and `z` to `seed` or `random_seed`.
+# TODO: Change `typing.NoReturn` to `typing.Never` when Python 3.11 is oldest LTS.
+def seed(z: int) -> NoReturn:
+    """Sets all seeds used to generate random number streams.
+    
     Currently contains:
             - random library
             - numpy random
+
+    PARAMETERS
+    ----------
+    z (int): Seed for pseudorandom generator.
     """
     random.seed(z)
     ciw.rng = np.random.default_rng(seed=z)
