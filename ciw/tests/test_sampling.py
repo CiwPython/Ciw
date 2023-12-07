@@ -113,7 +113,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Ln), "Lognormal(5.5, 3.6)")
         self.assertEqual(str(Wb), "Weibull(8.8, 9.9)")
         self.assertEqual(str(Em), "Empirical")
-        self.assertEqual(str(Sq), "Sequential")
+        self.assertEqual(str(Sq), "Sequential(3.3, ..., 4.4)")
         self.assertEqual(str(Pf), "Pmf([1.1, 2.2, 3.3], [0.3, 0.2, 0.5])")
         self.assertEqual(str(Ph), "PhaseType")
         self.assertEqual(str(Er), "Erlang(4.5, 8)")
