@@ -11,6 +11,7 @@ from random import (
     lognormvariate,
     weibullvariate,
 )
+from typing import List, NoReturn
 
 import numpy as np
 
