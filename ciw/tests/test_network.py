@@ -185,11 +185,11 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.service_centres[0].ps_threshold, 4)
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].arrival_distributions],
-            ["Exponential: 3.0"],
+            ["Exponential(3.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
-            ["Exponential: 7.0"],
+            ["Exponential(7.0)"],
         )
         self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
         self.assertEqual(N.number_of_priority_classes, 1)
@@ -256,20 +256,20 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.service_centres[0].ps_threshold, 1)
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].arrival_distributions],
-            ["Exponential: 3.0"],
+            ["Exponential(3.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
-            ["Exponential: 7.0"],
+            ["Exponential(7.0)"],
         )
         self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
-            ["Exponential: 4.0"],
+            ["Exponential(4.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
-            ["Uniform: 0.4, 1.2"],
+            ["Uniform(0.4, 1.2)"],
         )
         self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
@@ -662,11 +662,11 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].arrival_distributions],
-            ["Exponential: 3.0"],
+            ["Exponential(3.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
-            ["Exponential: 7.0"],
+            ["Exponential(7.0)"],
         )
         self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
         self.assertEqual(N.number_of_priority_classes, 1)
@@ -699,11 +699,11 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.service_centres[1].class_change_matrix, None)
         self.assertEqual(
             [str(d) for d in N.customer_classes['Customer'].arrival_distributions],
-            ["Exponential: 3.0", "Uniform: 0.2, 0.6"],
+            ["Exponential(3.0)", "Uniform: 0.2, 0.6"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Customer'].service_distributions],
-            ["Exponential: 7.0", "Deterministic: 0.7"],
+            ["Exponential(7.0)", "Deterministic: 0.7"],
         )
         self.assertEqual(N.customer_classes['Customer'].routing, [[0.5, 0.2], [0.0, 0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
@@ -733,20 +733,20 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].arrival_distributions],
-            ["Exponential: 3.0"],
+            ["Exponential(3.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
-            ["Exponential: 7.0"],
+            ["Exponential(7.0)"],
         )
         self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
-            ["Exponential: 4.0"],
+            ["Exponential(4.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
-            ["Uniform: 0.4, 1.2"],
+            ["Uniform(0.4, 1.2)"],
         )
         self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
@@ -773,20 +773,20 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.service_centres[0].number_of_servers, 9)
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].arrival_distributions],
-            ["Exponential: 3.0"],
+            ["Exponential(3.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
-            ["Exponential: 7.0"],
+            ["Exponential(7.0)"],
         )
         self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
-            ["Exponential: 4.0"],
+            ["Exponential(4.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
-            ["Uniform: 0.4, 1.2"],
+            ["Uniform(0.4, 1.2)"],
         )
         self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.customer_classes['Class 0'].priority_class, 1)
@@ -822,11 +822,11 @@ class TestCreateNetworkKwargs(unittest.TestCase):
 
         self.assertEqual(
             [str(d) for d in N.customer_classes['Customer'].arrival_distributions],
-            ["Exponential: 3.0", "Exponential: 4.0", "Exponential: 2.0"],
+            ["Exponential(3.0)", "Exponential(4.0)", "Exponential: 2.0"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Customer'].service_distributions],
-            ["Exponential: 7.0", "Uniform: 0.4, 1.2", "Deterministic: 5.33"],
+            ["Exponential(7.0)", "Uniform(0.4, 1.2)", "Deterministic: 5.33"],
         )
         self.assertEqual(
             N.customer_classes['Customer'].routing,
@@ -892,20 +892,20 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.service_centres[0].ps_threshold, 1)
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].arrival_distributions],
-            ["Exponential: 3.0"],
+            ["Exponential(3.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
-            ["Exponential: 7.0"],
+            ["Exponential(7.0)"],
         )
         self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
-            ["Exponential: 4.0"],
+            ["Exponential(4.0)"],
         )
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
-            ["Uniform: 0.4, 1.2"],
+            ["Uniform(0.4, 1.2)"],
         )
         self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
