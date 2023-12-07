@@ -16,6 +16,7 @@ from typing import List, NoReturn
 import numpy as np
 
 from ciw.auxiliary import *
+from ciw.individual import Individual
 
 class Distribution(object):
     """
@@ -679,7 +680,7 @@ class MixtureDistribution(Distribution):
 
     Parameters
     ----------
-    dists : List[ciw.dists.Distribution]
+    dists : List[Distribution]
         A list of probability distributions to be combined in the mixture.
     rhos : List[float]
         A list of weights corresponding to the importance of each distribution in the mixture.
@@ -689,12 +690,12 @@ class MixtureDistribution(Distribution):
     ----------
     rhos : List[float]
         List of weights assigned to each distribution in the mixture.
-    dists : List[ciw.dists.Distribution]
+    dists : List[Distribution]
         List of probability distributions in the mixture.
 
     Methods
     -------
-    sample(t: float, inds: List[ciw.Individual] = None) -> float:
+    sample(t: float, inds: List[Individual] = None) -> float:
         Generate a random sample from the mixture distribution.
 
     Notes
@@ -703,13 +704,13 @@ class MixtureDistribution(Distribution):
     in the mixture. The distributions in `dists` should be instances of `ciw.dists.Distribution`.
     """
 
-    def __init__(self, dists: List[ciw.dists.Distribution], rhos: List[float]) -> NoReturn:
+    def __init__(self, dists: List[Distribution], rhos: List[float]) -> NoReturn:
         """
         Initialize the MixtureDistribution.
 
         Parameters
         ----------
-        dists : List[ciw.dists.Distribution]
+        dists : List[Distribution]
             A list of probability distributions to be combined in the mixture.
         rhos : List[float]
             A list of weights corresponding to the importance of each distribution in the mixture.
@@ -718,7 +719,7 @@ class MixtureDistribution(Distribution):
         self.rhos = rhos
         self.dists = dists
 
-    def sample(self, t: float, inds: List[ciw.Individual] = None) -> float:
+    def sample(self, t: float, inds: List[Individual] = None) -> float:
         """
         Generate a random sample from the mixture distribution.
 
@@ -726,7 +727,7 @@ class MixtureDistribution(Distribution):
         ----------
         t : float
             The time parameter for the sample generation.
-        inds : List[ciw.Individual], optional
+        inds : List[Individual], optional
             List of individuals associated with the sample, if applicable.
 
         Returns
