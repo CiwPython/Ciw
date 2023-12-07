@@ -332,7 +332,7 @@ class Pmf(Distribution):
         self.probs = probs
 
     def __repr__(self):
-        return "Pmf({self.values}, {self.probs})"
+        return f"Pmf({self.values}, {self.probs})"
 
     def sample(self, t=None, ind=None):
         return random_choice(self.values, self.probs)
