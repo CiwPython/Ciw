@@ -1,34 +1,26 @@
-class ServiceCentre(object):
+from dataclasses import dataclass
+from typing import Optional, Callable
+
+@dataclass
+class ServiceCentre:
     """
     An information store for each service centre in the queueing network.
+
     Contains all information that is independent of customer class:
-      - number of servers
-      - queueing capacity
-      - server schedules + preemtion status
-      - class change matrix
+        - number of servers
+        - queueing capacity
+        - server schedules + preemption status
+        - class change matrix
     """
 
-    def __init__(
-        self,
-        number_of_servers,
-        queueing_capacity,
-        class_change_matrix=None,
-        priority_preempt=False,
-        ps_threshold=1,
-        server_priority_function=None,
-        service_discipline=None,
-    ):
-        """
-        Initialises the ServiceCentre object.
-        """
-        self.number_of_servers = number_of_servers
-        self.queueing_capacity = queueing_capacity
-        self.class_change_matrix = class_change_matrix
-        self.priority_preempt = priority_preempt
-        self.ps_threshold = ps_threshold
-        self.server_priority_function = server_priority_function
-        self.service_discipline = service_discipline
-        self.class_change_time = False
+    number_of_servers: int
+    queueing_capacity: int
+    class_change_matrix: Optional[np.ndarray] = None
+    priority_preempt: bool = False
+    ps_threshold: int = 1
+    server_priority_function: Optional[Callable] = None
+    service_discipline: Optional[str] = None
+    class_change_time: bool = False
 
 
 class CustomerClass(object):
