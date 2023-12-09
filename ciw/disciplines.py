@@ -1,25 +1,49 @@
+from typing import List
+
+from ciw.individual import Individual
 from ciw.auxiliary import random_choice
 
 
-def FIFO(individuals):
+def FIFO(individuals: List[Individual]) -> Individual:
     """
-    FIFO: First in first out / First come first served
-    Returns the individual at the head of the queue
+    FIFO: First In, First Out (FIFO)
+
+    Returns the individual at the head of the queue.
+
+    Parameters:
+    - individuals (List[Individual]): List of individuals in the queue.
+
+    Returns:
+    - Individual: The individual at the head of the queue.
     """
     return individuals[0]
 
 
-def SIRO(individuals):
+def SIRO(individuals: List[Individual]) -> Individual:
     """
-    SIRO: Service in random order
-    Returns a random individual from the queue
+    SIRO: Service In Random Order (SIRO)
+
+    Returns a random individual from the queue.
+
+    Parameters:
+    - individuals (List[Individual]): List of individuals in the queue.
+
+    Returns:
+    - Individual: A randomly selected individual from the queue.
     """
     return random_choice(individuals)
 
 
-def LIFO(individuals):
+def LIFO(individuals: List[Individual]) -> Individual:
     """
-    LIFO: Last in first out / Last come first served
-    Returns the individual who joined the queue most recently
+    LIFO: Last In, First Out (LIFO)
+
+    Returns the individual who joined the queue most recently.
+
+    Parameters:
+    - individuals (List[Individual]): List of individuals in the queue.
+
+    Returns:
+    - Individual: The individual who joined the queue most recently.
     """
     return individuals[-1]
