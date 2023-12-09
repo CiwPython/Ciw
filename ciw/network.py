@@ -15,7 +15,7 @@ class ServiceCentre:
 
     number_of_servers: int
     queueing_capacity: int
-    class_change_matrix: Optional[np.ndarray] = None
+    class_change_matrix = None
     priority_preempt: bool = False
     ps_threshold: int = 1
     server_priority_function: Optional[Callable] = None
