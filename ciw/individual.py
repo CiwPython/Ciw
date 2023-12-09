@@ -103,4 +103,4 @@ class Individual(object):
     def __repr__(self):
         """Represents an Individual instance as a string.
         """
-        return f"Individual {self.id_number}"
+        return f"Individual(id_number={self.id_number})"
