@@ -11,6 +11,7 @@ Here is a list of other options that may be of interest, both commercial and ope
 - `Khronos <http://khronos-des.sourceforge.net/>`_
 - `NetSim <http://www.boson.com/netsim-cisco-network-simulator>`_
 - `Queueing-tool <https://queueing-tool.readthedocs.io/en/latest/>`_
+- `Salabim <https://www.salabim.org/>`_
 - `SimPy <https://simpy.readthedocs.org/en/latest/>`_
 - `SIMUL8 <http://www.simul8.com/>`_
 
