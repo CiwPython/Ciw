@@ -1,4 +1,4 @@
-class StateTracker(object):
+class StateTracker:
     """
     A generic class to record system's state.
     """
