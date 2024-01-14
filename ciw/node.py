@@ -373,7 +373,7 @@ class Node(object):
         """
         Decides if priority preemption is needed, finds the individual to preempt, and preempt them.
         """
-        if self.priority_preempt != False:
+        if self.priority_preempt:
             least_priority = max(s.cust.priority_class for s in self.servers)
             if individual.priority_class < least_priority:
                 least_prioritised_individuals = [
