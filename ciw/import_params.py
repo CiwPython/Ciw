@@ -92,12 +92,17 @@ def create_network_from_dictionary(params_input):
         "class_change_matrices",
         [None for nd in range(number_of_nodes)],
     )
-    class_change_time_distributions = {clss2: {clss1: None for clss1 in params['customer_class_names']} for clss2 in params['customer_class_names']}
-    if 'class_change_time_distributions' in params:
-        for clss1 in params['customer_class_names']:
-            for clss2 in params['customer_class_names']:
+    class_change_time_distributions = {
+        clss2: {clss1: None for clss1 in params["customer_class_names"]}
+        for clss2 in params["customer_class_names"]
+    }
+    if "class_change_time_distributions" in params:
+        for clss1 in params["customer_class_names"]:
+            for clss2 in params["customer_class_names"]:
                 try:
-                    class_change_time_distributions[clss1][clss2] = params['class_change_time_distributions'][clss1][clss2]
+                    class_change_time_distributions[clss1][clss2] = params[
+                        "class_change_time_distributions"
+                    ][clss1][clss2]
                 except:
                     pass
 
@@ -105,7 +110,7 @@ def create_network_from_dictionary(params_input):
     for nd in range(number_of_nodes):
         nodes.append(
             ServiceCentre(
-                params['number_of_servers'][nd],
+                params["number_of_servers"][nd],
                 params["queue_capacities"][nd],
                 class_change_matrices[nd],
                 preempt_priorities[nd],
@@ -114,12 +119,12 @@ def create_network_from_dictionary(params_input):
                 params["service_disciplines"][nd],
             )
         )
-    for clss_name in params['customer_class_names']:
+    for clss_name in params["customer_class_names"]:
         if all(isinstance(f, types.FunctionType) for f in params["routing"]):
             classes[clss_name] = CustomerClass(
-                params['arrival_distributions'][clss_name],
-                params['service_distributions'][clss_name],
-                params['routing'],
+                params["arrival_distributions"][clss_name],
+                params["service_distributions"][clss_name],
+                params["routing"],
                 params["priority_classes"][clss_name],
                 params["baulking_functions"][clss_name],
                 params["batching_distributions"][clss_name],
@@ -129,9 +134,9 @@ def create_network_from_dictionary(params_input):
             )
         else:
             classes[clss_name] = CustomerClass(
-                params['arrival_distributions'][clss_name],
-                params['service_distributions'][clss_name],
-                params['routing'][clss_name],
+                params["arrival_distributions"][clss_name],
+                params["service_distributions"][clss_name],
+                params["routing"][clss_name],
                 params["priority_classes"][clss_name],
                 params["baulking_functions"][clss_name],
                 params["batching_distributions"][clss_name],
@@ -187,12 +192,21 @@ def fill_out_dictionary(params):
         "routing": {class_name: [[0.0]] for class_name in class_names},
         "number_of_nodes": len(params["number_of_servers"]),
         "number_of_classes": len(class_names),
-        "queue_capacities": [float("inf") for _ in range(len(params["number_of_servers"]))],
+        "queue_capacities": [
+            float("inf") for _ in range(len(params["number_of_servers"]))
+        ],
         "priority_classes": {class_name: 0 for class_name in class_names},
-        "baulking_functions": {class_name: [None for _ in range(len(params["number_of_servers"]))]for class_name in class_names},
-        "batching_distributions": {class_name: [
-                ciw.dists.Deterministic(1) for _ in range(len(params["number_of_servers"]))
-            ] for class_name in class_names},
+        "baulking_functions": {
+            class_name: [None for _ in range(len(params["number_of_servers"]))]
+            for class_name in class_names
+        },
+        "batching_distributions": {
+            class_name: [
+                ciw.dists.Deterministic(1)
+                for _ in range(len(params["number_of_servers"]))
+            ]
+            for class_name in class_names
+        },
         "ps_thresholds": [1 for _ in range(len(params["number_of_servers"]))],
         "server_priority_functions": [
             None for _ in range(len(params["number_of_servers"]))
@@ -313,34 +327,49 @@ def validify_dictionary(params):
     if neg_numservers:
         raise ValueError("Number of servers must be positive integers.")
     for c in params["number_of_servers"]:
-        if not (isinstance(c, int) or isinstance(c, Schedule) or c == float('inf')):
-            raise ValueError("Number of servers must be positive integers or instances of ciw.schedules.Schedule.")
+        if not (isinstance(c, int) or isinstance(c, Schedule) or c == float("inf")):
+            raise ValueError(
+                "Number of servers must be positive integers or instances of ciw.schedules.Schedule."
+            )
     if not valid_capacities:
         raise ValueError("Queue capacities must be positive integers or zero.")
-    
+
     if "class_change_matrices" in params:
-        if not isinstance(params['class_change_matrices'], list):
-            raise ValueError("class_change_matrices should be a list of dictionaries for each node in the network.")
+        if not isinstance(params["class_change_matrices"], list):
+            raise ValueError(
+                "class_change_matrices should be a list of dictionaries for each node in the network."
+            )
         num_nodes = len(params["class_change_matrices"]) == params["number_of_nodes"]
         if not num_nodes:
             raise ValueError("Ensure correct nodes used in class_change_matrices.")
         for nd in params["class_change_matrices"]:
             for row in nd.values():
-                if sum(row.values()) > 1.0 or min(row.values()) < 0.0 or max(row.values()) > 1.0:
+                if (
+                    sum(row.values()) > 1.0
+                    or min(row.values()) < 0.0
+                    or max(row.values()) > 1.0
+                ):
                     raise ValueError("Ensure that class change matrix is valid.")
-        class_change_names = set([k for matrix in params['class_change_matrices'] for k in matrix.keys()])
-        if not class_change_names.issubset(set(params['arrival_distributions'])):
-            raise ValueError("Ensure consistant names for customer classes.")
-    
-    if "class_change_time_distributions" in params:
-        class_change_from_names = set(list(params['class_change_time_distributions'].keys()))
-        class_change_to_names = set([clss for row in params['class_change_time_distributions'].values() for clss in row.keys()])
-        wrong_class_names = (
-            not class_change_from_names.issubset(set(params['customer_class_names']))
-        ) or (
-        
-            not class_change_to_names.issubset(set(params['customer_class_names']))
+        class_change_names = set(
+            [k for matrix in params["class_change_matrices"] for k in matrix.keys()]
         )
+        if not class_change_names.issubset(set(params["arrival_distributions"])):
+            raise ValueError("Ensure consistant names for customer classes.")
+
+    if "class_change_time_distributions" in params:
+        class_change_from_names = set(
+            list(params["class_change_time_distributions"].keys())
+        )
+        class_change_to_names = set(
+            [
+                clss
+                for row in params["class_change_time_distributions"].values()
+                for clss in row.keys()
+            ]
+        )
+        wrong_class_names = (
+            not class_change_from_names.issubset(set(params["customer_class_names"]))
+        ) or (not class_change_to_names.issubset(set(params["customer_class_names"])))
         if wrong_class_names:
             raise ValueError(
                 "Ensure consistant customer classes used in class_change_time_distributions."

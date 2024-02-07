@@ -47,7 +47,9 @@ class Simulation(object):
         self.batch_sizes = self.find_batching_dists()
         self.show_simulation_to_distributions()
         self.number_of_priority_classes = self.network.number_of_priority_classes
-        self.transitive_nodes = [node_type(i + 1, self) for i, node_type in enumerate(self.NodeTypes)]
+        self.transitive_nodes = [
+            node_type(i + 1, self) for i, node_type in enumerate(self.NodeTypes)
+        ]
         self.nodes = [self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()]
         self.active_nodes = self.nodes[:-1]
         self.nodes[0].initialise()
@@ -72,10 +74,14 @@ class Simulation(object):
         objects for each node for each customer class.
         """
         return {
-            node + 1: {
-                clss: copy.deepcopy(self.network.customer_classes[clss].arrival_distributions[node])
+            node
+            + 1: {
+                clss: copy.deepcopy(
+                    self.network.customer_classes[clss].arrival_distributions[node]
+                )
                 for clss in self.network.customer_class_names
-            } for node in range(self.network.number_of_nodes)
+            }
+            for node in range(self.network.number_of_nodes)
         }
 
     def find_service_dists(self):
@@ -84,10 +90,14 @@ class Simulation(object):
         objects for each node for each customer class.
         """
         return {
-            node + 1: {
-                clss: copy.deepcopy(self.network.customer_classes[clss].service_distributions[node])
+            node
+            + 1: {
+                clss: copy.deepcopy(
+                    self.network.customer_classes[clss].service_distributions[node]
+                )
                 for clss in self.network.customer_class_names
-            } for node in range(self.network.number_of_nodes)
+            }
+            for node in range(self.network.number_of_nodes)
         }
 
     def find_batching_dists(self):
@@ -96,10 +106,14 @@ class Simulation(object):
         objects for each node for each class.
         """
         return {
-            node + 1: {
-                clss: copy.deepcopy(self.network.customer_classes[clss].batching_distributions[node])
+            node
+            + 1: {
+                clss: copy.deepcopy(
+                    self.network.customer_classes[clss].batching_distributions[node]
+                )
                 for clss in self.network.customer_class_names
-            } for node in range(self.network.number_of_nodes)
+            }
+            for node in range(self.network.number_of_nodes)
         }
 
     def show_simulation_to_distributions(self):
@@ -168,10 +182,14 @@ class Simulation(object):
 
         if node_class is not None:
             if not isinstance(node_class, list):
-                self.NodeTypes = [node_class for _ in range(self.network.number_of_nodes)]
+                self.NodeTypes = [
+                    node_class for _ in range(self.network.number_of_nodes)
+                ]
             else:
                 if len(node_class) != self.network.number_of_nodes:
-                    raise ValueError("Ensure consistant number of nodes is used throughout.")
+                    raise ValueError(
+                        "Ensure consistant number of nodes is used throughout."
+                    )
                 self.NodeTypes = node_class
         else:
             self.NodeTypes = [Node for _ in range(self.network.number_of_nodes)]

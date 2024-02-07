@@ -72,14 +72,18 @@ class StateTracker(object):
         prev_state = self.history[0][1]
 
         if start < 0 or end <= start:
-            raise ValueError("Observation period need to be a positive interval above zero")
+            raise ValueError(
+                "Observation period need to be a positive interval above zero"
+            )
 
         for event in self.history:
             date = event[0]
             state = event[1]
             if date > end:
                 break
-            date_diff = self.simulation.nodes[1].increment_time(date, -max(prev_date, start))
+            date_diff = self.simulation.nodes[1].increment_time(
+                date, -max(prev_date, start)
+            )
             if start < date < end:
                 if prev_state not in steady_state_dictionary:
                     steady_state_dictionary[prev_state] = date_diff
@@ -254,6 +258,7 @@ class NodeClassMatrix(StateTracker):
         Class 0), and 1 customer at the second node (0 of Class 0, 1 of
         Class 1).
     """
+
     def __init__(self, class_ordering=None):
         """
         Pre-initialises the object with keyword `class_ordering`
@@ -265,12 +270,17 @@ class NodeClassMatrix(StateTracker):
         Initialises the state tracker class.
         """
         self.simulation = simulation
-        
+
         if self.class_ordering is not None:
-            self.class_ordering = {clss: i for i, clss in enumerate(self.class_ordering)}
+            self.class_ordering = {
+                clss: i for i, clss in enumerate(self.class_ordering)
+            }
         else:
-            self.class_ordering = {clss: i for i, clss in enumerate(self.simulation.network.customer_class_names)}
-        
+            self.class_ordering = {
+                clss: i
+                for i, clss in enumerate(self.simulation.network.customer_class_names)
+            }
+
         self.state = [
             [0 for cls in range(self.simulation.network.number_of_classes)]
             for i in range(self.simulation.network.number_of_nodes)
@@ -374,6 +384,7 @@ class MatrixBlocking(StateTracker):
         the second node to the first. The numbers denote the order
         at which they became blocked.
     """
+
     def initialise(self, simulation):
         """
         Initialises the matrix blocking tracker class.
@@ -381,9 +392,8 @@ class MatrixBlocking(StateTracker):
         self.simulation = simulation
         self.state = [
             [
-                [
-                    [] for i in range(self.simulation.network.number_of_nodes)
-                ] for i in range(self.simulation.network.number_of_nodes)
+                [[] for i in range(self.simulation.network.number_of_nodes)]
+                for i in range(self.simulation.network.number_of_nodes)
             ],
             [0 for i in range(self.simulation.network.number_of_nodes)],
         ]
@@ -400,7 +410,9 @@ class MatrixBlocking(StateTracker):
         """
         Changes the state of the system when a customer gets blocked.
         """
-        self.state[0][node.id_number - 1][destination.id_number - 1].append(self.increment)
+        self.state[0][node.id_number - 1][destination.id_number - 1].append(
+            self.increment
+        )
         self.increment += 1
 
     def change_state_release(self, node, destination, ind, blocked):
@@ -439,8 +451,6 @@ class MatrixBlocking(StateTracker):
         """
         naive = tuple(self.state[-1])
         matrix = tuple(
-            tuple(
-                tuple(obs for obs in col) for col in row
-            ) for row in self.state[0]
+            tuple(tuple(obs for obs in col) for col in row) for row in self.state[0]
         )
         return (matrix, naive)

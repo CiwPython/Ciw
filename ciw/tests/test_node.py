@@ -100,7 +100,11 @@ class TestNode(unittest.TestCase):
         self.assertEqual(N.c, 9)
         self.assertEqual(
             [[round(p, 10) for p in row] for row in N.transition_row.values()],
-            [[0.1, 0.2, 0.1, 0.4, 0.2], [0.6, 0.0, 0.0, 0.2, 0.2], [0.0, 0.0, 0.4, 0.3, 0.3]],
+            [
+                [0.1, 0.2, 0.1, 0.4, 0.2],
+                [0.6, 0.0, 0.0, 0.2, 0.2],
+                [0.0, 0.0, 0.4, 0.3, 0.3],
+            ],
         )
         self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
@@ -127,15 +131,33 @@ class TestNode(unittest.TestCase):
                 "Class 1": [[0.8, 0.1], [0.2, 0.0]],
             },
             class_change_matrices=[
-                {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-                {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}}
+                {
+                    "Class 0": {"Class 0": 0.5, "Class 1": 0.5},
+                    "Class 1": {"Class 0": 0.5, "Class 1": 0.5},
+                },
+                {
+                    "Class 0": {"Class 0": 1.0, "Class 1": 0.0},
+                    "Class 1": {"Class 0": 0.0, "Class 1": 1.0},
+                },
             ],
         )
         Q = ciw.Simulation(Net)
         N1 = Q.transitive_nodes[0]
-        self.assertEqual(N1.class_change, {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}})
+        self.assertEqual(
+            N1.class_change,
+            {
+                "Class 0": {"Class 0": 0.5, "Class 1": 0.5},
+                "Class 1": {"Class 0": 0.5, "Class 1": 0.5},
+            },
+        )
         N2 = Q.transitive_nodes[1]
-        self.assertEqual(N2.class_change, {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}})
+        self.assertEqual(
+            N2.class_change,
+            {
+                "Class 0": {"Class 0": 1.0, "Class 1": 0.0},
+                "Class 1": {"Class 0": 0.0, "Class 1": 1.0},
+            },
+        )
         self.assertEqual(N.interrupted_individuals, [])
 
         N_schedule = ciw.create_network(
@@ -143,7 +165,10 @@ class TestNode(unittest.TestCase):
                 "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
                 "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
             },
-            number_of_servers=[ciw.Schedule(schedule=[[1, 30], [2, 60], [1, 90], [3, 100]]), 3],
+            number_of_servers=[
+                ciw.Schedule(schedule=[[1, 30], [2, 60], [1, 90], [3, 100]]),
+                3,
+            ],
             queue_capacities=[float("Inf"), 10],
             service_distributions={
                 "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Exponential(0.2)],
@@ -167,7 +192,7 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(N_priorities)
         N = Q.transitive_nodes[0]
         self.assertEqual(N.c, 4)
-        self.assertEqual(Q.network.priority_class_mapping, {'Class 0': 0, 'Class 1': 1})
+        self.assertEqual(Q.network.priority_class_mapping, {"Class 0": 0, "Class 1": 1})
         self.assertEqual(Q.number_of_priority_classes, 2)
         self.assertEqual(N.interrupted_individuals, [])
         self.assertFalse(N.reneging)
@@ -183,7 +208,7 @@ class TestNode(unittest.TestCase):
         ciw.seed(4)
         Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[0]
-        inds = [ciw.Individual(i + 1, 'Class 0') for i in range(3)]
+        inds = [ciw.Individual(i + 1, "Class 0") for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             Q.current_time = current_time
             N.accept(inds[int(current_time * 100 - 1)])
@@ -228,33 +253,39 @@ class TestNode(unittest.TestCase):
                 "Class 1": [[0.8, 0.1], [0.2, 0.0]],
             },
             class_change_matrices=[
-                {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-                {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}}
+                {
+                    "Class 0": {"Class 0": 0.5, "Class 1": 0.5},
+                    "Class 1": {"Class 0": 0.5, "Class 1": 0.5},
+                },
+                {
+                    "Class 0": {"Class 0": 1.0, "Class 1": 0.0},
+                    "Class 1": {"Class 0": 0.0, "Class 1": 1.0},
+                },
             ],
         )
         Q = ciw.Simulation(N)
         N1 = Q.transitive_nodes[0]
-        ind = ciw.Individual(254, 'Class 0')
-        self.assertEqual(ind.customer_class, 'Class 0')
-        self.assertEqual(ind.previous_class, 'Class 0')
+        ind = ciw.Individual(254, "Class 0")
+        self.assertEqual(ind.customer_class, "Class 0")
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 0')
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 0")
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 0')
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 0")
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 1")
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 1")
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 0')
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 0")
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 1")
+        self.assertEqual(ind.previous_class, "Class 0")
 
         # Test for case of having priorities
         ciw.seed(14)
@@ -273,57 +304,63 @@ class TestNode(unittest.TestCase):
             },
             number_of_servers=[4, 3],
             class_change_matrices=[
-                {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.25, 'Class 1': 0.75}},
-                {'Class 0': {'Class 0': 1, 'Class 1': 0}, 'Class 1': {'Class 0': 0, 'Class 1': 1}}
+                {
+                    "Class 0": {"Class 0": 0.5, "Class 1": 0.5},
+                    "Class 1": {"Class 0": 0.25, "Class 1": 0.75},
+                },
+                {
+                    "Class 0": {"Class 0": 1, "Class 1": 0},
+                    "Class 1": {"Class 0": 0, "Class 1": 1},
+                },
             ],
             priority_classes={"Class 0": 0, "Class 1": 1},
         )
         Q = ciw.Simulation(N)
         N1 = Q.transitive_nodes[0]
-        ind = ciw.Individual(254, 'Class 0')
-        self.assertEqual(ind.customer_class, 'Class 0')
+        ind = ciw.Individual(254, "Class 0")
+        self.assertEqual(ind.customer_class, "Class 0")
         self.assertEqual(ind.priority_class, 0)
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 0")
         self.assertEqual(ind.priority_class, 0)
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 0")
         self.assertEqual(ind.priority_class, 0)
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 1")
         self.assertEqual(ind.priority_class, 1)
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.previous_class, "Class 0")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 1")
         self.assertEqual(ind.priority_class, 1)
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 1")
         self.assertEqual(ind.priority_class, 1)
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 1")
         self.assertEqual(ind.priority_class, 1)
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 1")
         self.assertEqual(ind.priority_class, 1)
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 1')
+        self.assertEqual(ind.customer_class, "Class 1")
         self.assertEqual(ind.priority_class, 1)
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 0")
         self.assertEqual(ind.priority_class, 0)
-        self.assertEqual(ind.previous_class, 'Class 1')
+        self.assertEqual(ind.previous_class, "Class 1")
         N1.change_customer_class(ind)
-        self.assertEqual(ind.customer_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 0")
         self.assertEqual(ind.priority_class, 0)
-        self.assertEqual(ind.previous_class, 'Class 0')
+        self.assertEqual(ind.previous_class, "Class 0")
 
     def test_block_individual_method(self):
         ciw.seed(4)
@@ -356,7 +393,7 @@ class TestNode(unittest.TestCase):
         ciw.seed(4)
         Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[0]
-        inds = [ciw.Individual(i + 1, 'Class 0') for i in range(3)]
+        inds = [ciw.Individual(i + 1, "Class 0") for i in range(3)]
         for current_time in [0.01, 0.02, 0.03]:
             Q.current_time = current_time
             N.accept(inds[int(current_time * 100 - 1)])
@@ -423,7 +460,9 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.service_start_date, False)
         self.assertEqual(ind.service_end_date, False)
         Q.current_time = 200.0
-        Q.transitive_nodes[0].begin_service_if_possible_release(ind, Q.nodes[1].servers[0])
+        Q.transitive_nodes[0].begin_service_if_possible_release(
+            ind, Q.nodes[1].servers[0]
+        )
         self.assertEqual(ind.arrival_date, 100.0)
         self.assertEqual(round(ind.service_time, 5), 0.03382)
         self.assertEqual(ind.service_start_date, 200.0)
@@ -537,16 +576,16 @@ class TestNode(unittest.TestCase):
         N = Q.transitive_nodes[0]
         N.next_event_date = 0.0
         self.assertEqual(N.all_individuals, [])
-        ind1 = ciw.Individual(1, customer_class='Class 0')
-        ind2 = ciw.Individual(2, customer_class='Class 0')
-        ind3 = ciw.Individual(3, customer_class='Class 0')
-        ind4 = ciw.Individual(4, customer_class='Class 0')
-        ind5 = ciw.Individual(5, customer_class='Class 0')
-        ind6 = ciw.Individual(6, customer_class='Class 0')
-        ind7 = ciw.Individual(7, customer_class='Class 0')
-        ind8 = ciw.Individual(8, customer_class='Class 0')
-        ind9 = ciw.Individual(9, customer_class='Class 0')
-        ind10 = ciw.Individual(10, customer_class='Class 0')
+        ind1 = ciw.Individual(1, customer_class="Class 0")
+        ind2 = ciw.Individual(2, customer_class="Class 0")
+        ind3 = ciw.Individual(3, customer_class="Class 0")
+        ind4 = ciw.Individual(4, customer_class="Class 0")
+        ind5 = ciw.Individual(5, customer_class="Class 0")
+        ind6 = ciw.Individual(6, customer_class="Class 0")
+        ind7 = ciw.Individual(7, customer_class="Class 0")
+        ind8 = ciw.Individual(8, customer_class="Class 0")
+        ind9 = ciw.Individual(9, customer_class="Class 0")
+        ind10 = ciw.Individual(10, customer_class="Class 0")
 
         Q.current_time = 0.01
         N.accept(ind1)
@@ -676,7 +715,7 @@ class TestNode(unittest.TestCase):
         ciw.seed(6)
         Q = ciw.Simulation(N_params)
         node = Q.transitive_nodes[0]
-        ind = ciw.Individual(22, 'Class 0')
+        ind = ciw.Individual(22, "Class 0")
         self.assertEqual(str(node.next_node(ind)), "Node 4")
         self.assertEqual(str(node.next_node(ind)), "Node 4")
         self.assertEqual(str(node.next_node(ind)), "Node 4")
@@ -712,7 +751,7 @@ class TestNode(unittest.TestCase):
         ciw.seed(7)
         Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[0]
-        ind = ciw.Individual(6, 'Class 0')
+        ind = ciw.Individual(6, "Class 0")
         Q.current_time = 3
         N.accept(ind)
         ind.service_start_date = 3.5
@@ -726,13 +765,13 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.data_records[0].service_end_date, 5.5)
         self.assertEqual(ind.data_records[0].time_blocked, 3.5)
         self.assertEqual(ind.data_records[0].exit_date, 9)
-        self.assertEqual(ind.data_records[0].customer_class, 'Class 0')
+        self.assertEqual(ind.data_records[0].customer_class, "Class 0")
 
     def test_reset_individual_attributes(self):
         ciw.seed(7)
         Q = ciw.Simulation(N_params)
         N = Q.transitive_nodes[0]
-        ind = ciw.Individual(6, 'Class 0')
+        ind = ciw.Individual(6, "Class 0")
         Q.current_time = 3
         N.accept(ind)
         ind.service_start_date = 3.5
@@ -743,7 +782,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.service_start_date, 3.5)
         self.assertEqual(ind.service_end_date, 5.5)
         self.assertEqual(ind.exit_date, 9)
-        self.assertEqual(ind.customer_class, 'Class 0')
+        self.assertEqual(ind.customer_class, "Class 0")
 
         N.reset_individual_attributes(ind)
         self.assertFalse(ind.arrival_date)
@@ -790,13 +829,17 @@ class TestNode(unittest.TestCase):
         N1 = Q.transitive_nodes[0]
         N2 = Q.transitive_nodes[1]
 
-        self.assertEqual([[str(obs) for obs in lst] for lst in N1.individuals], [[], []])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N1.individuals], [[], []]
+        )
         self.assertEqual([str(obs) for obs in N1.all_individuals], [])
-        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []]
+        )
         self.assertEqual([str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 1
-        Q.nodes[0].next_class = 'Class 0'
+        Q.nodes[0].next_class = "Class 0"
         Q.nodes[0].have_event()
 
         self.assertEqual(
@@ -804,11 +847,13 @@ class TestNode(unittest.TestCase):
             [["Individual 1"], []],
         )
         self.assertEqual([str(obs) for obs in N1.all_individuals], ["Individual 1"])
-        self.assertEqual([[str(obs) for obs in lst] for lst in N2.individuals], [[], []])
+        self.assertEqual(
+            [[str(obs) for obs in lst] for lst in N2.individuals], [[], []]
+        )
         self.assertEqual([str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 1
-        Q.nodes[0].next_class = 'Class 1'
+        Q.nodes[0].next_class = "Class 1"
         Q.nodes[0].have_event()
 
         self.assertEqual(
@@ -824,7 +869,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N2.all_individuals], [])
 
         Q.nodes[0].next_node = 2
-        Q.nodes[0].next_class = 'Class 0'
+        Q.nodes[0].next_class = "Class 0"
         Q.nodes[0].have_event()
 
         self.assertEqual(
@@ -841,7 +886,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual([str(obs) for obs in N2.all_individuals], ["Individual 3"])
 
         Q.nodes[0].next_node = 2
-        Q.nodes[0].next_class = 'Class 1'
+        Q.nodes[0].next_class = "Class 1"
         Q.nodes[0].have_event()
 
         self.assertEqual(
@@ -882,7 +927,9 @@ class TestNode(unittest.TestCase):
 
     def test_server_utilisation_with_schedules(self):
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Sequential([2.0, 4.0, 4.0, 0.0, 7.0, 1000.0])],
+            arrival_distributions=[
+                ciw.dists.Sequential([2.0, 4.0, 4.0, 0.0, 7.0, 1000.0])
+            ],
             service_distributions=[ciw.dists.Sequential([4.0, 2.0, 6.0, 6.0, 3.0])],
             number_of_servers=[ciw.Schedule(schedule=[[1, 9], [2, 23]])],
         )
@@ -1033,10 +1080,10 @@ class TestNode(unittest.TestCase):
             A custom server priority function that priortises server 1 for
             customer class 0 and server 2 for customer class 1.
             """
-            if ind.customer_class == 'Class 0':
+            if ind.customer_class == "Class 0":
                 priorities = {1: 0, 2: 1}
                 return priorities[srv.id_number]
-            if ind.customer_class == 'Class 1':
+            if ind.customer_class == "Class 1":
                 priorities = {1: 1, 2: 0}
                 return priorities[srv.id_number]
 
@@ -1060,14 +1107,14 @@ class TestNode(unittest.TestCase):
             [
                 rec.server_id == 1
                 for rec in Q.get_all_records()
-                if rec.customer_class == 'Class 0'
+                if rec.customer_class == "Class 0"
             ]
         )
         all_class_1_correct = all(
             [
                 rec.server_id == 1
                 for rec in Q.get_all_records()
-                if rec.customer_class == 'Class 0'
+                if rec.customer_class == "Class 0"
             ]
         )
 
@@ -1102,15 +1149,15 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(13)
         self.assertEqual(Q.nodes[0].next_event_date, 14)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
         Q.simulate_until_max_time(16)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 17)
-        self.assertEqual(Q.nodes[1].next_event_type, 'renege')
+        self.assertEqual(Q.nodes[1].next_event_type, "renege")
         Q.simulate_until_max_time(17.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, float("inf"))
@@ -1118,15 +1165,15 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(27)
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 32)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
         Q.simulate_until_max_time(30)
         self.assertEqual(Q.nodes[0].next_event_date, 35)
         self.assertEqual(Q.nodes[1].next_event_date, 31)
-        self.assertEqual(Q.nodes[1].next_event_type, 'renege')
+        self.assertEqual(Q.nodes[1].next_event_type, "renege")
         Q.simulate_until_max_time(31.5)
         self.assertEqual(Q.nodes[0].next_event_date, 35)
         self.assertEqual(Q.nodes[1].next_event_date, 32)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
 
     def test_reneging_records(self):
         N = ciw.create_network(
@@ -1147,14 +1194,19 @@ class TestNode(unittest.TestCase):
         self.assertEqual([r.service_start_date for r in reneging_recs], [nan, nan])
         self.assertEqual([r.service_end_date for r in reneging_recs], [nan, nan])
         self.assertEqual([r.server_id for r in reneging_recs], [nan, nan])
-        self.assertEqual([r.customer_class for r in reneging_recs], ['Customer', 'Customer'])
+        self.assertEqual(
+            [r.customer_class for r in reneging_recs], ["Customer", "Customer"]
+        )
         self.assertEqual([r.queue_size_at_arrival for r in reneging_recs], [1, 1])
         self.assertEqual([r.queue_size_at_departure for r in reneging_recs], [1, 1])
 
     def test_reneging_sends_to_destination(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7), None],
-            service_distributions=[ciw.dists.Deterministic(11), ciw.dists.Deterministic(2)],
+            service_distributions=[
+                ciw.dists.Deterministic(11),
+                ciw.dists.Deterministic(2),
+            ],
             routing=[[0, 0], [0, 0]],
             number_of_servers=[1, 1],
             reneging_time_distributions=[ciw.dists.Deterministic(3), None],
@@ -1173,7 +1225,9 @@ class TestNode(unittest.TestCase):
         self.assertEqual([r.service_start_date for r in recs_ind2], [nan, 17])
         self.assertEqual([r.service_end_date for r in recs_ind2], [nan, 19])
         self.assertEqual([r.server_id for r in recs_ind2], [nan, 1])
-        self.assertEqual([r.customer_class for r in recs_ind2], ['Customer', 'Customer'])
+        self.assertEqual(
+            [r.customer_class for r in recs_ind2], ["Customer", "Customer"]
+        )
         self.assertEqual([r.queue_size_at_arrival for r in recs_ind2], [1, 0])
         self.assertEqual([r.queue_size_at_departure for r in recs_ind2], [1, 0])
 
@@ -1207,15 +1261,15 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(13)
         self.assertEqual(Q.nodes[0].next_event_date, 14)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
         Q.simulate_until_max_time(17.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 29)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
 
     def test_reneging_with_schedules(self):
         N = ciw.create_network(
@@ -1238,35 +1292,35 @@ class TestNode(unittest.TestCase):
         Q.simulate_until_max_time(6)
         self.assertEqual(Q.nodes[0].next_event_date, 7)
         self.assertEqual(Q.nodes[1].next_event_date, 16)
-        self.assertEqual(Q.nodes[1].next_event_type, 'shift_change')
+        self.assertEqual(Q.nodes[1].next_event_type, "shift_change")
         Q.simulate_until_max_time(13)
         self.assertEqual(Q.nodes[0].next_event_date, 14)
         self.assertEqual(Q.nodes[1].next_event_date, 16)
-        self.assertEqual(Q.nodes[1].next_event_type, 'shift_change')
+        self.assertEqual(Q.nodes[1].next_event_type, "shift_change")
         Q.simulate_until_max_time(15.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 16)
-        self.assertEqual(Q.nodes[1].next_event_type, 'shift_change')
+        self.assertEqual(Q.nodes[1].next_event_type, "shift_change")
         Q.simulate_until_max_time(16.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 17)
-        self.assertEqual(Q.nodes[1].next_event_type, 'renege')
+        self.assertEqual(Q.nodes[1].next_event_type, "renege")
         Q.simulate_until_max_time(17.5)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 18)
-        self.assertEqual(Q.nodes[1].next_event_type, 'end_service')
+        self.assertEqual(Q.nodes[1].next_event_type, "end_service")
         Q.simulate_until_max_time(20)
         self.assertEqual(Q.nodes[0].next_event_date, 21)
         self.assertEqual(Q.nodes[1].next_event_date, 10000)
-        self.assertEqual(Q.nodes[1].next_event_type, 'shift_change')
+        self.assertEqual(Q.nodes[1].next_event_type, "shift_change")
         Q.simulate_until_max_time(23)
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 24)
-        self.assertEqual(Q.nodes[1].next_event_type, 'renege')
+        self.assertEqual(Q.nodes[1].next_event_type, "renege")
         Q.simulate_until_max_time(27)
         self.assertEqual(Q.nodes[0].next_event_date, 28)
         self.assertEqual(Q.nodes[1].next_event_date, 10000)
-        self.assertEqual(Q.nodes[1].next_event_type, 'shift_change')
+        self.assertEqual(Q.nodes[1].next_event_type, "shift_change")
 
     def test_simultaneous_reneging(self):
         """
@@ -1281,7 +1335,7 @@ class TestNode(unittest.TestCase):
           t=43 Cust 4 leaves
         """
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Sequential([3, 1, 1, 15, float('inf')])],
+            arrival_distributions=[ciw.dists.Sequential([3, 1, 1, 15, float("inf")])],
             service_distributions=[ciw.dists.Deterministic(20)],
             number_of_servers=[1],
             reneging_time_distributions=[ciw.dists.Sequential([100, 7, 6, 100])],
@@ -1289,8 +1343,12 @@ class TestNode(unittest.TestCase):
         ciw.seed(0)
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(50)
-        recs_services = sorted(Q.get_all_records(only=['service']), key=lambda x: x.id_number)
-        recs_reneges = sorted(Q.get_all_records(only=['renege']), key=lambda x: x.id_number)
+        recs_services = sorted(
+            Q.get_all_records(only=["service"]), key=lambda x: x.id_number
+        )
+        recs_reneges = sorted(
+            Q.get_all_records(only=["renege"]), key=lambda x: x.id_number
+        )
         self.assertEqual(len(recs_services), 2)
         self.assertEqual([r.id_number for r in recs_services], [1, 4])
         self.assertEqual([r.service_start_date for r in recs_services], [3, 23])
@@ -1322,8 +1380,8 @@ class TestNode(unittest.TestCase):
             },
             number_of_servers=[1],
             class_change_time_distributions={
-                'Class 0': {'Class 0': None, 'Class 1': ciw.dists.Deterministic(4)},
-                'Class 1': {'Class 0': None, 'Class 1': None},
+                "Class 0": {"Class 0": None, "Class 1": ciw.dists.Deterministic(4)},
+                "Class 1": {"Class 0": None, "Class 1": None},
             },
         )
         Q = ciw.Simulation(N)
@@ -1335,36 +1393,36 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[0].waiting_time, 0)
         self.assertEqual(recs[0].service_start_date, 3)
         self.assertEqual(recs[0].service_end_date, 7.5)
-        self.assertEqual(recs[0].customer_class, 'Class 0')
-        self.assertEqual(recs[0].original_customer_class, 'Class 0')
+        self.assertEqual(recs[0].customer_class, "Class 0")
+        self.assertEqual(recs[0].original_customer_class, "Class 0")
         # Customer 2
         self.assertEqual(recs[1].arrival_date, 6)
         self.assertEqual(recs[1].waiting_time, 1.5)
         self.assertEqual(recs[1].service_start_date, 7.5)
         self.assertEqual(recs[1].service_end_date, 12)
-        self.assertEqual(recs[1].customer_class, 'Class 0')
-        self.assertEqual(recs[1].original_customer_class, 'Class 0')
+        self.assertEqual(recs[1].customer_class, "Class 0")
+        self.assertEqual(recs[1].original_customer_class, "Class 0")
         # Customer 3
         self.assertEqual(recs[2].arrival_date, 9)
         self.assertEqual(recs[2].waiting_time, 3)
         self.assertEqual(recs[2].service_start_date, 12)
         self.assertEqual(recs[2].service_end_date, 16.5)
-        self.assertEqual(recs[2].customer_class, 'Class 0')
-        self.assertEqual(recs[2].original_customer_class, 'Class 0')
+        self.assertEqual(recs[2].customer_class, "Class 0")
+        self.assertEqual(recs[2].original_customer_class, "Class 0")
         # Customer 4
         self.assertEqual(recs[3].arrival_date, 12)
         self.assertEqual(recs[3].waiting_time, 4.5)
         self.assertEqual(recs[3].service_start_date, 16.5)
         self.assertEqual(recs[3].service_end_date, 21)
-        self.assertEqual(recs[3].customer_class, 'Class 1')
-        self.assertEqual(recs[3].original_customer_class, 'Class 0')
+        self.assertEqual(recs[3].customer_class, "Class 1")
+        self.assertEqual(recs[3].original_customer_class, "Class 0")
         # Customer 5
         self.assertEqual(recs[4].arrival_date, 15)
         self.assertEqual(recs[4].waiting_time, 6)
         self.assertEqual(recs[4].service_start_date, 21)
         self.assertEqual(recs[4].service_end_date, 25.5)
-        self.assertEqual(recs[4].customer_class, 'Class 1')
-        self.assertEqual(recs[4].original_customer_class, 'Class 0')
+        self.assertEqual(recs[4].customer_class, "Class 1")
+        self.assertEqual(recs[4].original_customer_class, "Class 0")
 
     def test_class_change_while_waiting_default_nones(self):
         """
@@ -1388,7 +1446,7 @@ class TestNode(unittest.TestCase):
             },
             number_of_servers=[1],
             class_change_time_distributions={
-                'Class 0': {'Class 1': ciw.dists.Deterministic(4)},
+                "Class 0": {"Class 1": ciw.dists.Deterministic(4)},
             },
         )
         Q = ciw.Simulation(N)
@@ -1400,37 +1458,36 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[0].waiting_time, 0)
         self.assertEqual(recs[0].service_start_date, 3)
         self.assertEqual(recs[0].service_end_date, 7.5)
-        self.assertEqual(recs[0].customer_class, 'Class 0')
-        self.assertEqual(recs[0].original_customer_class, 'Class 0')
+        self.assertEqual(recs[0].customer_class, "Class 0")
+        self.assertEqual(recs[0].original_customer_class, "Class 0")
         # Customer 2
         self.assertEqual(recs[1].arrival_date, 6)
         self.assertEqual(recs[1].waiting_time, 1.5)
         self.assertEqual(recs[1].service_start_date, 7.5)
         self.assertEqual(recs[1].service_end_date, 12)
-        self.assertEqual(recs[1].customer_class, 'Class 0')
-        self.assertEqual(recs[1].original_customer_class, 'Class 0')
+        self.assertEqual(recs[1].customer_class, "Class 0")
+        self.assertEqual(recs[1].original_customer_class, "Class 0")
         # Customer 3
         self.assertEqual(recs[2].arrival_date, 9)
         self.assertEqual(recs[2].waiting_time, 3)
         self.assertEqual(recs[2].service_start_date, 12)
         self.assertEqual(recs[2].service_end_date, 16.5)
-        self.assertEqual(recs[2].customer_class, 'Class 0')
-        self.assertEqual(recs[2].original_customer_class, 'Class 0')
+        self.assertEqual(recs[2].customer_class, "Class 0")
+        self.assertEqual(recs[2].original_customer_class, "Class 0")
         # Customer 4
         self.assertEqual(recs[3].arrival_date, 12)
         self.assertEqual(recs[3].waiting_time, 4.5)
         self.assertEqual(recs[3].service_start_date, 16.5)
         self.assertEqual(recs[3].service_end_date, 21)
-        self.assertEqual(recs[3].customer_class, 'Class 1')
-        self.assertEqual(recs[3].original_customer_class, 'Class 0')
+        self.assertEqual(recs[3].customer_class, "Class 1")
+        self.assertEqual(recs[3].original_customer_class, "Class 0")
         # Customer 5
         self.assertEqual(recs[4].arrival_date, 15)
         self.assertEqual(recs[4].waiting_time, 6)
         self.assertEqual(recs[4].service_start_date, 21)
         self.assertEqual(recs[4].service_end_date, 25.5)
-        self.assertEqual(recs[4].customer_class, 'Class 1')
-        self.assertEqual(recs[4].original_customer_class, 'Class 0')
-
+        self.assertEqual(recs[4].customer_class, "Class 1")
+        self.assertEqual(recs[4].original_customer_class, "Class 0")
 
     def test_priority_change_while_waiting(self):
         """
@@ -1457,8 +1514,8 @@ class TestNode(unittest.TestCase):
             },
             number_of_servers=[1],
             class_change_time_distributions={
-                'Class 0': {'Class 0': None, 'Class 1': None},
-                'Class 1': {'Class 0': ciw.dists.Deterministic(7), 'Class 1': None},
+                "Class 0": {"Class 0": None, "Class 1": None},
+                "Class 1": {"Class 0": ciw.dists.Deterministic(7), "Class 1": None},
             },
             priority_classes={"Class 0": 0, "Class 1": 1},
         )
@@ -1471,36 +1528,36 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[0].waiting_time, 0)
         self.assertEqual(recs[0].service_start_date, 3)
         self.assertEqual(recs[0].service_end_date, 7.5)
-        self.assertEqual(recs[0].customer_class, 'Class 1')
-        self.assertEqual(recs[0].original_customer_class, 'Class 1')
+        self.assertEqual(recs[0].customer_class, "Class 1")
+        self.assertEqual(recs[0].original_customer_class, "Class 1")
         # Customer 2
         self.assertEqual(recs[1].arrival_date, 4)
         self.assertEqual(recs[1].waiting_time, 3.5)
         self.assertEqual(recs[1].service_start_date, 7.5)
         self.assertEqual(recs[1].service_end_date, 12)
-        self.assertEqual(recs[1].customer_class, 'Class 0')
-        self.assertEqual(recs[1].original_customer_class, 'Class 0')
+        self.assertEqual(recs[1].customer_class, "Class 0")
+        self.assertEqual(recs[1].original_customer_class, "Class 0")
         # Customer 3
         self.assertEqual(recs[2].arrival_date, 8)
         self.assertEqual(recs[2].waiting_time, 4)
         self.assertEqual(recs[2].service_start_date, 12)
         self.assertEqual(recs[2].service_end_date, 16.5)
-        self.assertEqual(recs[2].customer_class, 'Class 0')
-        self.assertEqual(recs[2].original_customer_class, 'Class 0')
+        self.assertEqual(recs[2].customer_class, "Class 0")
+        self.assertEqual(recs[2].original_customer_class, "Class 0")
         # Customer 4
         self.assertEqual(recs[3].arrival_date, 12)
         self.assertEqual(recs[3].waiting_time, 4.5)
         self.assertEqual(recs[3].service_start_date, 16.5)
         self.assertEqual(recs[3].service_end_date, 21)
-        self.assertEqual(recs[3].customer_class, 'Class 0')
-        self.assertEqual(recs[3].original_customer_class, 'Class 0')
+        self.assertEqual(recs[3].customer_class, "Class 0")
+        self.assertEqual(recs[3].original_customer_class, "Class 0")
         # Customer 5
         self.assertEqual(recs[4].arrival_date, 6)
         self.assertEqual(recs[4].waiting_time, 15)
         self.assertEqual(recs[4].service_start_date, 21)
         self.assertEqual(recs[4].service_end_date, 25.5)
-        self.assertEqual(recs[4].customer_class, 'Class 0')
-        self.assertEqual(recs[4].original_customer_class, 'Class 1')
+        self.assertEqual(recs[4].customer_class, "Class 0")
+        self.assertEqual(recs[4].original_customer_class, "Class 1")
 
     def test_preemptive_priorities(self):
         """
@@ -1587,7 +1644,9 @@ class TestNode(unittest.TestCase):
         self.assertEqual(recs[2].service_end_date, 11.5)
 
         # Test there are interrupted service data records
-        interrupted_recs = [r for r in all_recs if r.record_type == "interrupted service"]
+        interrupted_recs = [
+            r for r in all_recs if r.record_type == "interrupted service"
+        ]
         self.assertEqual(len(interrupted_recs), 1)
         self.assertEqual(interrupted_recs[0].arrival_date, 5)
         self.assertEqual(interrupted_recs[0].service_start_date, 6.5)
@@ -1634,8 +1693,8 @@ class TestNode(unittest.TestCase):
             number_of_servers=[1],
             priority_classes=({"Class 0": 0, "Class 1": 1}, [False]),
             class_change_time_distributions={
-                'Class 0': {'Class 0': None, 'Class 1': None},
-                'Class 1': {'Class 0': ciw.dists.Deterministic(1.2), 'Class 1': None}
+                "Class 0": {"Class 0": None, "Class 1": None},
+                "Class 1": {"Class 0": ciw.dists.Deterministic(1.2), "Class 1": None},
             },
         )
         Q = ciw.Simulation(N, exact=26)
@@ -1676,8 +1735,8 @@ class TestNode(unittest.TestCase):
             number_of_servers=[1],
             priority_classes=({"Class 0": 0, "Class 1": 1}, ["resample"]),
             class_change_time_distributions={
-                'Class 0': {'Class 0': None, 'Class 1': None},
-                'Class 1': {'Class 0': ciw.dists.Deterministic(1.2), 'Class 1': None}
+                "Class 0": {"Class 0": None, "Class 1": None},
+                "Class 1": {"Class 0": ciw.dists.Deterministic(1.2), "Class 1": None},
             },
         )
         Q = ciw.Simulation(N, exact=26)
@@ -1708,7 +1767,9 @@ class TestNode(unittest.TestCase):
         self.assertEqual(float(recs[4].service_end_date), 16.7)
 
         # Test interrupted service data records
-        interrupted_recs = [r for r in all_recs if r.record_type == "interrupted service"]
+        interrupted_recs = [
+            r for r in all_recs if r.record_type == "interrupted service"
+        ]
         self.assertEqual(len(interrupted_recs), 1)
         self.assertEqual(float(interrupted_recs[0].arrival_date), 6)
         self.assertEqual(float(interrupted_recs[0].service_start_date), 7)
@@ -1722,18 +1783,27 @@ class TestNode(unittest.TestCase):
             arrival_distributions={
                 "Class 0": [ciw.dists.Exponential(1)],
                 "Class 1": [ciw.dists.Exponential(1)],
-                "Class 2": [ciw.dists.Exponential(1)]
+                "Class 2": [ciw.dists.Exponential(1)],
             },
             service_distributions={
                 "Class 0": [ciw.dists.Exponential(7)],
                 "Class 1": [ciw.dists.Exponential(6)],
-                "Class 2": [ciw.dists.Exponential(2)]
+                "Class 2": [ciw.dists.Exponential(2)],
             },
             number_of_servers=[4],
             class_change_time_distributions={
-                "Class 0": {"Class 1": ciw.dists.Exponential(1), "Class 2": ciw.dists.Exponential(2)},
-                "Class 1": {"Class 0": ciw.dists.Exponential(3), "Class 2": ciw.dists.Exponential(1)},
-                "Class 2": {"Class 0": ciw.dists.Exponential(3), "Class 1": ciw.dists.Exponential(3)}
+                "Class 0": {
+                    "Class 1": ciw.dists.Exponential(1),
+                    "Class 2": ciw.dists.Exponential(2),
+                },
+                "Class 1": {
+                    "Class 0": ciw.dists.Exponential(3),
+                    "Class 2": ciw.dists.Exponential(1),
+                },
+                "Class 2": {
+                    "Class 0": ciw.dists.Exponential(3),
+                    "Class 1": ciw.dists.Exponential(3),
+                },
             },
             priority_classes=({"Class 0": 0, "Class 1": 1, "Class 2": 2}, ["resample"]),
         )
@@ -1741,7 +1811,6 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(1000)
         self.assertEqual(len(Q.nodes[-1].all_individuals), 3070)
-
 
     def test_preemptive_priorities_resume_options(self):
         """
@@ -1855,7 +1924,9 @@ class TestNode(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7)],
             service_distributions=[ciw.dists.Deterministic(4)],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 24], [0, 29], [1, 37]], preemption="resume")],
+            number_of_servers=[
+                ciw.Schedule(schedule=[[1, 24], [0, 29], [1, 37]], preemption="resume")
+            ],
         )
         ciw.seed(0)
         Q = ciw.Simulation(N)
@@ -1865,7 +1936,9 @@ class TestNode(unittest.TestCase):
         recs_ind3 = [r for r in recs if r.id_number == 3]
         self.assertEqual(len(recs_ind3), 2)
 
-        interrupted_record = [r for r in recs_ind3 if r.record_type == "interrupted service"][0]
+        interrupted_record = [
+            r for r in recs_ind3 if r.record_type == "interrupted service"
+        ][0]
         resumed_record = [r for r in recs_ind3 if r.record_type == "service"][0]
         self.assertEqual(interrupted_record.arrival_date, 21)
         self.assertEqual(interrupted_record.service_start_date, 21)
@@ -2010,12 +2083,14 @@ class TestNode(unittest.TestCase):
         self.assertEqual(set(Q.nodes[2].blocked_queue), set(expected_blocked_queue))
 
     def test_shift_change_before_arrival(self):
-         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Sequential(sequence=[2.0, float('inf')])],
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Sequential(sequence=[2.0, float("inf")])],
             service_distributions=[ciw.dists.Deterministic(value=1.0)],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 1.0], [2, 10.0]], preemption=False)]
-         )
-         Q = ciw.Simulation(N)
-         Q.simulate_until_max_time(10.5)
-         recs = Q.get_all_records()
-         self.assertEqual(len(recs), 1)
+            number_of_servers=[
+                ciw.Schedule(schedule=[[1, 1.0], [2, 10.0]], preemption=False)
+            ],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(10.5)
+        recs = Q.get_all_records()
+        self.assertEqual(len(recs), 1)

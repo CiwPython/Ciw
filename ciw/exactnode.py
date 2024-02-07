@@ -10,7 +10,7 @@ class ExactNode(Node):
     precise version of addition to fix discrepencies
     with floating point numbers.
     """
-    
+
     @property
     def now(self):
         """

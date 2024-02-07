@@ -4,7 +4,7 @@ from .individual import Individual
 
 class ArrivalNode(object):
     """Class for the arrival node of the network.
-    
+
     See Also
     --------
     ciw.Simulation : Main simulation class.
@@ -25,12 +25,17 @@ class ArrivalNode(object):
         """
         self.simulation = simulation
         self.number_of_individuals = 0
-        self.number_of_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
+        self.number_of_individuals_per_class = {
+            clss: 0 for clss in self.simulation.network.customer_class_names
+        }
         self.number_accepted_individuals = 0
-        self.number_accepted_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
+        self.number_accepted_individuals_per_class = {
+            clss: 0 for clss in self.simulation.network.customer_class_names
+        }
         self.event_dates_dict = {
-            nd + 1: {clss: False for clss in self.simulation.network.customer_class_names
-            } for nd in range(self.simulation.network.number_of_nodes)
+            nd
+            + 1: {clss: False for clss in self.simulation.network.customer_class_names}
+            for nd in range(self.simulation.network.number_of_nodes)
         }
 
     def initialise(self):
@@ -52,7 +57,9 @@ class ArrivalNode(object):
             self.send_individual(next_node, next_individual)
         else:
             rnd_num = random()
-            if rnd_num < next_node.baulking_functions[self.next_class](next_node.number_of_individuals):
+            if rnd_num < next_node.baulking_functions[self.next_class](
+                next_node.number_of_individuals
+            ):
                 self.record_baulk(next_node, next_individual)
                 self.simulation.nodes[-1].accept(next_individual, completed=False)
             else:
@@ -84,7 +91,9 @@ class ArrivalNode(object):
         for _ in range(batch):
             self.number_of_individuals += 1
             self.number_of_individuals_per_class[self.next_class] += 1
-            priority_class = self.simulation.network.priority_class_mapping[self.next_class]
+            priority_class = self.simulation.network.priority_class_mapping[
+                self.next_class
+            ]
             next_individual = self.simulation.IndividualType(
                 self.number_of_individuals,
                 self.next_class,
@@ -92,7 +101,9 @@ class ArrivalNode(object):
                 simulation=self.simulation,
             )
             if self.simulation.network.process_based:
-                next_individual.route = self.simulation.network.customer_classes[next_individual.customer_class].routing[self.next_node - 1](next_individual)
+                next_individual.route = self.simulation.network.customer_classes[
+                    next_individual.customer_class
+                ].routing[self.next_node - 1](next_individual)
             next_node = self.simulation.transitive_nodes[self.next_node - 1]
             self.release_individual(next_node, next_individual)
 
@@ -124,14 +135,18 @@ class ArrivalNode(object):
         """
         Samples the inter-arrival time for next class and node.
         """
-        return self.simulation.inter_arrival_times[nd][clss]._sample(t=self.simulation.current_time)
+        return self.simulation.inter_arrival_times[nd][clss]._sample(
+            t=self.simulation.current_time
+        )
 
     def batch_size(self, nd, clss):
         """
         Samples the batch size for next class and node.
         Raises error if a positive integer is not sampled.
         """
-        batch = self.simulation.batch_sizes[nd][clss]._sample(t=self.simulation.current_time)
+        batch = self.simulation.batch_sizes[nd][clss]._sample(
+            t=self.simulation.current_time
+        )
         if isinstance(batch, int) and batch >= 0:
             return batch
         raise ValueError("Batch sizes must be positive integers.")
@@ -146,7 +161,9 @@ class ArrivalNode(object):
         """
         Adds an individual to the rejection dictionary.
         """
-        next_node.write_baulking_or_rejection_record(individual, record_type="rejection")
+        next_node.write_baulking_or_rejection_record(
+            individual, record_type="rejection"
+        )
 
     def release_individual(self, next_node, next_individual):
         """

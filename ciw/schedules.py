@@ -3,13 +3,16 @@ class Schedule:
     A Schedule class, for storing information about server schedules and
     generating the next shifts.
     """
+
     def __init__(self, schedule, preemption=False):
         """
         Initialises the instance of the Schedule object
         """
-        if preemption not in [False, 'resume', 'restart', 'resample']:
-            raise ValueError("Pre-emption options should be either 'resume', 'restart', 'resample', or False.")
-        self.schedule_type = 'schedule'
+        if preemption not in [False, "resume", "restart", "resample"]:
+            raise ValueError(
+                "Pre-emption options should be either 'resume', 'restart', 'resample', or False."
+            )
+        self.schedule_type = "schedule"
         self.schedule_dates = [shift[1] for shift in schedule]
         self.schedule_servers = [shift[0] for shift in schedule]
         self.preemption = preemption
@@ -20,7 +23,9 @@ class Schedule:
         Initialises the generator object at the beginning of a simulation
         """
         self.next_c = self.schedule_servers[0]
-        self.schedule_generator = self.get_schedule_generator(self.schedule_dates, self.schedule_servers)
+        self.schedule_generator = self.get_schedule_generator(
+            self.schedule_dates, self.schedule_servers
+        )
         self.get_next_shift()
 
     def get_schedule_generator(self, boundaries, values):
@@ -31,7 +36,9 @@ class Schedule:
         index = 0
         date = 0
         while True:
-            date = boundaries[index % num_boundaries] + ((index) // num_boundaries * self.cyclelength)
+            date = boundaries[index % num_boundaries] + (
+                (index) // num_boundaries * self.cyclelength
+            )
             index += 1
             yield date, values[index % num_boundaries]
 
@@ -52,10 +59,14 @@ class Slotted(Schedule):
         """
         if not capacitated:
             if preemption is not False:
-                raise ValueError("Pre-emption options not availale for non-capacitated slots.")
-        if preemption not in [False, 'resume', 'restart', 'resample']:
-            raise ValueError("Pre-emption options should be either 'resume', 'restart', 'resample', or False.")
-        self.schedule_type = 'slotted'
+                raise ValueError(
+                    "Pre-emption options not availale for non-capacitated slots."
+                )
+        if preemption not in [False, "resume", "restart", "resample"]:
+            raise ValueError(
+                "Pre-emption options should be either 'resume', 'restart', 'resample', or False."
+            )
+        self.schedule_type = "slotted"
         self.slots = slots
         self.slot_sizes = slot_sizes
         self.capacitated = capacitated
@@ -63,12 +74,13 @@ class Slotted(Schedule):
         self.cyclelength = self.slots[-1]
         self.c = 0
 
-
     def initialise(self):
         """
         Initialises the generator object at the beginning of a simulation
         """
-        self.schedule_generator = self.get_schedule_generator(self.slots, [self.slot_sizes[-1]] + self.slot_sizes[:-1])
+        self.schedule_generator = self.get_schedule_generator(
+            self.slots, [self.slot_sizes[-1]] + self.slot_sizes[:-1]
+        )
         self.get_next_slot()
 
     def get_next_slot(self):

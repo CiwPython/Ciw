@@ -75,7 +75,9 @@ class Individual(object):
     For more details on the attributes and methods, please refer to the class documentation.
     """
 
-    def __init__(self, id_number, customer_class='Customer', priority_class=0, simulation=False):
+    def __init__(
+        self, id_number, customer_class="Customer", priority_class=0, simulation=False
+    ):
         """
         Initialise an individual.
         """
@@ -101,6 +103,5 @@ class Individual(object):
         self.simulation = simulation
 
     def __repr__(self):
-        """Represents an Individual instance as a string.
-        """
+        """Represents an Individual instance as a string."""
         return f"Individual {self.id_number}"

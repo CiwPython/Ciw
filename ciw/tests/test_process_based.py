@@ -41,7 +41,7 @@ def generator_function_7(ind):
 
 
 def generator_function_8(ind):
-    if ind.customer_class == 'Class 0':
+    if ind.customer_class == "Class 0":
         return [1]
     return [1, 1, 1]
 
@@ -173,10 +173,11 @@ class TestProcessBased(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
-        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
         self.assertEqual(
-            routes_counter,
-            Counter({(1, 1, 2, 1, 3): 245, (2, 1, 3, 1, 1): 255})
+            routes_counter, Counter({(1, 1, 2, 1, 3): 245, (2, 1, 3, 1, 1): 255})
         )
 
         N = ciw.create_network(
@@ -197,7 +198,9 @@ class TestProcessBased(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
-        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
         self.assertEqual(
             routes_counter,
             Counter({(3, 2, 3, 2, 3): 256, (1, 1, 1): 155, (2, 1, 3, 1, 1): 89}),
@@ -221,7 +224,9 @@ class TestProcessBased(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
-        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
         self.assertEqual(
             routes_counter,
             Counter({(3, 2, 3, 2, 3): 233, (1, 1, 2, 1, 3): 148, (2, 1, 3, 1, 1): 119}),
@@ -245,7 +250,9 @@ class TestProcessBased(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
-        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
         self.assertEqual(
             routes_counter,
             Counter({(3,): 385, (1, 1, 2, 1, 3): 57, (2, 1, 3, 1, 1): 58}),
@@ -269,10 +276,11 @@ class TestProcessBased(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
-        routes_counter = Counter([tuple(dr.node for dr in ind.data_records) for ind in inds])
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
         self.assertEqual(
-            routes_counter,
-            Counter({(2, 1, 1, 2): 172, (2, 1, 2): 169, (1, 1, 1): 159})
+            routes_counter, Counter({(2, 1, 1, 2): 172, (2, 1, 2): 169, (1, 1, 1): 159})
         )
 
     def test_customer_class_based_routing(self):
@@ -292,5 +300,10 @@ class TestProcessBased(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_customers(500, method="Finish")
         inds = Q.nodes[-1].all_individuals
-        routes_counter = set([tuple([ind.customer_class, tuple(dr.node for dr in ind.data_records)]) for ind in inds])
-        self.assertEqual(routes_counter, {('Class 1', (1, 1, 1)), ('Class 0', (1,))})
+        routes_counter = set(
+            [
+                tuple([ind.customer_class, tuple(dr.node for dr in ind.data_records)])
+                for ind in inds
+            ]
+        )
+        self.assertEqual(routes_counter, {("Class 1", (1, 1, 1)), ("Class 0", (1,))})
