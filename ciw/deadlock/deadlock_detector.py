@@ -107,7 +107,8 @@ class StateDigraph(NoDetection):
         """
         for blq in node.blocked_queue:
             inds = [
-                ind for ind in node.simulation.nodes[blq[0]].all_individuals
+                ind
+                for ind in node.simulation.nodes[blq[0]].all_individuals
                 if ind.id_number == blq[1]
             ]
             ind = inds[0]

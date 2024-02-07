@@ -82,21 +82,48 @@ class TestArrivalNode(unittest.TestCase):
         N.initialise()
         self.assertEqual(round(N.next_event_date, 5), 0.00440)
         self.assertEqual(N.number_of_individuals, 0)
-        self.assertEqual(N.number_of_individuals_per_class, {'Class 0': 0, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_of_individuals_per_class,
+            {"Class 0": 0, "Class 1": 0, "Class 2": 0},
+        )
         self.assertEqual(N.number_accepted_individuals, 0)
-        self.assertEqual(N.number_accepted_individuals_per_class, {'Class 0': 0, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_accepted_individuals_per_class,
+            {"Class 0": 0, "Class 1": 0, "Class 2": 0},
+        )
         expected_dates_dict = {
-            1: {'Class 0': 0.2110410999, 'Class 1': 0.1415614623, 'Class 2': 0.3923690877},
-            2: {'Class 0': 0.1218825551, 'Class 1': 0.0044003133, 'Class 2': 0.2442775601},
-            3: {'Class 0': 0.0819463473, 'Class 1': 0.4135097542, 'Class 2': 0.7256307839},
-            4: {'Class 0': 0.1738823223, 'Class 1': 0.3988184145, 'Class 2': 0.2987813628},
+            1: {
+                "Class 0": 0.2110410999,
+                "Class 1": 0.1415614623,
+                "Class 2": 0.3923690877,
+            },
+            2: {
+                "Class 0": 0.1218825551,
+                "Class 1": 0.0044003133,
+                "Class 2": 0.2442775601,
+            },
+            3: {
+                "Class 0": 0.0819463473,
+                "Class 1": 0.4135097542,
+                "Class 2": 0.7256307839,
+            },
+            4: {
+                "Class 0": 0.1738823223,
+                "Class 1": 0.3988184145,
+                "Class 2": 0.2987813628,
+            },
         }
-        dates_dict = { nd: {
-            obs: round(N.event_dates_dict[nd][obs], 10)
+        dates_dict = {
+            nd: {
+                obs: round(N.event_dates_dict[nd][obs], 10)
                 for obs in N.event_dates_dict[nd]
-            } for nd in N.event_dates_dict
+            }
+            for nd in N.event_dates_dict
         }
-        self.assertEqual(dates_dict, expected_dates_dict,)
+        self.assertEqual(
+            dates_dict,
+            expected_dates_dict,
+        )
 
     def test_initialise_event_dates_dict_method(self):
         ciw.seed(6)
@@ -104,28 +131,64 @@ class TestArrivalNode(unittest.TestCase):
         N = ciw.ArrivalNode(Q)
         N.initialise()
         expected_dates_dict_1 = {
-            1: {'Class 0': 0.4362282541, 'Class 1': 0.2672232406, 'Class 2': 0.3864256273},
-            2: {'Class 0': 0.1636952311, 'Class 1': 0.0714709565, 'Class 2': 0.8065738414},
-            3: {'Class 0': 0.4088480190, 'Class 1': 0.0514323248, 'Class 2': 0.8132038176},
-            4: {'Class 0': 1.1573751438, 'Class 1': 0.4649276714, 'Class 2': 0.8176876727},
+            1: {
+                "Class 0": 0.4362282541,
+                "Class 1": 0.2672232406,
+                "Class 2": 0.3864256273,
+            },
+            2: {
+                "Class 0": 0.1636952311,
+                "Class 1": 0.0714709565,
+                "Class 2": 0.8065738414,
+            },
+            3: {
+                "Class 0": 0.4088480190,
+                "Class 1": 0.0514323248,
+                "Class 2": 0.8132038176,
+            },
+            4: {
+                "Class 0": 1.1573751438,
+                "Class 1": 0.4649276714,
+                "Class 2": 0.8176876727,
+            },
         }
         expected_dates_dict_2 = {
-            1: {'Class 0': 0.0325870775, 'Class 1': 0.8054262558, 'Class 2': 0.8168179515},
-            2: {'Class 0': 0.0841671381, 'Class 1': 0.0328245299, 'Class 2': 0.2196023847},
-            3: {'Class 0': 0.2519089068, 'Class 1': 0.0573597814, 'Class 2': 1.5117882121},
-            4: {'Class 0': 0.8881158889, 'Class 1': 0.0560592622, 'Class 2': 2.1307650868},
+            1: {
+                "Class 0": 0.0325870775,
+                "Class 1": 0.8054262558,
+                "Class 2": 0.8168179515,
+            },
+            2: {
+                "Class 0": 0.0841671381,
+                "Class 1": 0.0328245299,
+                "Class 2": 0.2196023847,
+            },
+            3: {
+                "Class 0": 0.2519089068,
+                "Class 1": 0.0573597814,
+                "Class 2": 1.5117882121,
+            },
+            4: {
+                "Class 0": 0.8881158889,
+                "Class 1": 0.0560592622,
+                "Class 2": 2.1307650868,
+            },
         }
-        dates_dict_1 = { nd: {
-            obs: round(N.event_dates_dict[nd][obs], 10)
-            for obs in N.event_dates_dict[nd]
-            } for nd in N.event_dates_dict
+        dates_dict_1 = {
+            nd: {
+                obs: round(N.event_dates_dict[nd][obs], 10)
+                for obs in N.event_dates_dict[nd]
+            }
+            for nd in N.event_dates_dict
         }
         self.assertEqual(dates_dict_1, expected_dates_dict_1)
         N.initialise_event_dates_dict()
-        dates_dict_2 = { nd: {
-            obs: round(N.event_dates_dict[nd][obs], 10)
-            for obs in N.event_dates_dict[nd]
-            } for nd in N.event_dates_dict
+        dates_dict_2 = {
+            nd: {
+                obs: round(N.event_dates_dict[nd][obs], 10)
+                for obs in N.event_dates_dict[nd]
+            }
+            for nd in N.event_dates_dict
         }
         self.assertEqual(dates_dict_2, expected_dates_dict_2)
 
@@ -143,12 +206,12 @@ class TestArrivalNode(unittest.TestCase):
         N.find_next_event_date()
         self.assertEqual(round(N.next_event_date, 5), 0.00105)
         self.assertEqual(N.next_node, 1)
-        self.assertEqual(N.next_class, 'Class 1')
+        self.assertEqual(N.next_class, "Class 1")
 
         N.have_event()
         self.assertEqual(round(N.next_event_date, 5), 0.00518)
         self.assertEqual(N.next_node, 3)
-        self.assertEqual(N.next_class, 'Class 1')
+        self.assertEqual(N.next_class, "Class 1")
 
     def test_have_event_method(self):
         ciw.seed(1)
@@ -156,9 +219,15 @@ class TestArrivalNode(unittest.TestCase):
         N = ciw.ArrivalNode(Q)
         N.initialise()
         self.assertEqual(N.number_of_individuals, 0)
-        self.assertEqual(N.number_of_individuals_per_class, {'Class 0': 0, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_of_individuals_per_class,
+            {"Class 0": 0, "Class 1": 0, "Class 2": 0},
+        )
         self.assertEqual(N.number_accepted_individuals, 0)
-        self.assertEqual(N.number_accepted_individuals_per_class, {'Class 0': 0, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_accepted_individuals_per_class,
+            {"Class 0": 0, "Class 1": 0, "Class 2": 0},
+        )
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[0].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
@@ -172,15 +241,25 @@ class TestArrivalNode(unittest.TestCase):
 
         N.have_event()
         self.assertEqual(N.number_of_individuals, 1)
-        self.assertEqual(N.number_of_individuals_per_class, {'Class 0': 0, 'Class 1': 1, 'Class 2': 0})
+        self.assertEqual(
+            N.number_of_individuals_per_class,
+            {"Class 0": 0, "Class 1": 1, "Class 2": 0},
+        )
         self.assertEqual(N.number_accepted_individuals, 1)
-        self.assertEqual(N.number_accepted_individuals_per_class, {'Class 0': 0, 'Class 1': 1, 'Class 2': 0})
+        self.assertEqual(
+            N.number_accepted_individuals_per_class,
+            {"Class 0": 0, "Class 1": 1, "Class 2": 0},
+        )
         self.assertEqual(
             [str(obj) for obj in Q.transitive_nodes[0].all_individuals],
             ["Individual 1"],
         )
         self.assertEqual(
-            [str(obj) for pr_cls in Q.transitive_nodes[0].individuals for obj in pr_cls],
+            [
+                str(obj)
+                for pr_cls in Q.transitive_nodes[0].individuals
+                for obj in pr_cls
+            ],
             ["Individual 1"],
         )
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
@@ -197,9 +276,15 @@ class TestArrivalNode(unittest.TestCase):
         N = ciw.ArrivalNode(Q)
         N.initialise()
         self.assertEqual(N.number_of_individuals, 0)
-        self.assertEqual(N.number_of_individuals_per_class, {'Class 0': 0, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_of_individuals_per_class,
+            {"Class 0": 0, "Class 1": 0, "Class 2": 0},
+        )
         self.assertEqual(N.number_accepted_individuals, 0)
-        self.assertEqual(N.number_accepted_individuals_per_class, {'Class 0': 0, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_accepted_individuals_per_class,
+            {"Class 0": 0, "Class 1": 0, "Class 2": 0},
+        )
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[0].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
@@ -213,9 +298,15 @@ class TestArrivalNode(unittest.TestCase):
 
         N.have_event()
         self.assertEqual(N.number_of_individuals, 1)
-        self.assertEqual(N.number_of_individuals_per_class, {'Class 0': 1, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_of_individuals_per_class,
+            {"Class 0": 1, "Class 1": 0, "Class 2": 0},
+        )
         self.assertEqual(N.number_accepted_individuals, 1)
-        self.assertEqual(N.number_accepted_individuals_per_class, {'Class 0': 1, 'Class 1': 0, 'Class 2': 0})
+        self.assertEqual(
+            N.number_accepted_individuals_per_class,
+            {"Class 0": 1, "Class 1": 0, "Class 2": 0},
+        )
         self.assertEqual(Q.transitive_nodes[0].all_individuals, [])
         self.assertEqual(Q.transitive_nodes[0].individuals, [[]])
         self.assertEqual(Q.transitive_nodes[1].all_individuals, [])
@@ -225,7 +316,11 @@ class TestArrivalNode(unittest.TestCase):
             ["Individual 1"],
         )
         self.assertEqual(
-            [str(obj) for pr_cls in Q.transitive_nodes[2].individuals for obj in pr_cls],
+            [
+                str(obj)
+                for pr_cls in Q.transitive_nodes[2].individuals
+                for obj in pr_cls
+            ],
             ["Individual 1"],
         )
         self.assertEqual(Q.transitive_nodes[3].all_individuals, [])
@@ -243,10 +338,14 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(N)
         AN = Q.nodes[0]
         self.assertEqual(
-            str(AN.simulation.network.customer_classes['Customer'].arrival_distributions[0]),
+            str(
+                AN.simulation.network.customer_classes[
+                    "Customer"
+                ].arrival_distributions[0]
+            ),
             "None",
         )
-        self.assertEqual(AN.event_dates_dict[1]['Customer'], float("Inf"))
+        self.assertEqual(AN.event_dates_dict[1]["Customer"], float("Inf"))
 
     def test_rejection(self):
         params = {
@@ -342,7 +441,9 @@ class TestArrivalNode(unittest.TestCase):
 
         # Test that batched individuals have same arrival date
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Sequential([5.0, 5.0, 2.0, 1.0, 5.0, 100.0])],
+            arrival_distributions=[
+                ciw.dists.Sequential([5.0, 5.0, 2.0, 1.0, 5.0, 100.0])
+            ],
             service_distributions=[ciw.dists.Sequential([2.0, 3.0])],
             number_of_servers=[1],
             batching_distributions=[ciw.dists.Deterministic(2)],
@@ -423,7 +524,28 @@ class TestArrivalNode(unittest.TestCase):
         # Numbers of individuals should only increase by 1 or by 5
         self.assertEqual(
             observerd_inds,
-            [0, 1, 6, 11, 12, 13, 14, 15, 20, 25, 30, 35, 40, 41, 42, 43, 48, 49, 54, 55],
+            [
+                0,
+                1,
+                6,
+                11,
+                12,
+                13,
+                14,
+                15,
+                20,
+                25,
+                30,
+                35,
+                40,
+                41,
+                42,
+                43,
+                48,
+                49,
+                54,
+                55,
+            ],
         )
 
     def test_batching_multi_node(self):
@@ -456,7 +578,10 @@ class TestArrivalNode(unittest.TestCase):
         classes = [r.customer_class for r in recs]
         self.assertEqual(arrivals, [20, 20, 20, 23, 23, 25])
         self.assertEqual(nodes, [1, 1, 1, 2, 2, 3])
-        self.assertEqual(classes, ['Customer', 'Customer', 'Customer', 'Customer', 'Customer', 'Customer'])
+        self.assertEqual(
+            classes,
+            ["Customer", "Customer", "Customer", "Customer", "Customer", "Customer"],
+        )
 
     def test_batching_multi_classes(self):
         N = ciw.create_network(
@@ -487,7 +612,9 @@ class TestArrivalNode(unittest.TestCase):
         classes = [r.customer_class for r in recs]
         self.assertEqual(arrivals, [20, 20, 20, 23, 23, 25])
         self.assertEqual(nodes, [1, 1, 1, 1, 1, 1])
-        self.assertEqual(classes, ['Class 0', 'Class 0', 'Class 0', 'Class 1', 'Class 1', 'Class 2'])
+        self.assertEqual(
+            classes, ["Class 0", "Class 0", "Class 0", "Class 1", "Class 1", "Class 2"]
+        )
 
     def test_batching_time_dependent(self):
         N = ciw.create_network(

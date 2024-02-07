@@ -79,8 +79,14 @@ N_classchange = ciw.create_network(
     },
     routing={"Class 0": [[0.8, 0.1], [0.0, 0.0]], "Class 1": [[0.8, 0.1], [0.2, 0.0]]},
     class_change_matrices=[
-        {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}},
-        {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}}
+        {
+            "Class 0": {"Class 0": 0.5, "Class 1": 0.5},
+            "Class 1": {"Class 0": 0.5, "Class 1": 0.5},
+        },
+        {
+            "Class 0": {"Class 0": 1.0, "Class 1": 0.0},
+            "Class 1": {"Class 0": 0.0, "Class 1": 1.0},
+        },
     ],
 )
 
@@ -122,7 +128,11 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(N.c, float("inf"))
         self.assertEqual(
             [[round(p, 10) for p in row] for row in N.transition_row.values()],
-            [[0.1, 0.2, 0.1, 0.4, 0.2], [0.6, 0.0, 0.0, 0.2, 0.2], [0.0, 0.0, 0.4, 0.3, 0.3]],
+            [
+                [0.1, 0.2, 0.1, 0.4, 0.2],
+                [0.6, 0.0, 0.0, 0.2, 0.2],
+                [0.0, 0.0, 0.4, 0.3, 0.3],
+            ],
         )
         self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
@@ -132,9 +142,21 @@ class TestProcessorSharing(unittest.TestCase):
 
         Q = ciw.Simulation(N_classchange, node_class=ciw.PSNode)
         N1 = Q.transitive_nodes[0]
-        self.assertEqual(N1.class_change, {'Class 0': {'Class 0': 0.5, 'Class 1': 0.5}, 'Class 1': {'Class 0': 0.5, 'Class 1': 0.5}})
+        self.assertEqual(
+            N1.class_change,
+            {
+                "Class 0": {"Class 0": 0.5, "Class 1": 0.5},
+                "Class 1": {"Class 0": 0.5, "Class 1": 0.5},
+            },
+        )
         N2 = Q.transitive_nodes[1]
-        self.assertEqual(N2.class_change, {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}})
+        self.assertEqual(
+            N2.class_change,
+            {
+                "Class 0": {"Class 0": 1.0, "Class 1": 0.0},
+                "Class 1": {"Class 0": 0.0, "Class 1": 1.0},
+            },
+        )
         self.assertEqual(N.interrupted_individuals, [])
 
         Q = ciw.Simulation(N_schedule, node_class=ciw.PSNode)
@@ -152,7 +174,7 @@ class TestProcessorSharing(unittest.TestCase):
         N = Q.transitive_nodes[0]
         self.assertEqual(N.ps_capacity, 4)
         self.assertEqual(N.c, float("inf"))
-        self.assertEqual(Q.network.priority_class_mapping, {'Class 0': 0, 'Class 1': 1})
+        self.assertEqual(Q.network.priority_class_mapping, {"Class 0": 0, "Class 1": 1})
         self.assertEqual(Q.number_of_priority_classes, 2)
         self.assertEqual(N.interrupted_individuals, [])
         self.assertEqual(N.last_occupancy, 0)
@@ -167,7 +189,9 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(Q.current_time, 0.0)
         Q.current_time = 0.5
         self.assertEqual(Q.current_time, 0.5)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
         self.assertEqual(round(ind1.arrival_date, 10), 0.5)
         self.assertEqual(round(ind1.service_time, 10), 1.0)
@@ -177,7 +201,9 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind1.service_start_date, 10), 0.5)
         self.assertEqual(round(ind1.service_end_date, 10), 1.5)
         Q.current_time = 0.7
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
         self.assertEqual(round(ind1.arrival_date, 10), 0.5)
         self.assertEqual(round(ind1.service_time, 10), 1.0)
@@ -194,7 +220,9 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind2.service_start_date, 10), 0.7)
         self.assertEqual(round(ind2.service_end_date, 10), 2.7)
         Q.current_time = 2.0
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(round(ind1.arrival_date, 10), 0.5)
         self.assertEqual(round(ind1.service_time, 10), 1.0)
@@ -228,11 +256,17 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(Q.current_time, 0.0)
         Q.current_time = 0.5
         self.assertEqual(Q.current_time, 0.5)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(round(ind1.arrival_date, 10), 0.5)
         self.assertEqual(round(ind1.service_time, 10), 1.0)
@@ -297,7 +331,11 @@ class TestProcessorSharing(unittest.TestCase):
             Q = ciw.Simulation(N, node_class=ciw.PSNode)
             Q.simulate_until_max_time(250)
             recs = Q.get_all_records()
-            obs_services = [r.service_time for r in recs if r.arrival_date > 30 and r.arrival_date < 370]
+            obs_services = [
+                r.service_time
+                for r in recs
+                if r.arrival_date > 30 and r.arrival_date < 370
+            ]
             average_service_times.append(sum(obs_services) / len(obs_services))
         expected = 1 / (mu - lmbda)
         observed = sum(average_service_times) / len(average_service_times)
@@ -316,7 +354,11 @@ class TestProcessorSharing(unittest.TestCase):
             Q = ciw.Simulation(N, node_class=ciw.PSNode)
             Q.simulate_until_max_time(250)
             recs = Q.get_all_records()
-            obs_services = [r.service_time for r in recs if r.arrival_date > 30 and r.arrival_date < 370]
+            obs_services = [
+                r.service_time
+                for r in recs
+                if r.arrival_date > 30 and r.arrival_date < 370
+            ]
             average_service_times.append(sum(obs_services) / len(obs_services))
         expected = 1 / (mu - lmbda)
         observed = sum(average_service_times) / len(average_service_times)
@@ -352,17 +394,23 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[float("inf")],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 2.0)
         self.assertEqual(ind2.with_server, True)
         self.assertEqual(ind2.service_end_date, 2.0)
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 3.0)
@@ -370,7 +418,9 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(ind2.service_end_date, 3.0)
         self.assertEqual(ind3.with_server, True)
         self.assertEqual(ind3.service_end_date, 3.0)
-        ind4 = ciw.Individual(4, customer_class='Customer', priority_class=0, simulation=Q)
+        ind4 = ciw.Individual(
+            4, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind4)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 4.0)
@@ -387,17 +437,23 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[4],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 2.0)
         self.assertEqual(ind2.with_server, True)
         self.assertEqual(ind2.service_end_date, 2.0)
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 3.0)
@@ -405,7 +461,9 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(ind2.service_end_date, 3.0)
         self.assertEqual(ind3.with_server, True)
         self.assertEqual(ind3.service_end_date, 3.0)
-        ind4 = ciw.Individual(4, customer_class='Customer', priority_class=0, simulation=Q)
+        ind4 = ciw.Individual(
+            4, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind4)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 4.0)
@@ -422,17 +480,23 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[3],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 2.0)
         self.assertEqual(ind2.with_server, True)
         self.assertEqual(ind2.service_end_date, 2.0)
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 3.0)
@@ -440,7 +504,9 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(ind2.service_end_date, 3.0)
         self.assertEqual(ind3.with_server, True)
         self.assertEqual(ind3.service_end_date, 3.0)
-        ind4 = ciw.Individual(4, customer_class='Customer', priority_class=0, simulation=Q)
+        ind4 = ciw.Individual(
+            4, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind4)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 3.0)
@@ -456,24 +522,32 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[2],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 2.0)
         self.assertEqual(ind2.with_server, True)
         self.assertEqual(ind2.service_end_date, 2.0)
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 2.0)
         self.assertEqual(ind2.with_server, True)
         self.assertEqual(ind2.service_end_date, 2.0)
         self.assertEqual(ind3.with_server, False)
-        ind4 = ciw.Individual(4, customer_class='Customer', priority_class=0, simulation=Q)
+        ind4 = ciw.Individual(
+            4, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind4)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 2.0)
@@ -488,22 +562,30 @@ class TestProcessorSharing(unittest.TestCase):
             number_of_servers=[1],
         )
         Q = ciw.Simulation(N, node_class=ciw.PSNode)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
         self.assertEqual(ind2.with_server, False)
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
         self.assertEqual(ind2.with_server, False)
         self.assertEqual(ind3.with_server, False)
-        ind4 = ciw.Individual(4, customer_class='Customer', priority_class=0, simulation=Q)
+        ind4 = ciw.Individual(
+            4, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind4)
         self.assertEqual(ind1.with_server, True)
         self.assertEqual(ind1.service_end_date, 1.0)
@@ -521,11 +603,17 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(Q.current_time, 0.0)
         Q.current_time = 0.5
         self.assertEqual(Q.current_time, 0.5)
-        ind1 = ciw.Individual(1, customer_class='Customer', priority_class=0, simulation=Q)
+        ind1 = ciw.Individual(
+            1, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind1)
-        ind2 = ciw.Individual(2, customer_class='Customer', priority_class=0, simulation=Q)
+        ind2 = ciw.Individual(
+            2, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind2)
-        ind3 = ciw.Individual(3, customer_class='Customer', priority_class=0, simulation=Q)
+        ind3 = ciw.Individual(
+            3, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind3)
         self.assertEqual(round(ind1.arrival_date, 10), 0.5)
         self.assertEqual(round(ind1.service_time, 10), 1.0)
@@ -549,7 +637,9 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(round(ind3.service_start_date, 10), 0.5)
         self.assertEqual(round(ind3.service_end_date, 10), 9.5)
         Q.current_time = 1.5
-        ind4 = ciw.Individual(4, customer_class='Customer', priority_class=0, simulation=Q)
+        ind4 = ciw.Individual(
+            4, customer_class="Customer", priority_class=0, simulation=Q
+        )
         Q.nodes[1].accept(ind4)
         self.assertEqual(round(ind1.arrival_date, 10), 0.5)
         self.assertEqual(round(ind1.service_time, 10), 1.0)
@@ -632,7 +722,9 @@ class TestProcessorSharing(unittest.TestCase):
             ps_thresholds=[3],
         )
         ciw.seed(0)
-        Q = ciw.Simulation(N, node_class=ciw.PSNode, tracker=ciw.trackers.SystemPopulation())
+        Q = ciw.Simulation(
+            N, node_class=ciw.PSNode, tracker=ciw.trackers.SystemPopulation()
+        )
         Q.simulate_until_max_time(500)
         probs = Q.statetracker.state_probabilities()
         self.assertEqual(round(probs[0], 7), 0.4287092)

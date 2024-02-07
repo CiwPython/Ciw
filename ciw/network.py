@@ -89,12 +89,22 @@ class Network(object):
         self.number_of_priority_classes = len(
             set([clss.priority_class for clss in customer_classes.values()])
         )
-        self.priority_class_mapping = {clss: customer_classes[clss].priority_class for clss in customer_classes.keys()}
+        self.priority_class_mapping = {
+            clss: customer_classes[clss].priority_class
+            for clss in customer_classes.keys()
+        }
         for nd_id, node in enumerate(self.service_centres):
-            if all(clss.reneging_time_distributions[nd_id] == None for clss in self.customer_classes.values()):
+            if all(
+                clss.reneging_time_distributions[nd_id] == None
+                for clss in self.customer_classes.values()
+            ):
                 node.reneging = False
             else:
                 node.reneging = True
-        if any(dist is not None for clss in customer_classes.values() for dist in clss.class_change_time_distributions.values()):
+        if any(
+            dist is not None
+            for clss in customer_classes.values()
+            for dist in clss.class_change_time_distributions.values()
+        ):
             for node in self.service_centres:
                 node.class_change_time = True
