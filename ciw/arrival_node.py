@@ -52,7 +52,7 @@ class ArrivalNode:
             self.send_individual(next_node, next_individual)
         else:
             rnd_num = random()
-            if rnd_num < next_node.baulking_functions[self.next_class](next_node.number_of_individuals):
+            if rnd_num < next_node.baulking_functions[self.next_class](next_node.number_of_individuals, Q=self.simulation, next_ind=next_individual, next_node=next_node):
                 self.record_baulk(next_node, next_individual)
                 self.simulation.nodes[-1].accept(next_individual, completed=False)
             else:

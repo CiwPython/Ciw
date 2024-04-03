@@ -910,7 +910,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(round(sum(throughput_class1) / 25, 5), 5.71125)
 
     def test_baulking(self):
-        def my_baulking_function(n):
+        def my_baulking_function(n, Q=None, next_ind=None, next_node=None):
             if n < 3:
                 return 0.0
             return 1.0
@@ -975,6 +975,26 @@ class TestSimulation(unittest.TestCase):
             sorted([r.service_end_date for r in completed_recs]),
             [24.5, 26.0, 47.0, 47.5],
         )
+
+    def test_state_dependent_baulking(self):
+        def my_baulking_function(n, Q, next_ind=None, next_node=None):
+            total_population = sum(len(node.all_individuals) for node in Q.transitive_nodes)
+            if total_population < 5:
+                return 0.0
+            return 1.0
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(5.0)],
+            service_distributions=[ciw.dists.Deterministic(21.0)],
+            number_of_servers=[1],
+            baulking_functions=[my_baulking_function],
+        )
+
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(200)
+        max_population = max(ts[1] for ts in Q.statetracker.history)
+        self.assertEqual(max_population, 5)
+
 
     def test_prioritys_with_classchanges(self):
         N = ciw.create_network(
