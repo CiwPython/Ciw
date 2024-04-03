@@ -295,8 +295,8 @@ class Node(object):
         Finds the number of slotted services to start in this slot
         """
         if self.schedule.capacitated:
-            return min(max(self.schedule.slot_size - self.number_in_service, 0), len(self.all_individuals))
-        return min(self.schedule.slot_size, len(self.all_individuals))
+            return min(max(self.schedule.slot_size - self.number_in_service, 0), self.number_of_individuals)
+        return min(self.schedule.slot_size, self.number_of_individuals)
 
     def interrupt_slotted_services(self):
         """

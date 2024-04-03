@@ -978,7 +978,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_state_dependent_baulking(self):
         def my_baulking_function(n, Q, next_ind=None, next_node=None):
-            total_population = sum(len(node.all_individuals) for node in Q.transitive_nodes)
+            total_population = sum(node.number_of_individuals for node in Q.transitive_nodes)
             if total_population < 5:
                 return 0.0
             return 1.0
