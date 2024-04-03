@@ -43,23 +43,23 @@ def create_network(
         "service_distributions": service_distributions,
     }
 
-    if baulking_functions != None:
+    if baulking_functions is not None:
         params["baulking_functions"] = baulking_functions
-    if class_change_matrices != None:
+    if class_change_matrices is not None:
         params["class_change_matrices"] = class_change_matrices
     if class_change_time_distributions is not None:
         params["class_change_time_distributions"] = class_change_time_distributions
-    if priority_classes != None:
+    if priority_classes is not None:
         params["priority_classes"] = priority_classes
-    if queue_capacities != None:
+    if queue_capacities is not None:
         params["queue_capacities"] = queue_capacities
-    if routing != None:
+    if routing is not None:
         params["routing"] = routing
-    if batching_distributions != None:
+    if batching_distributions is not None:
         params["batching_distributions"] = batching_distributions
-    if ps_thresholds != None:
+    if ps_thresholds is not None:
         params["ps_thresholds"] = ps_thresholds
-    if server_priority_functions != None:
+    if server_priority_functions is not None:
         params["server_priority_functions"] = server_priority_functions
     if reneging_time_distributions is not None:
         params["reneging_time_distributions"] = reneging_time_distributions
