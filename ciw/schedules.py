@@ -2,21 +2,24 @@ from typing import List, Tuple, Union, Generator, NoReturn
 
 class Schedule:
     """
-    A Schedule class for storing information about server schedules and generating the next shifts.
+    A Schedule class for storing information about server schedules and
+    generating the next shifts.
 
     Parameters
     ----------
     schedule : List[Tuple[int, float]]
-        A list of tuples representing shifts, where each tuple contains the number of servers and the shift date.
+        A list of tuples representing shifts, where each tuple contains the
+        number of servers and the shift end date.
     preemption : Union[bool, str], optional
-        Pre-emption option, should be either 'resume', 'restart', 'resample', or False. Default is False.
+        Pre-emption option, should be either 'resume', 'restart', 'resample',
+        or False. Default is False.
 
     Attributes
     ----------
     schedule_type : str
         Type of the schedule.
     schedule_dates : List[float]
-        List of shift dates.
+        List of shift end dates.
     schedule_servers : List[int]
         List of corresponding server numbers.
     preemption : Union[bool, str]
@@ -29,7 +32,8 @@ class Schedule:
     initialise()
         Initializes the generator object at the beginning of a simulation.
     get_schedule_generator(boundaries, values)
-        A generator that yields the next time and number of servers according to a given schedule.
+        A generator that yields the next time and number of servers according
+        to a given schedule.
     get_next_shift()
         Updates the next shifts from the generator.
     """
@@ -43,7 +47,8 @@ class Schedule:
             A list of tuples representing shifts, where each tuple contains
             the number of servers and the shift date.
         preemption : Union[bool, str], optional
-            Pre-emption option, should be either 'resume', 'restart', 'resample', or False.
+            Pre-emption option, should be either 'resume', 'restart',
+            'resample', or False.
             Default is False.
         """
         if preemption not in [False, 'resume', 'restart', 'resample']:
@@ -64,7 +69,8 @@ class Schedule:
 
     def get_schedule_generator(self, boundaries: List[float], values:List[int]) -> Generator[Tuple[float, int], None, None]:
         """
-        A generator that yields the next time and number of servers according to a given schedule.
+        A generator that yields the next time and number of servers according
+        to a given schedule.
 
         Parameters
         ----------
