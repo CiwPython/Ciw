@@ -682,13 +682,13 @@ class MixtureDistribution(Distribution):
     ----------
     dists : List[Distribution]
         A list of probability distributions to be combined in the mixture.
-    rhos : List[float]
+    probs : List[float]
         A list of weights corresponding to the importance of each distribution in the mixture.
         The weights must sum to 1.
 
     Attributes
     ----------
-    rhos : List[float]
+    probs : List[float]
         List of weights assigned to each distribution in the mixture.
     dists : List[Distribution]
         List of probability distributions in the mixture.
@@ -700,11 +700,11 @@ class MixtureDistribution(Distribution):
 
     Notes
     -----
-    The weights in `rhos` should sum to 1, indicating the relative importance of each distribution
+    The weights in `probs` should sum to 1, indicating the relative importance of each distribution
     in the mixture. The distributions in `dists` should be instances of `ciw.dists.Distribution`.
     """
 
-    def __init__(self, dists: List[Distribution], rhos: List[float]) -> NoReturn:
+    def __init__(self, dists: List[Distribution], probs: List[float]) -> NoReturn:
         """
         Initialize the MixtureDistribution.
 
@@ -712,14 +712,14 @@ class MixtureDistribution(Distribution):
         ----------
         dists : List[Distribution]
             A list of probability distributions to be combined in the mixture.
-        rhos : List[float]
+        probs : List[float]
             A list of weights corresponding to the importance of each distribution in the mixture.
             The weights must sum to 1.
         """
-        self.rhos = rhos
+        self.probs = probs
         self.dists = dists
 
-    def sample(self, t: float, inds: List[Individual] = None) -> float:
+    def sample(self, t: float = None, inds: List[Individual] = None) -> float:
         """
         Generate a random sample from the mixture distribution.
 
@@ -737,17 +737,10 @@ class MixtureDistribution(Distribution):
         """
         chosen_dist = random.choices(
             population=self.dists,
-            weights=self.rhos,
+            weights=self.probs,
             k=1)[0]
 
         return chosen_dist.sample(t, inds)
         
     def __repr__(self):
-
-        dist_strs = [f'{rho} * {dist}' for rho,dist in zip(self.rhos, self.dists)]
-
-        if len(dist_strs) <= 3:
-            inside = ', '.join(dist_strs)
-            return f"Mixture({inside})"
-        else:
-            return f"Mixture({dist_strs[0]}, ..., {dist_strs[-1]})"
+        return "MixtureDistribution"

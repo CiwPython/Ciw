@@ -992,6 +992,37 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Ex_div_Dt), "CombinedDistribution")
         self.assertEqual(str(Ex_div_Sq), "CombinedDistribution")
 
+    def test_mixture_distributions(self):
+        ciw.seed(0)
+        D1 = ciw.dists.Deterministic(1.0)
+        D5 = ciw.dists.Deterministic(5.0)
+        D8 = ciw.dists.Deterministic(8.0)
+
+        Mixted_100 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1, 0, 0])
+        m100_samples = [Mixted_100.sample() for _ in range(10)]
+        m100_expected = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        self.assertEqual(str(Mixted_100), 'MixtureDistribution')
+        self.assertEqual(m100_samples, m100_expected)
+
+        Mixted_010 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 1, 0])
+        m010_samples = [Mixted_010.sample() for _ in range(10)]
+        m010_expected = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+        self.assertEqual(str(Mixted_010), 'MixtureDistribution')
+        self.assertEqual(m010_samples, m010_expected)
+
+        Mixted_001 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 0, 1])
+        m001_samples = [Mixted_001.sample() for _ in range(10)]
+        m001_expected = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+        self.assertEqual(str(Mixted_001), 'MixtureDistribution')
+        self.assertEqual(m001_samples, m001_expected)
+
+        Mixted_eq = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1/3, 1/3, 1/3])
+        meq_samples = [Mixted_eq.sample() for _ in range(10)]
+        meq_expected = [5, 8, 1, 8, 5, 1, 8, 5, 8, 8]
+        self.assertEqual(str(Mixted_eq), 'MixtureDistribution')
+        self.assertEqual(meq_samples, meq_expected)
+
+
     def test_state_dependent_distribution(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(4)],
