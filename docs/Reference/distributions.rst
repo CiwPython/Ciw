@@ -29,6 +29,7 @@ The following are currently supported:
 - :ref:`poisson_dist`
 - :ref:`geometric_dist`
 - :ref:`binomial_dist`
+- :ref:`mixture_dist`
 
 
 .. _uniform_dist:
@@ -309,4 +310,19 @@ The Binomial distribution samples a random integer from the Binomial distributio
 Write an Geometric distribution with success probability of `0.3` and `20` trials as follows::
 
     ciw.dists.Binomial(n=20, prob=0.3)
+
+
+.. _mixture_dist:
+
+---------------------
+Mixture Distributions
+---------------------
+
+A countable and finite mixture distriubtion, which probabilistically chooses to sample from one of a number of given distributions. Given a number of distributions each with PDF :math:`D_i(x)`, each with a probability :math:`p_i`, such that :math:`\sum_i p_i = 1`, then the Mixture distribution has PMF :math:`f(x) = \sum_i p_i D_i(x)`
+
+Write an Mixture distribution that samples from an Exponential distribution with probability 0.3 and Uniform distribution with probability 0.7::
+
+    U = ciw.dists.Exponential(rate=0.1)
+    T = ciw.dists.Uniform(lower=2, upper=6)
+    ciw.dists.MixtureDistribution(dists=[U, T], probs=[0.3, 0.7])
 
