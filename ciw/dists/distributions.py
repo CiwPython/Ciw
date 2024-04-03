@@ -104,7 +104,7 @@ class Uniform(Distribution):
         self.upper = upper
 
     def __repr__(self):
-        return f"Uniform({self.lower}, {self.upper})"
+        return f"Uniform(lower={self.lower}, upper={self.upper})"
 
     def sample(self, t=None, ind=None):
         return uniform(self.lower, self.upper)
@@ -126,7 +126,7 @@ class Deterministic(Distribution):
         self.value = value
 
     def __repr__(self):
-        return f"Deterministic({self.value})"
+        return f"Deterministic(value={self.value})"
 
     def sample(self, t=None, ind=None):
         return self.value
@@ -156,7 +156,7 @@ class Triangular(Distribution):
         self.upper = upper
 
     def __repr__(self):
-        return f"Triangular({self.lower}, {self.mode}, {self.upper})"
+        return f"Triangular(lower={self.lower}, mode={self.mode}, upper={self.upper})"
 
     def sample(self, t=None, ind=None):
         return triangular(self.lower, self.upper, self.mode)
@@ -178,7 +178,7 @@ class Exponential(Distribution):
         self.rate = rate
 
     def __repr__(self):
-        return f"Exponential({self.rate})"
+        return f"Exponential(rate={self.rate})"
 
     def sample(self, t=None, ind=None):
         return expovariate(self.rate)
@@ -198,7 +198,7 @@ class Gamma(Distribution):
         self.scale = scale
 
     def __repr__(self):
-        return f"Gamma({self.shape}, {self.scale})"
+        return f"Gamma(shape={self.shape}, scale={self.scale})"
 
     def sample(self, t=None, ind=None):
         return gammavariate(self.shape, self.scale)
@@ -218,7 +218,7 @@ class Normal(Distribution):
         self.sd = sd
 
     def __repr__(self):
-        return f"Normal({self.mean}, {self.sd})"
+        return f"Normal(mean={self.mean}, sd={self.sd})"
 
     def sample(self, t=None, ind=None):
         return truncated_normal(self.mean, self.sd)
@@ -238,7 +238,7 @@ class Lognormal(Distribution):
         self.sd = sd
 
     def __repr__(self):
-        return f"Lognormal({self.mean}, {self.sd})"
+        return f"Lognormal(mean={self.mean}, sd={self.sd})"
 
     def sample(self, t=None, ind=None):
         return lognormvariate(self.mean, self.sd)
@@ -258,7 +258,7 @@ class Weibull(Distribution):
         self.shape = shape
 
     def __repr__(self):
-        return f"Weibull({self.scale}, {self.shape})"
+        return f"Weibull(shape={self.scale}, scale={self.shape})"
 
     def sample(self, t=None, ind=None):
         return weibullvariate(self.scale, self.shape)
@@ -306,7 +306,7 @@ class Sequential(Distribution):
         if len(self.sequence) <= 3:
             return f"Sequential({self.sequence})"
         else:
-            return f"Sequential({self.sequence[0]}, ..., {self.sequence[-1]})"
+            return f"Sequential([{self.sequence[0]}, ..., {self.sequence[-1]}])"
 
     def sample(self, t=None, ind=None):
         return next(self.generator)
@@ -332,7 +332,7 @@ class Pmf(Distribution):
         self.probs = probs
 
     def __repr__(self):
-        return f"Pmf({self.values}, {self.probs})"
+        return f"Pmf(values={self.values}, probs={self.probs})"
 
     def sample(self, t=None, ind=None):
         return random_choice(self.values, self.probs)
@@ -428,7 +428,7 @@ class Erlang(PhaseType):
         super().__init__(initial_state, absorbing_matrix)
 
     def __repr__(self):
-        return f"Erlang({self.rate}, {self.num_phases})"
+        return f"Erlang(rate={self.rate}, k={self.num_phases})"
 
 
 class HyperExponential(PhaseType):
@@ -619,7 +619,7 @@ class Poisson(Distribution):
         return ciw.rng.poisson(lam=self.rate)
 
     def __repr__(self):
-        return f"Poisson({self.rate})"
+        return f"Poisson(rate={self.rate})"
 
 
 class Geometric(Distribution):
@@ -642,7 +642,7 @@ class Geometric(Distribution):
         return ciw.rng.geometric(p=self.prob)
 
     def __repr__(self):
-        return f"Geometric({self.prob})"
+        return f"Geometric(prob={self.prob})"
 
 
 class Binomial(Distribution):
@@ -671,7 +671,7 @@ class Binomial(Distribution):
         return ciw.rng.binomial(n=self.n, p=self.prob)
 
     def __repr__(self):
-        return f"Binomial({self.n}, {self.prob})"
+        return f"Binomial(n={self.n}, prob={self.prob})"
 
 
 class MixtureDistribution(Distribution):
