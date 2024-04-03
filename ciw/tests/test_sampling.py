@@ -92,6 +92,7 @@ class TestSampling(unittest.TestCase):
         Ln = ciw.dists.Lognormal(5.5, 3.6)
         Wb = ciw.dists.Weibull(8.8, 9.9)
         Em = ciw.dists.Empirical([3.3, 3.3, 4.4, 3.3, 4.4])
+        Sq_short = ciw.dists.Sequential([3.3, 10.1])
         Sq = ciw.dists.Sequential([3.3, 3.3, 4.4, 3.3, 4.4])
         Pf = ciw.dists.Pmf([1.1, 2.2, 3.3], [0.3, 0.2, 0.5])
         Ph = ciw.dists.PhaseType([1, 0, 0], [[-3, 2, 1], [1, -5, 4], [0, 0, 0]])
@@ -104,26 +105,27 @@ class TestSampling(unittest.TestCase):
         Ge = ciw.dists.Geometric(prob=0.3)
         Bi = ciw.dists.Binomial(n=20, prob=0.7)
         self.assertEqual(str(Di), "Distribution")
-        self.assertEqual(str(Un), "Uniform: 3.4, 6.7")
-        self.assertEqual(str(Dt), "Deterministic: 1.1")
-        self.assertEqual(str(Tr), "Triangular: 1.1, 2.2, 3.3")
-        self.assertEqual(str(Ex), "Exponential: 0.4")
-        self.assertEqual(str(Ga), "Gamma: 2.1, 4.1")
-        self.assertEqual(str(No), "Normal: 5.5, 0.6")
-        self.assertEqual(str(Ln), "Lognormal: 5.5, 3.6")
-        self.assertEqual(str(Wb), "Weibull: 8.8, 9.9")
+        self.assertEqual(str(Un), "Uniform(lower=3.4, upper=6.7)")
+        self.assertEqual(str(Dt), "Deterministic(value=1.1)")
+        self.assertEqual(str(Tr), "Triangular(lower=1.1, mode=2.2, upper=3.3)")
+        self.assertEqual(str(Ex), "Exponential(rate=0.4)")
+        self.assertEqual(str(Ga), "Gamma(shape=2.1, scale=4.1)")
+        self.assertEqual(str(No), "Normal(mean=5.5, sd=0.6)")
+        self.assertEqual(str(Ln), "Lognormal(mean=5.5, sd=3.6)")
+        self.assertEqual(str(Wb), "Weibull(shape=8.8, scale=9.9)")
         self.assertEqual(str(Em), "Empirical")
-        self.assertEqual(str(Sq), "Sequential")
-        self.assertEqual(str(Pf), "Pmf")
+        self.assertEqual(str(Sq_short), "Sequential([3.3, 10.1])")
+        self.assertEqual(str(Sq), "Sequential([3.3, ..., 4.4])")
+        self.assertEqual(str(Pf), "Pmf(values=[1.1, 2.2, 3.3], probs=[0.3, 0.2, 0.5])")
         self.assertEqual(str(Ph), "PhaseType")
-        self.assertEqual(str(Er), "Erlang: 4.5, 8")
+        self.assertEqual(str(Er), "Erlang(rate=4.5, k=8)")
         self.assertEqual(str(Hx), "HyperExponential")
         self.assertEqual(str(He), "HyperErlang")
         self.assertEqual(str(Cx), "Coxian")
         self.assertEqual(str(Pi), "PoissonIntervals")
-        self.assertEqual(str(Po), "Poisson: 1.5")
-        self.assertEqual(str(Ge), "Geometric: 0.3")
-        self.assertEqual(str(Bi), "Binomial: 20, 0.7")
+        self.assertEqual(str(Po), "Poisson(rate=1.5)")
+        self.assertEqual(str(Ge), "Geometric(prob=0.3)")
+        self.assertEqual(str(Bi), "Binomial(n=20, prob=0.7)")
 
     def test_distribution_parent_is_useless(self):
         D = ciw.dists.Distribution()
@@ -989,6 +991,37 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Sq_div_Ex), "CombinedDistribution")
         self.assertEqual(str(Ex_div_Dt), "CombinedDistribution")
         self.assertEqual(str(Ex_div_Sq), "CombinedDistribution")
+
+    def test_mixture_distributions(self):
+        ciw.seed(0)
+        D1 = ciw.dists.Deterministic(1.0)
+        D5 = ciw.dists.Deterministic(5.0)
+        D8 = ciw.dists.Deterministic(8.0)
+
+        Mixted_100 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1, 0, 0])
+        m100_samples = [Mixted_100.sample() for _ in range(10)]
+        m100_expected = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        self.assertEqual(str(Mixted_100), 'MixtureDistribution')
+        self.assertEqual(m100_samples, m100_expected)
+
+        Mixted_010 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 1, 0])
+        m010_samples = [Mixted_010.sample() for _ in range(10)]
+        m010_expected = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+        self.assertEqual(str(Mixted_010), 'MixtureDistribution')
+        self.assertEqual(m010_samples, m010_expected)
+
+        Mixted_001 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 0, 1])
+        m001_samples = [Mixted_001.sample() for _ in range(10)]
+        m001_expected = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+        self.assertEqual(str(Mixted_001), 'MixtureDistribution')
+        self.assertEqual(m001_samples, m001_expected)
+
+        Mixted_eq = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1/3, 1/3, 1/3])
+        meq_samples = [Mixted_eq.sample() for _ in range(10)]
+        meq_expected = [5, 8, 1, 8, 5, 1, 8, 5, 8, 8]
+        self.assertEqual(str(Mixted_eq), 'MixtureDistribution')
+        self.assertEqual(meq_samples, meq_expected)
+
 
     def test_state_dependent_distribution(self):
         N = ciw.create_network(

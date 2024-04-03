@@ -2,7 +2,7 @@ from random import random
 from .individual import Individual
 
 
-class ArrivalNode(object):
+class ArrivalNode:
     """Class for the arrival node of the network.
     
     See Also

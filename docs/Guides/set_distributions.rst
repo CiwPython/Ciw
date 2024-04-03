@@ -156,3 +156,17 @@ These combined distributions return the combined sampled values:
     >>> ciw.seed(10)
     >>> [round(Exp_div_Det.sample(), 2) for _ in range(5)]
     [5.65, 3.73, 5.75, 1.54, 11.19]
+
+
+Mixture Distributions
+---------------------
+Distributions can also be combined probabilistically. A countable and finite mixture distriubtion probabilistically chooses to sample from one of a number of given distributions. Given a number of distributions each with PDF :math:`D_i(x)`, each with a probability :math:`p_i`, such that :math:`\sum_i p_i = 1`, then the Mixture distribution has PMF :math:`f(x) = \sum_i p_i D_i(x)`
+
+For example, say let's make a mixture distribution that samples from an Exponential distribution rate 1 with probability 0.5, another Exponential distribution rate 2 with probability 0.2, a Uniform distribution between 0.2 and 0.8 with probability 0.2, and returns a Deterministic value of 0.5 with probability 0.1. We can do this with:
+
+    >>> Exp1 = ciw.dists.Exponential(rate=1)
+    >>> Exp2 = ciw.dists.Exponential(rate=2)
+    >>> Unif = ciw.dists.Uniform(lower=0.2, upper=0.8)
+    >>> Det5 = ciw.dists.Deterministic(0.5)
+
+    >>> M = ciw.dists.MixtureDistribution(dists=[Exp1, Exp2, Unif, Det5], probs=[0.5, 0.2, 0.2, 0.1])
