@@ -14,12 +14,18 @@ For example, say we have an :ref:`M/M/1 <kendall-notation>` system where custome
 
 We can define the following baulking function::
 
-    >>> def probability_of_baulking(n):
+    >>> def probability_of_baulking(n, Q, next_ind, next_node):
     ...     if n < 3:
     ...         return 0.0
     ...     if n < 7:
     ...         return 0.5
     ...     return 1.0
+
+Note that the baulking function takes four keyword parameters:
+  + :code:`n`: the number of customers currently in the queue,
+  + :code:`Q`: the simulation object itself (so you have access to the whole state of the system),
+  + :code:`next_ind`: the individual that we are deciding if they will baulk (so you have access to individualised baulking),
+  + :code:`next_node`: the node that the individual might baulk from.
 
 When creating the Network object we tell Ciw which node and customer class this function applies to with the :code:`baulking_functions` keyword::
 	
