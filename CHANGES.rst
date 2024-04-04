@@ -1,6 +1,14 @@
 History
 -------
 
++ **3.1.1 (2024-04-04)**
+    + Add a MixtureDistrubution that probabilistically chooses from a number of other distributions to sample from.
+    + Baulking functions now take the simulation, current node, and current individual.
+    + Service disciplines now take the current time.
+    + Service disciplines now called when a customer arrives (allowing for lingering customers).
+    + Distributions have parameters in their reprs.
+    + Adding type hints and better doctrings.
+
 + **v3.1.0 (2023-12-03)**
     + Server schedules now defined with objects.
     + Slotted services feature added, with capacitated and non-capacitated slots, and pre-emption options.
