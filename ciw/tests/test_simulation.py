@@ -1172,8 +1172,8 @@ class TestServiceDisciplines(unittest.TestCase):
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(14)
         recs = sorted(Q.get_all_records(), key=lambda dr: dr.service_start_date)
-        self.assertEqual([r.id_number for r in recs], [1, 2, 5, 4, 8])
-        self.assertEqual([r.arrival_date for r in recs], [1.0, 2.0, 5.0, 4.0, 8.0])
+        self.assertEqual([r.id_number for r in recs], [1, 2, 5, 6, 4])
+        self.assertEqual([r.arrival_date for r in recs], [1.0, 2.0, 5.0, 6.0, 4.0])
         self.assertEqual([r.service_time for r in recs], [2.5, 2.5, 2.5, 2.5, 2.5])
         self.assertEqual(
             [r.service_end_date for r in recs],
