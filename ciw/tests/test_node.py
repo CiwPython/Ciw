@@ -628,6 +628,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(ind.service_start_date, False)
         self.assertEqual(ind.service_end_date, False)
         Q.current_time = 300
+        Q.transitive_nodes[0].individuals[0].append(ind)
         Q.transitive_nodes[0].begin_service_if_possible_accept(ind)
         self.assertEqual(ind.arrival_date, 300)
         self.assertEqual(round(ind.service_time, 5), 0.03382)
