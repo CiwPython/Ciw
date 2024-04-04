@@ -1240,6 +1240,66 @@ class TestServiceDisciplines(unittest.TestCase):
         )
 
 
+    def test_custom_service_discipline(self):
+        """
+        First test for a given linger time, no person waited less than the linger time.
+        """
+        def linger(individuals, t):
+            individuals_who_lingered = [ind for ind in individuals if (t - ind.arrival_date) >= 3]
+            if len(individuals_who_lingered) == 0:
+                return None
+            return individuals_who_lingered[0]
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(3)],
+            service_distributions=[ciw.dists.Exponential(5)],
+            number_of_servers=[1],
+            service_disciplines=[linger]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(100)
+        recs = Q.get_all_records()
+        waits = [r.waiting_time for r in recs]
+        self.assertTrue(min(waits) >= 3)
+
+        """
+        Now test a specific example:
+        Customers arrive every 1.31
+        Services last 1.9 and 0.2 alternatively
+        Customers must linger for at least 3
+
+        ID  Arrive  Linger  Start  Service    End
+        -----------------------------------------
+        1    01.31   04.31  05.24      1.9  07.14
+        2    02.62   05.62  07.14      0.2  07.34
+        3    03.93   06.93  07.34      1.9  09.24
+        4    05.24   08.24  09.24      0.2  09.44
+        5    06.55   09.55  10.48      1.9  12.38
+        6    07.86   10.86  12.38      0.2  12.58
+        7    09.17   12.17  12.58      1.9  14.48
+        8    10.48   13.48  14.48      0.2  14.68
+        -----------------------------------------
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(value=1.31)],
+            service_distributions=[ciw.dists.Sequential([1.9, 0.2])],
+            number_of_servers=[1],
+            service_disciplines=[linger]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(8, method='Finish')
+        recs = Q.get_all_records()
+        self.assertEqual(len(recs), 8)
+
+        arrivals = [round(r.arrival_date, 2) for r in recs]
+        start_dates = [round(r.service_start_date, 2) for r in recs]
+        end_dates = [round(r.service_end_date, 2) for r in recs]
+
+        self.assertEqual(arrivals, [1.31, 2.62, 3.93, 5.24, 6.55, 7.86, 9.17, 10.48])
+        self.assertEqual(start_dates, [5.24, 7.14, 7.34, 9.24, 10.48, 12.38, 12.58, 14.48])
+        self.assertEqual(end_dates, [7.14, 7.34, 9.24, 9.44, 12.38, 12.58, 14.48, 14.68])
+
+
     def test_names_for_customer_classes(self):
         N = ciw.create_network(
             arrival_distributions={

@@ -144,20 +144,21 @@ class Node(object):
             ind = next_individual
         else:
             ind = self.choose_next_customer()
-        
-        free_server = self.find_free_server(ind)
-        if free_server is None and isinf(self.c) is False and self.c > 0:
-            self.decide_preempt(ind)
-        if free_server is not None or isinf(self.c):
-            if isinf(self.c) is False:
-                self.attach_server(free_server, ind)
-            ind.service_start_date = self.now
-            ind.service_time = self.get_service_time(ind)
-            ind.service_end_date = self.now + ind.service_time
-            self.number_in_service += 1
-            self.reset_class_change(ind)
-            if not isinf(self.c):
-                free_server.next_end_service_date = ind.service_end_date
+
+        if ind is not None:
+            free_server = self.find_free_server(ind)
+            if free_server is None and isinf(self.c) is False and self.c > 0:
+                self.decide_preempt(ind)
+            if free_server is not None or isinf(self.c):
+                if isinf(self.c) is False:
+                    self.attach_server(free_server, ind)
+                ind.service_start_date = self.now
+                ind.service_time = self.get_service_time(ind)
+                ind.service_end_date = self.now + ind.service_time
+                self.number_in_service += 1
+                self.reset_class_change(ind)
+                if not isinf(self.c):
+                    free_server.next_end_service_date = ind.service_end_date
 
     def begin_interrupted_individuals_service(self, srvr):
         """
@@ -349,7 +350,7 @@ class Node(object):
         for priority_individuals in self.individuals:
             waiting_individuals = [ind for ind in priority_individuals if not ind.server]
             if len(waiting_individuals) > 0:
-                return self.service_discipline(waiting_individuals)
+                return self.service_discipline(waiting_individuals, self.now)
 
     def create_starting_servers(self):
         """
