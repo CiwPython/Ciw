@@ -38,11 +38,11 @@ As an example, say we have a three node network, and we want to use FIFO discipl
 Custom Disciplines
 ------------------
 
-Other service disciplines can also be implemented by writing a custom service discipline function. These functions take in a list of individuals and returns an individual from that list that represents the next individual to be served. As this is a list of individuals, we can access the individuals' attributes when making the service discipline decision.
+Other service disciplines can also be implemented by writing a custom service discipline function. These functions take in a list of individuals, and the current time, and returns an individual from that list that represents the next individual to be served. As this is a list of individuals, we can access the individuals' attributes when making the service discipline decision.
 
 For example, say we wish to implement a service discipline that chooses the customers randomly, but with probability proportional to their arrival order, we could write:
 
-    >>> def SIRO_proportional(individuals):
+    >>> def SIRO_proportional(individuals, t):
     ...     n = len(inds)
     ...     denominator = (n * (n + 1)) / 2
     ...     probs = [(n - i) / denominator for i in range(n)]
