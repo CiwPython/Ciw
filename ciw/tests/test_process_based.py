@@ -45,6 +45,12 @@ def generator_function_8(ind):
         return [1]
     return [1, 1, 1]
 
+class ClassForProcessBasedMethod:
+    def __init__(self, n):
+        self.n = n
+    def generator_method(self, ind):
+        return [1, 1, 1]
+
 
 class TestProcessBased(unittest.TestCase):
     def test_network_takes_routing_function(self):
@@ -294,3 +300,19 @@ class TestProcessBased(unittest.TestCase):
         inds = Q.nodes[-1].all_individuals
         routes_counter = set([tuple([ind.customer_class, tuple(dr.node for dr in ind.data_records)]) for ind in inds])
         self.assertEqual(routes_counter, {('Class 1', (1, 1, 1)), ('Class 0', (1,))})
+
+    def test_process_based_takes_methods(self):
+        import types
+        G = ClassForProcessBasedMethod(5)
+        self.assertTrue(isinstance(G.generator_method, types.MethodType))
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(1)],
+            service_distributions=[ciw.dists.Deterministic(1000)],
+            number_of_servers=[1],
+            routing=[G.generator_method],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(4.5)
+        inds = Q.nodes[1].all_individuals
+        for ind in inds:
+            self.assertEqual(ind.route, [1, 1, 1])

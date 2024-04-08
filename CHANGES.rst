@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.1.3** (2024-04-08)**
+    + Allows class methods as generator functions for process-based routing.
+
 + **3.1.2 (2024-04-08)**
     + Fix bug when using Mixture distribution.
 

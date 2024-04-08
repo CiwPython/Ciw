@@ -115,7 +115,7 @@ def create_network_from_dictionary(params_input):
             )
         )
     for clss_name in params['customer_class_names']:
-        if all(isinstance(f, types.FunctionType) for f in params["routing"]):
+        if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
             classes[clss_name] = CustomerClass(
                 params['arrival_distributions'][clss_name],
                 params['service_distributions'][clss_name],
@@ -140,7 +140,7 @@ def create_network_from_dictionary(params_input):
                 class_change_time_distributions[clss_name],
             )
     n = Network(nodes, classes)
-    if all(isinstance(f, types.FunctionType) for f in params["routing"]):
+    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
         n.process_based = True
     else:
         n.process_based = False
@@ -220,7 +220,7 @@ def validify_dictionary(params):
     Raises errors if there is something wrong with the
     parameters dictionary.
     """
-    if all(isinstance(f, types.FunctionType) for f in params["routing"]):
+    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
         consistant_num_classes = (
             params["number_of_classes"]
             == len(params["arrival_distributions"])
@@ -241,7 +241,7 @@ def validify_dictionary(params):
         )
     if not consistant_num_classes:
         raise ValueError("Ensure consistant number of classes is used throughout.")
-    if all(isinstance(f, types.FunctionType) for f in params["routing"]):
+    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
         consistant_class_names = (
             set(params["arrival_distributions"])
             == set(params["service_distributions"])
@@ -266,7 +266,7 @@ def validify_dictionary(params):
         )
     if not consistant_class_names:
         raise ValueError("Ensure consistant names for customer classes.")
-    if all(isinstance(f, types.FunctionType) for f in params["routing"]):
+    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
         num_nodes_count = (
             [params["number_of_nodes"]]
             + [len(obs) for obs in params["arrival_distributions"].values()]
@@ -296,7 +296,7 @@ def validify_dictionary(params):
         )
     if len(set(num_nodes_count)) != 1:
         raise ValueError("Ensure consistant number of nodes is used throughout.")
-    if not all(isinstance(f, types.FunctionType) for f in params["routing"]):
+    if not all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
         for clss in params["routing"].values():
             for row in clss:
                 if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
