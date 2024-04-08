@@ -695,7 +695,7 @@ class MixtureDistribution(Distribution):
 
     Methods
     -------
-    sample(t: float, inds: List[Individual] = None) -> float:
+    sample(t: float, ind: Individual = None) -> float:
         Generate a random sample from the mixture distribution.
 
     Notes
@@ -719,7 +719,7 @@ class MixtureDistribution(Distribution):
         self.probs = probs
         self.dists = dists
 
-    def sample(self, t: float = None, inds: List[Individual] = None) -> float:
+    def sample(self, t: float = None, ind: Individual = None) -> float:
         """
         Generate a random sample from the mixture distribution.
 
@@ -727,8 +727,8 @@ class MixtureDistribution(Distribution):
         ----------
         t : float
             The time parameter for the sample generation.
-        inds : List[Individual], optional
-            List of individuals associated with the sample, if applicable.
+        inds : Individual, optional
+           The individual to sample a time for, if applicable.
 
         Returns
         -------
@@ -740,7 +740,7 @@ class MixtureDistribution(Distribution):
             weights=self.probs,
             k=1)[0]
 
-        return chosen_dist.sample(t, inds)
+        return chosen_dist.sample(t, ind)
         
     def __repr__(self):
         return "MixtureDistribution"
