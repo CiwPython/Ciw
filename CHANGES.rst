@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.1.2 (2024-04-08)**
+    + Fix bug when using Mixture distribution.
+
 + **3.1.1 (2024-04-04)**
     + Add a MixtureDistrubution that probabilistically chooses from a number of other distributions to sample from.
     + Baulking functions now take the simulation, current node, and current individual.
