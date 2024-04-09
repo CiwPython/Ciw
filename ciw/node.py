@@ -597,6 +597,8 @@ class Node(object):
         if not isinf(self.c) and not self.slotted:
             newly_free_server = next_individual.server
             self.detatch_server(newly_free_server, next_individual)
+        if self.slotted:
+            next_individual.server = False
         self.reset_individual_attributes(next_individual)
         self.simulation.statetracker.change_state_release(
             self, next_node, next_individual, next_individual.is_blocked

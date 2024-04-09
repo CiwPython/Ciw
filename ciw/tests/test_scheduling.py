@@ -626,6 +626,7 @@ class TestScheduling(unittest.TestCase):
         expected_service_dates = [1, 1, 1, 2, 2, 3, 3, 3, 4]
         observed_service_dates = [r.service_start_date for r in recs]
         self.assertEqual(observed_service_dates, expected_service_dates)
+        self.assertFalse(any([ind.server for ind in Q.nodes[-1].all_individuals]))
 
     def test_slotted_services_repeat(self):
         """
