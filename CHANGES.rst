@@ -1,7 +1,10 @@
 History
 -------
 
-+ **3.1.3** (2024-04-08)**
++ **3.1.4 (2024-04-09)**
+    + Fix bug where Individual's server isn't reset after a slotted service.
+
++ **3.1.3 (2024-04-08)**
     + Allows class methods as generator functions for process-based routing.
 
 + **3.1.2 (2024-04-08)**
