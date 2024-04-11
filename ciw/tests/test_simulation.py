@@ -1326,3 +1326,51 @@ class TestServiceDisciplines(unittest.TestCase):
         mean_child_wait = sum(child_waits) / len(child_waits)
         self.assertEqual(round(mean_adult_wait, 8), 0.00301455)
         self.assertEqual(round(mean_child_wait, 8), 0.00208601)
+
+    def test_system_capacity(self):
+        """
+        Expected results would be:
+
+        node    id  arrival_date  current_capacity  start_date  end_date
+        ----------------------------------------------------------------
+           1     1           0.8                 1         0.8       5.9
+           2     2           1.0                 2         1.0       6.1
+           1     3           1.6                 3         5.9      11.0
+           2     4           2.0                 4         6.1      11.1
+           1     5           2.4                 5        11.0      16.1
+           2     6           3.0                 reject
+           1     7           3.2                 reject
+        1, 2  8, 9           4.0                 reject
+           2    10           4.8                 reject
+           1    11           5.0                 reject
+           2    12           5.6                 reject
+           1    13           6.0                 5        16.1      21.2
+           2    14           6.4                 5        11.1      16.2
+           1    15           7.0                 reject
+        """
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(0.8), ciw.dists.Deterministic(1)],
+            service_distributions=[ciw.dists.Deterministic(5.1), ciw.dists.Deterministic(5.1)],
+            routing=[[0.0, 0.0], [0.0, 0.0]],
+            number_of_servers=[1, 1],
+            system_capacity=5
+        )
+        Q = ciw.Simulation(N, tracker=ciw.trackers.SystemPopulation())
+        Q.simulate_until_max_time(22)
+        recs_service = sorted(Q.get_all_records(only=['service']), key=lambda r: r.arrival_date)
+        recs_reject = sorted(Q.get_all_records(only=['rejection']), key=lambda r: r.arrival_date)
+
+        expected_arrivals = [0.8, 1.0, 1.6, 2.0, 2.4, 6.0, 6.4]
+        expected_ssds = [0.8, 1.0, 5.9, 6.1, 11.0, 16.1, 11.1]
+        expected_seds = [5.9, 6.1, 11.0, 11.1, 16.1, 21.2, 16.2]
+        expected_nodes = [1, 2, 1, 2, 1, 1, 2]
+        expected_rejection_times = [3.0, 3.2, 4.0, 4.0, 4.8, 5.0, 5.6, 7.0]
+
+        self.assertTrue(all([s[1] <= 5 for s in Q.statetracker.history]))
+        self.assertEqual([r.arrival_date for r in recs_service], expected_arrivals)
+        self.assertEqual([r.node for r in recs_service], expected_nodes)
+        self.assertEqual([r.service_start_date for r in recs_service], expected_ssds)
+        self.assertEqual([r.service_end_date for r in recs_service], expected_seds)
+        self.assertEqual([r.arrival_date for r in recs_reject if r.arrival_date <= 7.0], expected_rejection_times)
+
+
