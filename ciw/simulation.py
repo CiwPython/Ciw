@@ -71,7 +71,7 @@ class Simulation(object):
         """
         The number of individuals currently in the system.
         """
-        return sum(n.number_of_individuals for n in self.transitive_nodes)
+        return (self.nodes[0].number_of_individuals - 1) - self.nodes[-1].number_of_individuals
 
     def find_arrival_dists(self):
         """
