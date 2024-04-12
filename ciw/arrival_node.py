@@ -28,6 +28,7 @@ class ArrivalNode:
         self.number_of_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
         self.number_accepted_individuals = 0
         self.number_accepted_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
+        self.system_capacity = self.simulation.network.system_capacity
         self.event_dates_dict = {
             nd + 1: {clss: False for clss in self.simulation.network.customer_class_names
             } for nd in range(self.simulation.network.number_of_nodes)
@@ -153,7 +154,7 @@ class ArrivalNode:
         Either rejects the next_individual die to lack of capacity,
         or sends that individual to baulk or not.
         """
-        if next_node.number_of_individuals >= next_node.node_capacity:
+        if (next_node.number_of_individuals >= next_node.node_capacity) or (self.simulation.number_of_individuals >= self.system_capacity):
             self.record_rejection(next_node, next_individual)
             self.simulation.nodes[-1].accept(next_individual, completed=False)
         else:

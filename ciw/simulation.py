@@ -66,6 +66,13 @@ class Simulation(object):
         """
         return self.name
 
+    @property    
+    def number_of_individuals(self):
+        """
+        The number of individuals currently in the system.
+        """
+        return sum(n.number_of_individuals for n in self.transitive_nodes)
+
     def find_arrival_dists(self):
         """
         Create the dictionary of arrival time distribution

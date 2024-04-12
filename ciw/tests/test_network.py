@@ -1024,3 +1024,23 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             ciw.create_network(**params_geq1)
         with self.assertRaises(ValueError):
             ciw.create_network(**params_neg)
+
+    def test_raising_errors_system_capacity(self):
+        params_neg = {
+            'arrival_distributions': [ciw.dists.Exponential(10), ciw.dists.Exponential(10)],
+            'service_distributions': [ciw.dists.Exponential(30), ciw.dists.Exponential(20)],
+            'number_of_servers': [2, 2],
+            'routing': [[0.0, 0.0], [0.0, 0.0]],
+            'system_capacity': -4
+        }
+        params_str = {
+            'arrival_distributions': [ciw.dists.Exponential(10), ciw.dists.Exponential(10)],
+            'service_distributions': [ciw.dists.Exponential(30), ciw.dists.Exponential(20)],
+            'number_of_servers': [2, 2],
+            'routing': [[0.0, 0.0], [0.0, 0.0]],
+            'system_capacity': '77'
+        }
+        with self.assertRaises(ValueError):
+            ciw.create_network(**params_neg)
+        with self.assertRaises(ValueError):
+            ciw.create_network(**params_str)

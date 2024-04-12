@@ -21,6 +21,7 @@ def create_network(
     reneging_time_distributions=None,
     reneging_destinations=None,
     service_disciplines=None,
+    system_capacity=float('inf')
 ):
     """
     Takes in kwargs, creates dictionary.
@@ -41,6 +42,7 @@ def create_network(
         "arrival_distributions": arrival_distributions,
         "number_of_servers": number_of_servers,
         "service_distributions": service_distributions,
+        'system_capacity': system_capacity
     }
 
     if baulking_functions is not None:
@@ -144,6 +146,7 @@ def create_network_from_dictionary(params_input):
         n.process_based = True
     else:
         n.process_based = False
+    n.system_capacity = params['system_capacity']
     return n
 
 
@@ -208,6 +211,7 @@ def fill_out_dictionary(params):
         "service_disciplines": [
             ciw.disciplines.FIFO for _ in range(len(params["number_of_servers"]))
         ],
+        "system_capacity": float('inf')
     }
 
     for a in default_dict:
@@ -352,3 +356,8 @@ def validify_dictionary(params):
         )
         if not correct_destinations:
             raise ValueError("Ensure all reneging destinations are possible.")
+
+    if not isinstance(params['system_capacity'], int) and params['system_capacity'] != float('inf'):
+        raise ValueError("Ensure system capacity is a positive integer.")
+    if params['system_capacity'] <= 0:
+        raise ValueError("Ensure system capacity is a positive integer.")
