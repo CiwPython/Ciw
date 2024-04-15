@@ -242,6 +242,63 @@ class NodePopulationSubset(StateTracker):
         return tuple(self.state)
 
 
+class GroupedNodePopulation(StateTracker):
+    """
+    The node population tracker records the number of customers at each group
+    of nodes, where node groups are defined by the user.
+
+    Example:
+        (3, 1)
+        This denotes 3 customers at the first node group, and 1 customer at the
+        second node group.
+    """
+
+    def __init__(self, groups):
+        """
+        Pre-initialises the object with keyword `observed_nodes`
+        """
+        self.groups = groups
+        self.observed_nodes = [nd for group in groups for nd in group] 
+
+    def initialise(self, simulation):
+        """
+        Initialises the state tracker class.
+        """
+        self.simulation = simulation
+        self.state = [0 for i in self.groups]
+        self.history = [[self.simulation.current_time, self.hash_state()]]
+
+    def change_state_accept(self, node, ind):
+        """
+        Changes the state of the system when a customer is accepted.
+        """
+        if node.id_number - 1 in self.observed_nodes:
+            node_in_group = [(node.id_number - 1) in group for group in self.groups]
+            group_index = node_in_group.index(True)
+            self.state[group_index] += 1
+
+    def change_state_block(self, node, destination, ind):
+        """
+        Changes the state of the system when a customer gets blocked.
+        """
+        pass
+
+    def change_state_release(self, node, destination, ind, blocked):
+        """
+        Changes the state of the system when a customer is released.
+        """
+        if node.id_number - 1 in self.observed_nodes:
+            node_in_group = [(node.id_number - 1) in group for group in self.groups]
+            group_index = node_in_group.index(True)
+            self.state[group_index] -= 1
+
+    def hash_state(self):
+        """
+        Returns a hashable state.
+        """
+        return tuple(self.state)
+
+
 class NodeClassMatrix(StateTracker):
     """
     The node-class matrix tracker records the number of customers of each
