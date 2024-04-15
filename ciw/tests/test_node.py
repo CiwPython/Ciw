@@ -156,6 +156,8 @@ class TestNode(unittest.TestCase):
         )
         Q = ciw.Simulation(N_schedule)
         N = Q.transitive_nodes[0]
+        N.have_event()
+        N.update_next_event_date()
         self.assertEqual(N.schedule.cyclelength, 100)
         self.assertEqual(N.c, 1)
         self.assertEqual(N.schedule.schedule_dates, [30, 60, 90, 100])
@@ -166,6 +168,8 @@ class TestNode(unittest.TestCase):
 
         Q = ciw.Simulation(N_priorities)
         N = Q.transitive_nodes[0]
+        N.have_event()
+        N.update_next_event_date()
         self.assertEqual(N.c, 4)
         self.assertEqual(Q.network.priority_class_mapping, {'Class 0': 0, 'Class 1': 1})
         self.assertEqual(Q.number_of_priority_classes, 2)
@@ -755,6 +759,7 @@ class TestNode(unittest.TestCase):
     def test_date_from_schedule_generator(self):
         sg = ciw.Schedule(schedule=[[1, 30], [0, 60], [2, 90], [3, 100]])
         sg.initialise()
+        sg.get_next_shift()
         self.assertEqual(sg.c, 1)
         self.assertEqual(sg.next_c, 0)
         self.assertEqual(sg.next_shift_change_date, 30)
@@ -765,6 +770,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(next(sg.schedule_generator), (160, 2))
 
         sg.initialise()
+        sg.get_next_shift()
         self.assertEqual(sg.c, 1)
         self.assertEqual(sg.next_c, 0)
         self.assertEqual(sg.next_shift_change_date, 30)

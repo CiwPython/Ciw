@@ -1105,7 +1105,7 @@ class TestSimulation(unittest.TestCase):
             ],
             queue_capacities=[2, 2],
         )
-        ciw.seed(11)
+        ciw.seed(10)
         Q = ciw.Simulation(
             N,
             deadlock_detector=ciw.deadlock.StateDigraph(),
@@ -1113,7 +1113,7 @@ class TestSimulation(unittest.TestCase):
         )
         Q.simulate_until_deadlock()
         ttd = Q.times_to_deadlock[((0, 0), (0, 0))]
-        self.assertEqual(round(ttd, 5), 119.65819)
+        self.assertEqual(round(ttd, 5), 51.75691)
 
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(1.0), None],

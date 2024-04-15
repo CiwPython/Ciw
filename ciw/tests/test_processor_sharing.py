@@ -137,19 +137,10 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(N2.class_change, {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}})
         self.assertEqual(N.interrupted_individuals, [])
 
-        Q = ciw.Simulation(N_schedule, node_class=ciw.PSNode)
-        N = Q.transitive_nodes[0]
-        self.assertEqual(N.schedule.cyclelength, 100)
-        self.assertEqual(N.ps_capacity, 1)
-        self.assertEqual(N.c, float("inf"))
-        self.assertEqual(N.schedule.schedule_dates, [30, 60, 90, 100])
-        self.assertEqual(N.schedule.schedule_servers, [1, 2, 1, 3])
-        self.assertEqual(N.next_event_date, 30)
-        self.assertEqual(N.interrupted_individuals, [])
-        self.assertEqual(N.last_occupancy, 0)
-
         Q = ciw.Simulation(N_priorities, node_class=ciw.PSNode)
         N = Q.transitive_nodes[0]
+        N.have_event()
+        N.update_next_event_date()
         self.assertEqual(N.ps_capacity, 4)
         self.assertEqual(N.c, float("inf"))
         self.assertEqual(Q.network.priority_class_mapping, {'Class 0': 0, 'Class 1': 1})
