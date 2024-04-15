@@ -26,6 +26,7 @@ Contents:
    slotted.rst
    server_priority.rst
    dynamic_customerclasses.rst
+   system_capacity.rst
    state_trackers.rst
    deadlock.rst
    process_based.rst
