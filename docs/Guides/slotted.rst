@@ -47,6 +47,38 @@ Simulating this system, we'll see that services only begin between during the sl
     {1.5, 2.3, 2.8, 4.3, 5.1, 5.6}
 
 
+Schedule Offsets
+----------------
+
+A slotted schedule can be offset by a given amount of time. This means that the cyclic schedule will have a delayed start. This is defined using the :code:`offset` keyword. It's effect can be compared below::
+
+    ciw.Slotted(slots=[1.5, 2.3, 2.8], slot_sizes=[2, 5, 3])
+
+gives:
+
+    +----------------------------+------+------+------+------+------+------+------+------+
+    |   Slot Times :math:`t`     |  1.5 |  2.3 |  2.8 |  4.3 |  5.1 |  5.6 |  7.1 |  ... |
+    +----------------------------+------+------+------+------+------+------+------+------+
+    |   Slot Sizes :math:`s_t`   |    2 |    5 |    3 |    2 |    5 |    3 |    2 |  ... |
+    +----------------------------+------+------+------+------+------+------+------+------+
+
+whereas::
+
+    ciw.Slotted(slots=[1.5, 2.3, 2.8], slot_sizes=[2, 5, 3], offset=10.0)
+
+gives:
+
+    +----------------------------+-------+-------+-------+-------+-------+-------+-------+------+
+    |   Slot Times :math:`t`     |  11.5 |  12.3 |  12.8 |  14.3 |  15.1 |  15.6 |  17.1 |  ... |
+    +----------------------------+-------+-------+-------+-------+-------+-------+-------+------+
+    |   Slot Sizes :math:`s_t`   |     2 |     5 |     3 |     2 |     5 |     3 |     2 |  ... |
+    +----------------------------+-------+-------+-------+-------+-------+-------+-------+------+
+
+
+An offset of 10 here delays the beginning of the first slot by 10 time units, and that offset does not appear again in the cyclic schedule. The offset should only be defined as a positive float.
+
+
+
 
 Capacitated & Non-capacitated Slots
 -----------------------------------

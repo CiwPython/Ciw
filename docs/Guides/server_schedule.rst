@@ -51,6 +51,37 @@ Simulating this system, we'll see that no services begin between dates 10 and 30
 
 
 
+Schedule Offsets
+----------------
+
+A schedule can be offset by a given amount of time. This means that the cyclic schedule will have a delayed start, where no servers are present. This is defined using the :code:`offset` keyword. It's effect can be compared below::
+
+    ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]])
+
+gives:
+
+    +-------------------+---------+--------+--------+---------+---------+--------+
+    |    Shift Times    |    0-10 |  10-30 | 30-100 | 100-110 | 110-130 | ...    |
+    +-------------------+---------+--------+--------+---------+---------+--------+
+    | Number of Servers |       2 |      0 |      1 |       2 |       0 | ...    |
+    +-------------------+---------+--------+--------+---------+---------+--------+
+
+whereas::
+
+    ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], offset=7.0)
+
+gives:
+
+    +-------------------+---------+---------+--------+--------+---------+---------+--------+
+    |    Shift Times    |     0-7 |    7-17 |  17-37 | 37-107 | 107-117 | 117-137 | ...    |
+    +-------------------+---------+---------+--------+--------+---------+---------+--------+
+    | Number of Servers |       0 |       2 |      0 |      1 |       2 |       0 | ...    |
+    +-------------------+---------+---------+--------+--------+---------+---------+--------+
+
+
+An offset of 7 here delays the beginning of the first shift by 7 time units, and that offset does not appear again in the cyclic schedule. The offset should only be defined as a positive float.
+
+
 Pre-emption
 -----------
 

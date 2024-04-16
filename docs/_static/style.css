@@ -14,4 +14,5 @@ th {
 
 td {
     font-size: 100%;
+    border: 1px solid #ddd !important;
 }
