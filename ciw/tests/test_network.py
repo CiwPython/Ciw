@@ -204,7 +204,7 @@ class TestNetwork(unittest.TestCase):
                 ciw.dists.Exponential(7.0),
                 ciw.dists.Deterministic(0.7),
             ],
-            "number_of_servers": [ciw.Schedule(schedule=[[1, 20], [4, 50]]), 3],
+            "number_of_servers": [ciw.Schedule(numbers_of_servers=[1, 4], shift_end_dates=[20, 50]), 3],
             "routing": [[0.5, 0.2], [0.0, 0.0]],
             "queue_capacities": [10, float("inf")],
         }
@@ -214,8 +214,8 @@ class TestNetwork(unittest.TestCase):
         self.assertEqual(N.service_centres[0].queueing_capacity, 10)
         self.assertTrue(type(N.service_centres[0].number_of_servers), ciw.schedules.Schedule)
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
-        self.assertEqual(N.service_centres[0].number_of_servers.schedule_dates, [20, 50])
-        self.assertEqual(N.service_centres[0].number_of_servers.schedule_servers, [1, 4])
+        self.assertEqual(N.service_centres[0].number_of_servers.shift_end_dates, [20, 50])
+        self.assertEqual(N.service_centres[0].number_of_servers.numbers_of_servers, [1, 4])
         self.assertEqual(N.service_centres[1].queueing_capacity, float("inf"))
         self.assertEqual(N.service_centres[1].number_of_servers, 3)
         self.assertEqual(N.service_centres[1].class_change_matrix, None)
@@ -681,7 +681,7 @@ class TestCreateNetworkKwargs(unittest.TestCase):
                 ciw.dists.Exponential(7.0),
                 ciw.dists.Deterministic(0.7),
             ],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 20], [4, 50]]), 3],
+            number_of_servers=[ciw.Schedule(numbers_of_servers=[1, 4], shift_end_dates=[20, 50]), 3],
             routing=[[0.5, 0.2], [0.0, 0.0]],
             queue_capacities=[10, float("inf")],
         )
@@ -691,8 +691,8 @@ class TestCreateNetworkKwargs(unittest.TestCase):
         self.assertEqual(N.service_centres[0].queueing_capacity, 10)
         self.assertEqual(type(N.service_centres[0].number_of_servers), ciw.schedules.Schedule)
         self.assertEqual(N.service_centres[0].class_change_matrix, None)
-        self.assertEqual(N.service_centres[0].number_of_servers.schedule_dates, [20, 50])
-        self.assertEqual(N.service_centres[0].number_of_servers.schedule_servers, [1, 4])
+        self.assertEqual(N.service_centres[0].number_of_servers.shift_end_dates, [20, 50])
+        self.assertEqual(N.service_centres[0].number_of_servers.numbers_of_servers, [1, 4])
         self.assertFalse(N.service_centres[0].number_of_servers.preemption)
         self.assertEqual(N.service_centres[1].queueing_capacity, float("inf"))
         self.assertEqual(N.service_centres[1].number_of_servers, 3)

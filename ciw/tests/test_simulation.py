@@ -416,7 +416,7 @@ class TestSimulation(unittest.TestCase):
             arrival_distributions=[ciw.dists.Exponential(20)],
             service_distributions=[ciw.dists.Deterministic(0.01)],
             routing=[[0.0]],
-            number_of_servers=[ciw.Schedule(schedule=[[0, 0.5], [1, 0.55], [0, 3.0]])],
+            number_of_servers=[ciw.Schedule(numbers_of_servers=[0, 1, 0], shift_end_dates=[0.5, 0.55, 3.0])],
         )
         ciw.seed(777)
         Q = ciw.Simulation(N)
@@ -437,7 +437,7 @@ class TestSimulation(unittest.TestCase):
             arrival_distributions=[ciw.dists.Exponential(20)],
             service_distributions=[ciw.dists.Deterministic(0.01)],
             routing=[[0.0]],
-            number_of_servers=[ciw.Schedule(schedule=[[0, 0.5], [1, 0.55], [0, 3.0]])],
+            number_of_servers=[ciw.Schedule(numbers_of_servers=[0, 1, 0], shift_end_dates=[0.5, 0.55, 3.0])],
         )
 
         ciw.seed(777)
@@ -578,7 +578,7 @@ class TestSimulation(unittest.TestCase):
             arrival_distributions=[ciw.dists.Exponential(20)],
             service_distributions=[ciw.dists.Deterministic(0.01)],
             routing=[[0.0]],
-            number_of_servers=[ciw.Schedule(schedule=[[0, 0.5], [1, 0.55], [0, 3.0]])],
+            number_of_servers=[ciw.Schedule(numbers_of_servers=[0, 1, 0], shift_end_dates=[0.5, 0.55, 3.0])],
         )
         Q = ciw.Simulation(N, node_class=None, arrival_node_class=None)
         self.assertEqual(Q.NodeTypes, [ciw.Node])
@@ -1094,7 +1094,7 @@ class TestSimulation(unittest.TestCase):
                 "Class 0": [ciw.dists.Exponential(0.8), ciw.dists.Exponential(1.2)],
                 "Class 1": [ciw.dists.Exponential(0.5), ciw.dists.Exponential(1.0)],
             },
-            number_of_servers=[ciw.Schedule(schedule=[[1, 10], [0, 20], [2, 30]], preemption="resample"), 2],
+            number_of_servers=[ciw.Schedule(numbers_of_servers=[1, 0, 2], shift_end_dates=[10, 20, 30], preemption="resample"), 2],
             routing={
                 "Class 0": [[0.1, 0.3], [0.2, 0.2]],
                 "Class 1": [[0.0, 0.6], [0.2, 0.1]],
@@ -1121,7 +1121,7 @@ class TestSimulation(unittest.TestCase):
                 ciw.dists.Deterministic(0.1),
                 ciw.dists.Deterministic(3.0),
             ],
-            number_of_servers=[ciw.Schedule(schedule=[[1, 2.5], [0, 2.8]], preemption="resample"), 1],
+            number_of_servers=[ciw.Schedule(numbers_of_servers=[1, 0], shift_end_dates=[2.5, 2.8], preemption="resample"), 1],
             queue_capacities=[float("inf"), 0],
             routing=[[0.0, 1.0], [0.0, 0.0]],
         )

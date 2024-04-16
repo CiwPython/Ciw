@@ -46,15 +46,15 @@ During a pre-emptive schedule, that server will immediately stop service and lea
 In order to implement pre-emptive or non-pre-emptive schedules, the :code:`ciw.Schedule` object takes in a keywords argument :code:`preemption` the chosen pre-emption option. For example::
 
     number_of_servers=[
-        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption=False)      # non-preemptive
-        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="resample") # preemptive and resamples service time
-        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="restart")  # preemptive and restarts origional service time
-        ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]], preemption="resume") # preemptive continutes services where left off
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption=False)      # non-preemptive
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resample") # preemptive and resamples service time
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="restart")  # preemptive and restarts origional service time
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resume") # preemptive continutes services where left off
     ]
 
 Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
 
-    number_of_servers=[ciw.Schedule(schedule=[[2, 10], [0, 30], [1, 100]])] # non-preemptive
+    number_of_servers=[ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100])] # non-preemptive
 
 
 Records of Interrupted Services

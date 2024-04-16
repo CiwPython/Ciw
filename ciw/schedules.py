@@ -18,9 +18,9 @@ class Schedule:
     ----------
     schedule_type : str
         Type of the schedule.
-    schedule_dates : List[float]
+    shift_end_dates : List[float]
         List of shift end dates.
-    schedule_servers : List[int]
+    numbers_of_servers : List[int]
         List of corresponding server numbers.
     preemption : Union[bool, str]
         Pre-emption option.
@@ -37,15 +37,16 @@ class Schedule:
     get_next_shift()
         Updates the next shifts from the generator.
     """
-    def __init__(self, schedule: List[Tuple[int, float]], preemption: Union[bool, str] = False, offset: float = 0.0) -> NoReturn:
+    def __init__(self, numbers_of_servers: List[int], shift_end_dates: List[float], preemption: Union[bool, str] = False, offset: float = 0.0) -> NoReturn:
         """
         Initializes the instance of the Schedule object.
 
         Parameters
         ----------
-        schedule : List[Tuple[int, float]]
-            A list of tuples representing shifts, where each tuple contains
-            the number of servers and the shift date.
+        numbers_of_servers : List[int]
+            A list containing the number of servers working at each shift
+        shift_end_dates : List[float]
+            A list containing the end dates of each shift.
         preemption : Union[bool, str], optional
             Pre-emption option, should be either 'resume', 'restart',
             'resample', or False.
@@ -58,10 +59,10 @@ class Schedule:
         if offset < 0.0:
             raise ValueError("Offset should be a positive float.")
         self.schedule_type = 'schedule'
-        self.schedule_dates = [shift[1] for shift in schedule]
-        self.schedule_servers = [shift[0] for shift in schedule]
+        self.shift_end_dates = shift_end_dates
+        self.numbers_of_servers = numbers_of_servers
         self.preemption = preemption
-        self.cyclelength = self.schedule_dates[-1]
+        self.cyclelength = self.shift_end_dates[-1]
         self.offset = offset
 
     def initialise(self) -> NoReturn:
@@ -70,8 +71,8 @@ class Schedule:
         """
         self.c = 0
         self.next_shift_change_date = self.offset
-        self.next_c = self.schedule_servers[0]
-        self.schedule_generator = self.get_schedule_generator(self.schedule_dates, self.schedule_servers, self.offset)
+        self.next_c = self.numbers_of_servers[0]
+        self.schedule_generator = self.get_schedule_generator(self.shift_end_dates, self.numbers_of_servers, self.offset)
 
     def get_schedule_generator(self, boundaries:List[float], values:List[int], offset:float) -> Generator[Tuple[float, int], None, None]:
         """
