@@ -1,10 +1,10 @@
 .. _ps-routing:
 
-================================================
-Join Shortest Queue in Processor Sharing Systems
-================================================
+===========================================
+Load Balancing in Processor Sharing Systems
+============================================
 
-In this example we will consider multiple parallel processor sharing queues, where customers are routed to the least busy node. This is calles a Join Shortest Queue, or JSQ system.
+In this example we will consider multiple parallel processor sharing queues, where customers are routed to the least busy node. This is calles a Load Balancing, a type of Join Shortest Queue, or JSQ system.
 
 Consider three independent parallel processor sharing nodes. Customers arrive and are sent to the least busy node.
 This can be modelled as a 4 node system: the first node is a dummy node where customers arrive, and routes the customer to one of the thee remaining processor sharing nodes.
@@ -24,32 +24,22 @@ If the arrival distribution is Poisson with rate 8, and required service times a
     ...                        float('inf'),
     ...                        float('inf'),
     ...                        float('inf')],
-    ...     routing=[[0, 0, 0, 0],
-    ...              [0, 0, 0, 0],
-    ...              [0, 0, 0, 0],
-    ...              [0, 0, 0, 0]]
+    ...     routing=ciw.routing.NetworkRouting(routers=[
+    ...         ciw.routing.LoadBalancing(destinations=[2, 3, 4]),
+    ...         ciw.routing.Leave(),
+    ...         ciw.routing.Leave(),
+    ...         ciw.routing.Leave()
+    ...     ])
     ... )
 
-For each of the three parallel processor sharing nodes, we can use the :code:`ciw.PSNode` class.
-However, we now need a custom node class for the initial dummy node, to take care of the routing decisions.
-We'll call this class :code:`RoutingDecision`::
+For each of the three parallel processor sharing nodes, we can use the :code:`ciw.PSNode` class. The routing decisions are derived from the routing objects, where the first node is given the :code:`LoadBalancing` object, that balances the load in nodes 2, 3 and 4; that is, it sends the individual one of these nodes, whichever currently has the least individuals.
 
-    >>> class RoutingDecision(ciw.Node):
-    ...     def next_node(self, ind):
-    ...         """
-    ...         Finds the next node by looking at nodes 2, 3, and 4,
-    ...         seeing how busy they are, and routing to the least busy.
-    ...         """
-    ...         busyness = {n: self.simulation.nodes[n].number_of_individuals for n in [2, 3, 4]}
-    ...         chosen_n = sorted(busyness.keys(), key=lambda x: busyness[x])[0]
-    ...         return self.simulation.nodes[chosen_n]
-
-Now let's build a simulation object, where the first node uses our custom :code:`RoutingDecision` class, and the others use the built-in :code:`ciw.PSNode` class. We'll also add a state tracker for analysis::
+Now let's build a simulation object, where the first node uses the usual :code:`ciw.Node` class, and the others use the built-in :code:`ciw.PSNode` class. We'll also add a state tracker for analysis::
 
     >>> ciw.seed(0)
     >>> Q = ciw.Simulation(
     ...     N, tracker=ciw.trackers.SystemPopulation(),
-    ...     node_class=[RoutingDecision, ciw.PSNode, ciw.PSNode, ciw.PSNode])
+    ...     node_class=[ciw.Node, ciw.PSNode, ciw.PSNode, ciw.PSNode])
 
 We'll run this for 100 time units::
 
@@ -57,11 +47,14 @@ We'll run this for 100 time units::
 
 We can look at the state probabilities, that is, the proportion of time the system spent in each state, where a state represents the number of customers present in the system::
 
-    >>> Q.statetracker.state_probabilities(observation_period=(10, 90)) # doctest:+SKIP
-    {0: 0.425095024227593,
-     1: 0.35989517302304014,
-     2: 0.14629711075255158,
-     3: 0.054182634504608064,
-     4: 0.01124224242623659,
-     5: 0.002061285633093934,
-     6: 0.0012265294328765105}
+    >>> state_probs = Q.statetracker.state_probabilities(observation_period=(10, 90))
+    >>> for n in range(8):
+    ...     print(n, round(state_probs[n], 5))
+    0 0.436
+    1 0.37895
+    2 0.13629
+    3 0.03238
+    4 0.01255
+    5 0.00224
+    6 0.00109
+    7 0.00051
