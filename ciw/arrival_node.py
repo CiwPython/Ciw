@@ -92,8 +92,9 @@ class ArrivalNode:
                 priority_class,
                 simulation=self.simulation,
             )
-            self.simulation.routers[next_individual.customer_class].initialise_individual(next_individual)
             next_node = self.simulation.transitive_nodes[self.next_node - 1]
+            next_individual.starting_node = next_node.id_number
+            self.simulation.routers[next_individual.customer_class].initialise_individual(next_individual)
             self.release_individual(next_node, next_individual)
 
         self.event_dates_dict[self.next_node][self.next_class] = self.increment_time(

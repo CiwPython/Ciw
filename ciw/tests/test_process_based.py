@@ -4,15 +4,15 @@ import random
 from collections import Counter
 
 
-def generator_function_1(ind):
+def generator_function_1(ind, simulation):
     return [1, 1]
 
 
-def generator_function_2(ind):
+def generator_function_2(ind, simulation):
     return [1, 2, 1, 3]
 
 
-def generator_function_3(ind):
+def generator_function_3(ind, simulation):
     rnd = random.random()
     if rnd < 0.4:
         return [2, 2, 3, 2]
@@ -20,13 +20,13 @@ def generator_function_3(ind):
         return [1]
     return [3, 2, 3]
 
-def generator_function_4(ind):
+def generator_function_4(ind, simulation):
     return []
 
 class ClassForProcessBasedMethod:
     def __init__(self, n):
         self.n = n
-    def generator_method(self, ind):
+    def generator_method(self, ind, simulation):
         return [1, 1]
 
 

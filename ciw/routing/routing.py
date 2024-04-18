@@ -76,7 +76,7 @@ class ProcessBased(NetworkRouting):
         """
         A method that is called at the arrival node when the individual is spawned.
         """
-        ind.route = self.route_function(ind)
+        ind.route = self.route_function(ind, self.simulation)
 
     def next_node(self, ind, node_id):
         """
