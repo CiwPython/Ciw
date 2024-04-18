@@ -50,6 +50,7 @@ class Simulation(object):
         self.transitive_nodes = [node_type(i + 1, self) for i, node_type in enumerate(self.NodeTypes)]
         self.nodes = [self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()]
         self.active_nodes = self.nodes[:-1]
+        self.routers = self.find_and_initialise_routers()
         self.nodes[0].initialise()
         if tracker is None:
             self.statetracker = trackers.StateTracker()
@@ -119,6 +120,16 @@ class Simulation(object):
                     self.inter_arrival_times[nd + 1][clss].simulation = self
                     self.service_times[nd + 1][clss].simulation = self
                     self.batch_sizes[nd + 1][clss].simulation = self
+
+    def find_and_initialise_routers(self):
+        """
+        Initialises the routing objects.
+        """
+        routers_dict = {}
+        for clss in self.network.customer_class_names:
+            routers_dict[clss] = self.network.customer_classes[clss].routing
+            routers_dict[clss].initialise(self)
+        return routers_dict
 
     def find_next_active_node(self):
         """

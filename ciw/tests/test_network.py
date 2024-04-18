@@ -191,7 +191,10 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+
+        router0 = N.customer_classes['Class 0'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Class 0': 0})
 
@@ -227,7 +230,12 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Customer'].service_distributions],
             ["Exponential(rate=7.0)", "Deterministic(value=0.7)"],
         )
-        self.assertEqual(N.customer_classes['Customer'].routing, [[0.5, 0.2], [0.0, 0.0]])
+        router = N.customer_classes['Customer'].routing
+        self.assertEqual(router.routers[0].destinations, [1, 2, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[0].probs], [0.5, 0.2, 0.3])
+        self.assertEqual(router.routers[1].destinations, [1, 2, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[1].probs], [0.0, 0.0, 1.0])
+
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Customer': 0})
 
@@ -262,7 +270,12 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+        router0 = N.customer_classes['Class 0'].routing
+        router1 = N.customer_classes['Class 1'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
+        self.assertEqual(router1.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.0, 1.0])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
             ["Exponential(rate=4.0)"],
@@ -271,7 +284,6 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
             ["Uniform(lower=0.4, upper=1.2)"],
         )
-        self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Class 0': 0, 'Class 1': 0})
 
@@ -313,7 +325,12 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+        router0 = N.customer_classes['Class 0'].routing
+        router1 = N.customer_classes['Class 1'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
+        self.assertEqual(router1.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.0, 1.0])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
             ["Exponential(rate=4.0)"],
@@ -322,7 +339,6 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
             ["Uniform(lower=0.4, upper=1.2)"],
         )
-        self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Class 0': 0, 'Class 1': 0})
 
@@ -354,7 +370,12 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+        router0 = N.customer_classes['Class 0'].routing
+        router1 = N.customer_classes['Class 1'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
+        self.assertEqual(router1.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.0, 1.0])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
             ["Exponential(rate=4.0)"],
@@ -363,7 +384,6 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
             ["Uniform(lower=0.4, upper=1.2)"],
         )
-        self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.customer_classes['Class 0'].priority_class, 1)
         self.assertEqual(N.customer_classes['Class 1'].priority_class, 0)
         self.assertEqual(N.number_of_priority_classes, 2)
@@ -403,10 +423,13 @@ class TestNetwork(unittest.TestCase):
             [str(d) for d in N.customer_classes['Customer'].service_distributions],
             ["Exponential(rate=7.0)", "Uniform(lower=0.4, upper=1.2)", "Deterministic(value=5.33)"],
         )
-        self.assertEqual(
-            N.customer_classes['Customer'].routing,
-            [[0.5, 0.0, 0.1], [0.2, 0.1, 0.0], [0.0, 0.0, 0.0]],
-        )
+        router = N.customer_classes['Customer'].routing
+        self.assertEqual(router.routers[0].destinations, [1, 2, 3, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[0].probs], [0.5, 0.0, 0.1, 0.4])
+        self.assertEqual(router.routers[1].destinations, [1, 2, 3, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[1].probs], [0.2, 0.1, 0.0, 0.7])
+        self.assertEqual(router.routers[2].destinations, [1, 2, 3, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[2].probs], [0.0, 0.0, 0.0, 1.0])
         self.assertEqual(
             N.customer_classes['Customer'].baulking_functions,
             [None, None, example_baulking_function],
@@ -424,7 +447,7 @@ class TestNetwork(unittest.TestCase):
             "number_of_nodes": 1,
             "queue_capacities": [float("inf")],
         }
-        params_list = [copy.deepcopy(params) for i in range(27)]
+        params_list = [copy.deepcopy(params) for i in range(28)]
 
         params_list[0]["number_of_classes"] = -2
         self.assertRaises(
@@ -531,16 +554,18 @@ class TestNetwork(unittest.TestCase):
             params_list[14]
         )
         params_list[15]["routing"]["Class 0"] = [[0.2], [0.1]]
+        N = ciw.create_network_from_dictionary(params_list[15])
         self.assertRaises(
             ValueError,
-            ciw.create_network_from_dictionary,
-            params_list[15]
+            ciw.Simulation,
+            N
         )
         params_list[16]["routing"]["Class 0"] = [[0.2, 0.1]]
+        N = ciw.create_network_from_dictionary(params_list[16])
         self.assertRaises(
             ValueError,
-            ciw.create_network_from_dictionary,
-            params_list[16]
+            ciw.Simulation,
+            N
         )
         params_list[17]["routing"]["Class 0"] = [[-0.6]]
         self.assertRaises(
@@ -602,6 +627,52 @@ class TestNetwork(unittest.TestCase):
             ciw.create_network_from_dictionary,
             params_list[26]
         )
+        params_list[27]["routing"]["Class 0"] = [['0.5']]
+        self.assertRaises(
+            ValueError,
+            ciw.create_network_from_dictionary,
+            params_list[27]
+        )
+
+    def test_raising_errors_routing(self):
+        params = {
+            'arrival_distributions': [ciw.dists.Exponential(1.0), ciw.dists.Exponential(1.0)],
+            'service_distributions': [ciw.dists.Exponential(2.0), ciw.dists.Exponential(2.0)],
+            'number_of_servers': [2, 1],
+            'routing': [[0.5, 0.6], [0.0, 0.3]]
+        }
+        self.assertRaises(
+            ValueError,
+            ciw.create_network_from_dictionary,
+            params
+        )
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(1.0), ciw.dists.Exponential(1.0)],
+            service_distributions=[ciw.dists.Exponential(2.0), ciw.dists.Exponential(2.0)],
+            number_of_servers=[2, 1],
+            routing=[[0.5, 0.2, 0.0], [0.0, 0.3, 0.0], [0.1, 0.1, 0.3]]
+        )
+        self.assertRaises(
+            ValueError,
+            ciw.Simulation,
+            N
+        )
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(1.0), ciw.dists.Exponential(1.0)],
+            service_distributions=[ciw.dists.Exponential(2.0), ciw.dists.Exponential(2.0)],
+            number_of_servers=[2, 1],
+            routing=ciw.routing.NetworkRouting(routers=[
+                ciw.routing.Probabilistic(destinations=[0, 1], probs=[0.5, 0.2]),
+                ciw.routing.Probabilistic(destinations=[0, 2], probs=[0.5, 0.2])
+            ])
+        )
+        self.assertRaises(
+            ValueError,
+            ciw.Simulation,
+            N
+        )
 
 
 class TestImportNoMatrix(unittest.TestCase):
@@ -611,7 +682,9 @@ class TestImportNoMatrix(unittest.TestCase):
             service_distributions=[ciw.dists.Exponential(2.0)],
             number_of_servers=[1],
         )
-        self.assertEqual([c.routing for c in N.customer_classes.values()], [[[0.0]]])
+        router = N.customer_classes['Customer'].routing
+        self.assertEqual(router.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[0].probs], [0.0, 1.0])
 
         N = ciw.create_network(
             arrival_distributions={
@@ -625,7 +698,12 @@ class TestImportNoMatrix(unittest.TestCase):
             number_of_servers=[1],
         )
 
-        self.assertEqual([c.routing for c in N.customer_classes.values()], [[[0.0]], [[0.0]]])
+        router0 = N.customer_classes['Class 0'].routing
+        router1 = N.customer_classes['Class 1'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.0, 1.0])
+        self.assertEqual(router1.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.0, 1.0])
 
         params = {
             "arrival_distributions": [
@@ -638,10 +716,11 @@ class TestImportNoMatrix(unittest.TestCase):
             ],
             "number_of_servers": [1, 2],
         }
+        N = ciw.create_network(**params)
         self.assertRaises(
             ValueError,
-            ciw.create_network_from_dictionary,
-            params
+            ciw.Simulation,
+            N
         )
 
 
@@ -668,7 +747,9 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+        router0 = N.customer_classes['Class 0'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Class 0': 0})
 
@@ -705,7 +786,12 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Customer'].service_distributions],
             ["Exponential(rate=7.0)", "Deterministic(value=0.7)"],
         )
-        self.assertEqual(N.customer_classes['Customer'].routing, [[0.5, 0.2], [0.0, 0.0]])
+        router = N.customer_classes['Customer'].routing
+        self.assertEqual(router.routers[0].destinations, [1, 2, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[0].probs], [0.5, 0.2, 0.3])
+        self.assertEqual(router.routers[1].destinations, [1, 2, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[1].probs], [0.0, 0.0, 1.0])
+
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Customer': 0})
 
@@ -739,7 +825,12 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+        router0 = N.customer_classes['Class 0'].routing
+        router1 = N.customer_classes['Class 1'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
+        self.assertEqual(router1.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.0, 1.0])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
             ["Exponential(rate=4.0)"],
@@ -748,7 +839,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
             ["Uniform(lower=0.4, upper=1.2)"],
         )
-        self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Class 0': 0, 'Class 1': 0})
 
@@ -779,7 +869,12 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+        router0 = N.customer_classes['Class 0'].routing
+        router1 = N.customer_classes['Class 1'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
+        self.assertEqual(router1.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.0, 1.0])
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
             ["Exponential(rate=4.0)"],
@@ -788,7 +883,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
             ["Uniform(lower=0.4, upper=1.2)"],
         )
-        self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.customer_classes['Class 0'].priority_class, 1)
         self.assertEqual(N.customer_classes['Class 1'].priority_class, 0)
         self.assertEqual(N.number_of_priority_classes, 2)
@@ -828,10 +922,14 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Customer'].service_distributions],
             ["Exponential(rate=7.0)", "Uniform(lower=0.4, upper=1.2)", "Deterministic(value=5.33)"],
         )
-        self.assertEqual(
-            N.customer_classes['Customer'].routing,
-            [[0.5, 0.0, 0.1], [0.2, 0.1, 0.0], [0.0, 0.0, 0.0]],
-        )
+        router = N.customer_classes['Customer'].routing
+        self.assertEqual(router.routers[0].destinations, [1, 2, 3, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[0].probs], [0.5, 0.0, 0.1, 0.4])
+        self.assertEqual(router.routers[1].destinations, [1, 2, 3, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[1].probs], [0.2, 0.1, 0.0, 0.7])
+        self.assertEqual(router.routers[2].destinations, [1, 2, 3, -1])
+        self.assertEqual([round(p, 2) for p in router.routers[2].probs], [0.0, 0.0, 0.0, 1.0])
+
         self.assertEqual(
             N.customer_classes['Customer'].baulking_functions,
             [None, None, example_baulking_function],
@@ -898,7 +996,13 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 0'].service_distributions],
             ["Exponential(rate=7.0)"],
         )
-        self.assertEqual(N.customer_classes['Class 0'].routing, [[0.5]])
+        router0 = N.customer_classes['Class 0'].routing
+        router1 = N.customer_classes['Class 1'].routing
+        self.assertEqual(router0.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.5, 0.5])
+        self.assertEqual(router1.routers[0].destinations, [1, -1])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.0, 1.0])
+
         self.assertEqual(
             [str(d) for d in N.customer_classes['Class 1'].arrival_distributions],
             ["Exponential(rate=4.0)"],
@@ -907,7 +1011,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             [str(d) for d in N.customer_classes['Class 1'].service_distributions],
             ["Uniform(lower=0.4, upper=1.2)"],
         )
-        self.assertEqual(N.customer_classes['Class 1'].routing, [[0.0]])
         self.assertEqual(N.number_of_priority_classes, 1)
         self.assertEqual(N.priority_class_mapping, {'Class 0': 0, 'Class 1': 0})
 

@@ -629,7 +629,7 @@ class TestSimulation(unittest.TestCase):
                 ciw.dists.Exponential(10),
                 ciw.dists.Exponential(10),
             ],
-            routing=[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+            routing=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
             number_of_servers=[1, 1, 1],
         )
 
@@ -715,7 +715,7 @@ class TestSimulation(unittest.TestCase):
                     ciw.dists.Exponential(10),
                     ciw.dists.Exponential(10),
                 ],
-                routing=[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+                routing=[[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
                 number_of_servers=[1, 1, 1],
             )
             return ciw.Simulation(N, node_class=node_classes)

@@ -3,6 +3,7 @@ import types
 import ciw.dists
 from .network import *
 from .schedules import *
+from .routing import *
 
 
 def create_network(
@@ -117,35 +118,18 @@ def create_network_from_dictionary(params_input):
             )
         )
     for clss_name in params['customer_class_names']:
-        if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
-            classes[clss_name] = CustomerClass(
-                params['arrival_distributions'][clss_name],
-                params['service_distributions'][clss_name],
-                params['routing'],
-                params["priority_classes"][clss_name],
-                params["baulking_functions"][clss_name],
-                params["batching_distributions"][clss_name],
-                params["reneging_time_distributions"][clss_name],
-                params["reneging_destinations"][clss_name],
-                class_change_time_distributions[clss_name],
-            )
-        else:
-            classes[clss_name] = CustomerClass(
-                params['arrival_distributions'][clss_name],
-                params['service_distributions'][clss_name],
-                params['routing'][clss_name],
-                params["priority_classes"][clss_name],
-                params["baulking_functions"][clss_name],
-                params["batching_distributions"][clss_name],
-                params["reneging_time_distributions"][clss_name],
-                params["reneging_destinations"][clss_name],
-                class_change_time_distributions[clss_name],
-            )
+        classes[clss_name] = CustomerClass(
+            params['arrival_distributions'][clss_name],
+            params['service_distributions'][clss_name],
+            params['routing'][clss_name],
+            params["priority_classes"][clss_name],
+            params["baulking_functions"][clss_name],
+            params["batching_distributions"][clss_name],
+            params["reneging_time_distributions"][clss_name],
+            params["reneging_destinations"][clss_name],
+            class_change_time_distributions[clss_name],
+        )
     n = Network(nodes, classes)
-    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
-        n.process_based = True
-    else:
-        n.process_based = False
     n.system_capacity = params['system_capacity']
     return n
 
@@ -162,9 +146,16 @@ def fill_out_dictionary(params):
         srv_dists = params["service_distributions"]
         params["service_distributions"] = {"Customer": srv_dists}
     if "routing" in params:
-        if all(isinstance(f, list) for f in params["routing"]):
-            rtng_mat = params["routing"]
-            params["routing"] = {"Customer": rtng_mat}
+        if isinstance(params["routing"], list):
+            transition_matrix = params["routing"]
+            params["routing"] = {"Customer": routing.TransitionMatrix(transition_matrix=transition_matrix)}
+        elif isinstance(params["routing"], dict):
+            for clss in params["routing"]:
+                if isinstance(params["routing"][clss], list):
+                    transition_matrix = params["routing"][clss]
+                    params["routing"][clss] = routing.TransitionMatrix(transition_matrix=transition_matrix)
+        else:
+            params["routing"] = {"Customer": params["routing"]}
     if "baulking_functions" in params:
         if isinstance(params["baulking_functions"], list):
             blk_fncs = params["baulking_functions"]
@@ -187,7 +178,7 @@ def fill_out_dictionary(params):
 
     default_dict = {
         "name": "Simulation",
-        "routing": {class_name: [[0.0]] for class_name in class_names},
+        "routing": {class_name: routing.TransitionMatrix(transition_matrix=[[0.0]]) for class_name in class_names},
         "number_of_nodes": len(params["number_of_servers"]),
         "number_of_classes": len(class_names),
         "queue_capacities": [float("inf") for _ in range(len(params["number_of_servers"]))],
@@ -224,87 +215,46 @@ def validify_dictionary(params):
     Raises errors if there is something wrong with the
     parameters dictionary.
     """
-    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
-        consistant_num_classes = (
-            params["number_of_classes"]
-            == len(params["arrival_distributions"])
-            == len(params["service_distributions"])
-            == len(params["batching_distributions"])
-            == len(params["reneging_time_distributions"])
-            == len(params["reneging_destinations"])
-        )
-    else:
-        consistant_num_classes = (
-            params["number_of_classes"]
-            == len(params["arrival_distributions"])
-            == len(params["service_distributions"])
-            == len(params["routing"])
-            == len(params["batching_distributions"])
-            == len(params["reneging_time_distributions"])
-            == len(params["reneging_destinations"])
-        )
+    consistant_num_classes = (
+        params["number_of_classes"]
+        == len(params["arrival_distributions"])
+        == len(params["service_distributions"])
+        == len(params["routing"])
+        == len(params["batching_distributions"])
+        == len(params["reneging_time_distributions"])
+        == len(params["reneging_destinations"])
+    )
     if not consistant_num_classes:
         raise ValueError("Ensure consistant number of classes is used throughout.")
-    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
-        consistant_class_names = (
-            set(params["arrival_distributions"])
-            == set(params["service_distributions"])
-            == set(params["batching_distributions"])
-            == set(params["reneging_time_distributions"])
-            == set(params["reneging_destinations"])
-        )
-    else:
-        consistant_class_names = (
-            set(params["arrival_distributions"])
-            == set(params["service_distributions"])
-            == set(params["routing"])
-            == set(params["batching_distributions"])
-            == set(params["reneging_time_distributions"])
-            == set(params["reneging_destinations"])
-        ) and (
-            len(params["arrival_distributions"])
-            == len(params["service_distributions"])
-            == len(params["batching_distributions"])
-            == len(params["reneging_time_distributions"])
-            == len(params["reneging_destinations"])
-        )
+    consistant_class_names = (
+        set(params["arrival_distributions"])
+        == set(params["service_distributions"])
+        == set(params["routing"])
+        == set(params["batching_distributions"])
+        == set(params["reneging_time_distributions"])
+        == set(params["reneging_destinations"])
+    ) and (
+        len(params["arrival_distributions"])
+        == len(params["service_distributions"])
+        == len(params["batching_distributions"])
+        == len(params["reneging_time_distributions"])
+        == len(params["reneging_destinations"])
+    )
     if not consistant_class_names:
         raise ValueError("Ensure consistant names for customer classes.")
-    if all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
-        num_nodes_count = (
-            [params["number_of_nodes"]]
-            + [len(obs) for obs in params["arrival_distributions"].values()]
-            + [len(obs) for obs in params["service_distributions"].values()]
-            + [len(obs) for obs in params["batching_distributions"].values()]
-            + [len(obs) for obs in params["reneging_time_distributions"].values()]
-            + [len(obs) for obs in params["reneging_destinations"].values()]
-            + [len(params["routing"])]
-            + [len(params["number_of_servers"])]
-            + [len(params["server_priority_functions"])]
-            + [len(params["queue_capacities"])]
-        )
-    else:
-        num_nodes_count = (
-            [params["number_of_nodes"]]
-            + [len(obs) for obs in params["arrival_distributions"].values()]
-            + [len(obs) for obs in params["service_distributions"].values()]
-            + [len(obs) for obs in params["routing"].values()]
-            + [len(obs) for obs in params["batching_distributions"].values()]
-            + [len(obs) for obs in params["reneging_time_distributions"].values()]
-            + [len(obs) for obs in params["reneging_destinations"].values()]
-            + [len(row) for row in [obs for obs in params["routing"].values()][0]]
-            + [len(params["number_of_servers"])]
-            + [len(params["server_priority_functions"])]
-            + [len(params["queue_capacities"])]
-            + [len(params["service_disciplines"])]
-        )
+    num_nodes_count = (
+        [params["number_of_nodes"]]
+        + [len(obs) for obs in params["arrival_distributions"].values()]
+        + [len(obs) for obs in params["service_distributions"].values()]
+        + [len(obs) for obs in params["batching_distributions"].values()]
+        + [len(obs) for obs in params["reneging_time_distributions"].values()]
+        + [len(obs) for obs in params["reneging_destinations"].values()]
+        + [len(params["number_of_servers"])]
+        + [len(params["server_priority_functions"])]
+        + [len(params["queue_capacities"])]
+    )
     if len(set(num_nodes_count)) != 1:
         raise ValueError("Ensure consistant number of nodes is used throughout.")
-    if not all(isinstance(f, types.FunctionType) or isinstance(f, types.MethodType) for f in params["routing"]):
-        for clss in params["routing"].values():
-            for row in clss:
-                if sum(row) > 1.0 or min(row) < 0.0 or max(row) > 1.0:
-                    raise ValueError("Ensure that routing matrix is valid.")
     neg_numservers = any(
         [(isinstance(obs, int) and obs < 0) for obs in params["number_of_servers"]]
     )

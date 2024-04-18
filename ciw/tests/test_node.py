@@ -98,10 +98,6 @@ class TestNode(unittest.TestCase):
         Q = ciw.Simulation(N_params)
         N = ciw.Node(1, Q)
         self.assertEqual(N.c, 9)
-        self.assertEqual(
-            [[round(p, 10) for p in row] for row in N.transition_row.values()],
-            [[0.1, 0.2, 0.1, 0.4, 0.2], [0.6, 0.0, 0.0, 0.2, 0.2], [0.0, 0.0, 0.4, 0.3, 0.3]],
-        )
         self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
         self.assertEqual(N.id_number, 1)
@@ -1018,7 +1014,7 @@ class TestNode(unittest.TestCase):
             arrival_distributions=[ciw.dists.Exponential(1), ciw.dists.Exponential(1)],
             service_distributions=[ciw.dists.Exponential(2), ciw.dists.Exponential(2)],
             number_of_servers=[2, 2],
-            routing=[[0, 0], [0, 0]],
+            routing=[[0.0, 0.0], [0.0, 0.0]],
             server_priority_functions=[prioritise_less_busy, prioritise_highest_id],
         )
         Q = ciw.Simulation(N)
@@ -1162,7 +1158,7 @@ class TestNode(unittest.TestCase):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7), None],
             service_distributions=[ciw.dists.Deterministic(11), ciw.dists.Deterministic(2)],
-            routing=[[0, 0], [0, 0]],
+            routing=[[0.0, 0.0], [0.0, 0.0]],
             number_of_servers=[1, 1],
             reneging_time_distributions=[ciw.dists.Deterministic(3), None],
             reneging_destinations=[2, -1],

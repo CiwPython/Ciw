@@ -41,11 +41,6 @@ class Node(object):
             self.next_event_date = float("Inf")
             self.next_shift_change = float("Inf")
         self.node_capacity = node.queueing_capacity + self.c
-        if not self.simulation.network.process_based:
-            self.transition_row = {
-                clss: self.simulation.network.customer_classes[clss].routing[id_ - 1] + [1.0 - sum(self.simulation.network.customer_classes[clss].routing[id_ - 1])]
-                for clss in self.simulation.network.customer_class_names
-            }
         self.class_change = node.class_change_matrix
         self.individuals = [[] for _ in range(simulation.number_of_priority_classes)]
         self.number_of_individuals = 0
@@ -538,21 +533,7 @@ class Node(object):
           - if process-based then take the next value from the predefined route,
             removing the current node from the route
         """
-        if not self.simulation.network.process_based:
-            customer_class = ind.customer_class
-            return random_choice(
-                self.simulation.nodes[1:],
-                self.transition_row[customer_class],
-            )
-        else:
-            if ind.route == [] or ind.route[0] != self.id_number:
-                raise ValueError("Individual process route sent to wrong node")
-            ind.route.pop(0)
-            if len(ind.route) == 0:
-                next_node_number = -1
-            else:
-                next_node_number = ind.route[0]
-            return self.simulation.nodes[next_node_number]
+        return self.simulation.routers[ind.customer_class].next_node(ind, self.id_number)
 
     def preempt(self, individual_to_preempt, next_individual):
         """
