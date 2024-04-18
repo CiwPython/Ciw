@@ -104,6 +104,7 @@ class NodeRouting:
     def error_check_at_initialise(self):
         pass
 
+
 class Probabilistic(NodeRouting):
     """
     A router that probabilistically chooses the next node.
@@ -140,3 +141,92 @@ class Probabilistic(NodeRouting):
         return self.simulation.nodes[node_index]
 
 
+class Direct(NodeRouting):
+    """
+    A router that sends the individual directly to another node.
+    """
+    def __init__(self, to):
+        """
+        Initialises the routing object.
+
+        Takes:
+            - to: a the node index to send to.
+        """
+        self.to = to
+
+    def next_node(self, ind):
+        """
+        Chooses the node 'to' with probability 1.
+        """
+        return self.simulation.nodes[self.to]
+
+
+class Leave(NodeRouting):
+    """
+    A router that sends the individual directly to the exit node.
+    """
+    def next_node(self, ind):
+        """
+        Chooses the exit node with probability 1.
+        """
+        return self.simulation.nodes[-1]
+
+
+class JoinShortestQueue(NodeRouting):
+    """
+    A router that sends the individual to the node
+    with the shortest queue from a list of destinations.
+    """
+    def __init__(self, destinations, tie_break='random'):
+        """
+        Initialises the routing object.
+
+        Takes:
+            - destinations: a list of node indices
+            - tie_break: the method to deal with ties.
+                + "random" - randomly choose between ties
+                + "order" - prioritise nodes in the order given by the destinations
+        """
+        self.destinations = destinations
+        self.tie_break = tie_break
+
+    def error_check_at_initialise(self):
+        if not set(self.destinations).issubset(set([nd.id_number for nd in self.simulation.nodes[1:]])):
+            raise ValueError("Routing destinations should be a subset of the nodes in the network.")
+
+    def get_queue_size(self, node_index):
+        """
+        Gets the size of the queue at the node_index.
+        """
+        return self.simulation.nodes[node_index].number_of_individuals - self.simulation.nodes[node_index].number_in_service
+
+    def next_node(self, ind):
+        """
+        Chooses the node from the destinations with the shortest queue.
+        """
+        shortest_queues = []
+        shortest_queue_size = float('inf')
+        for node_index in self.destinations:
+            queue_size = self.get_queue_size(node_index)
+            if queue_size == shortest_queue_size:
+                shortest_queues.append(node_index)
+            if queue_size < shortest_queue_size:
+                shortest_queues = [node_index]
+                shortest_queue_size = queue_size
+        if self.tie_break == 'random':
+            next_node_index = ciw.random_choice(shortest_queues)
+            return self.simulation.nodes[next_node_index]
+        if self.tie_break == 'order':
+            next_node_index = shortest_queues[0]
+            return self.simulation.nodes[next_node_index]
+
+
+class LoadBalancing(JoinShortestQueue):
+    """
+    A version of JoinShortestQueue that also counts customers in service.
+    """
+    def get_queue_size(self, node_index):
+        """
+        Gets the size of the queue at the node_index.
+        """
+        return self.simulation.nodes[node_index].number_of_individuals
