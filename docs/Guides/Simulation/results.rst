@@ -34,7 +34,7 @@ This gives a list of :code:`DataRecord` objects, which are named tuples with a n
 
     >>> r = recs[14]
     >>> r
-    Record(id_number=15, customer_class='Customer', original_customer_class='Customer', node=1, arrival_date=16.58266884119802, waiting_time=0.0, service_start_date=16.58266884119802, service_time=1.6996950244974869, service_end_date=18.28236386569551, time_blocked=0.0, exit_date=18.28236386569551, destination=-1, queue_size_at_arrival=0, queue_size_at_departure=1, server_id=1, record_type='service')
+    Record(id_number=15, customer_class='Customer', original_customer_class='Customer', node=1, arrival_date=16.58266..., waiting_time=0.0, service_start_date=16.58266..., service_time=1.69969..., service_end_date=18.28236..., time_blocked=0.0, exit_date=18.28236..., destination=-1, queue_size_at_arrival=0, queue_size_at_departure=1, server_id=1, record_type='service')
 
 These data records have a number of useful fields, set out in detail :ref:`here<refs-results>`. Importantly, fields can be accessed as attributes::
 
@@ -45,7 +45,7 @@ And so relevant data can be gathered using list comprehension::
 
     >>> waiting_times = [r.waiting_time for r in recs]
     >>> sum(waiting_times) / len(waiting_times)
-    0.3989747357976479
+    0.3989747...
 
 For easier manipulation, use in conjuction with `Pandas <https://pandas.pydata.org/>`_ is recommended, allowing for easier filtering, grouping, and summary statistics calculations. Lists of data records convert to Pandas data frames smoothly:
 

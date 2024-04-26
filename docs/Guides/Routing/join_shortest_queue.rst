@@ -169,13 +169,5 @@ We'll run this for 100 time units::
 We can look at the state probabilities, that is, the proportion of time the system spent in each state, where a state represents the number of customers present in the system::
 
     >>> state_probs = Q.statetracker.state_probabilities(observation_period=(10, 90))
-    >>> for n in range(8):
-    ...     print(n, round(state_probs[n], 5))
-    0 0.436
-    1 0.37895
-    2 0.13629
-    3 0.03238
-    4 0.01255
-    5 0.00224
-    6 0.00109
-    7 0.00051
+    >>> state_probs
+    {1: 0.37895..., 2: 0.13628..., 3: 0.03237..., 0: 0.43600..., 4: 0.01254..., 5: 0.00224..., 6: 0.00108..., 7: 0.00050...}

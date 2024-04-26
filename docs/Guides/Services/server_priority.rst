@@ -27,7 +27,7 @@ Observing the utilisation of each server we can see that server 1 is far more bu
     >>> Q.simulate_until_max_time(1000)
 
     >>> [srv.utilisation for srv in Q.nodes[1].servers]
-    [0.3184942440259139, 0.1437617661984246, 0.04196395909329539]
+    [0.31849424..., 0.14376176..., 0.04196395...]
 
 
 Ciw allows servers to be prioritised according to a custom server priority function. 
@@ -52,7 +52,7 @@ The :code:`server_priority_functions` keyword takes a list of server priority fu
     >>> Q.simulate_until_max_time(1000)
 
     >>> [srv.utilisation for srv in Q.nodes[1].servers]
-    [0.16784616228588892, 0.16882711899030475, 0.1675466880414403]
+    [0.16784616..., 0.16882711..., 0.16754668...]
 
 
 
@@ -95,7 +95,7 @@ Now let's see this in action when we have equal numbers of individuals of class 
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(1000)
     >>> [srv.utilisation for srv in Q.nodes[1].servers]
-    [0.36132860028585134, 0.3667939476202799, 0.2580202674603771]
+    [0.36132860..., 0.36679394..., 0.25802026...]
 
 Utilisation is fairly even between the first two servers, with the third server picking up any slack. Now let's see what happens when there is three times as many individuals of class 0 entering the system as there are of class 1::
 
@@ -116,7 +116,7 @@ Utilisation is fairly even between the first two servers, with the third server 
     >>> Q = ciw.Simulation(N)
     >>> Q.simulate_until_max_time(1000)
     >>> [srv.utilisation for srv in Q.nodes[1].servers]
-    [0.447650059165907, 0.2678754897968868, 0.29112382084389343]
+    [0.44765005..., 0.26787548..., 0.29112382...]
 
 Now the first server is much busier than the others.
 

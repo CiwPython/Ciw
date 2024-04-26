@@ -68,7 +68,7 @@ Information about blockages are visible in the service data records::
     >>> recs = Q.get_all_records(only=['service'])
     >>> dr = recs[381]
     >>> dr
-    Record(id_number=281, customer_class='Customer', original_customer_class='Customer', node=1, arrival_date=86.47159563260503, waiting_time=0.23440800156484443, service_start_date=86.70600363416987, service_time=0.6080763379283525, service_end_date=87.31407997209823, time_blocked=0.7507016571852461, exit_date=88.06478162928347, destination=2, queue_size_at_arrival=4, queue_size_at_departure=2, server_id=3, record_type='service')
+    Record(id_number=281, customer_class='Customer', original_customer_class='Customer', node=1, arrival_date=86.47159..., waiting_time=0.23440..., service_start_date=86.70600..., service_time=0.60807..., service_end_date=87.31407..., time_blocked=0.75070..., exit_date=88.06478..., destination=2, queue_size_at_arrival=4, queue_size_at_departure=2, server_id=3, record_type='service')
 
-In the case above, the customer ended service at date :code:`87.31407997209823`, but didn't exit until date :code:`88.06478162928347`, giving a :code:`time_blocked` of :code:`0.7507016571852461`.
+In the case above, the customer ended service at date :code:`87.31407...`, but didn't exit until date :code:`88.06478...`, giving a :code:`time_blocked` of :code:`0.75070...`.
 

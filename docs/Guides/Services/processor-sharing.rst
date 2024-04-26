@@ -23,7 +23,7 @@ Now we create a simulation object using :code:`ciw.PSNode` rather than :code:`ci
     >>> Q = ciw.Simulation(N, node_class=ciw.PSNode)
 
 Note that this applies the process sharing node to every node of the network.
-Alternatively we could provide a list of different node classes, for use on each different node of the network (see :ref:`this example <ps-routing>` for an in depth example of this)::
+Alternatively we could provide a list of different node classes, for use on each different node of the network (see :ref:`this example <example_lb>` for an in depth example of this)::
 
     >>> ciw.seed(0)
     >>> Q = ciw.Simulation(N, node_class=[ciw.PSNode])
