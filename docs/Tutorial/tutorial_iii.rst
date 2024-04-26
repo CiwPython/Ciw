@@ -1,4 +1,4 @@
-.. _tutorial-vi:
+.. _tutorial-iii:
 
 =================================
 Tutorial III: Restricted Networks

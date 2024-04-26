@@ -1,4 +1,4 @@
-.. _tutorial-ii:
+.. _tutorial-i-p2:
 
 ====================================================
 Tutorial I: Part 2 - Exploring the Simulation Object
@@ -23,7 +23,7 @@ Although our queueing system consisted of one node (the bank), the object :code:
     [Arrival Node, Node 1, Exit Node]
 
 + **The Arrival Node:**
-  This is where customers are created. They are spawned here, and can :ref:`baulk <baulking-functions>`, :ref:`be rejected <tutorial-vi>` or sent to a service node. Accessed using::
+  This is where customers are created. They are spawned here, and can :ref:`baulk <baulking-functions>`, :ref:`be rejected <tutorial-iii>` or sent to a service node. Accessed using::
 
     >>> Q.nodes[0]
     Arrival Node

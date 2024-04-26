@@ -1,4 +1,4 @@
-.. _tutorial-vii:
+.. _tutorial-iv:
 
 =========================================
 Tutorial IV: Multiple Classes of Customer

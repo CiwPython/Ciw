@@ -1,4 +1,4 @@
-.. _tutorial-iv:
+.. _tutorial-i-p4:
 
 ================================================
 Tutorial I: Part 4 - Trials, Warm-up & Cool-down
