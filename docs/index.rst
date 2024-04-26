@@ -17,12 +17,11 @@ Ciw is currently supported for and regularly tested on Python versions 3.7,
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :titlesonly:
    
    installation.rst
-   Tutorial-I/index.rst
-   Tutorial-II/index.rst
+   Tutorial/index.rst
    Guides/index.rst
    Reference/index.rst
    Background/index.rst
