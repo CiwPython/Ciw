@@ -529,11 +529,14 @@ class Node(object):
     def next_node(self, ind):
         """
         Finds the next node according the routing method:
-          - if not process-based then sample from transition matrix
-          - if process-based then take the next value from the predefined route,
-            removing the current node from the route
         """
         return self.simulation.routers[ind.customer_class].next_node(ind, self.id_number)
+
+    def next_node_for_rerouting(self, ind):
+        """
+        Finds the next node (for rerouting) according the routing method:
+        """
+        return self.simulation.routers[ind.customer_class].next_node_for_rerouting(ind, self.id_number)
 
     def preempt(self, individual_to_preempt, next_individual):
         """
@@ -541,13 +544,16 @@ class Node(object):
         """
         server = individual_to_preempt.server
         individual_to_preempt.original_service_time = individual_to_preempt.service_time
-        self.write_interruption_record(individual_to_preempt)
-        individual_to_preempt.service_start_date = False
-        individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.now
-        individual_to_preempt.service_time = self.priority_preempt
-        individual_to_preempt.service_end_date = False
-        self.detatch_server(server, individual_to_preempt)
-        self.decide_class_change(individual_to_preempt)
+        if self.priority_preempt == 'reroute':
+            self.reroute(individual_to_preempt)
+        else:
+            self.write_interruption_record(individual_to_preempt)
+            individual_to_preempt.service_start_date = False
+            individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.now
+            individual_to_preempt.service_time = self.priority_preempt
+            individual_to_preempt.service_end_date = False
+            self.detatch_server(server, individual_to_preempt)
+            self.decide_class_change(individual_to_preempt)
         self.attach_server(server, next_individual)
         next_individual.service_start_date = self.now
         next_individual.service_time = self.get_service_time(next_individual)
@@ -555,7 +561,7 @@ class Node(object):
         self.reset_class_change(next_individual)
         server.next_end_service_date = next_individual.service_end_date
 
-    def release(self, next_individual, next_node):
+    def release(self, next_individual, next_node, reroute=False):
         """
         Update node when an individual is released:
           - find the individual to release
@@ -573,7 +579,8 @@ class Node(object):
         self.number_in_service -= 1
         next_individual.queue_size_at_departure = self.number_of_individuals
         next_individual.exit_date = self.now
-        self.write_individual_record(next_individual)
+        if not reroute:
+            self.write_individual_record(next_individual)
         newly_free_server = None
         if not isinf(self.c) and not self.slotted:
             newly_free_server = next_individual.server
@@ -584,9 +591,11 @@ class Node(object):
         self.simulation.statetracker.change_state_release(
             self, next_node, next_individual, next_individual.is_blocked
         )
-        self.begin_service_if_possible_release(next_individual, newly_free_server)
+        if not reroute:
+            self.begin_service_if_possible_release(next_individual, newly_free_server)
         next_node.accept(next_individual)
-        self.release_blocked_individual()
+        if not reroute:
+            self.release_blocked_individual()
 
     def release_blocked_individual(self):
         """
@@ -687,23 +696,34 @@ class Node(object):
         Interrupts the service of an individual and places them in an
         interrupted queue, and writes an interruption record for them.
         """
-        self.interrupted_individuals.append(individual)
-        individual.interrupted = True
-        self.number_interrupted_individuals += 1
         individual.original_service_time = individual.service_time
-        self.write_interruption_record(individual)
-        individual.original_service_start_date = individual.service_start_date
-        individual.service_start_date = False
-        individual.time_left = individual.service_end_date - self.now
-        individual.service_time = self.schedule.preemption
-        individual.service_end_date = False
-        self.number_in_service -= 1
+        if self.schedule.preemption == 'reroute':
+            self.reroute(individual)
+        else:
+            self.interrupted_individuals.append(individual)
+            individual.interrupted = True
+            self.number_interrupted_individuals += 1
+            self.write_interruption_record(individual)
+            individual.original_service_start_date = individual.service_start_date
+            individual.service_start_date = False
+            individual.time_left = individual.service_end_date - self.now
+            individual.service_time = self.schedule.preemption
+            individual.service_end_date = False
+            self.number_in_service -= 1
 
     def sort_interrupted_individuals(self):
         """
         Sorts the list of interrupted individuals by priority class and arrival date.
         """
         self.interrupted_individuals.sort(key=lambda x: (x.priority_class, x.arrival_date))
+
+    def reroute(self, individual):
+        """
+        Rerouts a preempted individual
+        """
+        next_node = self.next_node_for_rerouting(individual)
+        self.write_interruption_record(individual, destination=next_node.id_number)
+        self.release(individual, next_node, reroute=True)
 
     def update_next_end_service_without_server(self):
         """
@@ -848,7 +868,7 @@ class Node(object):
         )
         individual.data_records.append(record)
 
-    def write_interruption_record(self, individual):
+    def write_interruption_record(self, individual, destination=nan):
         """
         Write a data record for an individual when being interrupted.
         """
@@ -869,7 +889,7 @@ class Node(object):
             service_end_date=nan,
             time_blocked=nan,
             exit_date=self.now,
-            destination=nan,
+            destination=destination,
             queue_size_at_arrival=individual.queue_size_at_arrival,
             queue_size_at_departure=individual.queue_size_at_departure,
             server_id=server_id,

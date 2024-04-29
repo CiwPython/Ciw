@@ -91,3 +91,28 @@ Now if the only arrivals are to node 1, and we run this for 100 time units, we s
     True
 
 
+
+.. _custom-rerouting:
+
+Custom Pre-emptive Re-routing
+-----------------------------
+
+Custom routing objects can be used to use different routing logic for when a customer finishes service, to when a customer has a service interrupted and must be re-routed. In order to do this, we need to create a custom routing object, and re-write the :code:`next_node_for_rerouting` method, which is called when deciding which node the customer will be re-routed to after pre-emption. By default, this calls the object's :code:`next_node` method, and so identical logic occurs. But we can rewrite this to use different logic when rerouting customers.
+
+Consider, for example, a two node system where customers always arrive to Node 1, and immediately leave the system. However, if they have service interrupted at Node 1, they are re-routed to Node 2::
+
+    >>> class CustomRerouting(ciw.routing.NodeRouting):
+    ...     def next_node(self, ind):
+    ...         """
+    ...         Always leaves the system.
+    ...         """
+    ...         return self.simulation.nodes[-1]
+    ... 
+    ...     def next_node_for_rerouting(self, ind):
+    ...         """
+    ...         Always sends to Node 2.
+    ...         """
+    ...         return self.simulation.nodes[2]
+
+
+**Note that re-routing customers ignores queue capacities.** That means that interrupted customers can be re-routed to nodes that already have full queues, nodes that would otherwise reject or block other arriving individuals; and so that node would be temporarily over-capacity.

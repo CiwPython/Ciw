@@ -52,8 +52,8 @@ class Schedule:
             'resample', or False.
             Default is False.
         """
-        if preemption not in [False, 'resume', 'restart', 'resample']:
-            raise ValueError("Pre-emption options should be either 'resume', 'restart', 'resample', or False.")
+        if preemption not in [False, 'resume', 'restart', 'resample', 'reroute']:
+            raise ValueError("Pre-emption options should be either 'resume', 'restart', 'resample', 'reroute', or False.")
         if not isinstance(offset, float):
             raise ValueError("Offset should be a positive float.")
         if offset < 0.0:

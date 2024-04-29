@@ -13,7 +13,8 @@ In Ciw they can either:
     
 + Have their service resampled (:code:`"resample"`);
 + Restart the exact same service (:code:`"restart"`);
-+ Continue the original service from where they left off (:code:`"resume"`).
++ Continue the original service from where they left off (:code:`"resume"`);
++ Be re-routed to another node (:code:`"reroute"`).
 
 
 
@@ -24,7 +25,7 @@ During non-pre-emptive priorities, customers cannot be interrupted. Therefore th
 
 In order to implement pre-emptive or non-pre-emptive priorities, put the priority class mapping in a tuple with a list of the chosen pre-emption options for each node in the network. For example::
 
-    priority_classes=({'Class 0': 0, 'Class 1': 1}, [False, "resample", "restart", "resume"])
+    priority_classes=({'Class 0': 0, 'Class 1': 1}, [False, "resample", "restart", "resume", "reroute"])
 
 This indicates that non-pre-emptive priorities will be used at the first node, and pre-emptive priorities will be used at the second, third and fourth nodes. Interrupted individuals will have their services resampled at the second node, they will restart their original service time at the third node, and they will continue where they left off at the fourth node.
 
@@ -46,15 +47,24 @@ During a pre-emptive schedule, that server will immediately stop service and lea
 In order to implement pre-emptive or non-pre-emptive schedules, the :code:`ciw.Schedule` object takes in a keywords argument :code:`preemption` the chosen pre-emption option. For example::
 
     number_of_servers=[
-        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption=False)      # non-preemptive
-        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resample") # preemptive and resamples service time
-        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="restart")  # preemptive and restarts origional service time
-        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resume") # preemptive continutes services where left off
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption=False),      # non-preemptive
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resample"), # preemptive and resamples service time
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="restart"),  # preemptive and restarts origional service time
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resume"),   # preemptive and continues services where left off
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="reroute")   # preemptive and sends the individual to another node
     ]
 
 Ciw defaults to non-pre-emptive schedules, and so the following code implies a non-pre-emptive schedule::
 
     number_of_servers=[ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100])] # non-preemptive
+
+
+Re-routing Customers
+--------------------
+
+If the :code:`"reroute"` pre-emptive option is chosen, then interrupted customers have their service cut short at the current node, and are then sent to another node. Ordinarily the next node is chosen in same way as if the customer had completed service, using the transition matrices, process based routes, or routing objects. However, it may be useful to have separate routing logic for preemptive reroutes, and a description of how to do that is given :ref:`here<custom-rerouting>`.
+
+**Note that re-routing customers ignores queue capacities.** That means that interrupted customers can be re-routed to nodes that already have full queues, nodes that would otherwise reject or block other arriving individuals; and so that node would be temporarily over-capacity.
 
 
 Records of Interrupted Services

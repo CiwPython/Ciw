@@ -30,6 +30,12 @@ class NetworkRouting:
         """
         return self.routers[node_id - 1].next_node(ind)
 
+    def next_node_for_rerouting(self, ind, node_id):
+        """
+        Chooses the next node when rerouting preempted customer.
+        """
+        return self.routers[node_id - 1].next_node_for_rerouting(ind)
+
 
 class TransitionMatrix(NetworkRouting):
     """
@@ -88,6 +94,12 @@ class ProcessBased(NetworkRouting):
             node_index = ind.route.pop(0)
         return self.simulation.nodes[node_index]
 
+    def next_node_for_rerouting(self, ind, node_id):
+        """
+        Chooses the next node when rerouting preempted customer.
+        """
+        return self.next_node(ind, node_id)
+
 
 class NodeRouting:
     """
@@ -103,6 +115,12 @@ class NodeRouting:
 
     def error_check_at_initialise(self):
         pass
+
+    def next_node_for_rerouting(self, ind):
+        """
+        By default, the next node for rerouting uses the same method as next_node.
+        """
+        return self.next_node(ind)
 
 
 class Probabilistic(NodeRouting):

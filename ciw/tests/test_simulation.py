@@ -8,6 +8,7 @@ import networkx as nx
 import csv
 from itertools import cycle
 import types
+import math
 
 N_params = ciw.create_network(
     arrival_distributions={
@@ -1197,6 +1198,315 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual([round(r.service_start_date, 2) for r in recs_service], expected_ssds)
         self.assertEqual([round(r.service_end_date, 2) for r in recs_service], expected_seds)
         self.assertEqual([round(r.arrival_date, 2) for r in recs_reject][:10], expected_first_10_rejection_times)
+
+    def test_reroute_preemption_classpriorities(self):
+        """
+        Class 0 arrive to Node 1 every 0.7, service lasts 0.2
+        Class 1 arrive to Node 1 every 1.0, service lasts 0.2
+        Class 0 have priority over class 1
+        Class 1 rerouted to Node 2 upon preemption
+
+        Ind    arr    clss    end
+          1    0.7       0    0.9
+          2    1.0       1    1.2
+          3    1.4       0    1.6
+          4    2.0       1    interrupted (goes to Node 2 for 0.5)
+          5    2.1       0    2.3
+        """
+        class Reroute(ciw.routing.NodeRouting):
+            def next_node(self, ind):
+                """
+                Chooses the exit node with probability 1.
+                """
+                return self.simulation.nodes[-1]
+
+            def next_node_for_rerouting(self, ind):
+                """
+                Chooses Node 2
+                """
+                return self.simulation.nodes[2]
+
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.7), None],
+                'Class 1': [ciw.dists.Deterministic(value=1.0), None]
+            },
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.5)],
+                'Class 1': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.5)]
+            },
+            number_of_servers=[1, 1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ['reroute', False]),
+            routing={
+                'Class 0': ciw.routing.NetworkRouting(routers=[ciw.routing.Leave(), ciw.routing.Leave()]),
+                'Class 1': ciw.routing.NetworkRouting(routers=[Reroute(), ciw.routing.Leave()])
+            }
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(2.7)
+        recs = Q.get_all_records()
+
+        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in nd_1], [-1, -1, -1, 2, -1])
+        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+
+        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [2.1])
+        self.assertEqual([round(r.service_time, 5) for r in nd_2], [0.5])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [2.6])
+        self.assertEqual([r.destination for r in nd_2], [-1])
+        self.assertEqual([r.record_type for r in nd_2], ['service'])
+
+        """
+        Class 0 arrive to Node 1 every 0.7, service lasts 0.2
+        Class 1 arrive to Node 1 every 1.0, service lasts 0.2
+        Class 0 have priority over class 1
+        All classes go Node 1 then Node 2
+
+        Node 1
+        Ind    arr    clss    end
+          1    0.7       0    0.9
+          2    1.0       1    1.2
+          3    1.4       0    1.6
+          4    2.0       1    interrupted
+          5    2.1       0    2.3
+
+        Node 2
+        Ind    arr    clss    end
+          1    0.9       0    1.0
+          2    1.2       1    1.3
+          3    1.6       0    1.7
+          4    2.1       1    2.2
+          5    2.3       0    2.4
+        """
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.7), None],
+                'Class 1': [ciw.dists.Deterministic(value=1.0), None]
+            },
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.1)],
+                'Class 1': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.1)]
+            },
+            number_of_servers=[1, 1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ['reroute', False]),
+            routing={
+                'Class 0': ciw.routing.TransitionMatrix(transition_matrix=[[0.0, 1.0], [0.0, 0.0]]),
+                'Class 1': ciw.routing.TransitionMatrix(transition_matrix=[[0.0, 1.0], [0.0, 0.0]])
+            }
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(2.7)
+        recs = Q.get_all_records()
+
+        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in nd_1], [2, 2, 2, 2, 2])
+        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+
+        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([round(r.service_time, 5) for r in nd_2], [0.1, 0.1, 0.1, 0.1, 0.1])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [1.0, 1.3, 1.7, 2.2, 2.4])
+        self.assertEqual([r.destination for r in nd_2], [-1, -1, -1, -1, -1])
+        self.assertEqual([r.record_type for r in nd_2], ['service', 'service', 'service', 'service', 'service'])
+
+    def test_reroute_preemption_classpriorities_process_based(self):
+        """
+        Class 0 arrive to Node 1 every 0.7, service lasts 0.2
+        Class 1 arrive to Node 1 every 1.0, service lasts 0.2
+        Class 0 have priority over class 1
+        All classes go Node 1 then Node 2
+
+        Node 1
+        Ind    arr    clss    end
+          1    0.7       0    0.9
+          2    1.0       1    1.2
+          3    1.4       0    1.6
+          4    2.0       1    interrupted
+          5    2.1       0    2.3
+
+        Node 2
+        Ind    arr    clss    end
+          1    0.9       0    1.0
+          2    1.2       1    1.3
+          3    1.6       0    1.7
+          4    2.1       1    2.2
+          5    2.3       0    2.4
+        """
+        def from_1_to_2(ind, simulation):
+            return [2]
+
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.7), None],
+                'Class 1': [ciw.dists.Deterministic(value=1.0), None]
+            },
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.1)],
+                'Class 1': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.1)]
+            },
+            number_of_servers=[1, 1],
+            priority_classes=({'Class 0': 0, 'Class 1': 1}, ['reroute', False]),
+            routing={
+                'Class 0': ciw.routing.ProcessBased(from_1_to_2),
+                'Class 1': ciw.routing.ProcessBased(from_1_to_2)
+            }
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(2.7)
+        recs = Q.get_all_records()
+
+        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in nd_1], [2, 2, 2, 2, 2])
+        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+
+        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([round(r.service_time, 5) for r in nd_2], [0.1, 0.1, 0.1, 0.1, 0.1])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [1.0, 1.3, 1.7, 2.2, 2.4])
+        self.assertEqual([r.destination for r in nd_2], [-1, -1, -1, -1, -1])
+        self.assertEqual([r.record_type for r in nd_2], ['service', 'service', 'service', 'service', 'service'])
+
+    def test_rerouting_ignores_queue_capacities(self):
+        """
+        Class 0 arrive to Node 1 every 0.7, service lasts 0.2
+        Class 1 arrive to Node 1 every 1.0, service lasts 0.2
+        Class 0 have priority over class 1
+        Class 1 rerouted to Node 2 upon preemption
+        Class 2 arrive at Node 2 every 0.6
+        
+        Node 1
+        Ind    arr    clss    end
+          2    0.7       0    0.9
+          3    1.0       1    1.2
+          5    1.4       0    1.6
+          6    2.0       1    interrupted (goes to Node 2 for 0.5)
+          7    2.1       0    2.3
+
+        Node 2
+        Ind    arr    clss    end
+          1    0.6       2    1.3
+          4    1.2       2    rejected
+          3    1.8       2    2.5
+          6    2.1       1    (2.5 + 0.7 =) 3.2 (individual is accepted even though a queue capacity of 0)
+          8    2.4       2    rejected
+        """
+        class Reroute(ciw.routing.NodeRouting):
+            def next_node(self, ind):
+                """
+                Chooses the exit node with probability 1.
+                """
+                return self.simulation.nodes[-1]
+
+            def next_node_for_rerouting(self, ind):
+                """
+                Chooses Node 2
+                """
+                return self.simulation.nodes[2]
+
+        N = ciw.create_network(
+            arrival_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.7), None],
+                'Class 1': [ciw.dists.Deterministic(value=1.0), None],
+                'Class 2': [None, ciw.dists.Deterministic(value=0.6)]
+            },
+            service_distributions={
+                'Class 0': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.7)],
+                'Class 1': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.7)],
+                'Class 2': [ciw.dists.Deterministic(value=0.2), ciw.dists.Deterministic(value=0.7)]
+            },
+            number_of_servers=[1, 1],
+            queue_capacities=[float('inf'), 0],
+            priority_classes=({'Class 0': 0, 'Class 1': 1, 'Class 2': 1}, ['reroute', False]),
+            routing={
+                'Class 0': ciw.routing.NetworkRouting(routers=[ciw.routing.Leave(), ciw.routing.Leave()]),
+                'Class 1': ciw.routing.NetworkRouting(routers=[Reroute(), ciw.routing.Leave()]),
+                'Class 2': ciw.routing.NetworkRouting(routers=[ciw.routing.Leave(), ciw.routing.Leave()])
+            }
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(3.3)
+        recs = Q.get_all_records()
+
+        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)[:5]
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in nd_1], [-1, -1, -1, 2, -1])
+        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+
+        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)[:5]
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [0.6, 1.2, 1.8, 2.1, 2.4])
+        self.assertEqual([str(round(r.service_time, 5)) for r in nd_2], ['0.7', 'nan', '0.7', '0.7', 'nan'])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [1.3, 1.2, 2.5, 3.2, 2.4])
+        self.assertEqual([str(r.destination) for r in nd_2], ['-1', 'nan', '-1', '-1', 'nan'])
+        self.assertEqual([r.record_type for r in nd_2], ['service', 'rejection', 'service', 'service', 'rejection'])
+
+    def test_reroute_at_shift_change(self):
+        """
+        Two nodes: arrivals to Node 1 every 1 time unit; service lasts 0.4 time units.
+        One server on duty from - to 4.2; 0 from 4.2 to 6.1; 1 from 6.1 to 100.
+        Interrupted individuals go to node 2, have service time 1.
+
+        Node 1
+        Ind    arr    exit
+          1    1.0     1.4
+          2    2.0     2.4
+          3    3.0     4.4
+          4    4.0     4.2 (interrupted)
+          5    5.0     6.5 (service started at 6.1 when server back on duty)
+          6    6.0     6.9 (service starts after ind 5 finishes service)
+          7    7.0     7.4
+
+        Node 2
+        Ind    arr    exit
+          4    4.2     5.2
+        """
+        class Reroute(ciw.routing.NodeRouting):
+            def next_node(self, ind):
+                """
+                Chooses the exit node with probability 1.
+                """
+                return self.simulation.nodes[-1]
+
+            def next_node_for_rerouting(self, ind):
+                """
+                Chooses Node 2
+                """
+                return self.simulation.nodes[2]
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(value=1.0), None],
+            service_distributions=[ciw.dists.Deterministic(value=0.4), ciw.dists.Deterministic(value=1.0)],
+            number_of_servers=[ciw.Schedule(numbers_of_servers=[1, 0, 1], shift_end_dates=[4.2, 6.1, 100], preemption="reroute"), 1],
+            routing=ciw.routing.NetworkRouting(routers=[Reroute(), ciw.routing.Leave()])
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(7.5)
+
+        recs = Q.get_all_records()
+        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0])
+        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [1.4, 2.4, 3.4, 4.2, 6.5, 6.9, 7.4])
+        self.assertEqual([r.destination for r in nd_1], [-1, -1, -1, 2, -1, -1, -1])
+        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service', 'service', 'service'])
+
+        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [4.2])
+        self.assertEqual([round(r.service_time, 5) for r in nd_2], [1.0])
+        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [5.2])
+        self.assertEqual([r.destination for r in nd_2], [-1])
+        self.assertEqual([r.record_type for r in nd_2], ['service'])
 
 
 class TestServiceDisciplines(unittest.TestCase):

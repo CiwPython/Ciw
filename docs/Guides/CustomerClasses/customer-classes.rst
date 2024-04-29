@@ -48,7 +48,7 @@ When collecting results, the class of the customer associated with each service 
     >>> Counter([r.customer_class for r in recs])
     Counter({'Child': 138, 'Adult': 89})
 
-Nearly all parameters of :code:`ciw.create_network` can be split by customer class, unless they describe the architecture of the network itself. Those that can and cannot be split by customer class are listed below::
+Nearly all parameters of :code:`ciw.create_network` can be split by customer class, unless they describe the architecture of the network itself. Those that can and cannot be split by customer class are listed below:
 
 Can be split by customer class:
     + :code:`arrival_distributions`,
