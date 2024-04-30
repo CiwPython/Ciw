@@ -18,6 +18,7 @@ The following node routers are currently supported:
 - :ref:`probabilistic`
 - :ref:`jsq`
 - :ref:`load_balancing`
+- :ref:`cycle`
 
 
 
@@ -126,7 +127,6 @@ The :code:`tie_break` argument is optional, and can take one of two strings: :co
 
 .. _load_balancing:
 
-
 --------------
 Load Balancing
 --------------
@@ -136,3 +136,15 @@ The customer goes :ref:`joins the node with the least amount of customers presen
     ciw.routing.LoadBalancing(destinations=[1, 3], tie_break='random')
 
 The :code:`tie_break` argument is optional, and can take one of two strings: :code:`'random'` or :code:`'order'`. When there is a tie between the nodes with the least amount of customers present, tie breaks are either dealt with by choosing randomly between the ties (:code:`'random'`), or take precedence by the order listed in the :code:`destinations` list (:code:`'order'`). If omitted, random tie-breaking is used.
+
+
+.. _cycle:
+
+-----
+Cycle
+-----
+
+The customers' destinations out of the node cycles through a given list. For example, the first customer is routed to Node 1, the second to Node 1, the third to Node 3, the fourth to Node 2, then henceforth the order cycles, so the fifth is routed to Node 1, the sixth to Node 1, and so on::
+
+    ciw.routing.Cycle(cycle=[1, 1, 3, 2])
+

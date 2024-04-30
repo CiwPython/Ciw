@@ -1,4 +1,5 @@
 import ciw
+import itertools
 
 class NetworkRouting:
     """
@@ -248,3 +249,29 @@ class LoadBalancing(JoinShortestQueue):
         Gets the size of the queue at the node_index.
         """
         return self.simulation.nodes[node_index].number_of_individuals
+
+
+class Cycle(NodeRouting):
+    """
+    A router that cycles through destinations, repeating the cycle once ended.
+    """
+    def __init__(self, cycle):
+        """
+        Initialises the routing object.
+
+        Takes:
+            - cycle: an ordered sequence of nodes.
+        """
+        self.cycle = cycle
+        self.generator = itertools.cycle(self.cycle)
+
+    def error_check_at_initialise(self):
+        if not set(self.cycle).issubset(set([nd.id_number for nd in self.simulation.nodes[1:]])):
+            raise ValueError("Routing destinations should be a subset of the nodes in the network.")
+
+    def next_node(self, ind):
+        """
+        Chooses the node 'to' with probability 1.
+        """
+        next_node_index = next(self.generator)
+        return self.simulation.nodes[next_node_index]

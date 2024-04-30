@@ -309,3 +309,27 @@ class TestRouting(unittest.TestCase):
         self.assertEqual([samples_1[i] for i in [1, 2, 3, -1]], [507, 493, 0, 0])
         self.assertTrue(all(r == 1 for r in samples_2))
         self.assertTrue(all(r == 2 for r in samples_3))
+
+
+    def test_cycle_routing(self):
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        R1 = ciw.routing.Cycle(cycle=[2, 3, 3])
+        R2 = ciw.routing.Cycle(cycle=[1, 2])
+        R3 = ciw.routing.Cycle(cycle=[1, -1, 2, -1])
+        R1.initialise(Q, 1)
+        R2.initialise(Q, 2)
+        R3.initialise(Q, 3)
+        ind = ciw.Individual(1)
+        samples_1 = [r.id_number for r in [R1.next_node(ind) for _ in range(20)]]
+        samples_2 = [r.id_number for r in [R2.next_node(ind) for _ in range(20)]]
+        samples_3 = [r.id_number for r in [R3.next_node(ind) for _ in range(20)]]
+        self.assertEqual([2, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3], samples_1)
+        self.assertEqual([1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], samples_2)
+        self.assertEqual([1, -1, 2, -1, 1, -1, 2, -1, 1, -1, 2, -1, 1, -1, 2, -1, 1, -1, 2, -1], samples_3)
+
+    def test_cycle_routing_raises_errors(self):
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        R1 = ciw.routing.Cycle(cycle=[1, 2, 7])
+        self.assertRaises(ValueError, R1.initialise, Q, 1)
