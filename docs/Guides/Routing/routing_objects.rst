@@ -14,12 +14,11 @@ Ciw has a number of these built in, however their primary use is to be defined b
 + :code:`ciw.routing.TransitionMatrix`, allowing users to define :ref:`transition matrices<transition-matrix>`, that is a matrix of probabilities of being transferred to each node in the network after service at every other node.
 + :code:`ciw.routing.ProcessBased`, allowing pre-defined routes to be given to individuals when they arrive, that is :ref:`process-based routing<process-based>`.
 
-However, the most flexible Network routing object is the generic :code:`ciw.routing.NetworkRouting`. This takes in a list of Node routing objects. Node routing objects are objects that determine routing out of a particular node. The following are built-in to Ciw, but importantly, they can be user defined:
+However, the most flexible Network routing object is the generic :code:`ciw.routing.NetworkRouting`. This takes in a list of Node routing objects. Node routing objects are objects that determine routing out of a particular node. A :ref:`full list is given<refs-routing>` in the References section. The following are some of the most basic built-in routers available in Ciw, but importantly, they can also be user defined:
 
 + :code:`ciw.routing.Direct(to=2)`: Sends the individual directly to another node. For example here, a customer is always send to node 2.
 + :code:`ciw.routing.Leave()`: The individual leaves the system.
 + :code:`ciw.routing.Probabilistic(destinations=[1, 3], probs=[0.1, 0.4])`: Probabilistically sends the individual to either of the destination, according to their corresponding probabilities. In this case, they are send to node 1 with probability 0.1, node 3 with probability 0.4, and leave the system with the rest of the probability, 0.5.
-+ :code:`ciw.routing.JoinShortestQueue` and :code:`ciw.routing.LoadBalancing` are forms of sending the individual to the shortest queue. More information on these is given :ref:`here<join-shortest-queue>`.
 
 
 Example

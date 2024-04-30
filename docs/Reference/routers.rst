@@ -34,9 +34,9 @@ The general network router allows us to define separate node routing objects for
 
     ciw.routing.NetworkRouting(
         routers=[
-            ciw.routing.NodeRouting(),
-            ciw.routing.NodeRouting(),
-            ciw.routing.NodeRouting()
+            ciw.routing.NodeRouting(), # should be replaced with one of the node routers below
+            ciw.routing.NodeRouting(), # should be replaced with one of the node routers below
+            ciw.routing.NodeRouting()  # should be replaced with one of the node routers below
         ]
     )
 
