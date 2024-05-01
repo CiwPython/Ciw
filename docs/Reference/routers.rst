@@ -10,6 +10,7 @@ The following network routers are currently supported:
 - :ref:`network_router`
 - :ref:`trans_mat`
 - :ref:`pb_route`
+- :ref:`pb_flex`
 
 The following node routers are currently supported:
 
@@ -71,6 +72,28 @@ The :ref:`process based<process-based>` router takes in a function that returns 
     )
 
 
+.. _pb_flex:
+
+---------------------------------
+The Flexible Process Based Routed
+---------------------------------
+
+The flexible process based router is an extension of the above process based router, where the routing function gives a list of sets (defined by lists). For example::
+
+    ciw.routing.FlexibleProcessBased(
+        routing_function=lambda ind, simulation: [[2, 1], [1], [1, 2, 3]],
+        rule='any',
+        choice='jsq'
+    )
+
+Arguments:
+ - The :code:`rule` argument can take one of two strings: :code:`'any'` or :code:`'all'`. For each set of nodes in the pre-defined route, using :code:`'any'` means that the customer must visit only one of the nodes in the set; while using :code:`'all'` means that the customer should visit all the nodes in that set, but not necessarily in that order.
+ - The :code:`choice` argument can take one of a number of strings. When using the :code:`'any'` rule, it determines how a node is chosen from the set. When using the :code:`'all'` rule, it determines at each instance, the choice of next node out of the set. The current options are:
+    - :code:`'random'`: randomly chooses a node from the set.
+    - :code:`'jsq'`: chooses the node with the smallest queue from the set (like the :ref:`join-shortest-queue<jsq>` router).
+    - :code:`'lb'`: chooses the node with the least number of customers present from the set (like the :ref:`load-balancing<load_balancing>` router).
+
+
 
 
 Node Routing Objects
@@ -124,6 +147,7 @@ The customer goes :ref:`joins the shortest queue<join-shortest-queue>` out of a 
     ciw.routing.JoinShortestQueue(destinations=[1, 3], tie_break='random')
 
 The :code:`tie_break` argument is optional, and can take one of two strings: :code:`'random'` or :code:`'order'`. When there is a tie between the nodes with the shortest queue, tie breaks are either dealt with by choosing randomly between the ties (:code:`'random'`), or take precedence by the order listed in the :code:`destinations` list (:code:`'order'`). If omitted, random tie-breaking is used.
+
 
 .. _load_balancing:
 

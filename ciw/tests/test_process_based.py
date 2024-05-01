@@ -3,7 +3,6 @@ import ciw
 import random
 from collections import Counter
 
-
 def generator_function_1(ind, simulation):
     return [1, 1]
 
@@ -29,6 +28,8 @@ class ClassForProcessBasedMethod:
     def generator_method(self, ind, simulation):
         return [1, 1]
 
+def flexible_generator_1(ind, simulation):
+    return [[2], [3, 4, 5], [6]]
 
 class TestProcessBased(unittest.TestCase):
     def test_network_takes_routing_function(self):
@@ -152,3 +153,103 @@ class TestProcessBased(unittest.TestCase):
         inds = Q.nodes[1].all_individuals
         for ind in inds:
             self.assertEqual(ind.route, [1, 1])
+
+    def test_flexible_process_based(self):
+        ## First test 'any-random':
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(rate=1), None, None, None, None, None],
+            service_distributions=[ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2)],
+            number_of_servers=[3, 3, 3, 3, 3, 3],
+            routing=ciw.routing.FlexibleProcessBased(
+                route_function=flexible_generator_1,
+                rule='any',
+                choice='random'
+            )
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(1000)
+        inds = Q.nodes[-1].all_individuals
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
+        self.assertEqual(
+            routes_counter,
+            Counter({(1, 2, 4, 6): 350, (1, 2, 5, 6): 333, (1, 2, 3, 6): 317}), # all evenly spread
+        )
+
+        ## Now test 'any-jsq' (flooding Node 4 so no customers ever go here):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(rate=1), None, None, None, None, None],
+            service_distributions=[ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Deterministic(value=200000), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2)],
+            number_of_servers=[3, 3, 3, 3, 3, 3],
+            routing=ciw.routing.FlexibleProcessBased(
+                route_function=flexible_generator_1,
+                rule='any',
+                choice='jsq'
+            )
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(1000)
+        inds = Q.nodes[-1].all_individuals
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
+        self.assertEqual(
+            routes_counter,
+            Counter({(1, 2, 5, 6): 503, (1, 2, 3, 6): 497}),  # evenly spread between the two unflooded nodes
+        )
+
+        ## Now test 'any-lb' (flooding Node 4 so no customers ever go here):
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(rate=1), None, None, None, None, None],
+            service_distributions=[ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Deterministic(value=200000), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2)],
+            number_of_servers=[3, 3, 3, 3, 3, 3],
+            routing=ciw.routing.FlexibleProcessBased(
+                route_function=flexible_generator_1,
+                rule='any',
+                choice='lb'
+            )
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(1000)
+        inds = Q.nodes[-1].all_individuals
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
+        self.assertEqual(
+            routes_counter,
+            Counter({(1, 2, 5, 6): 508, (1, 2, 3, 6): 492}),  # evenly spread between the two unflooded nodes
+        )
+
+
+        ## Now test 'all-random':
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Exponential(rate=1), None, None, None, None, None],
+            service_distributions=[ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2), ciw.dists.Exponential(rate=2)],
+            number_of_servers=[3, 3, 3, 3, 3, 3],
+            routing=ciw.routing.FlexibleProcessBased(
+                route_function=flexible_generator_1,
+                rule='all',
+                choice='random'
+            )
+        )
+        ciw.seed(0)
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(1000)
+        inds = Q.nodes[-1].all_individuals
+        routes_counter = Counter(
+            [tuple(dr.node for dr in ind.data_records) for ind in inds]
+        )
+        self.assertEqual(routes_counter[(1, 2, 3, 4, 5, 6)], 169)
+        self.assertEqual(routes_counter[(1, 2, 3, 5, 4, 6)], 139)
+        self.assertEqual(routes_counter[(1, 2, 4, 3, 5, 6)], 185)
+        self.assertEqual(routes_counter[(1, 2, 4, 5, 3, 6)], 166)
+        self.assertEqual(routes_counter[(1, 2, 5, 3, 4, 6)], 186)
+        self.assertEqual(routes_counter[(1, 2, 5, 4, 3, 6)], 155)
+
+    def test_flexible_process_based_error_raising(self):
+        self.assertRaises(ValueError, ciw.routing.FlexibleProcessBased, flexible_generator_1, 'something', 'random')
+        self.assertRaises(ValueError, ciw.routing.FlexibleProcessBased, flexible_generator_1, 'all', 'something')

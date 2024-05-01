@@ -101,6 +101,67 @@ class ProcessBased(NetworkRouting):
         """
         return self.next_node(ind, node_id)
 
+class FlexibleProcessBased(ProcessBased):
+    """
+    A class to route an individual based on a pre-defined process.
+    """
+    def __init__(self, route_function, rule, choice):
+        """
+        Initialises the routing object.
+
+        Takes:
+            - route_function: a function that returns a pre-defined route 
+        """
+        self.route_function = route_function
+        if rule not in ['any', 'all']:
+            raise ValueError("Flexible routing rules must be one of 'any' or 'all'.")
+        if choice not in ['random', 'jsq', 'lb']:
+            raise ValueError("Flexible routing choices must be one of 'random', 'jsq', or 'lb'.")
+        self.rule = rule
+        self.choice = choice
+
+    def find_next_node_from_subset(self, subset, ind):
+        """
+        Finds the next node within a subset of nodes
+        according to the 'choice' parameter
+        """
+        if self.choice == 'random':
+            return ciw.random_choice(subset)
+        if self.choice == 'jsq':
+            temp_router = JoinShortestQueue(destinations=subset)
+            temp_router.initialise(self.simulation, None)
+            nd = temp_router.next_node(ind)
+            return nd.id_number
+        if self.choice == 'lb':
+            temp_router = LoadBalancing(destinations=subset)
+            temp_router.initialise(self.simulation, None)
+            nd = temp_router.next_node(ind)
+            return nd.id_number
+
+    def update_individual_route(self, ind, next_node_id):
+        """
+        Updates the individual route by removing chosen nodes
+        along the route, according to the 'rule' parameter
+        """
+        if self.rule == 'any':
+            ind.route = ind.route[1:]
+        if self.rule == 'all':
+            ind.route[0].remove(next_node_id)
+            if len(ind.route[0]) == 0:
+                ind.route = ind.route[1:]
+
+    def next_node(self, ind, node_id):
+        """
+        Chooses the next node from the process-based pre-defined route.
+        """
+        if len(ind.route) == 0:
+            node_index = -1
+        else:
+            node_index = self.find_next_node_from_subset(ind.route[0], ind)
+            self.update_individual_route(ind, node_index)
+        return self.simulation.nodes[node_index]
+
+
 
 class NodeRouting:
     """
