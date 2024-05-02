@@ -75,23 +75,25 @@ Features
 
 A number of other features are also implemented, including:
 
-+ `Type I blocking <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vi.html>`_
++ `Type I blocking <https://ciw.readthedocs.io/en/latest/Guides/Queues/queue_capacities.html>`_
 + `A large range of sampling distributions <https://ciw.readthedocs.io/en/latest/Reference/distributions.html>`_
-+ `Phase-Type distributions <https://ciw.readthedocs.io/en/latest/Guides/phasetype.html>`_
-+ `Time-dependent and state-dependent distributions <https://ciw.readthedocs.io/en/latest/Guides/time_dependent.html>`_
-+ `Batch arrivals <https://ciw.readthedocs.io/en/latest/Guides/batching.html>`_
-+ `Baulking customers <https://ciw.readthedocs.io/en/latest/Guides/baulking.html>`_
-+ `Reneging customers <https://ciw.readthedocs.io/en/latest/Guides/reneging.html>`_
-+ `Processor sharing <https://ciw.readthedocs.io/en/latest/Guides/processor-sharing.html>`_
-+ `Multiple customer classes <https://ciw.readthedocs.io/en/latest/Tutorial-II/tutorial_vii.html>`_
-+ `Priorities <https://ciw.readthedocs.io/en/latest/Guides/priority.html>`_
-+ `Server priorities <https://ciw.readthedocs.io/en/latest/Guides/server_priority.html>`_
-+ `Service disciplines <https://ciw.readthedocs.io/en/latest/Guides/service_disciplines.html>`_
-+ `Customers changing classes <https://ciw.readthedocs.io/en/latest/Guides/dynamic_customerclasses.html>`_
-+ `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/server_schedule.html>`_
-+ `Slotted services <https://ciw.readthedocs.io/en/latest/Guides/slotted.html>`_
-+ `State tracking <https://ciw.readthedocs.io/en/latest/Guides/state_trackers.html>`_
-+ `Stopping the simulation after a certain amount of customers <https://ciw.readthedocs.io/en/latest/Guides/sim_numcusts.html>`_
-+ `Process-based routing <https://ciw.readthedocs.io/en/latest/Guides/process_based.html>`_
-+ `Deadlock detection <https://ciw.readthedocs.io/en/latest/Guides/deadlock.html>`_
++ `Phase-Type distributions <https://ciw.readthedocs.io/en/latest/Guides/Distributions/phasetype.html>`_
++ `Time-dependent and state-dependent distributions <https://ciw.readthedocs.io/en/latest/Guides/Distributions/time_dependent.html>`_
++ `Batch arrivals <https://ciw.readthedocs.io/en/latest/Guides/Arrivals/batching.html>`_
++ `Baulking customers <https://ciw.readthedocs.io/en/latest/Guides/CustomerBehaviour/baulking.html>`_
++ `Reneging customers <https://ciw.readthedocs.io/en/latest/Guides/CustomerBehaviour/reneging.html>`_
++ `Processor sharing <https://ciw.readthedocs.io/en/latest/Guides/Services/processor-sharing.html>`_
++ `Multiple customer classes <https://ciw.readthedocs.io/en/latest/Guides/CustomerClasses/customer-classes.html>`_
++ `Priorities <https://ciw.readthedocs.io/en/latest/Guides/CustomerClasses/priority.html>`_
++ `Server priorities <https://ciw.readthedocs.io/en/latest/Guides/Services/server_priority.html>`_
++ `Service disciplines <https://ciw.readthedocs.io/en/latest/Guides/Services/service_disciplines.html>`_
++ `Customers changing classes while queueing <https://ciw.readthedocs.io/en/latest/Guides/CustomerClasses/change-class-while-queueing.html>`_
++ `Customers changing classes after service <https://ciw.readthedocs.io/en/latest/Guides/CustomerClasses/change-class-after-service.html>`_
++ `Server schedules <https://ciw.readthedocs.io/en/latest/Guides/Services/server_schedule.html>`_
++ `Slotted services <https://ciw.readthedocs.io/en/latest/Guides/Services/slotted.html>`_
++ `State tracking <https://ciw.readthedocs.io/en/latest/Guides/System/state_trackers.html>`_
++ `Stopping the simulation after a certain amount of customers <https://ciw.readthedocs.io/en/latest/Guides/Simulation/sim_numcusts.html>`_
++ `Process-based routing <https://ciw.readthedocs.io/en/latest/Guides/Routing/process_based.html>`_
++ `Logical routing <https://ciw.readthedocs.io/en/latest/Guides/Reference/routers.html>`_
++ `Deadlock detection <https://ciw.readthedocs.io/en/latest/Guides/System/deadlock.html>`_
 

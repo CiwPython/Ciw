@@ -37,7 +37,7 @@ Let's run this and look at the routes of those that have left the system.
     >>> Q.simulate_until_max_time(100.0)
 
     >>> inds = Q.nodes[-1].all_individuals # Gets all individuals from exit node
-    >>> set([tuple(dr.node for dr in ind.data_records) for ind in inds]) # Get's all unique routes of completed individuals
+    >>> set([tuple(dr.node for dr in ind.data_records) for ind in inds]) # Gets all unique routes of completed individuals
     {(1, 1, 1)}
 
 Now we can see that all individuals who have left the system, that is they have completed their route, repeated service at Node 1 three times. 
