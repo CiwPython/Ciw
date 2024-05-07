@@ -1,6 +1,15 @@
 History
 -------
 
++ **3.2.0 (2024-05-07)**
+    + System capacity implemented.
+    + Server schedules objects now take `numbers_of_servers` and `shift_end_dates` keywards, instead of `schedule`.
+    + Server schedules and slotted services can be `offset`.
+    + Added a GroupedNodePopulation tracker.
+    + Restructures documentation, adds more guides, and updates reference pages.
+    + Routing objects implemented: TransitionMatrix object, ProcessBased object, FlexibleProcessBased object, NetworkRouting object, Direct object, Leave object, Probabilistic object, JoinShortestQueue object, LoadBalancing object
+    + Added `reroute` as an option for interrupted preemptive services.
+
 + **3.1.4 (2024-04-09)**
     + Fix bug where Individual's server isn't reset after a slotted service.
 
