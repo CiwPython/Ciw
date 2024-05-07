@@ -1,4 +1,4 @@
-.. system-capacity:
+.. _system-capacity:
 
 ===================================================
 How to Set a Maximium Capacity for the Whole System
