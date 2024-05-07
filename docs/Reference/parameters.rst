@@ -76,7 +76,7 @@ class_change_matrices
 *Optional*
 
 A dictionary of class change matrices for each node.
-For more details see :ref:`dynamic-classes`.
+For more details see :ref:`changeclass-afterservice`.
 
 An example for a two node network with two classes of customer::
 
@@ -88,6 +88,22 @@ An example for a two node network with two classes of customer::
          'Class 1': {'Class 0': 0.4, 'Class 1': 0.5, 'Class 2': 0.1},
          'Class 2': {'Class 0': 0.2, 'Class 1': 0.2, 'Class 2': 0.6}}
     ]
+
+
+
+class_change_time_distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Optional*
+
+A dictionary of distributions representing the time it takes to change from one class into another while waiting. For more details see :ref:`changeclass-whilequeueing`.
+
+An example of a two class network where customers of class 0 change to customers of class 1 according to an exponential distribution::
+
+    class_change_dist_dict = {
+        'Class 0': {'Class 1': ciw.dists.Exponential(rate=5)}
+    }
+
 
 
 
@@ -123,18 +139,62 @@ Example::
 
 
 
+ps_thresholds
+~~~~~~~~~~~~~
+
+A list of thresholds for capacitated processor sharing queues.
+For more information see :ref:`processor-sharing`.
+
+Example::
+
+    ps_thresholds=[3]
+
+
+
+
 queue_capacities
 ~~~~~~~~~~~~~~~~
 
 *Optional*
 
 A list of maximum queue capacities at each node.
-If ommitted, default values of :code:`float('inf')` for every node are given.
+If omitted, default values of :code:`float('inf')` for every node are given.
+For more details see :ref:`queue-capacities`.
 
 Example::
 
     queue_capacities=[5, float('inf'), float('inf'), 10]
 
+
+reneging_destinations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Optional*
+
+A dictionary of lists representing the destination a customer goes to when they renege, or abandon the queue, while waiting. For more details see :ref:`reneging-customers`.
+
+An example of a one node, two class network where customers of class 0 renege to node 2, and customers of class 1 renege and leave the system::
+
+    reneging_destinations = {
+        'Class 0': [2],
+        'Class 1': [-1]
+    }
+
+
+
+reneging_time_distributions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Optional*
+
+A dictionary of distributions representing the time it takes for a customer to renege, or abandon the queue, while waiting. For more details see :ref:`reneging-customers`.
+
+An example of a one node, two class network where customers of class 0 renege after a 5 time units, and customers of class 1 do not renege::
+
+    reneging_time_distributions = {
+        'Class 0': [ciw.dists.Deterministic(value=5)],
+        'Class 1': [None]
+    }
 
 
 routing
@@ -144,31 +204,59 @@ routing
 
 *Optional for 1 node*
 
-Describes how each customer class  routes around the system.
-This may be a routing matrix for each customer class, or a list routing function for process-based simulations, see :ref:`process-based`.
+Describes how each customer class routes around the system.
+This may be a routing matrix for each customer class, or a routing object, see :ref:`routing-objects`.
 
-This is a dictionary, with keys as customer classes, and values are lists of lists (matrices) containing the routing probabilities.
-If only one class of customer is required it is sufficient to simply enter single routing matrix (a list of lists).
+This is a dictionary, with keys as customer classes, and values are routing objects (or lists of of lists, matrices, containing the routing probabilities).
+If only one class of customer is required it is sufficient to simply enter single routing object or matrix.
 
-An example is shown::
+An example of using a routing object::
+
+    routing = ciw.routing.NetworkRouting(
+        routers=[
+            ciw.routing.Direct(to=2),
+            ciw.routing.Leave()
+        ]
+    )
+
+And an example of using transition matrices is shown::
 
     routing={'Class 0': [[0.1, 0.3],
                          [0.0, 0.8]],
              'Class 1': [[0.0, 1.0],
                          [0.0, 0.0]]}
 
-An example where only one class of customer is required::
 
-    routing=[[0.5, 0.3],
-             [0.2, 0.6]]
+server_priority_functions
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If using only one node, the default value is::
+*Optional*
 
-    routing={'Class 0': [[0.0]]}
+A function for each node that decides how to choose between multiple servers in the same node.
+For more details see :ref:`server-priority`.
 
-Otherwise a process-based routing function::
+Example::
 
-    routing=[routing_function]
+    server_priority_functions=[custom_server_priority]
+
+
+
+service_disciplines
+~~~~~~~~~~~~~~~~~~~
+
+*Optional*
+
+A list of service discipline functions, that describe the order in which customers are taken from the queue and served.
+For more details see :ref:`service-disciplines`.
+
+If omitted, FIFO service disciplines are assumed.
+
+Example of a 3 node network, one using FIFO, one using LIFO, and one using SIRO::
+
+    service_disciplines=[ciw.disciplines.FIFO,
+                         ciw.disciplines.LIFO,
+                         ciw.disciplines.SIRO]
+
 
 
 
@@ -193,4 +281,21 @@ An example where only one class of customer is required::
 
     service_distributions=[ciw.dists.Exponential(rate=4.8),
                            ciw.dists.Exponential(rate=5.2)]
+
+
+
+
+system_capacity
+~~~~~~~~~~~~~~~
+
+*Optional*
+
+The maximum queue capacity for the system.
+If omitted, a default value of :code:`float('inf')` is given.
+For more details see :ref:`system-capacity`.
+
+Example::
+
+    system_capacity=12
+
 

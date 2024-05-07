@@ -104,7 +104,7 @@ N_schedule = ciw.create_network(
         "Class 0": [ciw.dists.Exponential(0.05), ciw.dists.Exponential(0.04)],
         "Class 1": [ciw.dists.Exponential(0.04), ciw.dists.Exponential(0.06)],
     },
-    number_of_servers=[ciw.Schedule(schedule=[[1, 30], [2, 60], [1, 90], [3, 100]]), 3],
+    number_of_servers=[ciw.Schedule(numbers_of_servers=[1, 2, 1, 3], shift_end_dates=[30, 60, 90, 100]), 3],
     queue_capacities=[float("Inf"), 10],
     service_distributions={
         "Class 0": [ciw.dists.Deterministic(5.0), ciw.dists.Exponential(0.2)],
@@ -120,10 +120,34 @@ class TestProcessorSharing(unittest.TestCase):
         N = ciw.PSNode(1, Q)
         self.assertEqual(N.ps_capacity, 9)
         self.assertEqual(N.c, float("inf"))
-        self.assertEqual(
-            [[round(p, 10) for p in row] for row in N.transition_row.values()],
-            [[0.1, 0.2, 0.1, 0.4, 0.2], [0.6, 0.0, 0.0, 0.2, 0.2], [0.0, 0.0, 0.4, 0.3, 0.3]],
-        )
+        router0 = Q.network.customer_classes["Class 0"].routing
+        router1 = Q.network.customer_classes["Class 1"].routing
+        router2 = Q.network.customer_classes["Class 2"].routing
+        self.assertEqual(router0.routers[0].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router0.routers[1].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router0.routers[2].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router0.routers[3].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router1.routers[0].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router1.routers[1].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router1.routers[2].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router1.routers[3].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router2.routers[0].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router2.routers[1].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router2.routers[2].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual(router2.routers[3].destinations, [1, 2, 3, 4, -1])
+        self.assertEqual([round(p, 2) for p in router0.routers[0].probs], [0.1, 0.2, 0.1, 0.4, 0.2])
+        self.assertEqual([round(p, 2) for p in router0.routers[1].probs], [0.2, 0.2, 0.0, 0.1, 0.5])
+        self.assertEqual([round(p, 2) for p in router0.routers[2].probs], [0.0, 0.8, 0.1, 0.1, 0.0])
+        self.assertEqual([round(p, 2) for p in router0.routers[3].probs], [0.4, 0.1, 0.1, 0.0, 0.4])
+        self.assertEqual([round(p, 2) for p in router1.routers[0].probs], [0.6, 0.0, 0.0, 0.2, 0.2])
+        self.assertEqual([round(p, 2) for p in router1.routers[1].probs], [0.1, 0.1, 0.2, 0.2, 0.4])
+        self.assertEqual([round(p, 2) for p in router1.routers[2].probs], [0.9, 0.0, 0.0, 0.0, 0.1])
+        self.assertEqual([round(p, 2) for p in router1.routers[3].probs], [0.2, 0.1, 0.1, 0.1, 0.5])
+        self.assertEqual([round(p, 2) for p in router2.routers[0].probs], [0.0, 0.0, 0.4, 0.3, 0.3])
+        self.assertEqual([round(p, 2) for p in router2.routers[1].probs], [0.1, 0.1, 0.1, 0.1, 0.6])
+        self.assertEqual([round(p, 2) for p in router2.routers[2].probs], [0.1, 0.3, 0.2, 0.2, 0.2])
+        self.assertEqual([round(p, 2) for p in router2.routers[3].probs], [0.0, 0.0, 0.0, 0.3, 0.7])
+
         self.assertEqual(N.next_event_date, float("inf"))
         self.assertEqual(N.all_individuals, [])
         self.assertEqual(N.id_number, 1)
@@ -137,19 +161,10 @@ class TestProcessorSharing(unittest.TestCase):
         self.assertEqual(N2.class_change, {'Class 0': {'Class 0': 1.0, 'Class 1': 0.0}, 'Class 1': {'Class 0': 0.0, 'Class 1': 1.0}})
         self.assertEqual(N.interrupted_individuals, [])
 
-        Q = ciw.Simulation(N_schedule, node_class=ciw.PSNode)
-        N = Q.transitive_nodes[0]
-        self.assertEqual(N.schedule.cyclelength, 100)
-        self.assertEqual(N.ps_capacity, 1)
-        self.assertEqual(N.c, float("inf"))
-        self.assertEqual(N.schedule.schedule_dates, [30, 60, 90, 100])
-        self.assertEqual(N.schedule.schedule_servers, [1, 2, 1, 3])
-        self.assertEqual(N.next_event_date, 30)
-        self.assertEqual(N.interrupted_individuals, [])
-        self.assertEqual(N.last_occupancy, 0)
-
         Q = ciw.Simulation(N_priorities, node_class=ciw.PSNode)
         N = Q.transitive_nodes[0]
+        N.have_event()
+        N.update_next_event_date()
         self.assertEqual(N.ps_capacity, 4)
         self.assertEqual(N.c, float("inf"))
         self.assertEqual(Q.network.priority_class_mapping, {'Class 0': 0, 'Class 1': 1})

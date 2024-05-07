@@ -9,6 +9,7 @@ Contents:
    parameters.rst
    results.rst
    distributions.rst
+   routers.rst
    state_trackers.rst
    citation.rst
    contributing.rst

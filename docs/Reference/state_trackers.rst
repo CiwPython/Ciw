@@ -9,6 +9,7 @@ Currently Ciw has the following state trackers:
 - :ref:`population`
 - :ref:`nodepop`
 - :ref:`nodepopsubset`
+- :ref:`groupednodepop`
 - :ref:`nodeclssmatrix`
 - :ref:`naiveblock`
 - :ref:`matrixblock`
@@ -66,6 +67,24 @@ This denotes that there are two customers at the first observed node, no custome
 The Simulation object takes in the optional argument :code:`tracker`, which takes an argument :code:`observed_nodes` a list of node numbers to observe, used as follows (observing the first, second, and fifth nodes)::
 
     >>> Q = ciw.Simulation(N, tracker=ciw.trackers.NodePopulationSubset([0, 1, 4])) # doctest:+SKIP
+
+
+.. _groupednodepop:
+
+---------------------------------
+The GroupedNodePopulation Tracker
+---------------------------------
+
+The GroupedNodePopulation Tracker, similar to the NodePopulation Tracker, records the number of customers at each node. However this allows users to group nodes together into one state.
+States take the form of list of numbers. An example of tracking a queueing network with three grouped nodes is shown below::
+
+    (2, 0, 5)
+
+This denotes that there are two customers at the first group of nodes, no customers at the second group of nodes, and five customers at the third group of nodes.
+
+The Simulation object takes in the optional argument :code:`tracker`, which takes an argument :code:`groups` a list of groups of nodes (a list of lists, nodes in the same list are in the same group), used as follows (the first group observes the total population in the 1st and 7th nodes, the second group observed the population of the 4th node, and the 3th group observes the population in the 2nd, 3rd, 5th and 6th nodes::
+
+    >>> Q = ciw.Simulation(N, tracker=ciw.trackers.GroupedNodePopulation(groups=[[0, 6], [3], [1, 2, 4, 5]])) # doctest:+SKIP
 
 
 .. _nodeclssmatrix:

@@ -28,6 +28,7 @@ class ArrivalNode:
         self.number_of_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
         self.number_accepted_individuals = 0
         self.number_accepted_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
+        self.system_capacity = self.simulation.network.system_capacity
         self.event_dates_dict = {
             nd + 1: {clss: False for clss in self.simulation.network.customer_class_names
             } for nd in range(self.simulation.network.number_of_nodes)
@@ -91,9 +92,9 @@ class ArrivalNode:
                 priority_class,
                 simulation=self.simulation,
             )
-            if self.simulation.network.process_based:
-                next_individual.route = self.simulation.network.customer_classes[next_individual.customer_class].routing[self.next_node - 1](next_individual)
             next_node = self.simulation.transitive_nodes[self.next_node - 1]
+            next_individual.starting_node = next_node.id_number
+            self.simulation.routers[next_individual.customer_class].initialise_individual(next_individual)
             self.release_individual(next_node, next_individual)
 
         self.event_dates_dict[self.next_node][self.next_class] = self.increment_time(
@@ -153,7 +154,7 @@ class ArrivalNode:
         Either rejects the next_individual die to lack of capacity,
         or sends that individual to baulk or not.
         """
-        if next_node.number_of_individuals >= next_node.node_capacity:
+        if (next_node.number_of_individuals >= next_node.node_capacity) or (self.simulation.number_of_individuals >= self.system_capacity):
             self.record_rejection(next_node, next_individual)
             self.simulation.nodes[-1].accept(next_individual, completed=False)
         else:

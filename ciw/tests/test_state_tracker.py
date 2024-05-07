@@ -1922,3 +1922,93 @@ class TestNodeClassMatrixWithCustomerClassNames(unittest.TestCase):
              [0, 0, 1],
              [0, 0, 0]]
         )
+
+class TestGroupedNodePopulation(unittest.TestCase):
+    def test_groupednodepop_init_method(self):
+        Q = ciw.Simulation(N_params)
+        B = ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]])
+        B.initialise(Q)
+        self.assertEqual(B.simulation, Q)
+        self.assertEqual(B.state, [0, 0])
+
+    def test_groupednodepop_change_state_accept_method(self):
+        Q = ciw.Simulation(N_params)
+        B = ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]])
+        B.initialise(Q)
+        N = Q.nodes[1]
+        ind = ciw.Individual(1)
+        self.assertEqual(B.state, [0, 0])
+        B.change_state_accept(N, ind)
+        self.assertEqual(B.state, [1, 0])
+
+    def test_groupednodepop_change_state_block_method(self):
+        Q = ciw.Simulation(N_params)
+        B = ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]])
+        B.initialise(Q)
+        N1 = Q.nodes[1]
+        N2 = Q.nodes[2]
+        ind = ciw.Individual(1)
+        B.state = [1, 0]
+        B.change_state_block(N1, N2, ind)
+        self.assertEqual(B.state, [1, 0])
+
+    def test_groupednodepop_change_state_release_method(self):
+        Q = ciw.Simulation(N_params)
+        B = ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]])
+        B.initialise(Q)
+        N = Q.nodes[1]
+        N2 = Q.nodes[2]
+        Nex = Q.nodes[-1]
+        ind1 = ciw.Individual(1)
+        ind2 = ciw.Individual(2)
+        ind3 = ciw.Individual(3)
+        B.state = [12, 3]
+        B.change_state_release(N, Nex, ind1, False)
+        self.assertEqual(B.state, [11, 3])
+        B.change_state_release(N, Nex, ind2, True)
+        self.assertEqual(B.state, [10, 3])
+        B.change_state_release(N2, Nex, ind3, True)
+        self.assertEqual(B.state, [10, 2])
+
+    def test_groupednodepop_hash_state_method(self):
+        Q = ciw.Simulation(N_params)
+        B = ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]])
+        B.initialise(Q)
+        B.state = [7, 3]
+        self.assertEqual(B.hash_state(), (7, 3))
+
+    def test_groupednodepop_release_method_within_simulation(self):
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]]))
+        N = Q.transitive_nodes[2]
+        inds = [ciw.Individual(i, 'Class 0') for i in range(5)]
+        N.individuals = [inds]
+        for ind in N.individuals[0]:
+            srvr = N.find_free_server(ind)
+            N.attach_server(srvr, ind)
+        Q.statetracker.state = [11, 3]
+        self.assertEqual(Q.statetracker.state, [11, 3])
+        Q.current_time = 43.11
+        N.release(N.all_individuals[0], Q.nodes[1])
+        self.assertEqual(Q.statetracker.state, [11, 3])
+        N.all_individuals[1].is_blocked = True
+        Q.current_time = 46.72
+        N.release(N.all_individuals[1], Q.nodes[1])
+        self.assertEqual(Q.statetracker.state, [11, 3])
+        N.release(N.all_individuals[1], Q.nodes[-1])
+        self.assertEqual(Q.statetracker.state, [10, 3])
+
+    def test_groupednodepop_block_method_within_simulation(self):
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]]))
+        N = Q.transitive_nodes[2]
+        Q.statetracker.state = [11, 3]
+        self.assertEqual(Q.statetracker.state, [11, 3])
+        N.block_individual(ciw.Individual(1), Q.nodes[1])
+        self.assertEqual(Q.statetracker.state, [11, 3])
+
+    def test_groupednodepop_accept_method_within_simulation(self):
+        Q = ciw.Simulation(N_params, tracker=ciw.trackers.GroupedNodePopulation(groups=[[0, 2, 3], [1]]))
+        N = Q.transitive_nodes[2]
+        self.assertEqual(Q.statetracker.state, [0, 0])
+        Q.current_time = 45.6
+        N.accept(ciw.Individual(3, 'Class 2'))
+        self.assertEqual(Q.statetracker.state, [1, 0])

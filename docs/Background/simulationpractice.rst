@@ -5,8 +5,8 @@ Simulation Practice
 ===================
 
 Ensuring good practice when simulation modelling is important to get meaningful analyses from the models.
-This is shown in :ref:`Tutorial IV <tutorial-iv>`.
-A recommended resource on the subject is [SW14]_.
+This is shown in :ref:`Part 4 of Tutorial I <tutorial-i-p4>`.
+A recommended resource on the subject is [SR14]_.
 This page will briefly summarise some important aspects of carrying out simulation model analysis.
 
 -------------------------------

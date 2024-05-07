@@ -7,7 +7,7 @@ Notes on Ciw's Mechanisms
 General
 ~~~~~~~
 
-Ciw uses the *event scheduling* approach [SW14]_ , similar to the three phase approach.
+Ciw uses the *event scheduling* approach [SR14]_ , similar to the three phase approach.
 In the event scheduling approach, three types of event take place: **A Events** move the clock forward, **B Events** are prescheduled events, and **C Events** are events that arise because a **B Event** has happened.
 
 Here **A-events** correspond to moving the clock forward to the next **B-event**.
@@ -22,23 +22,6 @@ In event scheduling the following process occurs:
 4. Carry out all **C Events** that arose due to the event carried out in (3.)
 5. Repeat (3.) - (4.) until all **B Event** scheduled for that date have been carried out
 6. Repeat (2.) - (5.) until a terminating criteria has been satisfied
-
-
-Blocking Mechanism
-~~~~~~~~~~~~~~~~~~
-
-In Ciw, Type I blocking (blocking after service) is implemented for restricted networks.
-
-After service, a customer's next destination is sampled from the transition matrix.
-If there is space at the destination node, that customer will join the queue there.
-Else if the destination node's queueing capacity is full, then that customer will be blocked.
-That customer remains at that node, with its server, until space becomes available at the destination.
-This means the server that was serving that customer remains attached to that customer, being unable to serve anyone else until that customer is unblocked.
-
-At the time of blockage, information about this customer is added to the destination node's :code:`blocked_queue`, a virtual queue containing information about all the customers blocked to that node, and *the order in which they became blocked*.
-Thus, the sequence of unblockages happen in the order which customers were blocked.
-
-Circular blockages can lead to :ref:`deadlock <detect-deadlock>`.
 
 
 

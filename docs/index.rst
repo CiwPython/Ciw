@@ -11,18 +11,17 @@ disciplines, dynamic customer classes, and deadlock detection.
 
 The name **Ciw** is the Welsh word for a queue.
 
-Ciw is currently supported for and regularly tested on Python versions 3.7,
-3.8, 3.9, 3.10 and 3.11.
+Ciw is currently supported for and regularly tested on Python versions 3.8,
+3.9, 3.10, 3.11 and 3.12.
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :titlesonly:
    
    installation.rst
-   Tutorial-I/index.rst
-   Tutorial-II/index.rst
+   Tutorial/index.rst
    Guides/index.rst
    Reference/index.rst
    Background/index.rst
