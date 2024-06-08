@@ -43,32 +43,41 @@ Usage
 
 Import Ciw::
 
-    >>> import ciw
+```python
+>>> import ciw
+```
 
 To define an M/M/3 queue, with λ = 0.2 and μ = 0.1::
 
-    >>> N = ciw.create_network(
-    ...     arrival_distributions=[ciw.dists.Exponential(rate=0.2)],
-    ...     service_distributions=[ciw.dists.Exponential(rate=0.1)],
-    ...     number_of_servers=[3]
-    ... )
+```python
+>>> N = ciw.create_network(
+...     arrival_distributions=[ciw.dists.Exponential(rate=0.2)],
+...     service_distributions=[ciw.dists.Exponential(rate=0.1)],
+...     number_of_servers=[3]
+... )
+```
 
 Now set a seed, create a Simulation object, and simulate for 1440 time units::
 
-    >>> ciw.seed(1)
-    >>> Q = ciw.Simulation(N)
-    >>> Q.simulate_until_max_time(1440)
+```python
+>>> ciw.seed(1)
+>>> Q = ciw.Simulation(N)
+>>> Q.simulate_until_max_time(1440)
+```
 
 Collect results::
 
-    >>> recs = Q.get_all_records()
+```python
+>>> recs = Q.get_all_records()
+```
 
 Manipulate results to get useful statistics, e.g. average waiting time::
 
-    >>> waits = [r.waiting_time for r in recs]
-    >>> sum(waits) / len(waits)
-    4.2305...
-
+```python
+>>> waits = [r.waiting_time for r in recs]
+>>> sum(waits) / len(waits)
+4.2305...
+```
 
 Features
 --------
