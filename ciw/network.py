@@ -19,7 +19,7 @@ class ServiceCentre(object):
         service_discipline=None,
     ):
         """
-        Initialises the ServiceCentre object.
+        Initialises the `ServiceCentre` object.
         """
         self.number_of_servers = number_of_servers
         self.queueing_capacity = queueing_capacity
@@ -56,7 +56,7 @@ class CustomerClass(object):
         class_change_time_distributions,
     ):
         """
-        Initialises the CutomerCass object.
+        Initialises the `CustomerClass` object.
         """
         self.arrival_distributions = arrival_distributions
         self.service_distributions = service_distributions
@@ -72,8 +72,8 @@ class CustomerClass(object):
 class Network(object):
     """
     An information store the queueing network.
-    Contains a list of ServiceCentre objects for each
-    service centre, and a list of CustomerClass objects
+    Contains a list of `ServiceCentre` objects for each
+    service centre, and a list of `CustomerClass` objects
     for each customer class.
     """
 
