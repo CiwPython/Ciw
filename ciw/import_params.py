@@ -27,9 +27,6 @@ def create_network(
     """
     Takes in kwargs, creates dictionary.
     """
-    # print(arrival_distributions)
-    # print(service_distributions)
-    # print(number_of_servers)
     if (
         arrival_distributions == None
         or number_of_servers == None
