@@ -86,7 +86,7 @@ class CombinedDistribution(Distribution):
 
 class Uniform(Distribution):
     """
-    The Uniform distribution.
+    The continuous uniform distribution over an interval.
 
     Takes:
       - `lower` the lower bound
@@ -114,14 +114,22 @@ class Deterministic(Distribution):
     """
     The Deterministic distribution.
 
-    Takes:
-      - `value` the value to return
+    Notes
+    -----
+        This class samples from a degenerate distribution for a non-negative constant random variable.
+        This distribution is closely-related to the Dirac δ distribution.
     """
 
     def __init__(self, value):
+        """
+        Parameters
+        ----------
+        value
+            The value that is sampled.
+        """
         if value < 0.0:
             raise ValueError(
-                "Deterministic distribution must sample positive numbers only."
+                "Deterministic distribution must sample non-negative numbers only."
             )
         self.value = value
 
