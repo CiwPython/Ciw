@@ -31,7 +31,7 @@ Hence we would get::
     ...     number_of_servers=[2]
     ... )
 
-The decomposition of the arrival rates is due to `thinning of Poisson processes <(https://galton.uchicago.edu/~lalley/Courses/312/PoissonProcesses.pdf>`_. However, in general, think of arrival distributions as the distribution of inter-arrival times between customers of the same class.
+The decomposition of the arrival rates is due to `thinning of Poisson processes <https://galton.uchicago.edu/~lalley/Courses/312/PoissonProcesses.pdf>`_. However, in general, think of arrival distributions as the distribution of inter-arrival times between customers of the same class.
 
 It is important that the keys of these parameter dictionaries are the same throughout. If splitting one keyword by customer class, then *all* keywords that can be split by customer class need to be split by customer class.
 
