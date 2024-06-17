@@ -79,8 +79,8 @@ class CombinedDistribution(Distribution):
         return "CombinedDistribution"
 
     def sample(self, t=None, ind=None):
-        s1 = self.d1.sample()
-        s2 = self.d2.sample()
+        s1 = self.d1.sample(t, ind)
+        s2 = self.d2.sample(t, ind)
         return self.operator(s1, s2)
 
 
