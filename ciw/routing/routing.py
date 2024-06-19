@@ -199,11 +199,11 @@ class Probabilistic(NodeRouting):
         """
         for p in probs:
             if not isinstance(p, float):
-                raise ValueError("Routing probabilities must be between 0 and 1, and sum to less than 1.")
+                raise ValueError("Routing probabilities must be a float.")
             if p < 0 or p > 1:
-                raise ValueError("Routing probabilities must be between 0 and 1, and sum to less than 1.")
+                raise ValueError("Routing probabilities must be between 0 and 1.")
         if sum(probs) > 1.0:
-            raise ValueError("Routing probabilities must be between 0 and 1, and sum to less than 1.")
+            raise ValueError("Routing probabilities must sum to 1 or less.")
         self.destinations = destinations + [-1]
         self.probs = probs + [1 - sum(probs)]
 
