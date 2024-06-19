@@ -1,4 +1,4 @@
 setuptools>=69
 networkx>=2.3
 tqdm>=4.66.3
-numpy>=1.21.6
+numpy>=2.0.0
