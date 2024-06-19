@@ -258,7 +258,7 @@ class Weibull(Distribution):
         self.shape = shape
 
     def __repr__(self):
-        return f"Weibull(shape={self.scale}, scale={self.shape})"
+        return f"Weibull(shape={self.shape}, scale={self.scale})"
 
     def sample(self, t=None, ind=None):
         return weibullvariate(self.scale, self.shape)

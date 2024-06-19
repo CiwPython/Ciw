@@ -112,7 +112,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Ga), "Gamma(shape=2.1, scale=4.1)")
         self.assertEqual(str(No), "Normal(mean=5.5, sd=0.6)")
         self.assertEqual(str(Ln), "Lognormal(mean=5.5, sd=3.6)")
-        self.assertEqual(str(Wb), "Weibull(shape=8.8, scale=9.9)")
+        self.assertEqual(str(Wb), "Weibull(shape=9.9, scale=8.8)")
         self.assertEqual(str(Em), "Empirical")
         self.assertEqual(str(Sq_short), "Sequential([3.3, 10.1])")
         self.assertEqual(str(Sq), "Sequential([3.3, ..., 4.4])")
