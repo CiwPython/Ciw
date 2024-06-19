@@ -23,7 +23,7 @@ class Simulation(object):
         exact=False,
         name="Simulation",
         tracker=None,
-        deadlock_detector=deadlock.NoDetection(),
+        deadlock_detector=None,
         node_class=None,
         arrival_node_class=None,
         individual_class=None,
@@ -41,7 +41,7 @@ class Simulation(object):
             getcontext().prec = exact
 
         self.name = name
-        self.deadlock_detector = deadlock_detector
+        self.deadlock_detector = deadlock.NoDetection() if deadlock_detector is None else deadlock_detector
         self.inter_arrival_times = self.find_arrival_dists()
         self.service_times = self.find_service_dists()
         self.batch_sizes = self.find_batching_dists()
