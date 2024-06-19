@@ -74,7 +74,6 @@ class TestCustomerClass(unittest.TestCase):
             ciw.dists.Deterministic(1),
         ]
         reneging_time_distributions = [None, None, None]
-        reneging_destinations = [-1, -1, -1]
         class_change_time_distributions = [None]
 
         CC = ciw.CustomerClass(
@@ -85,7 +84,6 @@ class TestCustomerClass(unittest.TestCase):
             baulking_functions,
             batching_distributions,
             reneging_time_distributions,
-            reneging_destinations,
             class_change_time_distributions,
         )
         self.assertEqual(CC.arrival_distributions, arrival_distributions)
@@ -94,7 +92,6 @@ class TestCustomerClass(unittest.TestCase):
         self.assertEqual(CC.routing, routing)
         self.assertEqual(CC.priority_class, priority_class)
         self.assertEqual(CC.reneging_time_distributions, reneging_time_distributions)
-        self.assertEqual(CC.reneging_destinations, reneging_destinations)
         self.assertEqual(CC.class_change_time_distributions, class_change_time_distributions)
 
         # check baulking function works
@@ -133,7 +130,6 @@ class TestNetwork(unittest.TestCase):
         ]
         baulking_functions = [None, None, example_baulking_function]
         reneging_time_distributions = [None, None, None]
-        reneging_destinations = [-1, -1, -1]
         class_change_time_distributions = {'Class 0': None, 'Class 1': None}
         service_centres = [
             ciw.ServiceCentre(
@@ -150,7 +146,6 @@ class TestNetwork(unittest.TestCase):
                 baulking_functions,
                 batching_distributions,
                 reneging_time_distributions,
-                reneging_destinations,
                 class_change_time_distributions,
             ) for i in range(2)
         }
@@ -447,7 +442,7 @@ class TestNetwork(unittest.TestCase):
             "number_of_nodes": 1,
             "queue_capacities": [float("inf")],
         }
-        params_list = [copy.deepcopy(params) for i in range(28)]
+        params_list = [copy.deepcopy(params) for i in range(24)]
 
         params_list[0]["number_of_classes"] = -2
         self.assertRaises(
@@ -601,37 +596,25 @@ class TestNetwork(unittest.TestCase):
             params_list[20]
         )
 
-        params_list[23]["reneging_time_distributions"] = {
+        params_list[21]["reneging_time_distributions"] = {
             "Class 0": [ciw.dists.Exponential(1), ciw.dists.Exponential(1)]
         }
         self.assertRaises(
             ValueError,
             ciw.create_network_from_dictionary,
+            params_list[21]
+        )
+        params_list[22]["class_change_time_distributions"] = {'Class 0': {'Class 0': None}, 'Class 1': {'Class 0': None, 'Class 1': None}}
+        self.assertRaises(
+            ValueError,
+            ciw.create_network_from_dictionary,
+            params_list[22]
+        )
+        params_list[23]["routing"]["Class 0"] = [['0.5']]
+        self.assertRaises(
+            ValueError,
+            ciw.create_network_from_dictionary,
             params_list[23]
-        )
-        params_list[24]["reneging_destinations"] = {"Class 0": [-1, -1, -1]}
-        self.assertRaises(
-            ValueError,
-            ciw.create_network_from_dictionary,
-            params_list[24]
-        )
-        params_list[25]["reneging_destinations"] = {"Class 0": [7]}
-        self.assertRaises(
-            ValueError,
-            ciw.create_network_from_dictionary,
-            params_list[25]
-        )
-        params_list[26]["class_change_time_distributions"] = {'Class 0': {'Class 0': None}, 'Class 1': {'Class 0': None, 'Class 1': None}}
-        self.assertRaises(
-            ValueError,
-            ciw.create_network_from_dictionary,
-            params_list[26]
-        )
-        params_list[27]["routing"]["Class 0"] = [['0.5']]
-        self.assertRaises(
-            ValueError,
-            ciw.create_network_from_dictionary,
-            params_list[27]
         )
 
     def test_raising_errors_routing(self):
@@ -942,7 +925,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             number_of_servers=[2, 2],
             routing=[[0.0, 1.0], [0.2, 0.2]],
             reneging_time_distributions=[ciw.dists.Exponential(1), None],
-            reneging_destinations=[2, -1],
         )
         self.assertEqual(N.number_of_nodes, 2)
         self.assertEqual(N.number_of_classes, 1)
@@ -956,8 +938,6 @@ class TestCreateNetworkKwargs(unittest.TestCase):
             str(N.customer_classes['Customer'].reneging_time_distributions[0]), "Exponential(rate=1)"
         )
         self.assertEqual(N.customer_classes['Customer'].reneging_time_distributions[1], None)
-        self.assertEqual(N.customer_classes['Customer'].reneging_destinations[0], 2)
-        self.assertEqual(N.customer_classes['Customer'].reneging_destinations[1], -1)
 
         N = ciw.create_network(
             arrival_distributions={

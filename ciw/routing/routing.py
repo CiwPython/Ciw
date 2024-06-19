@@ -37,6 +37,12 @@ class NetworkRouting:
         """
         return self.routers[node_id - 1].next_node_for_rerouting(ind)
 
+    def next_node_for_jockeying(self, ind, node_id):
+        """
+        Chooses the next node when jockeying to another node after reneging.
+        """
+        return self.routers[node_id - 1].next_node_for_jockeying(ind)
+
 
 class TransitionMatrix(NetworkRouting):
     """
@@ -100,6 +106,12 @@ class ProcessBased(NetworkRouting):
         Chooses the next node when rerouting preempted customer.
         """
         return self.next_node(ind, node_id)
+
+    def next_node_for_jockeying(self, ind, node_id):
+        """
+        Chooses the next node when jockeying to another node after reneging.
+        """
+        return self.simulation.nodes[-1]
 
 class FlexibleProcessBased(ProcessBased):
     """
@@ -183,6 +195,12 @@ class NodeRouting:
         By default, the next node for rerouting uses the same method as next_node.
         """
         return self.next_node(ind)
+
+    def next_node_for_jockeying(self, ind):
+        """
+        Chooses the next node when jockeying to another node after reneging.
+        """
+        return self.simulation.nodes[-1]
 
 
 class Probabilistic(NodeRouting):

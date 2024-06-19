@@ -538,6 +538,12 @@ class Node(object):
         """
         return self.simulation.routers[ind.customer_class].next_node_for_rerouting(ind, self.id_number)
 
+    def next_node_for_jockeying(self, ind):
+        """
+        Finds the next node (for jockeing) according the routing method:
+        """
+        return self.simulation.routers[ind.customer_class].next_node_for_jockeying(ind, self.id_number)
+
     def preempt(self, individual_to_preempt, next_individual):
         """
         Removes individual_to_preempt from service and replaces them with next_individual
@@ -640,10 +646,7 @@ class Node(object):
         """
         reneging_individual = self.decide_between_simultaneous_individuals()
         reneging_individual.reneging_date = float("Inf")
-        next_node_number = self.simulation.network.customer_classes[
-            reneging_individual.customer_class
-        ].reneging_destinations[self.id_number - 1]
-        next_node = self.simulation.nodes[next_node_number]
+        next_node = self.next_node_for_jockeying(reneging_individual)
         self.individuals[reneging_individual.prev_priority_class].remove(reneging_individual)
         self.number_of_individuals -= 1
         reneging_individual.queue_size_at_departure = self.number_of_individuals

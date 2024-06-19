@@ -20,7 +20,6 @@ def create_network(
     ps_thresholds=None,
     server_priority_functions=None,
     reneging_time_distributions=None,
-    reneging_destinations=None,
     service_disciplines=None,
     system_capacity=float('inf')
 ):
@@ -63,8 +62,6 @@ def create_network(
         params["server_priority_functions"] = server_priority_functions
     if reneging_time_distributions is not None:
         params["reneging_time_distributions"] = reneging_time_distributions
-    if reneging_destinations is not None:
-        params["reneging_destinations"] = reneging_destinations
     if service_disciplines is not None:
         params["service_disciplines"] = service_disciplines
 
@@ -123,7 +120,6 @@ def create_network_from_dictionary(params_input):
             params["baulking_functions"][clss_name],
             params["batching_distributions"][clss_name],
             params["reneging_time_distributions"][clss_name],
-            params["reneging_destinations"][clss_name],
             class_change_time_distributions[clss_name],
         )
     n = Network(nodes, classes)
@@ -165,10 +161,6 @@ def fill_out_dictionary(params):
         if isinstance(params["reneging_time_distributions"], list):
             reneging_dists = params["reneging_time_distributions"]
             params["reneging_time_distributions"] = {"Customer": reneging_dists}
-    if "reneging_destinations" in params:
-        if isinstance(params["reneging_destinations"], list):
-            reneging_dests = params["reneging_destinations"]
-            params["reneging_destinations"] = {"Customer": reneging_dests}
 
     class_names = sorted(params["arrival_distributions"].keys())
     params["customer_class_names"] = class_names
@@ -190,10 +182,6 @@ def fill_out_dictionary(params):
         ],
         "reneging_time_distributions": {
             class_name: [None for _ in range(len(params["number_of_servers"]))]
-            for class_name in class_names
-        },
-        "reneging_destinations": {
-            class_name: [-1 for _ in range(len(params["number_of_servers"]))]
             for class_name in class_names
         },
         "service_disciplines": [
@@ -219,7 +207,6 @@ def validify_dictionary(params):
         == len(params["routing"])
         == len(params["batching_distributions"])
         == len(params["reneging_time_distributions"])
-        == len(params["reneging_destinations"])
     )
     if not consistant_num_classes:
         raise ValueError("Ensure consistant number of classes is used throughout.")
@@ -229,13 +216,11 @@ def validify_dictionary(params):
         == set(params["routing"])
         == set(params["batching_distributions"])
         == set(params["reneging_time_distributions"])
-        == set(params["reneging_destinations"])
     ) and (
         len(params["arrival_distributions"])
         == len(params["service_distributions"])
         == len(params["batching_distributions"])
         == len(params["reneging_time_distributions"])
-        == len(params["reneging_destinations"])
     )
     if not consistant_class_names:
         raise ValueError("Ensure consistant names for customer classes.")
@@ -245,7 +230,6 @@ def validify_dictionary(params):
         + [len(obs) for obs in params["service_distributions"].values()]
         + [len(obs) for obs in params["batching_distributions"].values()]
         + [len(obs) for obs in params["reneging_time_distributions"].values()]
-        + [len(obs) for obs in params["reneging_destinations"].values()]
         + [len(params["number_of_servers"])]
         + [len(params["server_priority_functions"])]
         + [len(params["queue_capacities"])]
@@ -296,13 +280,6 @@ def validify_dictionary(params):
             raise ValueError(
                 "Ensure consistant customer classes used in class_change_time_distributions."
             )
-    possible_destinations = list(range(1, params["number_of_nodes"] + 1)) + [-1]
-    for dests in params["reneging_destinations"]:
-        correct_destinations = all(
-            d in possible_destinations for d in params["reneging_destinations"][dests]
-        )
-        if not correct_destinations:
-            raise ValueError("Ensure all reneging destinations are possible.")
 
     if not isinstance(params['system_capacity'], int) and params['system_capacity'] != float('inf'):
         raise ValueError("Ensure system capacity is a positive integer.")

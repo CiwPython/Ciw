@@ -8,3 +8,4 @@ Contents:
 
    baulking.rst
    reneging.rst
+   jockeying.rst

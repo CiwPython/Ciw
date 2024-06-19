@@ -52,7 +52,6 @@ class CustomerClass(object):
         baulking_functions,
         batching_distributions,
         reneging_time_distributions,
-        reneging_destinations,
         class_change_time_distributions,
     ):
         """
@@ -65,7 +64,6 @@ class CustomerClass(object):
         self.priority_class = priority_class
         self.baulking_functions = baulking_functions
         self.reneging_time_distributions = reneging_time_distributions
-        self.reneging_destinations = reneging_destinations
         self.class_change_time_distributions = class_change_time_distributions
 
 

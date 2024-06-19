@@ -1155,13 +1155,25 @@ class TestNode(unittest.TestCase):
         self.assertEqual([r.queue_size_at_departure for r in reneging_recs], [1, 1])
 
     def test_reneging_sends_to_destination(self):
+        class Jockey(ciw.routing.NodeRouting):
+            def next_node(self, ind):
+                """
+                Chooses the exit node with probability 1.
+                """
+                return self.simulation.nodes[-1]
+
+            def next_node_for_jockeying(self, ind):
+                """
+                Chooses Node 2
+                """
+                return self.simulation.nodes[2]
+
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Deterministic(7), None],
             service_distributions=[ciw.dists.Deterministic(11), ciw.dists.Deterministic(2)],
-            routing=[[0.0, 0.0], [0.0, 0.0]],
+            routing=ciw.routing.NetworkRouting(routers=[Jockey(), ciw.routing.Leave()]),
             number_of_servers=[1, 1],
             reneging_time_distributions=[ciw.dists.Deterministic(3), None],
-            reneging_destinations=[2, -1],
         )
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(20)
@@ -1180,6 +1192,37 @@ class TestNode(unittest.TestCase):
         self.assertEqual([r.queue_size_at_arrival for r in recs_ind2], [1, 0])
         self.assertEqual([r.queue_size_at_departure for r in recs_ind2], [1, 0])
 
+    def test_process_based_defaults_jockeyers_to_exit(self):
+        def route(self, ind):
+            """
+            1-2
+            """
+            return [1]
+
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(7), None],
+            service_distributions=[ciw.dists.Deterministic(11), ciw.dists.Deterministic(2)],
+            routing=ciw.routing.ProcessBased(route_function=route),
+            number_of_servers=[1, 1],
+            reneging_time_distributions=[ciw.dists.Deterministic(3), None],
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(20)
+        recs = Q.get_all_records()
+        self.assertEqual([r.id_number for r in recs], [1, 2])
+        self.assertEqual([r.record_type for r in recs], ['service', 'renege'])
+        self.assertEqual([r.arrival_date for r in recs], [7, 14])
+        self.assertEqual([r.exit_date for r in recs], [18, 17])
+        self.assertEqual([r.waiting_time for r in recs], [0, 3])
+        self.assertEqual([r.node for r in recs], [1, 1])
+        self.assertEqual([r.service_time for r in recs], [11, nan])
+        self.assertEqual([r.service_start_date for r in recs], [7, nan])
+        self.assertEqual([r.service_end_date for r in recs], [18, nan])
+        self.assertEqual([r.server_id for r in recs], [1, nan])
+        self.assertEqual([r.customer_class for r in recs], ['Customer', 'Customer'])
+        self.assertEqual([r.queue_size_at_arrival for r in recs], [0, 1])
+        self.assertEqual([r.queue_size_at_departure for r in recs], [0, 1])
+
     def test_reneging_none_dist(self):
         N = ciw.create_network(
             arrival_distributions={
@@ -1195,7 +1238,6 @@ class TestNode(unittest.TestCase):
                 "Class 0": [ciw.dists.Deterministic(3)],
                 "Class 1": [None],
             },
-            reneging_destinations={"Class 0": [-1], "Class 1": [-1]},
         )
         Q = ciw.Simulation(N)
         self.assertTrue(Q.nodes[1].reneging)
