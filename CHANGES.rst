@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.2.1 (2024-06-19)**
+    + Remove `reneging_destinations`, move to a jockeying routing option within the routing objects.
+
 + **3.2.0 (2024-05-07)**
     + System capacity implemented.
     + Server schedules objects now take `numbers_of_servers` and `shift_end_dates` keywards, instead of `schedule`.
