@@ -1,4 +1,4 @@
 networkx>=2.3
 hypothesis==5.33.0
-tqdm>=4.64.0
+tqdm>=4.66.3
 coverage
