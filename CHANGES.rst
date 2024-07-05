@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.2.2 (2024-07-05)**
+    + Allow custom exit node classes.
+
 + **3.2.1 (2024-06-19)**
     + Remove `reneging_destinations`, move to a jockeying routing option within the routing objects.
 
