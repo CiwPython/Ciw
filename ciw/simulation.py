@@ -26,6 +26,7 @@ class Simulation(object):
         deadlock_detector=None,
         node_class=None,
         arrival_node_class=None,
+        exit_node_class=None,
         individual_class=None,
         server_class=None,
     ):
@@ -34,7 +35,7 @@ class Simulation(object):
         """
         self.current_time = 0.0
         self.network = network
-        self.set_classes(node_class, arrival_node_class, individual_class, server_class)
+        self.set_classes(node_class, arrival_node_class, exit_node_class, individual_class, server_class)
         if exact:
             self.NodeTypes = [ExactNode for _ in range(network.number_of_nodes)]
             self.ArrivalNodeType = ExactArrivalNode
@@ -48,7 +49,7 @@ class Simulation(object):
         self.show_simulation_to_distributions()
         self.number_of_priority_classes = self.network.number_of_priority_classes
         self.transitive_nodes = [node_type(i + 1, self) for i, node_type in enumerate(self.NodeTypes)]
-        self.nodes = [self.ArrivalNodeType(self)] + self.transitive_nodes + [ExitNode()]
+        self.nodes = [self.ArrivalNodeType(self)] + self.transitive_nodes + [self.ExitNodeType()]
         self.active_nodes = self.nodes[:-1]
         self.routers = self.find_and_initialise_routers()
         self.nodes[0].initialise()
@@ -173,16 +174,21 @@ class Simulation(object):
         return records
 
     def set_classes(
-        self, node_class, arrival_node_class, individual_class, server_class
+        self, node_class, arrival_node_class, exit_node_class, individual_class, server_class
     ):
         """
-        Sets the type of ArrivalNode and Node classes being used
-        in the Simulation model (if customer classes are used.)
+        Sets the type of ArrivalNode, Node, Exit Node, Individual,
+        and Server classes being used in the Simulation model.
         """
         if arrival_node_class is not None:
             self.ArrivalNodeType = arrival_node_class
         else:
             self.ArrivalNodeType = ArrivalNode
+
+        if exit_node_class is not None:
+            self.ExitNodeType = exit_node_class
+        else:
+            self.ExitNodeType = ExitNode
 
         if node_class is not None:
             if not isinstance(node_class, list):
