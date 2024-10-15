@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.2.3 (2024-10-15)**
+    + Allow some numerical imprecision in the PMF probability sums. This allows for very large arrays of probabilities and use of Pandas and Numpy to define probabilities.
+
 + **3.2.2 (2024-07-05)**
     + Allow custom exit node classes.
 
