@@ -326,7 +326,7 @@ class Pmf(Distribution):
             raise ValueError("Pmf must sample positive numbers only.")
         if any(p < 0 or p > 1.0 for p in probs):
             raise ValueError("Pmf must have valid probabilities.")
-        if sum(probs) != 1.0:
+        if not np.isclose(sum(probs), 1.0):
             raise ValueError("Pmf probabilities must sum to 1.0.")
         self.values = values
         self.probs = probs
