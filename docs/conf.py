@@ -12,6 +12,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import datetime
 import sys
 import os
 import shlex
@@ -50,8 +51,9 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
+current_year = datetime.datetime.now().year
 project = "Ciw"
-copyright = "2015, Geraint Palmer"
+copyright = f"{current_year}, Geraint Palmer"
 author = "Geraint Palmer"
 
 # The version info for the project you're documenting, acts as replacement for
