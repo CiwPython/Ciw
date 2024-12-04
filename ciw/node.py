@@ -86,7 +86,7 @@ class Node(object):
         """
         return "Node %s" % self.id_number
 
-    def accept(self, next_individual):
+    def accept(self, next_individual, completed=False):
         """
         Accepts a new customer to the queue:
           - remove previous exit date and blockage status
@@ -654,7 +654,7 @@ class Node(object):
         self.write_reneging_record(reneging_individual)
         self.reset_individual_attributes(reneging_individual)
         self.simulation.statetracker.change_state_renege(self, next_node, reneging_individual, False)
-        next_node.accept(reneging_individual)
+        next_node.accept(reneging_individual, completed=False)
         self.release_blocked_individual()
 
     def get_reneging_date(self, ind):

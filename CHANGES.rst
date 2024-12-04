@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.2.4 (2024-12-04)**
+    + Adds a new method for the `simulate_until_max_customers: "Complete" simulates until a specific number of completed customer journeys; while "Finish" simulates until a specific number of customers have reached the exit node (through bailking or reneging).
+
 + **3.2.3 (2024-10-15)**
     + Allow some numerical imprecision in the PMF probability sums. This allows for very large arrays of probabilities and use of Pandas and Numpy to define probabilities.
 

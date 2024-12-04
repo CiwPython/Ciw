@@ -273,13 +273,18 @@ class Simulation(object):
             self.progress_bar.close()
 
     def simulate_until_max_customers(
-        self, max_customers, progress_bar=False, method="Finish"
+        self, max_customers, progress_bar=False, method="Complete"
     ):
         """
         Runs the simulation until max_customers is reached:
 
+            - Method: Complete
+                Simulates until max_customers has reached the Exit Node after
+                completing their journey
             - Method: Finish
-                Simulates until max_customers has reached the Exit Node
+                Simulates until max_customers has reached the Exit Node whether
+                they have completed their journey or not (included baulkers and
+                renegers)
             - Method: Arrive
                 Simulates until max_customers have spawned at the Arrival Node
             - Method: Accept
@@ -292,8 +297,10 @@ class Simulation(object):
         if progress_bar:
             self.progress_bar = tqdm.tqdm(total=max_customers)
 
-        if method == "Finish":
+        if method == "Complete":
             check = lambda: self.nodes[-1].number_of_completed_individuals
+        elif method == "Finish":
+            check = lambda: self.nodes[-1].number_of_individuals
         elif method == "Arrive":
             check = lambda: self.nodes[0].number_of_individuals
         elif method == "Accept":

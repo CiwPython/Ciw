@@ -194,7 +194,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(Q.progress_bar.total, 150)
         self.assertEqual(Q.progress_bar.n, 150)
 
-    def test_simulate_until_max_customers_finish(self):
+    def test_simulate_until_max_customers(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Exponential(1.0)],
             service_distributions=[ciw.dists.Exponential(0.5)],
@@ -202,21 +202,35 @@ class TestSimulation(unittest.TestCase):
             routing=[[0.0]],
             queue_capacities=[3],
         )
-        # Test default method, 'Finish'
+        # Test default method, 'Complete'
         ciw.seed(2)
-        Q1 = ciw.Simulation(N)
-        Q1.simulate_until_max_customers(10, method="Finish")
-        self.assertEqual(Q1.nodes[-1].number_of_completed_individuals, 10)
-        completed_records = Q1.get_all_records(only=["service"])
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_customers(10)
+        self.assertEqual(Q.nodes[-1].number_of_completed_individuals, 10)
+        self.assertEqual(Q.nodes[-1].number_of_individuals, 34)
+        completed_records = Q.get_all_records(only=["service"])
         self.assertEqual(len(completed_records), 10)
+
+        # Test 'Complete' method
+        ciw.seed(2)
+        Q0 = ciw.Simulation(N)
+        Q0.simulate_until_max_customers(10, method="Complete")
+        self.assertEqual(Q0.nodes[-1].number_of_completed_individuals, 10)
+        self.assertEqual(Q0.nodes[-1].number_of_individuals, 34)
+        completed_records = Q0.get_all_records(only=["service"])
+        self.assertEqual(len(completed_records), 10)
+
+        next_active_node = Q0.find_next_active_node()
+        end_time_complete = next_active_node.next_event_date
 
         # Test 'Finish' method
         ciw.seed(2)
         Q2 = ciw.Simulation(N)
-        Q2.simulate_until_max_customers(10)
-        self.assertEqual(Q2.nodes[-1].number_of_completed_individuals, 10)
+        Q2.simulate_until_max_customers(10, method="Finish")
+        self.assertEqual(Q2.nodes[-1].number_of_completed_individuals, 3)
+        self.assertEqual(Q2.nodes[-1].number_of_individuals, 10)
         completed_records = Q2.get_all_records(only=["service"])
-        self.assertEqual(len(completed_records), 10)
+        self.assertEqual(len(completed_records), 3)
 
         next_active_node = Q2.find_next_active_node()
         end_time_finish = next_active_node.next_event_date
@@ -248,8 +262,11 @@ class TestSimulation(unittest.TestCase):
         next_active_node = Q4.find_next_active_node()
         end_time_accept = next_active_node.next_event_date
 
-        # Assert that finish time of finish > accept > arrive
-        self.assertGreater(end_time_finish, end_time_accept)
+        # Assert that finish time of complete > accept > finish > arrive
+        self.assertGreater(end_time_complete, end_time_accept)
+        self.assertGreater(end_time_complete, end_time_finish)
+        self.assertGreater(end_time_complete, end_time_arrive)
+        self.assertGreater(end_time_accept, end_time_finish)
         self.assertGreater(end_time_accept, end_time_arrive)
         self.assertGreater(end_time_finish, end_time_arrive)
 
