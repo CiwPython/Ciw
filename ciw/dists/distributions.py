@@ -561,9 +561,7 @@ class PoissonIntervals(Sequential):
         self.max_sample_date = max_sample_date
         self.get_intervals()
         self.get_dates()
-        self.inter_arrivals = [t - s for s, t in zip(self.dates, self.dates[1:])]
-        if self.inter_arrivals == []:
-            self.inter_arrivals = [float("inf")]
+        self.inter_arrivals = [t - s for s, t in zip(self.dates, self.dates[1:])] + [float('inf')]
         super().__init__(self.inter_arrivals)
 
     def __repr__(self):

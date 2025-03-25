@@ -1434,7 +1434,7 @@ class TestSampling(unittest.TestCase):
         expected_dates = [0]
         for t in Pi.inter_arrivals:
             expected_dates.append(expected_dates[-1] + t)
-        self.assertEqual(Pi.dates, expected_dates)
+        self.assertEqual(Pi.dates, expected_dates[:-1])
         self.assertLessEqual(Pi.dates[-1], Pi.max_sample_date)
 
         self.assertRaises(
@@ -1483,18 +1483,37 @@ class TestSampling(unittest.TestCase):
     def test_poissoninterval_rate_zero(self):
         ciw.seed(5)
         Pi = ciw.dists.PoissonIntervals(
-            rates=[10, 0], endpoints=[1, 2], max_sample_date=15
+            rates=[10, 0], endpoints=[1, 2], max_sample_date=15.5
         )
         arrivals_when_rate_is_zero = [date for date in Pi.dates if int(date) % 2 == 1]
         self.assertEqual(arrivals_when_rate_is_zero, [])
+        final_date = Pi.dates[-1]
+        self.assertTrue(final_date < 15)
 
         ciw.seed(5)
         Pi = ciw.dists.PoissonIntervals(
-            rates=[0, 0], endpoints=[1, 2], max_sample_date=15
+            rates=[0, 0], endpoints=[1, 2], max_sample_date=15.5
         )
         arrivals_when_rate_is_zero = [date for date in Pi.dates if int(date) % 2 == 1]
         self.assertEqual(arrivals_when_rate_is_zero, [])
         self.assertEqual(Pi.sample(), float("inf"))
+
+        ciw.seed(5)
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[3, 2, 0], endpoints=[1, 2, 10], max_sample_date=9
+        )
+        final_date = Pi.dates[-1]
+        self.assertTrue(final_date < 2)
+        
+        t = 0
+        arrivals = []
+        while t < 8:
+            t += Pi.sample()
+            arrivals.append(t)
+        final_sample = arrivals[-1]
+        final_arrival = arrivals[-2]
+        self.assertEqual(final_sample, float('inf'))
+        self.assertEqual(final_arrival, final_date)
 
     def test_poissoninterval_against_theory(self):
         """
