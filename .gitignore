@@ -11,3 +11,4 @@ dist/
 *ciw/disciplines/.hypothesis*
 env/
 venv/
+.venv/
