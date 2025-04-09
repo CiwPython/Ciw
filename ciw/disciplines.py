@@ -1,10 +1,14 @@
-from typing import List
+from __future__ import annotations
 
-from ciw.individual import Individual
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ciw.individual import Individual
+
 from ciw.auxiliary import random_choice
 
 
-def FIFO(individuals: List[Individual], t: float) -> Individual:
+def FIFO(individuals: list[Individual], t: float) -> Individual:
     """
     FIFO: First In, First Out (FIFO)
 
@@ -20,14 +24,14 @@ def FIFO(individuals: List[Individual], t: float) -> Individual:
     return individuals[0]
 
 
-def SIRO(individuals: List[Individual], t: float) -> Individual:
+def SIRO(individuals: list[Individual], t: float) -> Individual:
     """
     SIRO: Service In Random Order (SIRO)
 
     Returns a random individual from the queue.
 
     Parameters:
-    - individuals (List[Individual]): List of individuals in the queue.
+    - individuals (list[Individual]): List of individuals in the queue.
     - t (float): The current simulation time
 
     Returns:
@@ -36,14 +40,14 @@ def SIRO(individuals: List[Individual], t: float) -> Individual:
     return random_choice(individuals)
 
 
-def LIFO(individuals: List[Individual], t: float) -> Individual:
+def LIFO(individuals: list[Individual], t: float) -> Individual:
     """
     LIFO: Last In, First Out (LIFO)
 
     Returns the individual who joined the queue most recently.
 
     Parameters:
-    - individuals (List[Individual]): List of individuals in the queue.
+    - individuals (list[Individual]): List of individuals in the queue.
     - t (float): The current simulation time
 
     Returns:
