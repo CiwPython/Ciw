@@ -1,5 +1,3 @@
-import copy
-import types
 import ciw.dists
 from .network import *
 from .schedules import *
@@ -75,7 +73,6 @@ def create_network_from_dictionary(params_input):
     params = fill_out_dictionary(params_input)
     validify_dictionary(params)
     # Then make the Network object
-    number_of_classes = params["number_of_classes"]
     number_of_nodes = params["number_of_nodes"]
     if isinstance(params["priority_classes"], dict):
         preempt_priorities = [False for _ in range(number_of_nodes)]
