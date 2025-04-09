@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-class NoDetection(object):
+class NoDetection:
     """
     A generic class for all deadlock detector classes to inherit from.
     Using this class is equivalent to having no deadlock detection
