@@ -62,7 +62,8 @@ author = "Geraint Palmer"
 #
 # The short X.Y version.
 # Read in the version number
-exec(open("../ciw/version.py", "r").read())
+with open("../ciw/version.py", 'r') as version_file_handle:
+    exec(version_file_handle.read())
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = version
