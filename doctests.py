@@ -1,3 +1,5 @@
+"""Test hook(s) for Doctests in reStructuredText (.rst) Files."""
+
 import doctest
 import os
 import unittest
@@ -6,7 +8,8 @@ from typing import Any
 
 
 def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: Any) -> unittest.TestSuite:
-    """Discover and add all reStructuredText (.rst) doctest files within the current directory tree to the test suite.
+    """
+    Discover and add all reStructuredText (.rst) doctest files within the current directory tree to the test suite.
 
     Parameters
     ----------
@@ -27,6 +30,15 @@ def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: 
     This function is used by the unittest framework to discover and include additional doctests
     in the test suite during test discovery.
 
+    Examples
+    --------
+    When placed in a test module, unittest will automatically call `load_tests` if it exists.
+
+    >>> import unittest
+    >>> suite = unittest.TestSuite()
+    >>> loader = unittest.TestLoader()
+    >>> load_tests(loader, suite, None)  # doctest: +ELLIPSIS
+    <unittest.suite.TestSuite tests=[...]
     """
     for root, dirs, files in os.walk("."):
         for f in files:
@@ -43,3 +55,4 @@ def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: 
 if __name__ == "__main__":
     if sys.version_info >= (3, 6):
         unittest.main()
+
