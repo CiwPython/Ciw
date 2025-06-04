@@ -185,9 +185,7 @@ def fill_out_dictionary(params):
             class_name: [None] * number_of_nodes
             for class_name in class_names
         },
-        "service_disciplines": [
-            ciw.disciplines.FIFO
-        ] * number_of_nodes,
+        "service_disciplines": [ciw.disciplines.FIFO for _ in range(number_of_nodes)],
         "system_capacity": float('inf')
     }
 
