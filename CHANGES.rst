@@ -2,7 +2,7 @@ History
 -------
 
 + **3.2.5 (2025-03-25)**
-  + Fixes bug in PoissonIntervals distribution where if the last rate is zero or so small there is no samples, the cycle begins again too early.
+    + Fixes bug in PoissonIntervals distribution where if the last rate is zero or so small there is no samples, the cycle begins again too early.
 
 + **3.2.4 (2024-12-04)**
     + Adds a new method for the `simulate_until_max_customers`: "Complete" simulates until a specific number of completed customer journeys; while "Finish" simulates until a specific number of customers have reached the exit node (through bailking or reneging).
