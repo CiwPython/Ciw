@@ -89,11 +89,10 @@ def create_network_from_dictionary(params_input):
     class_change_time_distributions = {clss2: {clss1: None for clss1 in params['customer_class_names']} for clss2 in params['customer_class_names']}
     if 'class_change_time_distributions' in params:
         for clss1 in params['customer_class_names']:
-            for clss2 in params['customer_class_names']:
-                try:
-                    class_change_time_distributions[clss1][clss2] = params['class_change_time_distributions'][clss1][clss2]
-                except:
-                    pass
+            if clss1 in params['class_change_time_distributions']:
+                for clss2 in params['customer_class_names']:
+                    if clss2 in params['class_change_time_distributions'][clss1]:
+                        class_change_time_distributions[clss1][clss2] = params['class_change_time_distributions'][clss1][clss2]
 
     nodes, classes = [], {}
     for nd in range(number_of_nodes):
