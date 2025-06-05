@@ -19,12 +19,12 @@ Install a development version of the library::
 
 Make sure the tests pass (Ciw uses unit & doc testing)::
 
-    python -m unittest discover ciw
+    python -m unittest discover
     python doctests.py
 
 We encourage the use of coverage, ensuring all aspects of the code are tested::
 
-    coverage run --source=ciw -m unittest discover ciw.tests
+    coverage run --source=ciw -m unittest discover
     coverage report -m
 
 Add tests for your change. Make your change and make the tests pass.
