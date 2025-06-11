@@ -21,6 +21,7 @@ class ExitNode:
         Adds individual to the list of completed individuals.
         """
         self.all_individuals.append(next_individual)
+        next_individual.node = -1
         self.number_of_individuals += 1
         if completed:
             self.number_of_completed_individuals += 1

@@ -8,6 +8,7 @@ from .arrival_node import ArrivalNode
 from .exit_node import ExitNode
 from .individual import Individual
 from .server import Server
+from .data_record import DataRecord
 from ciw import trackers
 from ciw import deadlock
 
@@ -156,11 +157,10 @@ class Simulation(object):
             individual
             for node in self.nodes[1:]
             for individual in node.all_individuals
-            if len(individual.data_records) > 0
         ]
 
     def get_all_records(
-        self, only=["service", "baulk", "rejection", "renege", "interrupted service"]
+        self, only=["service", "baulk", "rejection", "renege", "interrupted service"], include_incomplete=False
     ):
         """
         Gets all data records from all individuals.
@@ -170,6 +170,10 @@ class Simulation(object):
             for record in individual.data_records:
                 if record.record_type in only:
                     records.append(record)
+            if include_incomplete:
+                if individual.node != -1:
+                    incomplete_record = self.nodes[individual.node].write_incomplete_record(individual)
+                    records.append(incomplete_record)
         self.all_records = records
         return records
 
@@ -265,6 +269,7 @@ class Simulation(object):
                 self.progress_bar.update(min(time_increment, remaining_time))
 
             self.current_time = next_active_node.next_event_date
+        self.current_time = max_simulation_time
 
         self.wrap_up_servers(max_simulation_time)
         if progress_bar:
@@ -320,8 +325,9 @@ class Simulation(object):
 
             previous_time = self.current_time
             self.current_time = next_active_node.next_event_date
+        self.current_time = previous_time
 
-        self.wrap_up_servers(previous_time)
+        self.wrap_up_servers(self.current_time)
 
         if progress_bar:
             remaining_time = max(max_customers - self.progress_bar.n, 0)

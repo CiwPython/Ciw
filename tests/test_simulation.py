@@ -408,26 +408,29 @@ class TestSimulation(unittest.TestCase):
         ciw.seed(36)
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(36)
-        inds = Q.get_all_individuals()
+        completed_inds = set(ind.id_number for ind in Q.get_all_individuals())
         recs = Q.get_all_records()
-        self.assertEqual(len(inds), 3)
+        self.assertEqual(len(completed_inds), 3)
         self.assertTrue(all([x[7] == 5.0 for x in recs[1:]]))
 
         ciw.seed(35)
         Q = ciw.Simulation(N)
         Q.simulate_until_max_time(36)
-        inds = Q.get_all_individuals()
+        completed_inds = set(ind.id_number for ind in Q.get_all_individuals())
         recs = Q.get_all_records()
-        self.assertEqual(len(inds), 2)
+        self.assertEqual(len(completed_inds), 3)
         self.assertTrue(all([x[7] == 5.0 for x in recs[1:]]))
 
         completed_inds = []
-        for _ in range(1000):
+        num_trials = 2500
+        for trial in range(num_trials):
+            ciw.seed(trial)
             Q = ciw.Simulation(N)
             Q.simulate_until_max_time(36)
-            inds = Q.get_all_individuals()
-            completed_inds.append(len(inds))
-        self.assertAlmostEqual(completed_inds.count(2) / float(1000), 1 / 4.0, places=1)
+            recs = Q.get_all_records()
+            num_completed_inds = len(set([r.id_number for r in recs]))
+            completed_inds.append(num_completed_inds)
+        self.assertAlmostEqual(completed_inds.count(2) / num_trials, 1 / 4.0, places=2)
 
     def test_exactness(self):
         N = ciw.create_network(
@@ -991,6 +994,136 @@ class TestSimulation(unittest.TestCase):
         for row in recs:
             self.assertIsInstance(row, ciw.data_record.DataRecord)
             self.assertEqual(len(row), len(ciw.data_record.DataRecord._fields))
+
+    def test_get_all_records_including_incomplete(self):
+        # Without incomplete
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(value=7)],
+            service_distributions=[ciw.dists.Deterministic(value=10)],
+            number_of_servers=[2]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(36)
+        recs = Q.get_all_records()
+        self.assertEqual([r.id_number for r in recs], [1, 2, 3])
+        self.assertEqual([r.arrival_date for r in recs], [7, 14, 21])
+        self.assertEqual([r.service_time for r in recs], [10, 10, 10])
+        self.assertEqual([r.service_end_date for r in recs], [17, 24, 31])
+
+        # Including incomplete records
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(value=7)],
+            service_distributions=[ciw.dists.Deterministic(value=10)],
+            number_of_servers=[2]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(36)
+        recs = Q.get_all_records(include_incomplete=True)
+        self.assertEqual([r.id_number for r in recs], [4, 5, 1, 2, 3])
+        self.assertEqual([r.arrival_date for r in recs], [28, 35, 7, 14, 21])
+        self.assertEqual([r.service_time for r in recs], [None, None, 10, 10, 10])
+        self.assertEqual([r.service_end_date for r in recs], [None, None, 17, 24, 31])
+
+    def test_get_all_records_including_incomplete_all_cases(self):
+        ### Some customers still in service at end of simulation
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(value=10)],
+            service_distributions=[ciw.dists.Deterministic(value=12)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(25)
+        # Only complete records
+        recs = Q.get_all_records()
+        self.assertEqual([r.id_number for r in recs], [1])
+        self.assertEqual([r.arrival_date for r in recs], [10])
+        self.assertEqual([r.service_time for r in recs], [12])
+        self.assertEqual([r.service_start_date for r in recs], [10])
+        self.assertEqual([r.service_end_date for r in recs], [22])
+        self.assertEqual([r.waiting_time for r in recs], [0])
+        self.assertEqual([r.exit_date for r in recs], [22])
+        self.assertEqual([r.time_blocked for r in recs], [0])
+        self.assertEqual([r.record_type for r in recs], ["service"])
+        # Including incomplete records
+        recs = Q.get_all_records(include_incomplete=True)
+        self.assertEqual([r.id_number for r in recs], [2, 1])
+        self.assertEqual([r.arrival_date for r in recs], [20, 10])
+        self.assertEqual([r.service_time for r in recs], [None, 12])
+        self.assertEqual([r.service_start_date for r in recs], [22, 10])
+        self.assertEqual([r.service_end_date for r in recs], [None, 22])
+        self.assertEqual([r.waiting_time for r in recs], [2, 0])
+        self.assertEqual([r.exit_date for r in recs], [None, 22])
+        self.assertEqual([r.time_blocked for r in recs], [None, 0])
+        self.assertEqual([r.record_type for r in recs], ["incomplete", "service"])
+
+
+        ### Some customers still in waiting at end of simulation
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(value=7)],
+            service_distributions=[ciw.dists.Deterministic(value=12)],
+            number_of_servers=[1]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(25)
+        # Only complete records
+        recs = Q.get_all_records()
+        self.assertEqual([r.id_number for r in recs], [1])
+        self.assertEqual([r.arrival_date for r in recs], [7])
+        self.assertEqual([r.service_time for r in recs], [12])
+        self.assertEqual([r.service_start_date for r in recs], [7])
+        self.assertEqual([r.service_end_date for r in recs], [19])
+        self.assertEqual([r.waiting_time for r in recs], [0])
+        self.assertEqual([r.exit_date for r in recs], [19])
+        self.assertEqual([r.time_blocked for r in recs], [0])
+        self.assertEqual([r.record_type for r in recs], ["service"])
+        # Including incomplete records
+        recs = Q.get_all_records(include_incomplete=True)
+        self.assertEqual([r.id_number for r in recs], [2, 3, 1])
+        self.assertEqual([r.arrival_date for r in recs], [14, 21, 7])
+        self.assertEqual([r.service_time for r in recs], [None, None, 12])
+        self.assertEqual([r.service_start_date for r in recs], [19, None, 7])
+        self.assertEqual([r.service_end_date for r in recs], [None, None, 19])
+        self.assertEqual([r.waiting_time for r in recs], [5, None, 0])
+        self.assertEqual([r.exit_date for r in recs], [None, None, 19])
+        self.assertEqual([r.time_blocked for r in recs], [None, None, 0])
+        self.assertEqual([r.record_type for r in recs], ["incomplete", "incomplete", "service"])
+
+        ### Some customers blocked by end of simulation
+        N = ciw.create_network(
+            arrival_distributions=[ciw.dists.Deterministic(value=7), None],
+            service_distributions=[ciw.dists.Deterministic(value=12), ciw.dists.Deterministic(15)],
+            number_of_servers=[1, 1],
+            queue_capacities=[float('inf'), 0],
+            routing=[[0.0, 1.0], [0.0, 0.0]]
+        )
+        Q = ciw.Simulation(N)
+        Q.simulate_until_max_time(48)
+        # Only complete records
+        recs = Q.get_all_records()
+        self.assertEqual([r.id_number for r in recs], [2, 1, 1])
+        self.assertEqual([r.node for r in recs], [1, 1, 2])
+        self.assertEqual([r.arrival_date for r in recs], [14, 7, 19])
+        self.assertEqual([r.service_time for r in recs], [12, 12, 15])
+        self.assertEqual([r.service_start_date for r in recs], [19, 7, 19])
+        self.assertEqual([r.service_end_date for r in recs], [31, 19, 34])
+        self.assertEqual([r.waiting_time for r in recs], [5, 0, 0])
+        self.assertEqual([r.exit_date for r in recs], [34, 19, 34])
+        self.assertEqual([r.time_blocked for r in recs], [3, 0, 0])
+        self.assertEqual([r.record_type for r in recs], ["service", "service", "service"])
+        # Including incomplete records
+        recs = Q.get_all_records(include_incomplete=True)
+        self.assertEqual([r.id_number for r in recs], [3, 4, 5, 6, 2, 2, 1, 1])
+        self.assertEqual([r.node for r in recs], [1, 1, 1, 1, 1, 2, 1, 2])
+        self.assertEqual([r.arrival_date for r in recs], [21, 28, 35, 42, 14, 34, 7, 19])
+        self.assertEqual([r.service_time for r in recs], [12, None, None, None, 12, None, 12, 15])
+        self.assertEqual([r.service_start_date for r in recs], [34, None, None, None, 19, 34, 7, 19])
+        self.assertEqual([r.service_end_date for r in recs], [46, None, None, None, 31, None, 19, 34])
+        self.assertEqual([r.waiting_time for r in recs], [13, None, None, None, 5, 0, 0, 0])
+        self.assertEqual([r.exit_date for r in recs], [None, None, None, None, 34, None, 19, 34])
+        self.assertEqual([r.time_blocked for r in recs], [None, None, None, None, 3, None, 0, 0])
+        self.assertEqual([r.record_type for r in recs], ["incomplete", "incomplete", "incomplete", "incomplete", "service", "incomplete", "service", "service"])
+
+
 
     def test_namedtuple_record(self):
         expected_fields = (
