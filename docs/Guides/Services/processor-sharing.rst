@@ -43,14 +43,14 @@ Though it looks like service times are much longer than in a regular FIFO queue,
 
     >>> ps_time_to_process_1000 = Q.current_time
     >>> ps_time_to_process_1000
-    254.0556420...
+    254.0454918...
 
     >>> ciw.seed(0) # same seed
     >>> Q = ciw.Simulation(N) # regular FIFO queue
     >>> Q.simulate_until_max_customers(1000)
     >>> fifo_time_to_process_1000 = Q.current_time
     >>> fifo_time_to_process_1000
-    254.0556420...
+    254.0454918...
 
 In Ciw two different generalisations of processor sharing are available: limited processor sharing, and capacitated processor sharing, described below. Systems exhibiting both these behaviours simultaneously can be simulated.
 
