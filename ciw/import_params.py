@@ -1,5 +1,3 @@
-import copy
-import types
 import ciw.dists
 from .network import *
 from .schedules import *
@@ -75,10 +73,9 @@ def create_network_from_dictionary(params_input):
     params = fill_out_dictionary(params_input)
     validify_dictionary(params)
     # Then make the Network object
-    number_of_classes = params["number_of_classes"]
     number_of_nodes = params["number_of_nodes"]
     if isinstance(params["priority_classes"], dict):
-        preempt_priorities = [False for _ in range(number_of_nodes)]
+        preempt_priorities = [False] * number_of_nodes
     if isinstance(params["priority_classes"], tuple):
         preempt_priorities = params["priority_classes"][1]
         params["priority_classes"] = {
@@ -87,16 +84,15 @@ def create_network_from_dictionary(params_input):
         }
     class_change_matrices = params.get(
         "class_change_matrices",
-        [None for nd in range(number_of_nodes)],
+        [None] * number_of_nodes,
     )
     class_change_time_distributions = {clss2: {clss1: None for clss1 in params['customer_class_names']} for clss2 in params['customer_class_names']}
     if 'class_change_time_distributions' in params:
         for clss1 in params['customer_class_names']:
-            for clss2 in params['customer_class_names']:
-                try:
-                    class_change_time_distributions[clss1][clss2] = params['class_change_time_distributions'][clss1][clss2]
-                except:
-                    pass
+            if clss1 in params['class_change_time_distributions']:
+                for clss2 in params['customer_class_names']:
+                    if clss2 in params['class_change_time_distributions'][clss1]:
+                        class_change_time_distributions[clss1][clss2] = params['class_change_time_distributions'][clss1][clss2]
 
     nodes, classes = [], {}
     for nd in range(number_of_nodes):
@@ -165,28 +161,27 @@ def fill_out_dictionary(params):
     class_names = sorted(params["arrival_distributions"].keys())
     params["customer_class_names"] = class_names
 
+    number_of_nodes = len(params["number_of_servers"])
     default_dict = {
         "name": "Simulation",
         "routing": {class_name: routing.TransitionMatrix(transition_matrix=[[0.0]]) for class_name in class_names},
-        "number_of_nodes": len(params["number_of_servers"]),
+        "number_of_nodes": number_of_nodes,
         "number_of_classes": len(class_names),
-        "queue_capacities": [float("inf") for _ in range(len(params["number_of_servers"]))],
+        "queue_capacities": [float("inf")] * number_of_nodes, 
         "priority_classes": {class_name: 0 for class_name in class_names},
-        "baulking_functions": {class_name: [None for _ in range(len(params["number_of_servers"]))]for class_name in class_names},
+        "baulking_functions": {class_name: [None] * number_of_nodes for class_name in class_names},
         "batching_distributions": {class_name: [
-                ciw.dists.Deterministic(1) for _ in range(len(params["number_of_servers"]))
-            ] for class_name in class_names},
-        "ps_thresholds": [1 for _ in range(len(params["number_of_servers"]))],
+                ciw.dists.Deterministic(1)
+        ] * number_of_nodes for class_name in class_names},
+        "ps_thresholds": [1] * number_of_nodes,
         "server_priority_functions": [
-            None for _ in range(len(params["number_of_servers"]))
-        ],
+            None
+        ] * number_of_nodes,
         "reneging_time_distributions": {
-            class_name: [None for _ in range(len(params["number_of_servers"]))]
+            class_name: [None] * number_of_nodes
             for class_name in class_names
         },
-        "service_disciplines": [
-            ciw.disciplines.FIFO for _ in range(len(params["number_of_servers"]))
-        ],
+        "service_disciplines": [ciw.disciplines.FIFO for _ in range(number_of_nodes)],
         "system_capacity": float('inf')
     }
 

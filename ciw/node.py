@@ -871,6 +871,46 @@ class Node(object):
         )
         individual.data_records.append(record)
 
+    def write_incomplete_record(self, individual):
+        """
+        Write an incomplete data record for an individual
+        at the end of the simulation run.
+        """
+        if not individual.service_time:  # Still in queue
+            service_start_date = None
+            waiting_time = None
+            service_time = None
+            service_end_date = None
+        else:
+            service_start_date = individual.service_start_date
+            waiting_time = individual.service_start_date - individual.arrival_date
+            if individual.service_end_date > self.now: # Still in service
+                service_time = None
+                service_end_date = None
+            else: # Still blocked
+                service_time = individual.service_time
+                service_end_date = individual.service_end_date
+
+        record = DataRecord(
+            id_number=individual.id_number,
+            customer_class=individual.previous_class,
+            original_customer_class=individual.original_class,
+            node=self.id_number,
+            arrival_date=individual.arrival_date,
+            waiting_time=waiting_time,
+            service_start_date=service_start_date,
+            service_time=service_time,
+            service_end_date=service_end_date,
+            time_blocked=None,
+            exit_date=None,
+            destination=None,
+            queue_size_at_arrival=individual.queue_size_at_arrival,
+            queue_size_at_departure=None,
+            server_id=False,
+            record_type="incomplete",
+        )
+        return record
+
     def write_interruption_record(self, individual, destination=nan):
         """
         Write a data record for an individual when being interrupted.

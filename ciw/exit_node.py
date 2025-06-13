@@ -1,12 +1,8 @@
-class ExitNode(object):
-    """
-    Class for the exit node on our network.
-    """
+class ExitNode:
+    """Exit node on our network."""
 
     def __init__(self):
-        """
-        Initialise the exit node.
-        """
+        """Initialise the exit node."""
         self.all_individuals = []
         self.number_of_individuals = 0
         self.number_of_completed_individuals = 0
@@ -25,6 +21,7 @@ class ExitNode(object):
         Adds individual to the list of completed individuals.
         """
         self.all_individuals.append(next_individual)
+        next_individual.node = -1
         self.number_of_individuals += 1
         if completed:
             self.number_of_completed_individuals += 1

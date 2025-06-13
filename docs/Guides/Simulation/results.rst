@@ -78,3 +78,38 @@ When a simulation can produce multiple types of data record, it is sometimes use
     >>> lost_customer_recs = Q.get_all_records(only=["rejection", "baulk", "renege"])
     >>> service_recs = Q.get_all_records(only=["service"])
 
+
+Incomplete Records
+~~~~~~~~~~~~~~~~~~
+
+By default, only *completed* data records are collected. That is, data records where all the recorded information is known, because the recorded information has been completed. That is, for a "service" record, the customer has left the node after service; for the "baulk" record, the customer has left the node after baulking. If the simulation ends with some customers still waiting, still receiving service, or still blocked after service, their incomplete data record is not recorded by default. 
+
+We can collect the incomplete data records using the :code:`include_incomplete` argument when collecting records. This will create an "incomplete" data record, with :code:`None` values representing information not know as it has not been completed yet.
+
+For example consider a D/D/1 queue which ends when a customer is still in service. Compare the collected records when we include and don't include incomplete records::
+
+    >>> import ciw
+    >>> N = ciw.create_network(
+    ...     arrival_distributions=[ciw.dists.Deterministic(value=5)],
+    ...     service_distributions=[ciw.dists.Deterministic(value=4)],
+    ...     number_of_servers=[1]
+    ... )
+    >>> ciw.seed(0)
+    >>> Q = ciw.Simulation(N)
+    >>> Q.simulate_until_max_time(11)
+
+    >>> ## Completed records only
+    >>> recs = Q.get_all_records()
+    >>> len(recs)
+    1
+    >>> recs[0]
+    Record(id_number=1, customer_class='Customer', original_customer_class='Customer', node=1, arrival_date=5, waiting_time=0, service_start_date=5, service_time=4, service_end_date=9, time_blocked=0, exit_date=9, destination=-1, queue_size_at_arrival=0, queue_size_at_departure=0, server_id=1, record_type='service')
+
+    >>> ## Including incomplete records
+    >>> recs = Q.get_all_records(include_incomplete=True)
+    >>> len(recs)
+    2
+    >>> recs[0]
+    Record(id_number=2, customer_class='Customer', original_customer_class='Customer', node=1, arrival_date=10, waiting_time=0, service_start_date=10, service_time=None, service_end_date=None, time_blocked=None, exit_date=None, destination=None, queue_size_at_arrival=0, queue_size_at_departure=None, server_id=False, record_type='incomplete')
+    >>> recs[1]
+    Record(id_number=1, customer_class='Customer', original_customer_class='Customer', node=1, arrival_date=5, waiting_time=0, service_start_date=5, service_time=4, service_end_date=9, time_blocked=0, exit_date=9, destination=-1, queue_size_at_arrival=0, queue_size_at_departure=0, server_id=1, record_type='service')

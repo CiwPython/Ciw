@@ -349,8 +349,10 @@ class PhaseType(Distribution):
     """
 
     def __init__(self, initial_state, absorbing_matrix):
-        if any(p < 0 or p > 1.0 for p in initial_state):
-            raise ValueError("Initial state vector must have valid probabilities.")
+        if any(p < 0 for p in initial_state):
+            raise ValueError("Initial state vector must have positive probabilities.")
+        if any(p > 1.0 for p in initial_state):
+            raise ValueError("Initial state vector probabilities must be no more than 1.0.")
         if sum(initial_state) > 1.0 + 10 ** (-10) or sum(initial_state) < 1.0 - 10 ** (
             -10
         ):
