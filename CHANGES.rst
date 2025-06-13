@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.2.6 (2025-06-13)**
+    + Add the `include_incomplete` keyword tot he `get_all_records` method to allow for collection of incomplete data records.
+
 + **3.2.5 (2025-03-25)**
     + Fixes bug in PoissonIntervals distribution where if the last rate is zero or so small there is no samples, the cycle begins again too early.
 
