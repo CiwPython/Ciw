@@ -21,7 +21,7 @@ class Simulation(object):
     def __init__(
         self,
         network,
-        exact=False,
+        exact: int = 0,
         name="Simulation",
         tracker=None,
         deadlock_detector=None,
@@ -32,8 +32,20 @@ class Simulation(object):
         server_class=None,
     ):
         """
-        Initialise an instance of the simualation.
+        Initialise an instance of the simulation.
+
+        This class supports exact arithmetic when `exact` is given a positive integer
+        representing the desired numerical precision. A precision of `0` is interpreted
+        to mean using ordinary float precision.
         """
+
+        # Input validation
+        if not isinstance(exact, int):
+            raise TypeError(f"{exact=} must be an integer.")
+        if exact < 0:
+            raise TypeError(f"{exact=} must be non-negative.")
+
+        # Assignments
         self.current_time = 0.0
         self.network = network
         self.set_classes(node_class, arrival_node_class, exit_node_class, individual_class, server_class)
