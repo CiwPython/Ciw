@@ -108,6 +108,18 @@ class Uniform(Distribution):
 
     def sample(self, t=None, ind=None):
         return uniform(self.lower, self.upper)
+    
+    def mean(self):
+        """
+        Returns the mean of the Uniform distribution.
+        """
+        return (self.lower + self.upper) / 2
+    
+    def variance(self):
+        """
+        Returns the variance of the Uniform distribution.
+        """
+        return ((self.upper - self.lower) ** 2) / 12
 
 
 class Deterministic(Distribution):

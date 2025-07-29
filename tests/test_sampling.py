@@ -188,6 +188,17 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 ul <= Nu.simulation.inter_arrival_times[Nu.id_number]['Customer']._sample() <= uh
             )
+    
+    def test_uniform_mean(self):
+        U = ciw.dists.Uniform(2.2, 3.3)
+        expected_mean = (2.2 + 3.3) / 2
+        self.assertEqual(U.mean(), expected_mean, places=7)
+
+    def test_uniform_variance(self):
+        U = ciw.dists.Uniform(2.2, 3.3)
+        expected_variance = ((3.3 - 2.2) ** 2) / 12
+        self.assertEqual(U.variance(), expected_variance, places=7)
+
 
     def test_deterministic_dist_object(self):
         D = ciw.dists.Deterministic(4.4)
