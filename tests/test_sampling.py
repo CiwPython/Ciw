@@ -190,14 +190,21 @@ class TestSampling(unittest.TestCase):
             )
     
     def test_uniform_mean(self):
+        """
+        Test that the mean of a Uniform distribution is computed correctly.
+        """
         U = ciw.dists.Uniform(2.2, 3.3)
         expected_mean = (2.2 + 3.3) / 2
-        self.assertEqual(U.mean(), expected_mean, places=7)
+        self.assertAlmostEqual(U.mean(), expected_mean)
 
     def test_uniform_variance(self):
+        """
+        Test that the variance of a Uniform distribution is computed correctly.
+        """
         U = ciw.dists.Uniform(2.2, 3.3)
         expected_variance = ((3.3 - 2.2) ** 2) / 12
-        self.assertEqual(U.variance(), expected_variance, places=7)
+        self.assertAlmostEqual(U.variance(), expected_variance)
+
 
 
     def test_deterministic_dist_object(self):
