@@ -255,6 +255,20 @@ class TestSampling(unittest.TestCase):
                 Nd.simulation.inter_arrival_times[Nd.id_number]['Customer']._sample(), d
             )
 
+        def test_deterministic_mean(self):
+            """
+            Test that the mean of a Deterministic distribution is computed correctly.
+            """
+            D = ciw.dists.Deterministic(4.4)
+            self.assertEqual(D.mean(), 4.4)
+
+        def test_deterministic_variance(self):
+            """
+            Test that the variance of a Deterministic distribution is always 0.
+            """
+            D = ciw.dists.Deterministic(4.4)
+            self.assertEqual(D.variance(), 0.0)
+            
     def test_triangular_dist_object(self):
         Tr = ciw.dists.Triangular(1.1, 1.5, 6.6)
         ciw.seed(5)

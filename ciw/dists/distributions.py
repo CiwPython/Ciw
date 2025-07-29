@@ -142,7 +142,19 @@ class Deterministic(Distribution):
 
     def sample(self, t=None, ind=None):
         return self.value
-
+    
+    def mean(self):
+        """
+        Returns the mean of the Deterministic distribution.
+        """
+        return self.value
+    
+    def variance(self):
+        """
+        Returns the variance of the Deterministic distribution, which is always 0.
+        """
+        return 0.0
+    
 
 class Triangular(Distribution):
     """
