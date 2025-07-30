@@ -109,12 +109,14 @@ class Uniform(Distribution):
     def sample(self, t=None, ind=None):
         return uniform(self.lower, self.upper)
     
+    @property
     def mean(self):
         """
         Returns the mean of the Uniform distribution.
         """
         return (self.lower + self.upper) / 2
-    
+
+    @property
     def variance(self):
         """
         Returns the variance of the Uniform distribution.
@@ -142,13 +144,17 @@ class Deterministic(Distribution):
 
     def sample(self, t=None, ind=None):
         return self.value
-    
+
+    @property
     def mean(self):
         """
         Returns the mean of the Deterministic distribution.
         """
         return self.value
+        
+
     
+    @property
     def variance(self):
         """
         Returns the variance of the Deterministic distribution, which is always 0.
