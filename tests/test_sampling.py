@@ -316,6 +316,20 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number]['Customer']._sample() <= th)
             self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number]['Customer']._sample() <= th)
 
+    def test_triangular_mean(self):
+        T = ciw.dists.Triangular(1.1, 2.2, 6.6)
+        expected_mean = (1.1 + 2.2 + 6.6) / 3
+        self.assertAlmostEqual(T.mean, expected_mean)
+
+    def test_triangular_variance(self):
+        T = ciw.dists.Triangular(1.1, 2.2, 6.6)
+        a, b, c = 1.1, 6.6, 2.2
+        expected_variance = (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
+        self.assertAlmostEqual(T.variance, expected_variance)
+
+
+
+
     def test_exponential_dist_object(self):
         E = ciw.dists.Exponential(4.4)
         ciw.seed(5)

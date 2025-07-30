@@ -190,6 +190,21 @@ class Triangular(Distribution):
 
     def sample(self, t=None, ind=None):
         return triangular(self.lower, self.upper, self.mode)
+    
+    @property
+    def mean(self):
+        """
+        Returns the mean of the Triangular distribution.
+        """
+        return (self.lower + self.mode + self.upper) / 3
+
+    @property
+    def variance(self):
+        """
+        Returns the variance of the Triangular distribution.
+        """
+        a, b, c = self.lower, self.upper, self.mode
+        return (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
 
 
 class Exponential(Distribution):
