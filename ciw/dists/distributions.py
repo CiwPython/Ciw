@@ -247,6 +247,20 @@ class Gamma(Distribution):
 
     def sample(self, t=None, ind=None):
         return gammavariate(self.shape, self.scale)
+    
+    @property
+    def mean(self):
+        """
+        Returns the mean of the Gamma distribution.
+        """
+        return self.shape * self.scale
+    
+    @property
+    def variance(self):
+        """
+        Returns the variance of the Gamma distribution.
+        """
+        return self.shape * (self.scale ** 2)
 
 
 class Normal(Distribution):

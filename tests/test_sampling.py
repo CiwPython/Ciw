@@ -432,6 +432,17 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 Ng.simulation.inter_arrival_times[Ng.id_number]['Customer']._sample() >= 0.0
             )
+    
+    def test_gamma_mean(self):
+        G = ciw.dists.Gamma(0.6, 1.2)
+        expected_mean = 0.6 * 1.2
+        self.assertAlmostEqual(G.mean, expected_mean)
+
+    def test_gamma_variance(self):
+        G = ciw.dists.Gamma(0.6, 1.2)
+        expected_variance = 0.6 * (1.2 ** 2)
+        self.assertAlmostEqual(G.variance, expected_variance)
+
 
     def test_lognormal_dist_object(self):
         Ln = ciw.dists.Lognormal(0.8, 0.2)
