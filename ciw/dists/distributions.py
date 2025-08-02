@@ -443,6 +443,22 @@ class Pmf(Distribution):
 
     def sample(self, t=None, ind=None):
         return random_choice(self.values, self.probs)
+    
+    @property
+    def mean(self):
+        """
+        Returns the mean of the PMF distribution.
+        """
+        return sum(v * p for v, p in zip(self.values, self.probs))
+
+    @property
+    def variance(self):
+        """
+        Returns the variance of the PMF distribution.
+        """
+        m = self.mean
+        return sum(p * (v - m) ** 2 for v, p in zip(self.values, self.probs))
+
 
 
 class PhaseType(Distribution):

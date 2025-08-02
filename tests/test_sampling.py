@@ -751,6 +751,22 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nc.simulation.service_times[Nc.id_number]['Customer']._sample() in set(cust_vals))
             self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number]['Customer']._sample() in set(cust_vals))
 
+
+    def test_pmf_mean(self):
+        values = [3.7, 3.8, 4.1]
+        probs = [0.2, 0.5, 0.3]
+        P = ciw.dists.Pmf(values, probs)
+        expected_mean = sum(v * p for v, p in zip(values, probs))
+        self.assertAlmostEqual(P.mean, expected_mean)
+
+    def test_pmf_variance(self):
+        values = [3.7, 3.8, 4.1]
+        probs = [0.2, 0.5, 0.3]
+        P = ciw.dists.Pmf(values, probs)
+        mean = sum(v * p for v, p in zip(values, probs))
+        expected_variance = sum(p * (v - mean) ** 2 for v, p in zip(values, probs))
+        self.assertAlmostEqual(P.variance, expected_variance)
+
     def test_custom_dist_object(self):
         CD = CustomDist()
         ciw.seed(5)
