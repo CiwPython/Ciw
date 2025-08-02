@@ -680,6 +680,20 @@ class TestSampling(unittest.TestCase):
                 in set(my_empirical_dist)
             )
 
+    def test_empirical_mean(self):
+        values = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
+        E = ciw.dists.Empirical(values)
+        expected_mean = sum(values) / len(values)
+        self.assertAlmostEqual(E.mean, expected_mean)
+
+    def test_empirical_variance(self):
+        values = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
+        E = ciw.dists.Empirical(values)
+        mean = sum(values) / len(values)
+        expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
+        self.assertAlmostEqual(E.variance, expected_variance)
+
+
     def test_pmf_object(self):
         Pmf = ciw.dists.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
         ciw.seed(5)

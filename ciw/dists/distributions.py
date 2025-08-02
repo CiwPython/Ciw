@@ -375,6 +375,22 @@ class Empirical(Distribution):
 
     def sample(self, t=None, ind=None):
         return random_choice(self.observations)
+    
+    @property
+    def mean(self):
+        """
+        Returns the mean of the Empirical distribution.
+        """
+        return sum(self.observations) / len(self.observations)
+
+    @property
+    def variance(self):
+        """
+        Returns the variance of the Empirical distribution.
+        """
+        m = self.mean
+        return sum((x - m) ** 2 for x in self.observations) / len(self.observations)
+
 
 
 class Sequential(Distribution):
