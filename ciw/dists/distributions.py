@@ -228,6 +228,20 @@ class Exponential(Distribution):
     def sample(self, t=None, ind=None):
         return expovariate(self.rate)
 
+    @property
+    def mean(self):
+        """
+        Returns the mean of the Exponential distribution.
+        """
+        return 1 / self.rate
+
+    @property
+    def variance(self):
+        """
+        Returns the variance of the Exponential distribution.
+        """
+        return 1 / (self.rate ** 2)
+
 
 class Gamma(Distribution):
     """

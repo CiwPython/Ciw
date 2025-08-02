@@ -380,6 +380,21 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 Ne.simulation.inter_arrival_times[Ne.id_number]['Customer']._sample() >= 0.0
             )
+    def test_exponential_mean(self):
+        """
+        Test that the mean of the Exponential distribution is computed correctly.
+        """
+        E = ciw.dists.Exponential(4.4)
+        expected_mean = 1 / 4.4
+        self.assertAlmostEqual(E.mean, expected_mean)
+
+    def test_exponential_variance(self):
+        """
+        Test that the variance of the Exponential distribution is computed correctly.
+        """
+        E = ciw.dists.Exponential(4.4)
+        expected_variance = 1 / (4.4 ** 2)
+        self.assertAlmostEqual(E.variance, expected_variance)
 
     def test_gamma_dist_object(self):
         G = ciw.dists.Gamma(0.6, 1.2)
@@ -593,6 +608,7 @@ class TestSampling(unittest.TestCase):
         for itr in range(10):  # Because repition happens in the simulation
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
+            
 
     def test_empirical_dist_object(self):
         Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
