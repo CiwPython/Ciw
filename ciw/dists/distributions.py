@@ -1,6 +1,7 @@
 '''Distributions available in Ciw.'''
 
 import copy
+import math
 from itertools import cycle
 from operator import add, mul, sub, truediv
 from random import (
@@ -335,6 +336,23 @@ class Weibull(Distribution):
 
     def sample(self, t=None, ind=None):
         return weibullvariate(self.scale, self.shape)
+    
+    @property
+    def mean(self):
+        """
+        Returns the mean of the Weibull distribution.
+        """
+        return self.scale * math.gamma(1 + 1 / self.shape)
+
+    @property
+    def variance(self):
+        """
+        Returns the variance of the Weibull distribution.
+        """
+        g1 = math.gamma(1 + 1 / self.shape)
+        g2 = math.gamma(1 + 2 / self.shape)
+        return (self.scale ** 2) * (g2 - g1 ** 2)
+
 
 
 class Empirical(Distribution):

@@ -1,5 +1,6 @@
 import unittest
 import ciw
+import math
 from csv import reader
 from random import random, choice
 from hypothesis import given
@@ -558,6 +559,19 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0
             )
+
+    def test_weibull_mean(self):
+        W = ciw.dists.Weibull(0.8, 0.9)
+        expected_mean = 0.8 * math.gamma(1 + 1 / 0.9)
+        self.assertAlmostEqual(W.mean, expected_mean)
+
+    def test_weibull_variance(self):
+        W = ciw.dists.Weibull(0.8, 0.9)
+        g1 = math.gamma(1 + 1 / 0.9)
+        g2 = math.gamma(1 + 2 / 0.9)
+        expected_variance = (0.8 ** 2) * (g2 - g1 ** 2)
+        self.assertAlmostEqual(W.variance, expected_variance)
+
 
     def test_normal_dist_object(self):
         N = ciw.dists.Normal(0.5, 0.1)
