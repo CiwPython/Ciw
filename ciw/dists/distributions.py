@@ -418,6 +418,21 @@ class Sequential(Distribution):
     def sample(self, t=None, ind=None):
         return next(self.generator)
 
+    @property
+    def mean(self):
+        """
+        Returns the mean of the Sequential distribution.
+        """
+        return sum(self.sequence) / len(self.sequence)
+
+    @property
+    def variance(self):
+        """
+        Returns the variance of the Sequential distribution.
+        """
+        m = self.mean
+        return sum((x - m) ** 2 for x in self.sequence) / len(self.sequence)
+
 
 class Pmf(Distribution):
     """

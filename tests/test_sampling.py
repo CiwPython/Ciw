@@ -989,6 +989,20 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
         self.assertEqual(services, expected_service_times)
 
+    def test_sequential_mean(self):
+        values = [0.9, 0.7, 0.5, 0.3, 0.1]
+        S = ciw.dists.Sequential(values)
+        expected_mean = sum(values) / len(values)
+        self.assertAlmostEqual(S.mean, expected_mean)
+
+    def test_sequential_variance(self):
+        values = [0.9, 0.7, 0.5, 0.3, 0.1]
+        S = ciw.dists.Sequential(values)
+        mean = sum(values) / len(values)
+        expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
+        self.assertAlmostEqual(S.variance, expected_variance)
+
+
     def test_combining_distributions(self):
         Dt = ciw.dists.Deterministic(5.0)
         Sq = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
