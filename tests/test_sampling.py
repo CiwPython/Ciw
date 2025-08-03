@@ -1845,6 +1845,15 @@ class TestSampling(unittest.TestCase):
         expected = [3, 0, 1, 0, 0, 2, 4, 2, 1, 1]
         self.assertEqual(samples, expected)
 
+    def test_poisson_mean(self):
+        P = ciw.dists.Poisson(1.5)
+        self.assertEqual(P.mean, 1.5)
+
+    def test_poisson_variance(self):
+        P = ciw.dists.Poisson(1.5)
+        self.assertEqual(P.variance, 1.5)
+
+
     def test_geometric_dist_object(self):
         Ge = ciw.dists.Geometric(0.3)
         ciw.seed(5)

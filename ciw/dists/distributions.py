@@ -758,6 +758,15 @@ class Poisson(Distribution):
 
     def __repr__(self):
         return f"Poisson(rate={self.rate})"
+    
+    @property
+    def mean(self):
+        return self.rate
+
+    @property
+    def variance(self):
+        return self.rate
+
 
 
 class Geometric(Distribution):
