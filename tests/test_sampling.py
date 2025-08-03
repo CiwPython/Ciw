@@ -1344,6 +1344,18 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
 
+    def test_erlang_mean_and_variance(self):
+        rate = 5.0
+        k = 7
+        Er = ciw.dists.Erlang(rate, k)
+
+        expected_mean = k / rate
+        expected_variance = k / (rate ** 2)
+
+        self.assertAlmostEqual(Er.mean, expected_mean, places=6)
+        self.assertAlmostEqual(Er.variance, expected_variance, places=6)
+
+
     def test_hyperexponential_dist_object(self):
         Hx = ciw.dists.HyperExponential([5, 7, 2, 1], [0.4, 0.1, 0.3, 0.2])
         ciw.seed(5)

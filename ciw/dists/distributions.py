@@ -589,6 +589,17 @@ class Erlang(PhaseType):
 
     def __repr__(self):
         return f"Erlang(rate={self.rate}, k={self.num_phases})"
+    
+    
+    
+    @property
+    def mean(self):
+        return self.num_phases / self.rate
+
+    @property
+    def variance(self):
+        return self.num_phases / (self.rate ** 2)
+
 
 
 class HyperExponential(PhaseType):
