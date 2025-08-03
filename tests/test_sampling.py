@@ -1621,6 +1621,26 @@ class TestSampling(unittest.TestCase):
         expected = [1.09, 0.77, 0.81, 0.08, 0.43]
         self.assertEqual(samples, expected)
 
+    def test_coxian_mean_and_variance(self):
+        rates = [5, 4, 7, 2]
+        probs = [0.2, 0.5, 0.3, 1.0]  # Prob of absorbing at each phase
+        Cx = ciw.dists.Coxian(rates, probs)
+
+        # Recompute mean and variance using matrix-based method
+    
+        Q = np.array(Cx.absorbing_matrix)[:-1, :-1]
+        alpha = np.array(Cx.initial_state[:-1])
+        ones = np.ones(len(Q))
+        invQ = np.linalg.inv(-Q)
+
+        expected_mean = float(alpha @ invQ @ ones)
+        second_moment = float(2 * alpha @ invQ @ invQ @ ones)
+        expected_variance = second_moment - expected_mean ** 2
+
+        self.assertAlmostEqual(Cx.mean, expected_mean, places=6)
+        self.assertAlmostEqual(Cx.variance, expected_variance, places=6)
+
+
     def test_poissoninterval_dist_object(self):
         ciw.seed(5)
         Pi = ciw.dists.PoissonIntervals(
