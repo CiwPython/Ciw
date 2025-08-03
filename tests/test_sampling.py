@@ -1879,6 +1879,17 @@ class TestSampling(unittest.TestCase):
         expected = [6, 3, 4, 2, 1, 2, 2, 1, 1, 3]
         self.assertEqual(samples, expected)
 
+    def test_geometric_mean(self):
+        G = ciw.dists.Geometric(0.3)
+        expected_mean = 1 / 0.3
+        self.assertAlmostEqual(G.mean, expected_mean)
+
+    def test_geometric_variance(self):
+        G = ciw.dists.Geometric(0.3)
+        expected_variance = (1 - 0.3) / (0.3 ** 2)
+        self.assertAlmostEqual(G.variance, expected_variance)
+
+
     def test_binomial_dist_object(self):
         Bi = ciw.dists.Binomial(20, 0.4)
         ciw.seed(5)

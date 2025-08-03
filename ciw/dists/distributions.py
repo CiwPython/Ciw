@@ -790,6 +790,15 @@ class Geometric(Distribution):
 
     def __repr__(self):
         return f"Geometric(prob={self.prob})"
+    
+    @property
+    def mean(self):
+        return 1 / self.prob
+
+    @property
+    def variance(self):
+        return (1 - self.prob) / (self.prob ** 2)
+
 
 
 class Binomial(Distribution):
