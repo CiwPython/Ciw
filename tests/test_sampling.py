@@ -1531,6 +1531,21 @@ class TestSampling(unittest.TestCase):
         expected = [0.25, 0.22, 3.46, 3.07, 1.69]
         self.assertEqual(samples, expected)
 
+    def test_hypererlang_mean_and_variance(self):
+        rates = [5, 2, 10]
+        probs = [0.3, 0.5, 0.2]
+        lengths = [3, 2, 4]
+        He = ciw.dists.HyperErlang(rates, probs, lengths)
+
+        expected_mean = sum(p * k / r for p, r, k in zip(probs, rates, lengths))
+        expected_variance = sum(
+        p * 2 * k / (r ** 2) for p, r, k in zip(probs, rates, lengths)
+        ) - expected_mean ** 2
+
+        self.assertAlmostEqual(He.mean, expected_mean, places=6)
+        self.assertAlmostEqual(He.variance, expected_variance, places=6)
+
+
     def test_coxian_dist_object(self):
         Cx = ciw.dists.Coxian([5, 4, 7, 2], [0.2, 0.5, 0.3, 1.0])
         ciw.seed(5)

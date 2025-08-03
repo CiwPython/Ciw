@@ -667,11 +667,29 @@ class HyperErlang(PhaseType):
                     absorbing_matrix[offset + subphase][offset + subphase + 1] = r
                 else:
                     absorbing_matrix[offset + subphase][-1] = r
+        self.rates = rates
+        self.probs = probs
+        self.phase_lengths = phase_lengths
 
         super().__init__(initial_state, absorbing_matrix)
 
     def __repr__(self):
         return "HyperErlang"
+    
+    @property
+    def mean(self):
+        return sum(
+        p * k / r for p, r, k in zip(self.probs, self.rates, self.phase_lengths)
+        )
+
+    @property
+    def variance(self):
+        mean = self.mean
+        return sum(
+        p * 2 * k / (r ** 2)
+        for p, r, k in zip(self.probs, self.rates, self.phase_lengths)
+        ) - mean ** 2
+
 
 
 class Coxian(PhaseType):
