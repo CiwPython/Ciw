@@ -591,7 +591,6 @@ class Erlang(PhaseType):
         return f"Erlang(rate={self.rate}, k={self.num_phases})"
     
     
-    
     @property
     def mean(self):
         return self.num_phases / self.rate
@@ -614,6 +613,8 @@ class HyperExponential(PhaseType):
     def __init__(self, rates, probs):
         if any(r <= 0.0 for r in rates):
             raise ValueError("Rates must be positive.")
+        self.rates = rates
+        self.probs = probs
         initial_state = probs + [0]
         num_phases = len(probs)
         absorbing_matrix = [[0] * (num_phases + 1) for _ in range(num_phases + 1)]
@@ -624,6 +625,15 @@ class HyperExponential(PhaseType):
 
     def __repr__(self):
         return "HyperExponential"
+
+    @property
+    def mean(self):
+        return sum(p / r for p, r in zip(self.probs, self.rates))
+
+    @property
+    def variance(self):
+        mean = self.mean
+        return sum(2 * p / (r ** 2) for p, r in zip(self.probs, self.rates)) - mean ** 2
 
 
 class HyperErlang(PhaseType):

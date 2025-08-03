@@ -1428,6 +1428,19 @@ class TestSampling(unittest.TestCase):
         expected = [0.12, 0.04, 0.43, 0.05, 0.5]
         self.assertEqual(samples, expected)
 
+
+    def test_hyperexponential_mean_and_variance(self):
+        rates = [5, 2, 10]
+        probs = [0.3, 0.5, 0.2]
+        Hx = ciw.dists.HyperExponential(rates, probs)
+
+        expected_mean = sum(p / r for p, r in zip(probs, rates))
+        expected_variance = sum(2 * p / (r ** 2) for p, r in zip(probs, rates)) - expected_mean ** 2
+
+        self.assertAlmostEqual(Hx.mean, expected_mean, places=6)
+        self.assertAlmostEqual(Hx.variance, expected_variance, places=6)
+
+
     def test_hypererlang_dist_object(self):
         Hg = ciw.dists.HyperErlang([5, 7, 2], [0.5, 0.3, 0.2], [3, 2, 5])
         ciw.seed(5)
