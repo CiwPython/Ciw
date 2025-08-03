@@ -1,6 +1,7 @@
 import unittest
 import ciw
 import math
+import numpy as np
 from csv import reader
 from random import random, choice
 from hypothesis import given
@@ -1269,6 +1270,37 @@ class TestSampling(unittest.TestCase):
         # We would expect this to be  `num_phases` / `rate` = 7 / 5 = 1.4
         self.assertEqual(round(sum(many_samples) / 1000, 4), 1.4057)
 
+    def test_phasetype_mean_and_variance(self):
+
+        # Define known PH distribution
+        initial_state = [0.3, 0.7, 0.0]
+        absorbing_matrix = [
+            [-5, 3, 2],
+            [0, -4, 4],
+            [0, 0, 0]
+        ]
+        Ph = ciw.dists.PhaseType(initial_state, absorbing_matrix)
+
+        # Extract transient generator Q and initial vector alpha
+        Q = np.array(absorbing_matrix)[:-1, :-1]        # Top-left 2x2 submatrix
+        alpha = np.array(initial_state[:-1])            # First 2 entries
+        invQ = np.linalg.inv(-Q)
+        ones = np.ones(len(Q))
+
+        # First moment: E[T] = α (-Q)^-1 1
+        expected_mean = float(alpha @ invQ @ ones)
+
+        # Second moment: E[T^2] = 2 α (-Q)^-2 1
+        expected_second_moment = float(2 * alpha @ invQ @ invQ @ ones)
+
+        # Variance: Var(T) = E[T^2] - (E[T])^2
+        expected_variance = expected_second_moment - expected_mean ** 2
+
+        # Assertions
+        self.assertAlmostEqual(Ph.mean, expected_mean, places=6)
+        self.assertAlmostEqual(Ph.variance, expected_variance, places=6)
+
+
     def test_sampling_erlang_dist(self):
         N = ciw.create_network(
             arrival_distributions=[ciw.dists.Erlang(5, 7)],
@@ -1917,3 +1949,14 @@ class TestSampling(unittest.TestCase):
         samples = [len([r for r in recs if r.arrival_date == t]) for t in range(1, 11)]
         expected = [10, 10, 8, 7, 5, 7, 7, 4, 4, 15]
         self.assertEqual(samples, expected)
+
+    def test_binomial_mean(self):
+        B = ciw.dists.Binomial(20, 0.4)
+        expected_mean = 20 * 0.4
+        self.assertEqual(B.mean, expected_mean)
+
+    def test_binomial_variance(self):
+        B = ciw.dists.Binomial(20, 0.4)
+        expected_variance = 20 * 0.4 * (1 - 0.4)
+        self.assertEqual(B.variance, expected_variance)
+

@@ -543,6 +543,26 @@ class PhaseType(Distribution):
             current_state = idx
         return cumulative_time
 
+    @property
+    def mean(self):
+        Q = np.array(self.absorbing_matrix)[:-1, :-1]
+        alpha = np.array(self.initial_state[:-1])
+        I = np.eye(len(Q))
+        ones = np.ones(len(Q))
+        expected = alpha @ np.linalg.inv(-Q) @ ones
+        return expected
+
+    @property
+    def variance(self):
+        Q = np.array(self.absorbing_matrix)[:-1, :-1]
+        alpha = np.array(self.initial_state[:-1])
+        I = np.eye(len(Q))
+        ones = np.ones(len(Q))
+        invQ = np.linalg.inv(-Q)
+        mean = self.mean
+        second_moment = 2 * alpha @ invQ @ invQ @ ones
+        return second_moment - mean**2
+
 
 class Erlang(PhaseType):
     """
@@ -828,6 +848,15 @@ class Binomial(Distribution):
 
     def __repr__(self):
         return f"Binomial(n={self.n}, prob={self.prob})"
+    
+    @property
+    def mean(self):
+        return self.n * self.prob
+
+    @property
+    def variance(self):
+        return self.n * self.prob * (1 - self.prob)
+
 
 
 class MixtureDistribution(Distribution):
