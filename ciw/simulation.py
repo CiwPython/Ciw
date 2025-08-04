@@ -344,45 +344,31 @@ class Simulation(object):
             nd.wrap_up_servers(current_time)
             nd.find_server_utilisation()
 
-    def print_means(self):
+    def print_distribution_summary(self):
         """
-        Print formatted means of arrival and service distributions for each node and class.
-        """
-        for node in self.transitive_nodes:
-            aid = node.id_number
-            print(f"\nNode {aid} - {node.c} server(s)")
-
-            print("  Arrival Means:")
-            for cust_class, dist in node.simulation.inter_arrival_times[aid].items():
-                mean = getattr(dist, 'mean', None)
-                mean_str = f"{mean:.4f}" if mean is not None else "N/A"
-                print(f"    Class '{cust_class}': {mean_str}")
-
-            print("  Service Means:")
-            for cust_class, dist in node.simulation.service_times[aid].items():
-                mean = getattr(dist, 'mean', None)
-                mean_str = f"{mean:.4f}" if mean is not None else "N/A"
-                print(f"    Class '{cust_class}': {mean_str}")
-
-
-
-    def print_variances(self):
-        """
-        Print formatted variances of arrival and service distributions for each node and class.
+        Print combined arrival and service mean/variance info for each node and class.
         """
         for node in self.transitive_nodes:
             aid = node.id_number
-            print(f"\nNode {aid} - {node.c} server(s)")
+            print(f"\nNode {aid} ({node.c} server{'s' if node.c > 1 else ''})")
+            all_classes = set(node.simulation.inter_arrival_times[aid].keys()) | set(node.simulation.service_times[aid].keys())
 
-            print("  Arrival Variances:")
-            for cust_class, dist in node.simulation.inter_arrival_times[aid].items():
-                var = getattr(dist, 'variance', None)
-                var_str = f"{var:.4f}" if var is not None else "N/A"
-                print(f"    Class '{cust_class}': {var_str}")
+            for cust_class in sorted(all_classes):
+                a_dist = node.simulation.inter_arrival_times[aid].get(cust_class)
+                s_dist = node.simulation.service_times[aid].get(cust_class)
 
-            print("  Service Variances:")
-            for cust_class, dist in node.simulation.service_times[aid].items():
-                var = getattr(dist, 'variance', None)
-                var_str = f"{var:.4f}" if var is not None else "N/A"
-                print(f"    Class '{cust_class}': {var_str}")
+                a_mean = getattr(a_dist, 'mean', None)
+                a_var = getattr(a_dist, 'variance', None)
+                s_mean = getattr(s_dist, 'mean', None)
+                s_var = getattr(s_dist, 'variance', None)
+
+                a_mean_str = f"{a_mean:.4f}" if a_mean is not None else "N/A"
+                a_var_str = f"{a_var:.4f}" if a_var is not None else "N/A"
+                s_mean_str = f"{s_mean:.4f}" if s_mean is not None else "N/A"
+                s_var_str = f"{s_var:.4f}" if s_var is not None else "N/A"
+
+                print(f"  Class '{cust_class}':")
+                print(f"    Arrival Mean:   {a_mean_str:<10} | Variance: {a_var_str}")
+                print(f"    Service Mean:   {s_mean_str:<10} | Variance: {s_var_str}")
+
 
