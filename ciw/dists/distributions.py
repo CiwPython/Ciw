@@ -296,6 +296,15 @@ class Normal(Distribution):
 
     def sample(self, t=None, ind=None):
         return truncated_normal(self.mean, self.sd)
+    
+    @property
+    def theoretical_mean(self):
+        return self.mean
+
+    @property
+    def theoretical_variance(self):
+        return self.sd ** 2
+
 
 
 class Lognormal(Distribution):

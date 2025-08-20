@@ -623,6 +623,15 @@ class TestSampling(unittest.TestCase):
         for itr in range(10):  # Because repition happens in the simulation
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
+    
+    def test_normal_mean_and_variance(self):
+        N = ciw.dists.Normal(mean=3.5, sd=1.2)
+        expected_mean = 3.5
+        expected_variance = 1.2 ** 2
+
+        self.assertAlmostEqual(N.theoretical_mean, expected_mean, places=6)
+        self.assertAlmostEqual(N.theoretical_variance, expected_variance, places=6)
+
             
 
     def test_empirical_dist_object(self):
