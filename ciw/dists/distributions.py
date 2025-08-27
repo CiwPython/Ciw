@@ -307,6 +307,7 @@ class Normal(Distribution):
 
 
 
+
 class Lognormal(Distribution):
     """
     The Lognormal distribution.
@@ -325,6 +326,8 @@ class Lognormal(Distribution):
 
     def sample(self, t=None, ind=None):
         return lognormvariate(self.mean, self.sd)
+    
+
 
 
 class Weibull(Distribution):
@@ -730,6 +733,27 @@ class Coxian(PhaseType):
 
     def __repr__(self):
         return "Coxian"
+    
+    @property
+    def mean(self):
+        Q = np.array(self.absorbing_matrix)[:-1, :-1]
+        alpha = np.array(self.initial_state[:-1])
+        ones = np.ones(len(Q))
+        invQ = np.linalg.inv(-Q)
+        return float(alpha @ invQ @ ones)
+
+    @property
+    def variance(self):
+        Q = np.array(self.absorbing_matrix)[:-1, :-1]
+        alpha = np.array(self.initial_state[:-1])
+        ones = np.ones(len(Q))
+        invQ = np.linalg.inv(-Q)
+        mean = float(alpha @ invQ @ ones)
+        second_moment = float(2 * alpha @ invQ @ invQ @ ones)
+        return second_moment - mean ** 2
+        
+
+
 
 
 class PoissonIntervals(Sequential):
