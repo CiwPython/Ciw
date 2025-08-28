@@ -2,6 +2,7 @@ import unittest
 import ciw
 import math
 import numpy as np
+from scipy.stats import norm
 from csv import reader
 from random import random, choice
 from hypothesis import given
@@ -637,13 +638,27 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
     
-    def test_normal_mean_and_variance(self):
-        N = ciw.dists.Normal(mean=3.5, sd=1.2)
-        expected_mean = 3.5
-        expected_variance = 1.2 ** 2
+    def test_normal_truncated_mean_and_variance(self):
+    
+        from math import sqrt, exp, pi, erf
 
-        self.assertAlmostEqual(N.theoretical_mean, expected_mean, places=6)
-        self.assertAlmostEqual(N.theoretical_variance, expected_variance, places=6)
+        # Example: Normal(mean=5.0, sd=1.0)
+        dist = ciw.dists.Normal(5.0, 1.0)
+
+        mu = dist._mean
+        sd = dist._sd
+        z = mu / sd
+        phi = (1 / sqrt(2 * pi)) * exp(-0.5 * z**2)
+        Phi = 0.5 * (1 + erf(z / sqrt(2)))
+
+        expected_mean = mu + sd * (phi / Phi)
+        expected_variance = sd**2 * (1 - z * (phi / Phi) - (phi / Phi)**2)
+
+        self.assertAlmostEqual(dist.mean, expected_mean, places=6)
+        self.assertAlmostEqual(dist.variance, expected_variance, places=6)
+
+
+
 
             
 

@@ -2,6 +2,7 @@
 
 import copy
 import math
+from math import sqrt, exp, pi, erf
 from itertools import cycle
 from operator import add, mul, sub, truediv
 from random import (
@@ -15,6 +16,8 @@ from random import (
 from typing import List, NoReturn
 
 import numpy as np
+
+from scipy.stats import norm
 
 from ciw.auxiliary import *
 from ciw.individual import Individual
@@ -278,32 +281,40 @@ class Gamma(Distribution):
         return self.shape * (self.scale ** 2)
 
 
+
 class Normal(Distribution):
     """
-    The Truncated Normal distribution.
+    Truncated Normal distribution (truncated below at 0).
 
-    Takes:
-      - `mean` the mean of the Normal, mu
-      - `sd` the standard deviation of the Normal, sigma
+    Parameters:
+        mean (float): Mean of the original normal distribution.
+        sd (float): Standard deviation of the original normal distribution.
     """
 
     def __init__(self, mean, sd):
-        self.mean = mean
-        self.sd = sd
+        self._mean = mean
+        self._sd = sd
 
     def __repr__(self):
-        return f"Normal(mean={self.mean}, sd={self.sd})"
+        return f"Normal(mean={self._mean}, sd={self._sd})"
 
     def sample(self, t=None, ind=None):
-        return truncated_normal(self.mean, self.sd)
-    
-    @property
-    def theoretical_mean(self):
-        return self.mean
+        return truncated_normal(self._mean, self._sd)
 
     @property
-    def theoretical_variance(self):
-        return self.sd ** 2
+    def mean(self):
+        z = self._mean / self._sd
+        phi = (1 / sqrt(2 * pi)) * exp(-0.5 * z ** 2)
+        Phi = 0.5 * (1 + erf(z / sqrt(2)))
+        return self._mean + self._sd * (phi / Phi)
+
+    @property
+    def variance(self):
+        z = self._mean / self._sd
+        phi = (1 / sqrt(2 * pi)) * exp(-0.5 * z ** 2)
+        Phi = 0.5 * (1 + erf(z / sqrt(2)))
+        term = phi / Phi
+        return self._sd**2 * (1 - z * term - term**2)
 
 
 
