@@ -509,6 +509,19 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nl.simulation.service_times[Nl.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number]['Customer']._sample() >= 0.0)
 
+    def test_lognormal_mean_and_variance(self):
+        mu = 0.7
+        sigma = 0.4
+        L = ciw.dists.Lognormal(mu, sigma)
+
+        expected_mean = __import__("math").exp(mu + (sigma ** 2) / 2)
+        expected_variance = (__import__("math").exp(sigma ** 2) - 1) * __import__("math").exp(2 * mu + sigma ** 2)
+
+        self.assertAlmostEqual(L.mean, expected_mean, places=6)
+        self.assertAlmostEqual(L.variance, expected_variance, places=6)
+
+
+
     def test_weibull_dist_object(self):
         W = ciw.dists.Weibull(0.9, 0.8)
         ciw.seed(5)

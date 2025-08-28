@@ -318,14 +318,24 @@ class Lognormal(Distribution):
     """
 
     def __init__(self, mean, sd):
-        self.mean = mean
-        self.sd = sd
+        self._mean = mean
+        self._sd = sd
 
     def __repr__(self):
-        return f"Lognormal(mean={self.mean}, sd={self.sd})"
+        return f"Lognormal(mean={self._mean}, sd={self._sd})"
 
     def sample(self, t=None, ind=None):
-        return lognormvariate(self.mean, self.sd)
+        return __import__("random").lognormvariate(self._mean, self._sd)
+
+    @property
+    def mean(self):
+        return __import__("math").exp(self._mean + (self._sd ** 2) / 2)
+
+    @property
+    def variance(self):
+        m = __import__("math")
+        return (m.exp(self._sd ** 2) - 1) * m.exp(2 * self._mean + self._sd ** 2)
+
     
 
 
@@ -751,7 +761,7 @@ class Coxian(PhaseType):
         mean = float(alpha @ invQ @ ones)
         second_moment = float(2 * alpha @ invQ @ invQ @ ones)
         return second_moment - mean ** 2
-        
+    
 
 
 
