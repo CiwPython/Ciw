@@ -850,6 +850,35 @@ class PoissonIntervals(Sequential):
             ]
             interval_dates = sorted(interval_dates)
             self.dates += interval_dates
+    
+    @property
+    def mean(self):
+        deltas = [self.endpoints[0]] + [
+            self.endpoints[i] - self.endpoints[i - 1]
+            for i in range(1, len(self.endpoints))
+        ]
+        P = sum(deltas)
+        LambdaP = sum(r * d for r, d in zip(self.rates, deltas))
+        if LambdaP <= 0.0:
+            return float("inf")
+        return P / LambdaP
+
+    @property
+    def variance(self):
+        deltas = [self.endpoints[0]] + [
+            self.endpoints[i] - self.endpoints[i - 1]
+            for i in range(1, len(self.endpoints))
+        ]
+        P = sum(deltas)
+        LambdaP = sum(r * d for r, d in zip(self.rates, deltas))
+        if LambdaP <= 0.0:
+            return float("inf")
+        if any(r <= 0.0 for r in self.rates):
+            return float("nan")  # or raise an error if you prefer
+        second_moment = (2.0 / LambdaP) * sum(d / r for r, d in zip(self.rates, deltas))
+        mean = P / LambdaP
+        return second_moment - mean ** 2
+
 
 
 class Poisson(Distribution):
