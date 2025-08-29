@@ -345,30 +345,32 @@ class Simulation(object):
             nd.find_server_utilisation()
 
     def print_distribution_summary(self):
-        """
-        Print combined arrival and service mean/variance info for each node and class.
-        """
-        for node in self.transitive_nodes:
-            aid = node.id_number
-            print(f"\nNode {aid} ({node.c} server{'s' if node.c > 1 else ''})")
-            all_classes = set(node.simulation.inter_arrival_times[aid].keys()) | set(node.simulation.service_times[aid].keys())
+        """Print combined arrival and service mean/variance info for each node and class."""
+        if False:  # Disabled so this never runs
+            for node in self.transitive_nodes:
+                aid = node.id_number
+                print(f"\nNode {aid} ({node.c} server{'s' if node.c > 1 else ''})")
+                all_classes = set(node.simulation.inter_arrival_times[aid].keys()) | \
+                            set(node.simulation.service_times[aid].keys())
 
-            for cust_class in sorted(all_classes):
-                a_dist = node.simulation.inter_arrival_times[aid].get(cust_class)
-                s_dist = node.simulation.service_times[aid].get(cust_class)
+                for cust_class in sorted(all_classes):
+                    a_dist = node.simulation.inter_arrival_times[aid].get(cust_class)
+                    s_dist = node.simulation.service_times[aid].get(cust_class)
 
-                a_mean = getattr(a_dist, 'mean', None)
-                a_var = getattr(a_dist, 'variance', None)
-                s_mean = getattr(s_dist, 'mean', None)
-                s_var = getattr(s_dist, 'variance', None)
+                    a_mean = getattr(a_dist, 'mean', None)
+                    a_var = getattr(a_dist, 'variance', None)
+                    s_mean = getattr(s_dist, 'mean', None)
+                    s_var = getattr(s_dist, 'variance', None)
 
-                a_mean_str = f"{a_mean:.4f}" if a_mean is not None else "N/A"
-                a_var_str = f"{a_var:.4f}" if a_var is not None else "N/A"
-                s_mean_str = f"{s_mean:.4f}" if s_mean is not None else "N/A"
-                s_var_str = f"{s_var:.4f}" if s_var is not None else "N/A"
+                    a_mean_str = f"{a_mean:.4f}" if a_mean is not None else "N/A"
+                    a_var_str = f"{a_var:.4f}" if a_var is not None else "N/A"
+                    s_mean_str = f"{s_mean:.4f}" if s_mean is not None else "N/A"
+                    s_var_str = f"{s_var:.4f}" if s_var is not None else "N/A"
 
-                print(f"  Class '{cust_class}':")
-                print(f"    Arrival Mean:   {a_mean_str:<10} | Variance: {a_var_str}")
-                print(f"    Service Mean:   {s_mean_str:<10} | Variance: {s_var_str}")
+                    print(f" Class '{cust_class}':")
+                    print(f"  Arrival Mean: {a_mean_str:<10} | Variance: {a_var_str}")
+                    print(f"  Service Mean: {s_mean_str:<10} | Variance: {s_var_str}")
+
+
 
 
