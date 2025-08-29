@@ -1157,6 +1157,65 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Ex_div_Dt), "CombinedDistribution")
         self.assertEqual(str(Ex_div_Sq), "CombinedDistribution")
 
+    def test_combined_add(self):
+        # A: N(5, sd=1) -> mean=5, var=1
+        # B: N(2, sd=0.5) -> mean=2, var=0.25
+        A = ciw.dists.Normal(5.0, 1.0)
+        B = ciw.dists.Normal(2.0, 0.5)
+
+        C = A + B
+        expected_mean = A.mean + B.mean                     # 5 + 2 = 7
+        expected_var  = A.variance + B.variance             # 1 + 0.25 = 1.25
+        self.assertAlmostEqual(C.mean, expected_mean)
+        self.assertAlmostEqual(C.variance, expected_var)
+
+
+    def test_combined_sub(self):
+        A = ciw.dists.Normal(5.0, 1.0)
+        B = ciw.dists.Normal(2.0, 0.5)
+
+        C = A - B
+        expected_mean = A.mean - B.mean                     # 5 - 2 = 3
+        expected_var  = A.variance + B.variance             # 1 + 0.25 = 1.25
+        self.assertAlmostEqual(C.mean, expected_mean)
+        self.assertAlmostEqual(C.variance, expected_var)
+
+
+    def test_combined_mul(self):
+        # Product moments (independent):
+        # E[AB] = mA mB
+        # Var(AB) = vA vB + mB^2 vA + mA^2 vB
+        A = ciw.dists.Normal(5.0, 1.0)    # mA=5, vA=1
+        B = ciw.dists.Normal(2.0, 0.5)    # mB=2, vB=0.25
+
+        C = A * B
+        expected_mean = A.mean * B.mean                   # 10
+        expected_var  = (
+            A.variance * B.variance                      # 1 * 0.25 = 0.25
+            + (B.mean ** 2) * A.variance                 # 4 * 1 = 4
+            + (A.mean ** 2) * B.variance                 # 25 * 0.25 = 6.25
+        )                                                # total = 10.5
+        self.assertAlmostEqual(C.mean, expected_mean)
+        self.assertAlmostEqual(C.variance, expected_var)
+
+
+    def test_combined_div(self):
+        # Division uses the delta-method approximation implemented in your properties:
+        # E[A/B] ≈ mA / mB
+        # Var(A/B) ≈ vA / mB^2 + (mA^2 * vB) / mB^4   (requires mB != 0)
+        A = ciw.dists.Normal(5.0, 1.0)    # mA=5, vA=1
+        B = ciw.dists.Normal(2.0, 0.5)    # mB=2, vB=0.25
+
+        C = A / B
+        expected_mean = A.mean / B.mean                              # 2.5
+        expected_var  = (
+            A.variance / (B.mean ** 2)                               # 1 / 4 = 0.25
+            + (A.mean ** 2) * B.variance / (B.mean ** 4)            # 25 * 0.25 / 16 = 0.390625
+        )                                                            # total = 0.640625
+        self.assertAlmostEqual(C.mean, expected_mean)
+        self.assertAlmostEqual(C.variance, expected_var)
+
+
     def test_mixture_distributions(self):
         ciw.seed(0)
         D1 = ciw.dists.Deterministic(1.0)

@@ -86,6 +86,43 @@ class CombinedDistribution(Distribution):
         s1 = self.d1.sample(t, ind)
         s2 = self.d2.sample(t, ind)
         return self.operator(s1, s2)
+    
+    @property
+    def mean(self):
+        m1 = self.d1.mean
+        m2 = self.d2.mean
+        if self.operator == add:
+            return m1 + m2
+        elif self.operator == sub:
+            return m1 - m2
+        elif self.operator == mul:
+            return m1 * m2
+        elif self.operator == truediv:
+            return float('nan') if m2 == 0 else m1 / m2  # delta-method mean
+        else:
+            raise ValueError("Unknown operator for CombinedDistribution.")
+
+    @property
+    def variance(self):
+        m1 = self.d1.mean
+        m2 = self.d2.mean
+        v1 = self.d1.variance
+        v2 = self.d2.variance
+
+        if self.operator in (add, sub):
+            # Var(A ± B) = Var(A) + Var(B), assuming independence
+            return v1 + v2
+        elif self.operator == mul:
+            # Var(AB) = v1*v2 + m2^2*v1 + m1^2*v2, assuming independence
+            return v1 * v2 + (m2 ** 2) * v1 + (m1 ** 2) * v2
+        elif self.operator == truediv:
+            # delta-method approximation for Var(A/B)
+            if m2 == 0:
+                return float('nan')
+            return (v1 / (m2 ** 2)) + ((m1 ** 2) * v2) / (m2 ** 4)
+        else:
+            raise ValueError("Unknown operator for CombinedDistribution.")
+
 
 
 class Uniform(Distribution):
