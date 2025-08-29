@@ -1187,6 +1187,35 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Mixted_eq), 'MixtureDistribution')
         self.assertEqual(meq_samples, meq_expected)
 
+    def test_mixture_mean(self):
+        c1 = ciw.dists.Normal(0.0, 1.0)  # mean=0, variance=1
+        c2 = ciw.dists.Normal(3.0, 2.0)  # mean=3, variance=4
+        probs = [0.6, 0.4]
+
+        M = ciw.dists.MixtureDistribution([c1, c2], probs)
+
+        expected_mean = probs[0] * c1.mean + probs[1] * c2.mean
+        self.assertAlmostEqual(M.mean, expected_mean)
+
+
+    def test_mixture_variance(self):
+        c1 = ciw.dists.Normal(0.0, 1.0)  # mean=0, variance=1
+        c2 = ciw.dists.Normal(3.0, 2.0)  # mean=3, variance=4
+        probs = [0.6, 0.4]
+
+        M = ciw.dists.MixtureDistribution([c1, c2], probs)
+
+        expected_mean = probs[0] * c1.mean + probs[1] * c2.mean
+        expected_variance = (
+            probs[0] * (c1.variance + c1.mean ** 2) +
+            probs[1] * (c2.variance + c2.mean ** 2)
+        ) - expected_mean ** 2
+
+        self.assertAlmostEqual(M.variance, expected_variance)
+
+
+
+
 
     def test_state_dependent_distribution(self):
         N = ciw.create_network(
@@ -1948,6 +1977,8 @@ class TestSampling(unittest.TestCase):
         ]
         expected = [0.2694, 0.4268, 0.701, 0.011, 0.239, 0.0966, 0.1567, 0.0834, 0.291, 0.006,]
         self.assertEqual(samples, expected)
+
+
 
     def test_poisson_dist_object(self):
         Po = ciw.dists.Poisson(1.5)

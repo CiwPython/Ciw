@@ -1051,3 +1051,17 @@ class MixtureDistribution(Distribution):
         
     def __repr__(self):
         return "MixtureDistribution"
+    
+    @property
+    def mean(self):
+        return sum(
+            p * dist.mean for p, dist in zip(self.probs, self.dists)
+        )
+
+    @property
+    def variance(self):
+        mu = self.mean
+        return sum(
+            p * (dist.variance + dist.mean ** 2) for p, dist in zip(self.probs, self.dists)
+        ) - mu ** 2
+
