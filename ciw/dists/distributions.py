@@ -1170,6 +1170,28 @@ class Poisson(Distribution):
     @property
     def variance(self):
         return self.rate
+    
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        lam = self.rate
+        k = 0
+        pmf = math.exp(-lam)
+        cum = pmf
+        while cum < 0.5:
+            k += 1
+            pmf *= lam / k
+            cum += pmf
+        return k
+
+    @property
+    def range(self):
+        return float('inf')
+
+    
 
 
 

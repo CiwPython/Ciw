@@ -2194,6 +2194,22 @@ class TestSampling(unittest.TestCase):
         self.assertTrue(math.isinf(Pi.range))
 
 
+    def test_poisson_sd_median_range(self):
+        Po = ciw.dists.Poisson(1.5)
+        self.assertAlmostEqual(Po.sd, math.sqrt(Po.variance))
+        lam = 1.5
+        k = 0
+        pmf = math.exp(-lam)
+        cum = pmf
+        while cum < 0.5:
+            k += 1
+            pmf *= lam / k
+            cum += pmf
+        self.assertEqual(Po.median, k)
+        self.assertTrue(math.isinf(Po.range))
+
+
+
 
     def test_geometric_dist_object(self):
         Ge = ciw.dists.Geometric(0.3)
