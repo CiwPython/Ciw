@@ -1374,6 +1374,16 @@ class TestSampling(unittest.TestCase):
 
         self.assertAlmostEqual(M.variance, expected_variance)
 
+    def test_mixture_sd_median_range(self):
+        D = ciw.dists.Deterministic(3.0)
+        U = ciw.dists.Uniform(2.0, 4.0)
+        M = ciw.dists.MixtureDistribution([D, U], [0.5, 0.5])
+        self.assertAlmostEqual(M.sd, math.sqrt(M.variance))
+        self.assertTrue(math.isnan(M.median))
+        # both bounded → our conservative policy is NaN
+        self.assertTrue(math.isnan(M.range))
+
+
 
 
 
@@ -2284,4 +2294,19 @@ class TestSampling(unittest.TestCase):
         B = ciw.dists.Binomial(20, 0.4)
         expected_variance = 20 * 0.4 * (1 - 0.4)
         self.assertEqual(B.variance, expected_variance)
+
+    def test_binomial_sd_median_range(self):
+        Bi = ciw.dists.Binomial(20, 0.4)
+        self.assertAlmostEqual(Bi.sd, math.sqrt(Bi.variance))
+        n, p = 20, 0.4
+        k = 0
+        pmf = (1 - p) ** n
+        cum = pmf
+        while cum < 0.5 and k < n:
+            k += 1
+            pmf *= (n - (k - 1)) / k * (p / (1.0 - p))
+            cum += pmf
+        self.assertEqual(Bi.median, k)
+        self.assertEqual(Bi.range, 20.0)
+
 

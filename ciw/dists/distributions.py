@@ -1262,7 +1262,27 @@ class Binomial(Distribution):
     @property
     def variance(self):
         return self.n * self.prob * (1 - self.prob)
+    
 
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        n, p = self.n, self.prob
+        k = 0
+        pmf = (1.0 - p) ** n
+        cum = pmf
+        while cum < 0.5 and k < n:
+            k += 1
+            pmf *= (n - (k - 1)) / k * (p / (1.0 - p))
+            cum += pmf
+        return k
+
+    @property
+    def range(self):
+        return float(self.n)
 
 
 class MixtureDistribution(Distribution):
@@ -1348,4 +1368,21 @@ class MixtureDistribution(Distribution):
         return sum(
             p * (dist.variance + dist.mean ** 2) for p, dist in zip(self.probs, self.dists)
         ) - mu ** 2
+    
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        return float('nan')  # generic mixture median is nontrivial
+
+    @property
+    def range(self):
+        # If any component is unbounded, mixture is unbounded.
+        try:
+            return float('inf') if any(math.isinf(d.range) for d in self.dists) else float('nan')
+        except Exception:
+            return float('nan')
+
 
