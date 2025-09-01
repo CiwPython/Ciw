@@ -828,6 +828,20 @@ class PhaseType(Distribution):
         mean = self.mean
         second_moment = 2 * alpha @ invQ @ invQ @ ones
         return second_moment - mean**2
+    
+       
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        return float('nan')  # would require matrix exponentials + root finding will add if wanted
+
+    @property
+    def range(self):
+        return float('inf')
+
 
 
 class Erlang(PhaseType):

@@ -1527,6 +1527,16 @@ class TestSampling(unittest.TestCase):
         self.assertAlmostEqual(Ph.mean, expected_mean, places=6)
         self.assertAlmostEqual(Ph.variance, expected_variance, places=6)
 
+    def test_phasetype_family_sd_median_range(self):
+        Er = ciw.dists.Erlang(5, 7)
+        Hx = ciw.dists.HyperExponential([4, 7, 2], [0.3, 0.1, 0.6])
+        Cx = ciw.dists.Coxian([5, 4, 7, 2], [0.2, 0.5, 0.3, 1.0])
+        for D in [Er, Hx, Cx]:
+            self.assertAlmostEqual(D.sd, math.sqrt(D.variance))
+            self.assertTrue(math.isnan(D.median))
+            self.assertTrue(math.isinf(D.range))
+
+
 
     def test_sampling_erlang_dist(self):
         N = ciw.create_network(
