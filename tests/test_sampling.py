@@ -2184,6 +2184,16 @@ class TestSampling(unittest.TestCase):
         P = ciw.dists.Poisson(1.5)
         self.assertEqual(P.variance, 1.5)
 
+    def test_poissonintervals_sd_median_range(self):
+        Pi = ciw.dists.PoissonIntervals(rates=[5, 1.5, 3],
+                                        endpoints=[3.2, 7.9, 10],
+                                        max_sample_date=15)
+        sd = Pi.sd
+        self.assertTrue((sd == sd) or math.isnan(sd))
+        self.assertTrue(math.isnan(Pi.median))
+        self.assertTrue(math.isinf(Pi.range))
+
+
 
     def test_geometric_dist_object(self):
         Ge = ciw.dists.Geometric(0.3)

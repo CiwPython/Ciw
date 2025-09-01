@@ -1125,6 +1125,21 @@ class PoissonIntervals(Sequential):
         second_moment = (2.0 / LambdaP) * sum(d / r for r, d in zip(self.rates, deltas))
         mean = P / LambdaP
         return second_moment - mean ** 2
+    
+     
+    @property
+    def sd(self):
+        v = self.variance
+        return math.sqrt(v) if (v == v and not math.isinf(v)) else float('nan')
+
+    @property
+    def median(self):
+        return float('nan')  # periodic NHPP inter-arrivals: nontrivial
+
+    @property
+    def range(self):
+        return float('inf')
+
 
 
 
