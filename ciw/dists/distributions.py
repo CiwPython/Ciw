@@ -719,6 +719,26 @@ class Pmf(Distribution):
         """
         m = self.mean
         return sum(p * (v - m) ** 2 for v, p in zip(self.values, self.probs))
+    
+     
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        pairs = sorted(zip(self.values, self.probs), key=lambda t: t[0])
+        cum = 0.0
+        for v, p in pairs:
+            cum += p
+            if cum >= 0.5:
+                return v
+        return pairs[-1][0]
+
+    @property
+    def range(self):
+        return max(self.values) - min(self.values)
+
 
 
 

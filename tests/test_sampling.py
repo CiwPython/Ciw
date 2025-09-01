@@ -884,6 +884,13 @@ class TestSampling(unittest.TestCase):
         expected_variance = sum(p * (v - mean) ** 2 for v, p in zip(values, probs))
         self.assertAlmostEqual(P.variance, expected_variance)
 
+    def test_pmf_sd_median_range(self):
+        P = ciw.dists.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
+        self.assertAlmostEqual(P.sd, math.sqrt(P.variance))
+        self.assertEqual(P.median, 3.8)
+        self.assertAlmostEqual(P.range, 4.1 - 3.7)
+
+
     def test_custom_dist_object(self):
         CD = CustomDist()
         ciw.seed(5)
