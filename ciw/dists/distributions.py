@@ -832,7 +832,17 @@ class PhaseType(Distribution):
        
     @property
     def sd(self):
-        return math.sqrt(self.variance)
+        v = self.variance
+        # if NaN or ±inf → return NaN
+        if not math.isfinite(v):
+            return float('nan')
+        # guard tiny negative values from numerical error
+        if v < 0:
+            if v > -1e-12:   # treat tiny negatives as zero
+                return 0.0
+            return float('nan')  # genuinely negative → undefined
+        return math.sqrt(v)
+
 
     @property
     def median(self):
