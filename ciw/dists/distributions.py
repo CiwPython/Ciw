@@ -122,6 +122,23 @@ class CombinedDistribution(Distribution):
             return (v1 / (m2 ** 2)) + ((m1 ** 2) * v2) / (m2 ** 4)
         else:
             raise ValueError("Unknown operator for CombinedDistribution.")
+        
+        
+    @property
+    def sd(self):
+        v = self.variance
+        return math.sqrt(v) if v == v and v != float('inf') else float('nan')
+
+    @property
+    def median(self):
+        # No simple closed-form in general.
+        return float('nan')
+
+    @property
+    def range(self):
+        # Unknown in general without bounds of operands and operator type.
+        return float('nan')
+
 
 
 
@@ -163,6 +180,22 @@ class Uniform(Distribution):
         Returns the variance of the Uniform distribution.
         """
         return ((self.upper - self.lower) ** 2) / 12
+    
+    
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        return (self.lower + self.upper) / 2
+
+    @property
+    def range(self):
+        return self.upper - self.lower
+
+    
+    
 
 
 class Deterministic(Distribution):
@@ -202,6 +235,18 @@ class Deterministic(Distribution):
         """
         return 0.0
     
+    @property
+    def sd(self):
+        return 0.0
+
+    @property
+    def median(self):
+        return self.value
+
+    @property
+    def range(self):
+        return 0.0
+
 
 class Triangular(Distribution):
     """
@@ -247,6 +292,18 @@ class Triangular(Distribution):
         a, b, c = self.lower, self.upper, self.mode
         return (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
 
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        return self.mode
+
+    @property
+    def range(self):
+        return self.upper - self.lower
+
 
 class Exponential(Distribution):
     """
@@ -282,6 +339,20 @@ class Exponential(Distribution):
         Returns the variance of the Exponential distribution.
         """
         return 1 / (self.rate ** 2)
+    
+
+    @property
+    def sd(self):
+        return 1.0 / self.rate
+
+    @property
+    def median(self):
+        return math.log(2.0) / self.rate
+
+    @property
+    def range(self):
+        return float('inf')
+
 
 
 class Gamma(Distribution):
@@ -316,6 +387,21 @@ class Gamma(Distribution):
         Returns the variance of the Gamma distribution.
         """
         return self.shape * (self.scale ** 2)
+    
+    
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        # No elementary closed form (requires inverse incomplete gamma).
+        return float('nan')
+
+    @property
+    def range(self):
+        return float('inf')
+
 
 
 
@@ -352,6 +438,23 @@ class Normal(Distribution):
         Phi = 0.5 * (1 + erf(z / sqrt(2)))
         term = phi / Phi
         return self._sd**2 * (1 - z * term - term**2)
+    
+   
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        # Truncated below at 0
+        z = self._mean / self._sd
+        target = 1.0 - 0.5 * norm.cdf(z)
+        return self._mean + self._sd * norm.ppf(target)
+
+    @property
+    def range(self):
+        return float('inf')
+
 
 
 
@@ -383,6 +486,19 @@ class Lognormal(Distribution):
     def variance(self):
         m = __import__("math")
         return (m.exp(self._sd ** 2) - 1) * m.exp(2 * self._mean + self._sd ** 2)
+
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        return math.exp(self._mean)
+
+    @property
+    def range(self):
+        return float('inf')
+
 
     
 
@@ -422,6 +538,20 @@ class Weibull(Distribution):
         g1 = math.gamma(1 + 1 / self.shape)
         g2 = math.gamma(1 + 2 / self.shape)
         return (self.scale ** 2) * (g2 - g1 ** 2)
+    
+        
+    @property
+    def sd(self):
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        return self.scale * (math.log(2.0) ** (1.0 / self.shape))
+
+    @property
+    def range(self):
+        return float('inf')
+
 
 
 
@@ -460,7 +590,32 @@ class Empirical(Distribution):
         """
         m = self.mean
         return sum((x - m) ** 2 for x in self.observations) / len(self.observations)
+    
+    # --- Paste inside class Empirical (replace / add these properties) ---
 
+    @property
+    def sd(self):
+    
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        # standard sample-median:
+        #  - odd n: middle element
+        #  - even n: average of the two middle elements
+        xs = sorted(self.observations)
+        n = len(xs)
+        mid = n // 2
+        if n % 2 == 1:
+            return xs[mid]
+        else:
+            return 0.5 * (xs[mid - 1] + xs[mid])
+
+    @property
+    def range(self):
+        return max(self.observations) - min(self.observations)
+
+    
 
 
 class Sequential(Distribution):
@@ -502,6 +657,27 @@ class Sequential(Distribution):
         """
         m = self.mean
         return sum((x - m) ** 2 for x in self.sequence) / len(self.sequence)
+
+    
+
+    @property
+    def sd(self):
+        # standard deviation = sqrt(variance)
+        return math.sqrt(self.variance)
+
+    @property
+    def median(self):
+        # sample median of the fixed sequence
+        xs = sorted(self.sequence)
+        n = len(xs)
+        mid = n // 2
+        return xs[mid] if n % 2 == 1 else 0.5 * (xs[mid - 1] + xs[mid])
+
+    @property
+    def range(self):
+        # width of support
+        return max(self.sequence) - min(self.sequence)
+
 
 
 class Pmf(Distribution):

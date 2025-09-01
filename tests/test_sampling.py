@@ -1,6 +1,7 @@
 import unittest
 import ciw
 import math
+from math import sqrt, exp, pi, erf
 import numpy as np
 from scipy.stats import norm
 from csv import reader
@@ -208,6 +209,14 @@ class TestSampling(unittest.TestCase):
         expected_variance = ((3.3 - 2.2) ** 2) / 12
         self.assertAlmostEqual(U.variance, expected_variance)
 
+        
+    def test_uniform_sd_median_range(self):
+        U = ciw.dists.Uniform(2.2, 3.3)
+        self.assertAlmostEqual(U.sd, math.sqrt(((3.3 - 2.2) ** 2) / 12))
+        self.assertAlmostEqual(U.median, (2.2 + 3.3) / 2)
+        self.assertAlmostEqual(U.range, 3.3 - 2.2)
+
+
 
 
     def test_deterministic_dist_object(self):
@@ -267,6 +276,14 @@ class TestSampling(unittest.TestCase):
         D = ciw.dists.Deterministic(4.4)
         _ = D.variance  # Access the property to trigger coverage
         self.assertEqual(D.variance, 0.0)
+
+    
+    def test_deterministic_sd_median_range(self):
+        D = ciw.dists.Deterministic(4.4)
+        self.assertEqual(D.sd, 0.0)
+        self.assertEqual(D.median, 4.4)
+        self.assertEqual(D.range, 0.0)
+
 
     def test_triangular_dist_object(self):
         Tr = ciw.dists.Triangular(1.1, 1.5, 6.6)
@@ -329,6 +346,17 @@ class TestSampling(unittest.TestCase):
         a, b, c = 1.1, 6.6, 2.2
         expected_variance = (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
         self.assertAlmostEqual(T.variance, expected_variance)
+
+    
+    @property
+    def median(self):
+        a, m, b = self.lower, self.mode, self.upper
+        mid = (a + b) / 2.0
+        if m >= mid:
+            return a + math.sqrt((b - a) * (m - a) / 2.0)
+        else:
+            return b - math.sqrt((b - a) * (b - m) / 2.0)
+
 
 
 
@@ -399,6 +427,14 @@ class TestSampling(unittest.TestCase):
         expected_variance = 1 / (4.4 ** 2)
         self.assertAlmostEqual(E.variance, expected_variance)
 
+    
+    def test_exponential_sd_median_range(self):
+        E = ciw.dists.Exponential(4.4)
+        self.assertAlmostEqual(E.sd, 1.0 / 4.4)
+        self.assertAlmostEqual(E.median, math.log(2.0) / 4.4)
+        self.assertTrue(math.isinf(E.range))
+
+
     def test_gamma_dist_object(self):
         G = ciw.dists.Gamma(0.6, 1.2)
         ciw.seed(5)
@@ -461,6 +497,14 @@ class TestSampling(unittest.TestCase):
         expected_variance = 0.6 * (1.2 ** 2)
         self.assertAlmostEqual(G.variance, expected_variance)
 
+       
+    def test_gamma_sd_median_range(self):
+        G = ciw.dists.Gamma(0.6, 1.2)
+        self.assertAlmostEqual(G.sd, math.sqrt(G.variance))
+        self.assertTrue(math.isnan(G.median))
+        self.assertTrue(math.isinf(G.range))
+
+
 
     def test_lognormal_dist_object(self):
         Ln = ciw.dists.Lognormal(0.8, 0.2)
@@ -520,6 +564,14 @@ class TestSampling(unittest.TestCase):
 
         self.assertAlmostEqual(L.mean, expected_mean, places=6)
         self.assertAlmostEqual(L.variance, expected_variance, places=6)
+
+    
+    def test_lognormal_sd_median_range(self):
+        L = ciw.dists.Lognormal(0.8, 0.2)
+        self.assertAlmostEqual(L.sd, math.sqrt(L.variance))
+        self.assertAlmostEqual(L.median, math.exp(0.8))
+        self.assertTrue(math.isinf(L.range))
+
 
 
 
@@ -587,6 +639,12 @@ class TestSampling(unittest.TestCase):
         expected_variance = (0.8 ** 2) * (g2 - g1 ** 2)
         self.assertAlmostEqual(W.variance, expected_variance)
 
+    def test_weibull_sd_median_range(self):
+        W = ciw.dists.Weibull(0.9, 0.8)
+        self.assertAlmostEqual(W.sd, math.sqrt(W.variance))
+        self.assertAlmostEqual(W.median, 0.9 * (math.log(2.0) ** (1.0 / 0.8)))
+        self.assertTrue(math.isinf(W.range))
+
 
     def test_normal_dist_object(self):
         N = ciw.dists.Normal(0.5, 0.1)
@@ -640,7 +698,6 @@ class TestSampling(unittest.TestCase):
     
     def test_normal_truncated_mean_and_variance(self):
     
-        from math import sqrt, exp, pi, erf
 
         # Example: Normal(mean=5.0, sd=1.0)
         dist = ciw.dists.Normal(5.0, 1.0)
@@ -656,6 +713,18 @@ class TestSampling(unittest.TestCase):
 
         self.assertAlmostEqual(dist.mean, expected_mean, places=6)
         self.assertAlmostEqual(dist.variance, expected_variance, places=6)
+
+
+    
+    def test_normal_trunc_sd_median_range(self):
+        N = ciw.dists.Normal(0.5, 0.1)
+        self.assertAlmostEqual(N.sd, math.sqrt(N.variance))
+        z = 0.5 / 0.1
+        target = 1.0 - 0.5 * norm.cdf(z)
+        expected_med = 0.5 + 0.1 * norm.ppf(target)
+        self.assertAlmostEqual(N.median, expected_med)
+        self.assertTrue(math.isinf(N.range))
+
 
 
 
@@ -730,6 +799,16 @@ class TestSampling(unittest.TestCase):
         mean = sum(values) / len(values)
         expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
         self.assertAlmostEqual(E.variance, expected_variance)
+
+
+    
+    def test_empirical_sd_median_range(self):
+        Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
+        self.assertAlmostEqual(Em.sd, math.sqrt(Em.variance))
+        # even-length sample → median = average of the two middle sorted values (8.0 and 8.8)
+        self.assertAlmostEqual(Em.median, (8.0 + 8.8) / 2.0)
+        self.assertAlmostEqual(Em.range, 12.3 - 8.0)
+
 
 
     def test_pmf_object(self):
@@ -1040,6 +1119,12 @@ class TestSampling(unittest.TestCase):
         expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
         self.assertAlmostEqual(S.variance, expected_variance)
 
+    def test_sequential_sd_median_range(self):
+        S = ciw.dists.Sequential([0.2, 0.4, 0.6, 0.8])
+        self.assertAlmostEqual(S.sd, math.sqrt(S.variance))
+        self.assertAlmostEqual(S.median, 0.5)
+        self.assertAlmostEqual(S.range, 0.8 - 0.2)
+
 
     def test_combining_distributions(self):
         Dt = ciw.dists.Deterministic(5.0)
@@ -1214,6 +1299,16 @@ class TestSampling(unittest.TestCase):
         )                                                            # total = 0.640625
         self.assertAlmostEqual(C.mean, expected_mean)
         self.assertAlmostEqual(C.variance, expected_var)
+
+
+    def test_combined_distribution_sd_median_range(self):
+        Dt = ciw.dists.Deterministic(5.0)
+        Sq = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
+        C = Dt + Sq
+        self.assertAlmostEqual(C.sd, math.sqrt(C.variance))
+        self.assertTrue(math.isnan(C.median))
+        self.assertTrue(math.isnan(C.range))
+
 
 
     def test_mixture_distributions(self):
