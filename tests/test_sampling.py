@@ -347,18 +347,17 @@ class TestSampling(unittest.TestCase):
         expected_variance = (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
         self.assertAlmostEqual(T.variance, expected_variance)
 
+    def test_triangular_sd_median_range(self):
+        T = ciw.dists.Triangular(1.1, 2.2, 6.6)
+        # sd = sqrt(variance)
+        self.assertAlmostEqual(T.sd, math.sqrt(T.variance))
+        # with your current implementation: median = mode
+        self.assertAlmostEqual(T.median, 2.2)
+        # range = upper - lower
+        self.assertAlmostEqual(T.range, 6.6 - 1.1)
+
+
     
-    @property
-    def median(self):
-        a, m, b = self.lower, self.mode, self.upper
-        mid = (a + b) / 2.0
-        if m >= mid:
-            return a + math.sqrt((b - a) * (m - a) / 2.0)
-        else:
-            return b - math.sqrt((b - a) * (b - m) / 2.0)
-
-
-
 
 
     def test_exponential_dist_object(self):
@@ -2308,5 +2307,7 @@ class TestSampling(unittest.TestCase):
             cum += pmf
         self.assertEqual(Bi.median, k)
         self.assertEqual(Bi.range, 20.0)
+
+
 
 

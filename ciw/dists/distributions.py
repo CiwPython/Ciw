@@ -1,5 +1,8 @@
 '''Distributions available in Ciw.'''
 
+       
+import random       
+
 import copy
 import math
 from math import sqrt, exp, pi, erf
