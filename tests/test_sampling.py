@@ -347,18 +347,26 @@ class TestSampling(unittest.TestCase):
         expected_variance = (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
         self.assertAlmostEqual(T.variance, expected_variance)
 
+    # --- Added Triangular sd/median/range test ---
     def test_triangular_sd_median_range(self):
-        T = ciw.dists.Triangular(1.1, 2.2, 6.6)
-        # sd = sqrt(variance)
-        self.assertAlmostEqual(T.sd, math.sqrt(T.variance))
-        # with your current implementation: median = mode
-        self.assertAlmostEqual(T.median, 2.2)
-        # range = upper - lower
-        self.assertAlmostEqual(T.range, 6.6 - 1.1)
+        a, m, b = 1.1, 2.2, 6.6
+        T = ciw.dists.Triangular(a, m, b)
 
+        # variance / sd
+        expected_var = (a*a + b*b + m*m - a*b - a*m - b*m) / 18.0
+        self.assertAlmostEqual(T.variance, expected_var)
+        self.assertAlmostEqual(T.sd, math.sqrt(expected_var))
 
-    
+        # true triangular median (piecewise)
+        mid = (a + b) / 2.0
+        if m >= mid:
+            expected_median = a + math.sqrt((b - a) * (m - a) / 2.0)
+        else:
+            expected_median = b - math.sqrt((b - a) * (b - m) / 2.0)
+        self.assertAlmostEqual(T.median, expected_median)
 
+        # range
+        self.assertAlmostEqual(T.range, b - a)
 
     def test_exponential_dist_object(self):
         E = ciw.dists.Exponential(4.4)
@@ -728,7 +736,8 @@ class TestSampling(unittest.TestCase):
 
 
 
-            
+
+
 
     def test_empirical_dist_object(self):
         Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
@@ -798,7 +807,6 @@ class TestSampling(unittest.TestCase):
         mean = sum(values) / len(values)
         expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
         self.assertAlmostEqual(E.variance, expected_variance)
-
 
     
     def test_empirical_sd_median_range(self):
@@ -1381,7 +1389,6 @@ class TestSampling(unittest.TestCase):
         self.assertTrue(math.isnan(M.median))
         # both bounded → our conservative policy is NaN
         self.assertTrue(math.isnan(M.range))
-
 
 
 
@@ -2307,7 +2314,3 @@ class TestSampling(unittest.TestCase):
             cum += pmf
         self.assertEqual(Bi.median, k)
         self.assertEqual(Bi.range, 20.0)
-
-
-
-
