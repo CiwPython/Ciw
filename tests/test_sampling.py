@@ -347,6 +347,15 @@ class TestSampling(unittest.TestCase):
         expected_variance = (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
         self.assertAlmostEqual(T.variance, expected_variance)
 
+    def test_triangular_median_right_mode_branch(self):
+        a, b, c = 1.0, 8.0, 7.0   # mode c is to the right of the midpoint
+        T = ciw.dists.Triangular(a, c, b)
+        mid = (a + b) / 2.0
+        self.assertTrue(c >= mid)  
+        expected = a + math.sqrt((b - a) * (c - a) / 2.0)
+        self.assertAlmostEqual(T.median, expected)
+
+
     # --- Added Triangular sd/median/range test ---
     def test_triangular_sd_median_range(self):
         a, m, b = 1.1, 2.2, 6.6
@@ -816,6 +825,12 @@ class TestSampling(unittest.TestCase):
         self.assertAlmostEqual(Em.median, (8.0 + 8.8) / 2.0)
         self.assertAlmostEqual(Em.range, 12.3 - 8.0)
 
+    def test_empirical_median_odd(self):
+        values = [5.0, 7.0, 9.0]  # 3 values, odd length
+        E = ciw.dists.Empirical(values)
+        self.assertEqual(E.median, 7.0)  # middle element
+
+
 
 
     def test_pmf_object(self):
@@ -896,6 +911,14 @@ class TestSampling(unittest.TestCase):
         self.assertAlmostEqual(P.sd, math.sqrt(P.variance))
         self.assertEqual(P.median, 3.8)
         self.assertAlmostEqual(P.range, 4.1 - 3.7)
+
+    def test_pmf_median_fallback(self):
+        # Force sum of probs < 1.0 to trigger fallback
+        P = ciw.dists.Pmf.__new__(ciw.dists.Pmf)  # bypass __init__ validation
+        P.values = [1.0, 2.0, 3.0]
+        P.probs = [0.1, 0.1, 0.1]  # sum = 0.3, so cumulative never reaches 0.5
+        self.assertEqual(P.median, 3.0)  # should return last value
+
 
 
     def test_custom_dist_object(self):
@@ -2229,7 +2252,78 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(Po.median, k)
         self.assertTrue(math.isinf(Po.range))
 
+    def test_poissonintervals_mean_guard_when_total_rate_zero(self):
+        """
+        Triggers: LambdaP <= 0.0 branch in PoissonIntervals.mean
+        Using all-zero rates makes total expected arrivals per cycle zero,
+        so mean should be +inf (guard path executes).
+        """
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[0.0, 0.0],            # all zero → LambdaP == 0
+            endpoints=[1.0, 2.0],
+            max_sample_date=5.0,
+        )
+        self.assertTrue(math.isinf(Pi.mean))
 
+
+    def test_poissonintervals_variance_nan_when_any_rate_is_zero(self):
+        """
+        Triggers: any(r <= 0.0 for r in self.rates) branch in variance.
+        Keep total rate positive (so we don't hit the LambdaP guard first),
+        but include a zero in rates to force variance → NaN.
+        """
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[3.0, 0.0],            # positive + zero → LambdaP > 0, but has a zero rate
+            endpoints=[1.0, 2.0],
+            max_sample_date=5.0,
+        )
+        self.assertTrue(math.isnan(Pi.variance))
+
+    def test_poissonintervals_variance_guard_total_rate_zero(self):
+        """
+        Hits: if LambdaP <= 0.0: return inf  (in PoissonIntervals.variance)
+        All-zero rates => total expected arrivals per cycle is zero.
+        """
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[0.0, 0.0],
+            endpoints=[1.0, 2.0],
+            max_sample_date=5.0,
+        )
+        self.assertTrue(math.isinf(Pi.variance))
+
+
+    def test_poissonintervals_sd_nan_when_variance_not_finite(self):
+        """
+        Hits: if not math.isfinite(v): return NaN (in PoissonIntervals.sd)
+        Mix a positive and a zero rate so variance() returns NaN,
+        then sd() should return NaN via the guard path.
+        """
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[3.0, 0.0],       # keeps LambdaP > 0, but triggers variance NaN
+            endpoints=[1.0, 2.0],
+            max_sample_date=5.0,
+        )
+        self.assertTrue(math.isnan(Pi.sd))
+
+
+    def test_poissonintervals_sd_clamps_tiny_negative_variance(self):
+        """
+        Hits: tiny-negative clamp in PoissonIntervals.sd (v < 0 and v > -1e-12).
+        We subclass to override variance to a small negative due to round-off.
+        """
+        class _FakePI(ciw.dists.PoissonIntervals):
+            @property
+            def variance(self):  # simulate tiny negative from numerical error
+                return -1e-13
+
+        Pi = _FakePI(rates=[1.0], endpoints=[1.0], max_sample_date=2.0)
+        self.assertEqual(Pi.sd, 0.0)  # sqrt(0) after clamp
+    
+    def test_poissonintervals_mean_simple(self):
+        rates = [2.0, 3.0]
+        endpoints = [1.0, 3.0]   # deltas = [1, 2], P=3, LambdaP=2*1 + 3*2 = 8
+        Pi = ciw.dists.PoissonIntervals(rates, endpoints, max_sample_date=6.0)
+        self.assertAlmostEqual(Pi.mean, 3.0 / 8.0, places=7)
 
 
     def test_geometric_dist_object(self):
