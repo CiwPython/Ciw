@@ -1784,19 +1784,24 @@ class TestSampling(unittest.TestCase):
         expected = [0.25, 0.22, 3.46, 3.07, 1.69]
         self.assertEqual(samples, expected)
 
+        
     def test_hypererlang_mean_and_variance(self):
-        rates = [5, 2, 10]
-        probs = [0.3, 0.5, 0.2]
-        lengths = [3, 2, 4]
-        He = ciw.dists.HyperErlang(rates, probs, lengths)
+        rates   = [5, 2, 10]
+        probs   = [0.3, 0.5, 0.2]
+        lengths = [3, 2, 4]   # k_i (number of Erlang phases per branch)
 
+        He = ciw.dists.HyperErlang(rates=rates, probs=probs, phase_lengths=lengths)
+
+        # Correct moments
         expected_mean = sum(p * k / r for p, r, k in zip(probs, rates, lengths))
-        expected_variance = sum(
-        p * 2 * k / (r ** 2) for p, r, k in zip(probs, rates, lengths)
-        ) - expected_mean ** 2
+        expected_second_moment = sum(
+            p * (k * (k + 1)) / (r ** 2) for p, r, k in zip(probs, rates, lengths)
+        )
+        expected_variance = expected_second_moment - expected_mean ** 2
 
         self.assertAlmostEqual(He.mean, expected_mean, places=6)
         self.assertAlmostEqual(He.variance, expected_variance, places=6)
+
 
 
     def test_coxian_dist_object(self):
@@ -2314,3 +2319,10 @@ class TestSampling(unittest.TestCase):
             cum += pmf
         self.assertEqual(Bi.median, k)
         self.assertEqual(Bi.range, 20.0)
+
+
+
+
+
+
+

@@ -741,30 +741,35 @@ class PhaseType(Distribution):
             current_state = idx 
         return cumulative_time 
 
-    @property 
-    def mean(self): 
-        Q = np.array(self.absorbing_matrix)[:-1, :-1] 
-        alpha = np.array(self.initial_state[:-1]) 
-        I = np.eye(len(Q)) 
-        ones = np.ones(len(Q)) 
-        expected = alpha @ np.linalg.inv(-Q) @ ones 
-        return expected 
+    @property
+    def mean(self):
+        Q = np.array(self.absorbing_matrix)[:-1, :-1]
+        alpha = np.array(self.initial_state[:-1])
+        ones = np.ones(len(Q))
+        return float(alpha @ np.linalg.inv(-Q) @ ones)
 
-    @property 
-    def variance(self): 
-        Q = np.array(self.absorbing_matrix)[:-1, :-1] 
-        alpha = np.array(self.initial_state[:-1]) 
-        I = np.eye(len(Q)) 
-        ones = np.ones(len(Q)) 
-        invQ = np.linalg.inv(-Q) 
-        mean = self.mean 
-        second_moment = 2 * alpha @ invQ @ invQ @ ones 
-        return second_moment - mean**2 
 
-    @property 
-    def sd(self): 
-        v = self.variance 
-        # if NaN or ±inf → return NaN 
+    @property
+    def variance(self):
+        Q = np.array(self.absorbing_matrix)[:-1, :-1]
+        alpha = np.array(self.initial_state[:-1])
+        ones = np.ones(len(Q))
+        invQ = np.linalg.inv(-Q)
+
+        # E[T] and E[T^2]
+        mean = float(alpha @ invQ @ ones)
+        second_moment = float(2 * alpha @ invQ @ invQ @ ones)
+
+        # Var(T) = E[T^2] - (E[T])^2  (with tiny-negative clamp)
+        v = second_moment - mean**2
+        if v < 0 and v > -1e-12:
+            v = 0.0
+        return v
+
+    @property
+    def sd(self):
+        v = self.variance
+        # if NaN or ±inf → return NaN
         if not math.isfinite(v): 
             return float('nan') 
         # guard tiny negative values from numerical error 
@@ -899,13 +904,21 @@ class HyperErlang(PhaseType):
             p * k / r for p, r, k in zip(self.probs, self.rates, self.phase_lengths) 
         ) 
 
-    @property 
-    def variance(self): 
-        mean = self.mean 
-        return sum( 
-            p * 2 * k / (r ** 2) 
-            for p, r, k in zip(self.probs, self.rates, self.phase_lengths) 
-        ) - mean ** 2 
+   
+    @property
+    def variance(self):
+        mean = self.mean  # Σ p * k / r
+        # Correct second moment for Erlang(k, r) is k*(k+1)/r^2
+        second_moment = sum(
+            p * (k * (k + 1)) / (r ** 2)
+            for p, r, k in zip(self.probs, self.rates, self.phase_lengths)
+        )
+        v = second_moment - (mean ** 2)
+        # tiny numerical guard
+        if v < 0 and v > -1e-12:
+            v = 0.0
+        return v
+
 
 
 class Coxian(PhaseType): 
@@ -1059,14 +1072,18 @@ class PoissonIntervals(Sequential):
         mean = P / LambdaP 
         return second_moment - mean ** 2 
 
-    @property 
-    def sd(self): 
-        v = self.variance 
-        return math.sqrt(v) if (v == v and not math.isinf(v)) else float('nan') 
+    @property
+    def sd(self):
+        v = self.variance
+        if not math.isfinite(v):
+            return float('nan')
+        if v < 0 and v > -1e-12:  # clamp tiny negatives from round-off
+            v = 0.0
+        return math.sqrt(v)
 
-    @property 
-    def median(self): 
-        return float('nan')  # periodic NHPP inter-arrivals: nontrivial 
+    @property
+    def median(self):
+        return float('nan')  # periodic NHPP inter-arrivals: nontrivial
 
     @property 
     def range(self): 
@@ -1277,9 +1294,13 @@ class MixtureDistribution(Distribution):
             p * (dist.variance + dist.mean ** 2) for p, dist in zip(self.probs, self.dists) 
         ) - mu ** 2 
 
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
+    @property
+    def sd(self):
+        v = self.variance
+        if v < 0 and v > -1e-12:
+            v = 0.0
+        return math.sqrt(v) if v == v and v != float('inf') else float('nan')
+ 
 
     @property 
     def median(self): 
