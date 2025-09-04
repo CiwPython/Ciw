@@ -760,7 +760,7 @@ class PhaseType(Distribution):
         mean = float(alpha @ invQ @ ones)
         second_moment = float(2 * alpha @ invQ @ invQ @ ones)
 
-        # Var(T) = E[T^2] - (E[T])^2  (with tiny-negative clamp)
+        # Var(T) = E[T^2] - (E[T])^2  (with tinynegative clamp)
         v = second_moment - mean**2
         return 0.0 if v < 0 and abs(v) <= 1e-12 else v
 
@@ -771,7 +771,7 @@ class PhaseType(Distribution):
 
     @property
     def median(self):
-        return float("nan")  # would require matrix exponentials + root finding
+        return float("nan")  # would require matrix exponentials + root finding )could look into if wanted)
 
     @property
     def range(self):
@@ -898,7 +898,7 @@ class HyperErlang(PhaseType):
     @property
     def variance(self):
         mean = self.mean  # ∑ p * k / r
-        # Correct second moment for Erlang(k, r) is k*(k+1)/r^2
+        #  second moment for Erlang(k, r) is k*(k+1)/r^2
         second_moment = sum(
             p * (k * (k + 1)) / (r ** 2)
             for p, r, k in zip(self.probs, self.rates, self.phase_lengths)
@@ -1056,7 +1056,7 @@ class PoissonIntervals(Sequential):
         if LambdaP <= 0.0: 
             return float("inf") 
         if any(r <= 0.0 for r in self.rates): 
-            return float("nan")  # or raise an error if you prefer 
+            return float("nan")  
         second_moment = (2.0 / LambdaP) * sum(d / r for r, d in zip(self.rates, deltas)) 
         mean = P / LambdaP 
         return second_moment - mean ** 2 

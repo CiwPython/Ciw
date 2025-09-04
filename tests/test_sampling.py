@@ -269,12 +269,12 @@ class TestSampling(unittest.TestCase):
 
     def test_deterministic_mean(self):
         D = ciw.dists.Deterministic(4.4)
-        _ = D.mean  # Access the property to trigger coverage
+        _ = D.mean  
         self.assertEqual(D.mean, 4.4)
 
     def test_deterministic_variance(self):
         D = ciw.dists.Deterministic(4.4)
-        _ = D.variance  # Access the property to trigger coverage
+        _ = D.variance  
         self.assertEqual(D.variance, 0.0)
 
     
@@ -356,17 +356,15 @@ class TestSampling(unittest.TestCase):
         self.assertAlmostEqual(T.median, expected)
 
 
-    # --- Added Triangular sd/median/range test ---
     def test_triangular_sd_median_range(self):
         a, m, b = 1.1, 2.2, 6.6
         T = ciw.dists.Triangular(a, m, b)
 
-        # variance / sd
         expected_var = (a*a + b*b + m*m - a*b - a*m - b*m) / 18.0
         self.assertAlmostEqual(T.variance, expected_var)
         self.assertAlmostEqual(T.sd, math.sqrt(expected_var))
 
-        # true triangular median (piecewise)
+        # triangular median (piecewise)
         mid = (a + b) / 2.0
         if m >= mid:
             expected_median = a + math.sqrt((b - a) * (m - a) / 2.0)
@@ -715,7 +713,6 @@ class TestSampling(unittest.TestCase):
     def test_normal_truncated_mean_and_variance(self):
     
 
-        # Example: Normal(mean=5.0, sd=1.0)
         dist = ciw.dists.Normal(5.0, 1.0)
 
         mu = dist._mean
@@ -740,12 +737,6 @@ class TestSampling(unittest.TestCase):
         expected_med = 0.5 + 0.1 * norm.ppf(target)
         self.assertAlmostEqual(N.median, expected_med)
         self.assertTrue(math.isinf(N.range))
-
-
-
-
-
-
 
 
     def test_empirical_dist_object(self):
@@ -821,17 +812,14 @@ class TestSampling(unittest.TestCase):
     def test_empirical_sd_median_range(self):
         Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
         self.assertAlmostEqual(Em.sd, math.sqrt(Em.variance))
-        # even-length sample → median = average of the two middle sorted values (8.0 and 8.8)
+        
         self.assertAlmostEqual(Em.median, (8.0 + 8.8) / 2.0)
         self.assertAlmostEqual(Em.range, 12.3 - 8.0)
 
     def test_empirical_median_odd(self):
-        values = [5.0, 7.0, 9.0]  # 3 values, odd length
+        values = [5.0, 7.0, 9.0]  
         E = ciw.dists.Empirical(values)
-        self.assertEqual(E.median, 7.0)  # middle element
-
-
-
+        self.assertEqual(E.median, 7.0) 
 
     def test_pmf_object(self):
         Pmf = ciw.dists.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
@@ -914,10 +902,10 @@ class TestSampling(unittest.TestCase):
 
     def test_pmf_median_fallback(self):
         # Force sum of probs < 1.0 to trigger fallback
-        P = ciw.dists.Pmf.__new__(ciw.dists.Pmf)  # bypass __init__ validation
+        P = ciw.dists.Pmf.__new__(ciw.dists.Pmf) 
         P.values = [1.0, 2.0, 3.0]
         P.probs = [0.1, 0.1, 0.1]  # sum = 0.3, so cumulative never reaches 0.5
-        self.assertEqual(P.median, 3.0)  # should return last value
+        self.assertEqual(P.median, 3.0)  
 
 
 
@@ -1379,8 +1367,8 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(meq_samples, meq_expected)
 
     def test_mixture_mean(self):
-        c1 = ciw.dists.Normal(0.0, 1.0)  # mean=0, variance=1
-        c2 = ciw.dists.Normal(3.0, 2.0)  # mean=3, variance=4
+        c1 = ciw.dists.Normal(0.0, 1.0)  
+        c2 = ciw.dists.Normal(3.0, 2.0)  
         probs = [0.6, 0.4]
 
         M = ciw.dists.MixtureDistribution([c1, c2], probs)
@@ -1390,8 +1378,8 @@ class TestSampling(unittest.TestCase):
 
 
     def test_mixture_variance(self):
-        c1 = ciw.dists.Normal(0.0, 1.0)  # mean=0, variance=1
-        c2 = ciw.dists.Normal(3.0, 2.0)  # mean=3, variance=4
+        c1 = ciw.dists.Normal(0.0, 1.0)  
+        c2 = ciw.dists.Normal(3.0, 2.0)  
         probs = [0.6, 0.4]
 
         M = ciw.dists.MixtureDistribution([c1, c2], probs)
@@ -1410,7 +1398,6 @@ class TestSampling(unittest.TestCase):
         M = ciw.dists.MixtureDistribution([D, U], [0.5, 0.5])
         self.assertAlmostEqual(M.sd, math.sqrt(M.variance))
         self.assertTrue(math.isnan(M.median))
-        # both bounded → our conservative policy is NaN
         self.assertTrue(math.isnan(M.range))
 
 
@@ -1538,7 +1525,6 @@ class TestSampling(unittest.TestCase):
 
     def test_phasetype_mean_and_variance(self):
 
-        # Define known PH distribution
         initial_state = [0.3, 0.7, 0.0]
         absorbing_matrix = [
             [-5, 3, 2],
@@ -1815,7 +1801,7 @@ class TestSampling(unittest.TestCase):
 
         He = ciw.dists.HyperErlang(rates=rates, probs=probs, phase_lengths=lengths)
 
-        # Correct moments
+       
         expected_mean = sum(p * k / r for p, r, k in zip(probs, rates, lengths))
         expected_second_moment = sum(
             p * (k * (k + 1)) / (r ** 2) for p, r, k in zip(probs, rates, lengths)
@@ -2259,7 +2245,7 @@ class TestSampling(unittest.TestCase):
         so mean should be +inf (guard path executes).
         """
         Pi = ciw.dists.PoissonIntervals(
-            rates=[0.0, 0.0],            # all zero → LambdaP == 0
+            rates=[0.0, 0.0],            
             endpoints=[1.0, 2.0],
             max_sample_date=5.0,
         )
@@ -2273,7 +2259,7 @@ class TestSampling(unittest.TestCase):
         but include a zero in rates to force variance → NaN.
         """
         Pi = ciw.dists.PoissonIntervals(
-            rates=[3.0, 0.0],            # positive + zero → LambdaP > 0, but has a zero rate
+            rates=[3.0, 0.0],            
             endpoints=[1.0, 2.0],
             max_sample_date=5.0,
         )
@@ -2299,7 +2285,7 @@ class TestSampling(unittest.TestCase):
         then sd() should return NaN via the guard path.
         """
         Pi = ciw.dists.PoissonIntervals(
-            rates=[3.0, 0.0],       # keeps LambdaP > 0, but triggers variance NaN
+            rates=[3.0, 0.0],       
             endpoints=[1.0, 2.0],
             max_sample_date=5.0,
         )
@@ -2420,45 +2406,42 @@ class TestEdgeCoverage(unittest.TestCase):
     def test_combined_unknown_operator_mean(self):
         A = ciw.dists.Deterministic(1.0)
         B = ciw.dists.Deterministic(2.0)
-        # bogus operator so we fall into the final "else" and raise
         with self.assertRaises(ValueError):
-            ciw.dists.CombinedDistribution(A, B, object()).mean  # type: ignore[arg-type]
+            ciw.dists.CombinedDistribution(A, B, object()).mean
 
     # 2) CombinedDistribution: unknown operator (variance)
     def test_combined_unknown_operator_variance(self):
         A = ciw.dists.Deterministic(1.0)
         B = ciw.dists.Deterministic(2.0)
         with self.assertRaises(ValueError):
-            ciw.dists.CombinedDistribution(A, B, object()).variance  # type: ignore[arg-type]
+            ciw.dists.CombinedDistribution(A, B, object()).variance 
 
     # 3) CombinedDistribution: division variance with denominator mean == 0
     def test_combined_division_variance_zero_den(self):
         num = ciw.dists.Normal(5.0, 1.0)
-        den = ciw.dists.Deterministic(0.0)  # m2 == 0 -> returns NaN branch
+        den = ciw.dists.Deterministic(0.0) 
         R = num / den
         self.assertTrue(math.isnan(R.variance))
 
     # 4) PoissonIntervals.mean: LambdaP <= 0 -> returns +inf
     def test_poissonintervals_mean_infinite(self):
-        # deltas > 0 but all rates zero -> LambdaP = 0
         Pi = ciw.dists.PoissonIntervals(rates=[0.0, 0.0], endpoints=[1.0, 2.0], max_sample_date=5.0)
         self.assertTrue(math.isinf(Pi.mean))
 
 
-    # 6) MixtureDistribution.sd: tiny-negative clamp path
+    # 5) MixtureDistribution.sd: tiny-negative clamp path
     def test_mixture_sd_tiny_negative_clamp(self):
-        # Create a subclass that *pretends* the variance is slightly negative.
         class FakeMix(ciw.dists.MixtureDistribution):
             @property
-            def variance(self):  # override only for this test
+            def variance(self):
                 return -1e-13  # triggers: if v < 0 and v > -1e-12: v = 0.0
 
         D = ciw.dists.Deterministic(1.0)
         M = FakeMix([D, D], [0.5, 0.5])
-        # sd() should clamp to 0 instead of returning NaN
+
         self.assertEqual(M.sd, 0.0)
 
-    # 7) MixtureDistribution.range: "inf if any component unbounded" path
+    # 6) MixtureDistribution.range: "inf if any component unbounded" path
     def test_mixture_range_infinite_component(self):
         M = ciw.dists.MixtureDistribution(
             [ciw.dists.Deterministic(1.0), ciw.dists.Exponential(1.0)],
@@ -2466,7 +2449,7 @@ class TestEdgeCoverage(unittest.TestCase):
         )
         self.assertTrue(math.isinf(M.range))
 
-    # 8) MixtureDistribution.range: exception-safe fallback (except branch)
+    # 7) MixtureDistribution.range: exception-safe fallback (except branch)
     def test_mixture_range_exception_path(self):
         class BadRange(ciw.dists.Distribution):
             @property
