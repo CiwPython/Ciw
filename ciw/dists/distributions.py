@@ -752,7 +752,7 @@ class PhaseType(Distribution):
     @property
     def variance(self):
         Q = np.array(self.absorbing_matrix)[:-1, :-1]
-        alpha = np.array(self.initial_state[:-1])
+        alpha = np.array(self.initial_state)[:-1]
         ones = np.ones(len(Q))
         invQ = np.linalg.inv(-Q)
 
@@ -762,22 +762,17 @@ class PhaseType(Distribution):
 
         # Var(T) = E[T^2] - (E[T])^2  (with tiny-negative clamp)
         v = second_moment - mean**2
-        if v < 0 and v > -1e-12:
+        if v < 0 and abs(v) <= 1e-12:   # clamp tiny negatives to zero
             v = 0.0
         return v
 
     @property
     def sd(self):
         v = self.variance
-        # if NaN or ±inf → return NaN
-        if not math.isfinite(v): 
-            return float('nan') 
-        # guard tiny negative values from numerical error 
-        if v < 0: 
-            if v > -1e-12:   # treat tiny negatives as zero 
-                return 0.0 
-            return float('nan')  # genuinely negative → undefined 
-        return math.sqrt(v) 
+        if not np.isfinite(v):          # if NaN or inf -> NaN
+            return float('nan')
+        return float(np.sqrt(v))        # variance already sanitized
+
 
     @property 
     def median(self): 
