@@ -762,25 +762,20 @@ class PhaseType(Distribution):
 
         # Var(T) = E[T^2] - (E[T])^2  (with tiny-negative clamp)
         v = second_moment - mean**2
-        if v < 0 and abs(v) <= 1e-12:   # clamp tiny negatives to zero
-            v = 0.0
-        return v
+        return 0.0 if v < 0 and abs(v) <= 1e-12 else v
 
     @property
     def sd(self):
         v = self.variance
-        if not np.isfinite(v):          # if NaN or inf -> NaN
-            return float('nan')
-        return float(np.sqrt(v))        # variance already sanitized
+        return float("nan") if not np.isfinite(v) else float(np.sqrt(v))
 
+    @property
+    def median(self):
+        return float("nan")  # would require matrix exponentials + root finding
 
-    @property 
-    def median(self): 
-        return float('nan')  # would require matrix exponentials + root finding 
-
-    @property 
-    def range(self): 
-        return float('inf') 
+    @property
+    def range(self):
+        return float("inf")
 
 
 class Erlang(PhaseType): 
@@ -902,7 +897,7 @@ class HyperErlang(PhaseType):
    
     @property
     def variance(self):
-        mean = self.mean  # Σ p * k / r
+        mean = self.mean  # ∑ p * k / r
         # Correct second moment for Erlang(k, r) is k*(k+1)/r^2
         second_moment = sum(
             p * (k * (k + 1)) / (r ** 2)
@@ -910,9 +905,8 @@ class HyperErlang(PhaseType):
         )
         v = second_moment - (mean ** 2)
         # tiny numerical guard
-        if v < 0 and v > -1e-12:
-            v = 0.0
-        return v
+        return 0.0 if v < 0 and abs(v) <= 1e-12 else v
+
 
 
 
