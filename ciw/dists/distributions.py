@@ -1071,7 +1071,8 @@ class PoissonIntervals(Sequential):
         second_moment = (2.0 / LambdaP) * sum(d / r for r, d in zip(self.rates, deltas)) 
         mean = P / LambdaP 
         return second_moment - mean ** 2 
-
+    
+    
     @property
     def sd(self):
         v = self.variance
@@ -1080,6 +1081,8 @@ class PoissonIntervals(Sequential):
         if v < 0 and v > -1e-12:  # clamp tiny negatives from round-off
             v = 0.0
         return math.sqrt(v)
+
+
 
     @property
     def median(self):

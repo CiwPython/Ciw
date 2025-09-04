@@ -2415,6 +2415,70 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(Bi.range, 20.0)
 
 
+class TestEdgeCoverage(unittest.TestCase):
+    # 1) CombinedDistribution: unknown operator (mean)
+    def test_combined_unknown_operator_mean(self):
+        A = ciw.dists.Deterministic(1.0)
+        B = ciw.dists.Deterministic(2.0)
+        # bogus operator so we fall into the final "else" and raise
+        with self.assertRaises(ValueError):
+            ciw.dists.CombinedDistribution(A, B, object()).mean  # type: ignore[arg-type]
+
+    # 2) CombinedDistribution: unknown operator (variance)
+    def test_combined_unknown_operator_variance(self):
+        A = ciw.dists.Deterministic(1.0)
+        B = ciw.dists.Deterministic(2.0)
+        with self.assertRaises(ValueError):
+            ciw.dists.CombinedDistribution(A, B, object()).variance  # type: ignore[arg-type]
+
+    # 3) CombinedDistribution: division variance with denominator mean == 0
+    def test_combined_division_variance_zero_den(self):
+        num = ciw.dists.Normal(5.0, 1.0)
+        den = ciw.dists.Deterministic(0.0)  # m2 == 0 -> returns NaN branch
+        R = num / den
+        self.assertTrue(math.isnan(R.variance))
+
+    # 4) PoissonIntervals.mean: LambdaP <= 0 -> returns +inf
+    def test_poissonintervals_mean_infinite(self):
+        # deltas > 0 but all rates zero -> LambdaP = 0
+        Pi = ciw.dists.PoissonIntervals(rates=[0.0, 0.0], endpoints=[1.0, 2.0], max_sample_date=5.0)
+        self.assertTrue(math.isinf(Pi.mean))
+
+
+    # 6) MixtureDistribution.sd: tiny-negative clamp path
+    def test_mixture_sd_tiny_negative_clamp(self):
+        # Create a subclass that *pretends* the variance is slightly negative.
+        class FakeMix(ciw.dists.MixtureDistribution):
+            @property
+            def variance(self):  # override only for this test
+                return -1e-13  # triggers: if v < 0 and v > -1e-12: v = 0.0
+
+        D = ciw.dists.Deterministic(1.0)
+        M = FakeMix([D, D], [0.5, 0.5])
+        # sd() should clamp to 0 instead of returning NaN
+        self.assertEqual(M.sd, 0.0)
+
+    # 7) MixtureDistribution.range: "inf if any component unbounded" path
+    def test_mixture_range_infinite_component(self):
+        M = ciw.dists.MixtureDistribution(
+            [ciw.dists.Deterministic(1.0), ciw.dists.Exponential(1.0)],
+            [0.5, 0.5]
+        )
+        self.assertTrue(math.isinf(M.range))
+
+    # 8) MixtureDistribution.range: exception-safe fallback (except branch)
+    def test_mixture_range_exception_path(self):
+        class BadRange(ciw.dists.Distribution):
+            @property
+            def range(self):  # raise on access so the "except" path runs
+                raise RuntimeError("boom")
+            def sample(self, t=None, ind=None): 
+                return 0.0
+
+        M = ciw.dists.MixtureDistribution([BadRange(), ciw.dists.Deterministic(1.0)], [0.5, 0.5])
+
+        self.assertTrue(math.isnan(M.range))
+
 
 
 
