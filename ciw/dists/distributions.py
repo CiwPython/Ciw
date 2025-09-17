@@ -66,6 +66,36 @@ class Distribution(object):
         Divide two distributions such that sampling is the ratio of the samples.
         """
         return CombinedDistribution(self, dist, truediv) 
+    
+    @property 
+    def mean(self): 
+        """default mean of a distribution"""
+        return float('nan') 
+
+    @property 
+    def variance(self): 
+        """default variance of a distribution"""
+        return float('nan')
+
+    @property 
+    def sd(self):
+        """default standard deviation of a distribution"""
+        return math.sqrt(self.variance) 
+
+    @property 
+    def median(self):
+        """default median of a distribution""" 
+        return float('nan')
+
+    @property 
+    def upper_limit(self):
+         """default upper range of a distribution""" 
+         return float('nan')
+
+    @property
+    def lower_limit(self):
+        """default lower range of a distribution""" 
+        return float('nan')
 
 
 class CombinedDistribution(Distribution): 
@@ -110,7 +140,7 @@ class CombinedDistribution(Distribution):
         v2 = self.d2.variance 
 
         if self.operator in (add, sub): 
-            # Var(A ± B) = Var(A) + Var(B), assuming independence 
+            # Var(A Â± B) = Var(A) + Var(B), assuming independence 
             return v1 + v2 
         elif self.operator == mul: 
             # Var(AB) = v1*v2 + m2^2*v1 + m1^2*v2, assuming independence 
@@ -173,18 +203,18 @@ class Uniform(Distribution):
     def variance(self): 
         """Returns the variance of the Uniform distribution."""
         return ((self.upper - self.lower) ** 2) / 12 
-
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
-
+ 
     @property 
     def median(self): 
         return (self.lower + self.upper) / 2 
 
-    @property 
-    def range(self): 
-        return self.upper - self.lower 
+    @property
+    def upper_limit(self):
+        return self.upper
+    
+    @property
+    def lower_limit(self):
+        return self.lower
 
 
 class Deterministic(Distribution): 
@@ -219,16 +249,16 @@ class Deterministic(Distribution):
         return 0.0 
 
     @property 
-    def sd(self): 
-        return 0.0 
-
-    @property 
     def median(self): 
         return self.value 
 
-    @property 
-    def range(self): 
-        return 0.0 
+    @property
+    def upper_limit(self):
+        return self.value
+    
+    @property
+    def lower_limit(self):
+        return self.value 
 
 
 class Triangular(Distribution): 
@@ -270,10 +300,7 @@ class Triangular(Distribution):
         """Returns the variance of the Triangular distribution."""
         a, b, c = self.lower, self.upper, self.mode 
         return (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18 
-
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
+ 
 
     @property 
     def median(self):
@@ -285,9 +312,13 @@ class Triangular(Distribution):
         else:
             return b - math.sqrt((b - a) * (b - c) / 2.0)
 
-    @property 
-    def range(self): 
-        return self.upper - self.lower 
+    @property
+    def upper_limit(self):
+        return self.upper
+    
+    @property
+    def lower_limit(self):
+        return self.lower
 
 
 class Exponential(Distribution): 
@@ -321,17 +352,18 @@ class Exponential(Distribution):
         """Returns the variance of the Exponential distribution."""
         return 1 / (self.rate ** 2) 
 
-    @property 
-    def sd(self): 
-        return 1.0 / self.rate 
 
     @property 
     def median(self): 
         return math.log(2.0) / self.rate 
 
-    @property 
-    def range(self): 
-        return float('inf') 
+    @property
+    def upper_limit(self):
+        return float('inf')
+    
+    @property
+    def lower_limit(self):
+        return 0 
 
 
 class Gamma(Distribution): 
@@ -363,18 +395,13 @@ class Gamma(Distribution):
         """Returns the variance of the Gamma distribution."""
         return self.shape * (self.scale ** 2) 
 
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
-
-    @property 
-    def median(self): 
-        # No elementary closed form (requires inverse incomplete gamma). 
-        return float('nan') 
-
-    @property 
-    def range(self): 
-        return float('inf') 
+    @property
+    def upper_limit(self):
+        return float('inf')
+    
+    @property
+    def lower_limit(self):
+        return 0
 
 
 class Normal(Distribution): 
@@ -412,19 +439,19 @@ class Normal(Distribution):
         return self._sd**2 * (1 - z * term - term**2) 
 
     @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
-
-    @property 
     def median(self): 
         # Truncated below at 0 
         z = self._mean / self._sd 
         target = 1.0 - 0.5 * norm.cdf(z) 
         return self._mean + self._sd * norm.ppf(target) 
 
-    @property 
-    def range(self): 
-        return float('inf') 
+    @property
+    def upper_limit(self):
+        return float('inf')
+    
+    @property
+    def lower_limit(self):
+        return 0
 
 
 class Lognormal(Distribution): 
@@ -444,28 +471,27 @@ class Lognormal(Distribution):
         return f"Lognormal(mean={self._mean}, sd={self._sd})" 
 
     def sample(self, t=None, ind=None): 
-        return __import__("random").lognormvariate(self._mean, self._sd) 
+        return lognormvariate(self._mean, self._sd) 
 
     @property 
     def mean(self): 
-        return __import__("math").exp(self._mean + (self._sd ** 2) / 2) 
+        return math.exp(self._mean + (self._sd ** 2) / 2) 
 
     @property 
     def variance(self): 
-        m = __import__("math") 
-        return (m.exp(self._sd ** 2) - 1) * m.exp(2 * self._mean + self._sd ** 2) 
-
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
+        return (math.exp(self._sd ** 2) - 1) * math.exp(2 * self._mean + self._sd ** 2) 
 
     @property 
     def median(self): 
         return math.exp(self._mean) 
 
-    @property 
-    def range(self): 
-        return float('inf') 
+    @property
+    def upper_limit(self):
+        return float('inf')
+    
+    @property
+    def lower_limit(self):
+        return 0
 
 
 class Weibull(Distribution): 
@@ -500,16 +526,16 @@ class Weibull(Distribution):
         return (self.scale ** 2) * (g2 - g1 ** 2) 
 
     @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
-
-    @property 
     def median(self): 
         return self.scale * (math.log(2.0) ** (1.0 / self.shape)) 
 
-    @property 
-    def range(self): 
-        return float('inf') 
+    @property
+    def upper_limit(self):
+        return float ('inf')
+    
+    @property
+    def lower_limit(self):
+        return 0
 
 
 class Empirical(Distribution): 
@@ -544,9 +570,6 @@ class Empirical(Distribution):
         m = self.mean 
         return sum((x - m) ** 2 for x in self.observations) / len(self.observations) 
 
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
 
     @property 
     def median(self): 
@@ -561,9 +584,13 @@ class Empirical(Distribution):
         else: 
             return 0.5 * (xs[mid - 1] + xs[mid]) 
 
-    @property 
-    def range(self): 
-        return max(self.observations) - min(self.observations) 
+    @property
+    def upper_limit(self):
+        return max(self.observations)
+    
+    @property
+    def lower_limit(self):
+        return min(self.observations)
 
 
 class Sequential(Distribution): 
@@ -603,11 +630,6 @@ class Sequential(Distribution):
         return sum((x - m) ** 2 for x in self.sequence) / len(self.sequence) 
 
     @property 
-    def sd(self): 
-        # standard deviation = sqrt(variance) 
-        return math.sqrt(self.variance) 
-
-    @property 
     def median(self): 
         # sample median of the fixed sequence 
         xs = sorted(self.sequence) 
@@ -615,10 +637,13 @@ class Sequential(Distribution):
         mid = n // 2 
         return xs[mid] if n % 2 == 1 else 0.5 * (xs[mid - 1] + xs[mid]) 
 
-    @property 
-    def range(self): 
-        # width of support 
-        return max(self.sequence) - min(self.sequence) 
+    @property
+    def upper_limit(self):
+        return max(self.sequence)
+    
+    @property
+    def lower_limit(self):
+        return min(self.sequence)
 
 
 class Pmf(Distribution): 
@@ -657,9 +682,6 @@ class Pmf(Distribution):
         m = self.mean 
         return sum(p * (v - m) ** 2 for v, p in zip(self.values, self.probs)) 
 
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
 
     @property 
     def median(self): 
@@ -671,9 +693,13 @@ class Pmf(Distribution):
                 return v 
         return pairs[-1][0] 
 
-    @property 
-    def range(self): 
-        return max(self.values) - min(self.values) 
+    @property
+    def upper_limit(self):
+        return max(self.values)
+    
+    @property
+    def lower_limit(self):
+        return min(self.values) 
 
 
 class PhaseType(Distribution): 
@@ -765,17 +791,12 @@ class PhaseType(Distribution):
         return 0.0 if v < 0 and abs(v) <= 1e-12 else v
 
     @property
-    def sd(self):
-        v = self.variance
-        return float("nan") if not np.isfinite(v) else float(np.sqrt(v))
-
+    def upper_limit(self):
+        return float('inf')
+    
     @property
-    def median(self):
-        return float("nan")  # would require matrix exponentials + root finding )could look into if wanted)
-
-    @property
-    def range(self):
-        return float("inf")
+    def lower_limit(self):
+        return 0
 
 
 class Erlang(PhaseType): 
@@ -897,7 +918,7 @@ class HyperErlang(PhaseType):
    
     @property
     def variance(self):
-        mean = self.mean  # ∑ p * k / r
+        mean = self.mean  # âˆ‘ p * k / r
         #  second moment for Erlang(k, r) is k*(k+1)/r^2
         second_moment = sum(
             p * (k * (k + 1)) / (r ** 2)
@@ -939,25 +960,6 @@ class Coxian(PhaseType):
 
     def __repr__(self): 
         return "Coxian" 
-
-    @property 
-    def mean(self): 
-        Q = np.array(self.absorbing_matrix)[:-1, :-1] 
-        alpha = np.array(self.initial_state[:-1]) 
-        ones = np.ones(len(Q)) 
-        invQ = np.linalg.inv(-Q) 
-        return float(alpha @ invQ @ ones) 
-
-    @property 
-    def variance(self): 
-        Q = np.array(self.absorbing_matrix)[:-1, :-1] 
-        alpha = np.array(self.initial_state[:-1]) 
-        ones = np.ones(len(Q)) 
-        invQ = np.linalg.inv(-Q) 
-        mean = float(alpha @ invQ @ ones) 
-        second_moment = float(2 * alpha @ invQ @ invQ @ ones) 
-        return second_moment - mean ** 2 
-
 
 class PoissonIntervals(Sequential): 
     """
@@ -1031,57 +1033,40 @@ class PoissonIntervals(Sequential):
                 random.uniform(interval[0], interval[1]) for _ in range(n) 
             ] 
             interval_dates = sorted(interval_dates) 
-            self.dates += interval_dates 
-
-    @property 
-    def mean(self): 
-        deltas = [self.endpoints[0]] + [ 
-            self.endpoints[i] - self.endpoints[i - 1] 
-            for i in range(1, len(self.endpoints)) 
-        ] 
-        P = sum(deltas) 
-        LambdaP = sum(r * d for r, d in zip(self.rates, deltas)) 
-        if LambdaP <= 0.0: 
-            return float("inf") 
-        return P / LambdaP 
-
-    @property 
-    def variance(self): 
-        deltas = [self.endpoints[0]] + [ 
-            self.endpoints[i] - self.endpoints[i - 1] 
-            for i in range(1, len(self.endpoints)) 
-        ] 
-        P = sum(deltas) 
-        LambdaP = sum(r * d for r, d in zip(self.rates, deltas)) 
-        if LambdaP <= 0.0: 
-            return float("inf") 
-        if any(r <= 0.0 for r in self.rates): 
-            return float("nan")  
-        second_moment = (2.0 / LambdaP) * sum(d / r for r, d in zip(self.rates, deltas)) 
-        mean = P / LambdaP 
-        return second_moment - mean ** 2 
-    
+            self.dates += interval_dates
     
     @property
-    def sd(self):
-        v = self.variance
-        if not math.isfinite(v):
-            return float('nan')
-        if v < 0 and v > -1e-12:  # clamp tiny negatives from round-off
-            v = 0.0
-        return math.sqrt(v)
+    def overall_rate(self):
+        deltas = [self.endpoints[0]] + [
+            self.endpoints[i] - self.endpoints[i - 1]
+            for i in range(1, len(self.endpoints))
+        ]
+        P = self.endpoints[-1]
+        LambdaP = sum(r * d for r, d in zip(self.rates, deltas))
+        return 0. if P == 0 else (LambdaP / P)
 
+    @property 
+    def mean(self):
+        O_R = self.overall_rate
+        return 1 / O_R if O_R > 0 else float('inf')
 
+    @property
+    def variance(self):
+        O_R = self.overall_rate
+        return 1 / (O_R ** 2) if O_R > 0 else float('inf')
 
+    @property
+    def upper_limit(self):
+        return float('inf')
+    
+    @property
+    def lower_limit(self):
+        return 0
+    
     @property
     def median(self):
-        return float('nan')  # periodic NHPP inter-arrivals: nontrivial
-
-    @property 
-    def range(self): 
-        return float('inf') 
-
-
+        return float('nan')
+    
 class Poisson(Distribution): 
     """
     The Poisson distribution.
@@ -1110,26 +1095,19 @@ class Poisson(Distribution):
     def variance(self): 
         return self.rate 
 
-    @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
+    @property
+    def median(self):
+        """this is a well known approximation of the median of a Poisson distribution"""
+        return float('nan') if self.rate == 0 else math.floor(self.rate + (1 / 3) - (0.02 / self.rate))
 
-    @property 
-    def median(self): 
-        lam = self.rate 
-        k = 0 
-        pmf = math.exp(-lam) 
-        cum = pmf 
-        while cum < 0.5: 
-            k += 1 
-            pmf *= lam / k 
-            cum += pmf 
-        return k 
 
-    @property 
-    def range(self): 
-        return float('inf') 
+    @property
+    def upper_limit(self):
+        return float('inf')
 
+    @property
+    def lower_limit(self):
+        return 0
 
 class Geometric(Distribution): 
     """
@@ -1160,6 +1138,18 @@ class Geometric(Distribution):
     @property 
     def variance(self): 
         return (1 - self.prob) / (self.prob ** 2) 
+    
+    @property
+    def median(self):
+        return math.ceil(-math.log(0.5) / math.log(1 - self.prob))
+
+    @property
+    def upper_limit(self):
+        return float('inf')
+    
+    @property
+    def lower_limit(self):
+        return 0
 
 
 class Binomial(Distribution): 
@@ -1199,24 +1189,16 @@ class Binomial(Distribution):
         return self.n * self.prob * (1 - self.prob) 
 
     @property 
-    def sd(self): 
-        return math.sqrt(self.variance) 
-
-    @property 
     def median(self): 
-        n, p = self.n, self.prob 
-        k = 0 
-        pmf = (1.0 - p) ** n 
-        cum = pmf 
-        while cum < 0.5 and k < n: 
-            k += 1 
-            pmf *= (n - (k - 1)) / k * (p / (1.0 - p)) 
-            cum += pmf 
-        return k 
+        return round(self.n * self.prob)
 
-    @property 
-    def range(self): 
-        return float(self.n) 
+    @property
+    def upper_limit(self):
+        return float('inf')
+
+    @property
+    def lower_limit(self):
+        return 0
 
 
 class MixtureDistribution(Distribution): 
@@ -1282,26 +1264,24 @@ class MixtureDistribution(Distribution):
     @property 
     def variance(self): 
         mu = self.mean 
-        return sum( 
+        var = sum( 
             p * (dist.variance + dist.mean ** 2) for p, dist in zip(self.probs, self.dists) 
-        ) - mu ** 2 
+        ) - mu ** 2
+        return max(var, 0.0)
 
-    @property
-    def sd(self):
-        v = self.variance
-        if v < 0 and v > -1e-12:
-            v = 0.0
-        return math.sqrt(v) if v == v and v != float('inf') else float('nan')
  
-
     @property 
     def median(self): 
         return float('nan')  # generic mixture median is nontrivial 
 
-    @property 
-    def range(self): 
-        # If any component is unbounded, mixture is unbounded. 
-        try: 
-            return float('inf') if any(math.isinf(d.range) for d in self.dists) else float('nan') 
-        except Exception: 
+    @property
+    def upper_limit(self):
+        if any(math.isnan(dist.upper_limit) for dist in self.dists):
             return float('nan')
+        return max(dist.upper_limit for dist in self.dists)
+
+    @property
+    def lower_limit(self):
+        if any(math.isnan(dist.lower_limit) for dist in self.dists):
+            return float('nan')
+        return min(dist.lower_limit for dist in self.dists)
