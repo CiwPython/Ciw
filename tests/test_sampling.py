@@ -201,6 +201,9 @@ class TestSampling(unittest.TestCase):
         expected_mean = (2.2 + 3.3) / 2
         self.assertAlmostEqual(U.mean, expected_mean)
 
+        samples = [U.sample() for _ in range(5000)]
+        self.assertAlmostEqual(np.mean(samples), expected_mean, places=3)
+
     def test_uniform_variance(self):
         """
         Test that the variance of a Uniform distribution is computed correctly.
