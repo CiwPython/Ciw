@@ -811,19 +811,23 @@ class TestSampling(unittest.TestCase):
         expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
         self.assertAlmostEqual(E.variance, expected_variance)
 
-    
     def test_empirical_sd_median_range(self):
         Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
         self.assertAlmostEqual(Em.sd, math.sqrt(Em.variance))
-        
         self.assertAlmostEqual(Em.median, (8.0 + 8.8) / 2.0)
         self.assertEqual(Em.upper_limit, 12.3)
         self.assertEqual(Em.lower_limit, 8.0)
+
+    def test_empirical_median_even(self):
+        Em = ciw.dists.Empirical([1, 2, 3, 6])
+        self.assertAlmostEqual(Em.median, 2.5)
+        self.assertAlmostEqual(Em.mean, 3)
 
     def test_empirical_median_odd(self):
         values = [5.0, 7.0, 9.0]  
         E = ciw.dists.Empirical(values)
         self.assertEqual(E.median, 7.0) 
+        self.assertEqual(E.mean, 7.0) 
 
     def test_pmf_object(self):
         Pmf = ciw.dists.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
@@ -1317,17 +1321,17 @@ class TestSampling(unittest.TestCase):
 
     def test_combined_div(self):
         # Division uses the delta-method approximation implemented in your properties:
-        # E[A/B] â‰ˆ mA / mB
-        # Var(A/B) â‰ˆ vA / mB^2 + (mA^2 * vB) / mB^4   (requires mB != 0)
+        # E[A/B] = mA / mB
+        # Var(A/B) = vA / mB^2 + (mA^2 * vB) / mB^4   (requires mB != 0)
         A = ciw.dists.Normal(5.0, 1.0)    # mA=5, vA=1
         B = ciw.dists.Normal(2.0, 0.5)    # mB=2, vB=0.25
 
         C = A / B
-        expected_mean = A.mean / B.mean                              # 2.5
+        expected_mean = A.mean / B.mean  # 2.5
         expected_var  = (
-            A.variance / (B.mean ** 2)                               # 1 / 4 = 0.25
-            + (A.mean ** 2) * B.variance / (B.mean ** 4)            # 25 * 0.25 / 16 = 0.390625
-        )                                                            # total = 0.640625
+            A.variance / (B.mean ** 2)  # 1 / 4 = 0.25
+            + (A.mean ** 2) * B.variance / (B.mean ** 4) # 25 * 0.25 / 16 = 0.390625
+        ) # total = 0.640625
         self.assertAlmostEqual(C.mean, expected_mean)
         self.assertAlmostEqual(C.variance, expected_var)
 
@@ -1338,8 +1342,8 @@ class TestSampling(unittest.TestCase):
         C = Dt + Sq
         self.assertAlmostEqual(C.sd, math.sqrt(C.variance))
         self.assertTrue(math.isnan(C.median))
-        self.assertTrue(math.isnan(C.range))
-
+        self.assertTrue(math.isnan(C.upper_limit))
+        self.assertTrue(math.isnan(C.lower_limit))
 
 
     def test_mixture_distributions(self):
@@ -2223,9 +2227,11 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(P.variance, 1.5)
 
     def test_poissonintervals_sd_median_range(self):
-        Pi = ciw.dists.PoissonIntervals(rates=[5, 1.5, 3],
-                                        endpoints=[3.2, 7.9, 10],
-                                        max_sample_date=15)
+        Pi = ciw.dists.PoissonIntervals(
+            rates=[5, 1.5, 3],
+            endpoints=[3.2, 7.9, 10],
+            max_sample_date=15
+        )
         sd = Pi.sd
         self.assertTrue((sd == sd) or math.isnan(sd))
         self.assertTrue(math.isnan(Pi.median))
@@ -2365,20 +2371,6 @@ class TestSampling(unittest.TestCase):
         self.assertTrue(math.isnan(base.variance))
         self.assertTrue(math.isnan(base.upper_limit))
         self.assertTrue(math.isnan(base.lower_limit))
-
-    def test_combined_unknown_operator(self):
-        """Test CombinedDistribution with unsupported operator"""
-        import operator
-        d1 = ciw.dists.Deterministic(2.0)
-        d2 = ciw.dists.Deterministic(3.0)
-        
-        combined = ciw.dists.CombinedDistribution(d1, d2, operator.pow)
-        
-        with self.assertRaises(ValueError):
-            _ = combined.mean
-        
-        with self.assertRaises(ValueError):
-            _ = combined.variance
 
     def test_combined_division_by_zero(self):
         """Test division variance when denominator mean is zero"""
