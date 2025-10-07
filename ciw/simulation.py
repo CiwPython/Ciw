@@ -343,3 +343,8 @@ class Simulation(object):
         for nd in self.transitive_nodes:
             nd.wrap_up_servers(current_time)
             nd.find_server_utilisation()
+
+
+
+
+
