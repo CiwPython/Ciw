@@ -1,28 +1,28 @@
 '''Distributions available in Ciw.''' 
 
-import copy 
-import math 
-import random 
-from math import sqrt, exp, pi, erf 
-from itertools import cycle 
-from operator import add, mul, sub, truediv 
-from random import ( 
-    expovariate, 
-    uniform, 
-    triangular, 
-    gammavariate, 
-    lognormvariate, 
-    weibullvariate, 
+import copy
+import math
+import random
+from math import sqrt, exp, pi, erf
+from itertools import cycle
+from operator import add, mul, sub, truediv
+from random import (
+    expovariate,
+    uniform,
+    triangular,
+    gammavariate,
+    lognormvariate,
+    weibullvariate,
 ) 
-from typing import List, NoReturn 
+from typing import List, NoReturn
 
-import numpy as np 
-from scipy.stats import norm 
+import numpy as np
+from scipy.stats import norm
 
-from ciw.auxiliary import * 
-from ciw.individual import Individual 
+from ciw.auxiliary import *
+from ciw.individual import Individual
 
-class Distribution(object): 
+class Distribution(object):
     """
     A general distribution from which all other distirbutions will inherit.
     """
@@ -126,8 +126,9 @@ class CombinedDistribution(Distribution):
         elif self.operator == mul:
             return m1 * m2
         elif self.operator == truediv:
-            return float('nan') if m2 == 0 else m1 / m2  # delta-method mean
-        return float('nan')
+            if m2 == 0:
+                return float('nan')
+            return m1 / m2  # delta-method mean
 
     @property
     def variance(self):
@@ -148,7 +149,6 @@ class CombinedDistribution(Distribution):
             if m2 == 0:
                 return float('nan')
             return (v1 / (m2 ** 2)) + ((m1 ** 2) * v2) / (m2 ** 4)
-        return float('nan')
 
 
 class Uniform(Distribution):
@@ -759,7 +759,7 @@ class PhaseType(Distribution):
 
         # Var(T) = E[T^2] - (E[T])^2  (with tinynegative clamp)
         v = second_moment - (mean ** 2)
-        return 0.0 if v < 0 and abs(v) <= 1e-12 else v
+        return v
 
     @property
     def upper_limit(self):
@@ -892,8 +892,7 @@ class HyperErlang(PhaseType):
             for p, r, k in zip(self.probs, self.rates, self.phase_lengths)
         )
         v = second_moment - (mean ** 2)
-        # tiny numerical guard
-        return 0.0 if v < 0 and abs(v) <= 1e-12 else v
+        return v
 
 
 class Coxian(PhaseType):
@@ -1007,7 +1006,7 @@ class PoissonIntervals(Sequential):
         ]
         P = self.endpoints[-1]
         LambdaP = sum(r * d for r, d in zip(self.rates, deltas))
-        return 0. if P == 0 else (LambdaP / P)
+        return LambdaP / P
 
     @property
     def mean(self):
@@ -1016,8 +1015,7 @@ class PoissonIntervals(Sequential):
 
     @property
     def variance(self):
-        O_R = self.overall_rate
-        return 1 / (O_R ** 2) if O_R > 0 else float('inf')
+        return float('nan')
 
     @property
     def median(self):
@@ -1062,7 +1060,7 @@ class Poisson(Distribution):
     @property
     def median(self):
         """this is a well known approximation of the median of a Poisson distribution"""
-        return float('nan') if self.rate == 0 else math.floor(self.rate + (1 / 3) - (0.02 / self.rate))
+        return math.floor(self.rate + (1 / 3) - (0.02 / self.rate))
 
     @property
     def upper_limit(self):
@@ -1103,7 +1101,7 @@ class Geometric(Distribution):
     
     @property
     def median(self):
-        return math.ceil(-math.log(0.5) / math.log(1 - self.prob))
+        return math.ceil(-1 / math.log(1 - self.prob, 2))
 
     @property
     def upper_limit(self):

@@ -9,7 +9,7 @@ from random import random, choice
 from hypothesis import given
 from hypothesis.strategies import floats, integers, lists, random_module, text
 import os
-import copy
+import tqdm
 
 
 def import_empirical(dist_file):
@@ -82,6 +82,22 @@ class StateDependent(ciw.dists.Distribution):
     def sample(self, t=None, ind=None):
         n = ind.queue_size_at_arrival
         return max((-0.05 * n) + 0.2, 0)
+
+
+def compare_theoretical_to_observed(D, n, places, self):
+    samples = [D.sample() for _ in range(n)]
+    if D.mean is not None:
+        self.assertAlmostEqual(np.mean(samples), D.mean, places=places)
+    if not math.isnan(D.variance):
+        self.assertAlmostEqual(np.var(samples), D.variance, places=places)
+    if not math.isnan(D.sd):
+        self.assertAlmostEqual(np.std(samples), D.sd, places=places)
+    if not math.isnan(D.median):
+        self.assertAlmostEqual(np.median(samples), D.median, places=places)
+    if not math.isnan(D.lower_limit):
+        self.assertTrue(min(samples) >= D.lower_limit)
+    if not math.isnan(D.upper_limit):
+        self.assertTrue(max(samples) <= D.upper_limit)
 
 
 class TestSampling(unittest.TestCase):
@@ -193,32 +209,19 @@ class TestSampling(unittest.TestCase):
                 ul <= Nu.simulation.inter_arrival_times[Nu.id_number]['Customer']._sample() <= uh
             )
     
-    def test_uniform_mean(self):
+    def test_uniform_summary_stats(self):
         """
         Test that the mean of a Uniform distribution is computed correctly.
         """
         U = ciw.dists.Uniform(2.2, 3.3)
         expected_mean = (2.2 + 3.3) / 2
-        self.assertAlmostEqual(U.mean, expected_mean)
-
-        samples = [U.sample() for _ in range(5000)]
-        self.assertAlmostEqual(np.mean(samples), expected_mean, places=3)
-
-    def test_uniform_variance(self):
-        """
-        Test that the variance of a Uniform distribution is computed correctly.
-        """
-        U = ciw.dists.Uniform(2.2, 3.3)
+        self.assertEqual(U.mean, expected_mean)
         expected_variance = ((3.3 - 2.2) ** 2) / 12
-        self.assertAlmostEqual(U.variance, expected_variance)
-
-        
-    def test_uniform_sd_median_range(self):
-        U = ciw.dists.Uniform(2.2, 3.3)
-        self.assertAlmostEqual(U.sd, math.sqrt(((3.3 - 2.2) ** 2) / 12))
-        self.assertAlmostEqual(U.median, (2.2 + 3.3) / 2)
-        self.assertAlmostEqual(U.lower_limit, 2.2)
-        self.assertAlmostEqual(U.upper_limit, 3.3)
+        self.assertEqual(U.variance, expected_variance)
+        self.assertEqual(U.sd, math.sqrt(((3.3 - 2.2) ** 2) / 12))
+        self.assertEqual(U.median, (2.2 + 3.3) / 2)
+        self.assertEqual(U.lower_limit, 2.2)
+        self.assertEqual(U.upper_limit, 3.3)
 
     def test_deterministic_dist_object(self):
         D = ciw.dists.Deterministic(4.4)
@@ -226,7 +229,6 @@ class TestSampling(unittest.TestCase):
         samples = [round(D._sample(), 2) for _ in range(10)]
         expected = [4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40, 4.40]
         self.assertEqual(samples, expected)
-
         self.assertRaises(ValueError, ciw.dists.Deterministic, -4.4)
 
     def test_sampling_deterministic_dist(self):
@@ -268,19 +270,10 @@ class TestSampling(unittest.TestCase):
                 Nd.simulation.inter_arrival_times[Nd.id_number]['Customer']._sample(), d
             )
 
-    def test_deterministic_mean(self):
+    def test_deterministic_summary_stats(self):
         D = ciw.dists.Deterministic(4.4)
-        _ = D.mean  
         self.assertEqual(D.mean, 4.4)
-
-    def test_deterministic_variance(self):
-        D = ciw.dists.Deterministic(4.4)
-        _ = D.variance  
         self.assertEqual(D.variance, 0.0)
-
-    
-    def test_deterministic_sd_median_range(self):
-        D = ciw.dists.Deterministic(4.4)
         self.assertEqual(D.sd, 0.0)
         self.assertEqual(D.median, 4.4)
         self.assertEqual(D.upper_limit, 4.4)
@@ -337,16 +330,22 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number]['Customer']._sample() <= th)
             self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number]['Customer']._sample() <= th)
 
-    def test_triangular_mean(self):
-        T = ciw.dists.Triangular(1.1, 2.2, 6.6)
-        expected_mean = (1.1 + 2.2 + 6.6) / 3
-        self.assertAlmostEqual(T.mean, expected_mean)
-
-    def test_triangular_variance(self):
-        T = ciw.dists.Triangular(1.1, 2.2, 6.6)
+    def test_triangular_summary_stats(self):
         a, b, c = 1.1, 6.6, 2.2
+        T = ciw.dists.Triangular(a, c, b)
+        expected_mean = (1.1 + 2.2 + 6.6) / 3
+        self.assertEqual(T.mean, expected_mean)
         expected_variance = (a**2 + b**2 + c**2 - a*b - a*c - b*c) / 18
-        self.assertAlmostEqual(T.variance, expected_variance)
+        self.assertEqual(T.variance, expected_variance)
+        self.assertEqual(T.sd, math.sqrt(expected_variance))
+        mid = (a + b) / 2.0
+        if c >= mid:
+            expected_median = a + math.sqrt((b - a) * (c - a) / 2.0)
+        else:
+            expected_median = b - math.sqrt((b - a) * (b - c) / 2.0)
+        self.assertEqual(T.median, expected_median)
+        self.assertEqual(T.upper_limit, b)
+        self.assertEqual(T.lower_limit, a)
 
     def test_triangular_median_right_mode_branch(self):
         a, b, c = 1.0, 8.0, 7.0   # mode c is to the right of the midpoint
@@ -354,28 +353,8 @@ class TestSampling(unittest.TestCase):
         mid = (a + b) / 2.0
         self.assertTrue(c >= mid)  
         expected = a + math.sqrt((b - a) * (c - a) / 2.0)
-        self.assertAlmostEqual(T.median, expected)
+        self.assertEqual(T.median, expected)
 
-
-    def test_triangular_sd_median_range(self):
-        a, m, b = 1.1, 2.2, 6.6
-        T = ciw.dists.Triangular(a, m, b)
-
-        expected_var = (a*a + b*b + m*m - a*b - a*m - b*m) / 18.0
-        self.assertAlmostEqual(T.variance, expected_var)
-        self.assertAlmostEqual(T.sd, math.sqrt(expected_var))
-
-        # triangular median (piecewise)
-        mid = (a + b) / 2.0
-        if m >= mid:
-            expected_median = a + math.sqrt((b - a) * (m - a) / 2.0)
-        else:
-            expected_median = b - math.sqrt((b - a) * (b - m) / 2.0)
-        self.assertAlmostEqual(T.median, expected_median)
-
-        # range
-        self.assertAlmostEqual(T.upper_limit, b)
-        self.assertAlmostEqual(T.lower_limit, a)
 
     def test_exponential_dist_object(self):
         E = ciw.dists.Exponential(4.4)
@@ -427,27 +406,17 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(
                 Ne.simulation.inter_arrival_times[Ne.id_number]['Customer']._sample() >= 0.0
             )
-    def test_exponential_mean(self):
+    def test_exponential_summary_stats(self):
         """
         Test that the mean of the Exponential distribution is computed correctly.
         """
         E = ciw.dists.Exponential(4.4)
         expected_mean = 1 / 4.4
-        self.assertAlmostEqual(E.mean, expected_mean)
-
-    def test_exponential_variance(self):
-        """
-        Test that the variance of the Exponential distribution is computed correctly.
-        """
-        E = ciw.dists.Exponential(4.4)
+        self.assertEqual(E.mean, expected_mean)
         expected_variance = 1 / (4.4 ** 2)
-        self.assertAlmostEqual(E.variance, expected_variance)
-
-    
-    def test_exponential_sd_median_range(self):
-        E = ciw.dists.Exponential(4.4)
-        self.assertAlmostEqual(E.sd, 1.0 / 4.4)
-        self.assertAlmostEqual(E.median, math.log(2.0) / 4.4)
+        self.assertEqual(E.variance, expected_variance)
+        self.assertEqual(E.sd, 1.0 / 4.4)
+        self.assertEqual(E.median, math.log(2.0) / 4.4)
         self.assertTrue(math.isinf(E.upper_limit))
         self.assertEqual(E.lower_limit, 0.0)
 
@@ -503,25 +472,14 @@ class TestSampling(unittest.TestCase):
                 Ng.simulation.inter_arrival_times[Ng.id_number]['Customer']._sample() >= 0.0
             )
     
-    def test_gamma_mean(self):
+    def test_gamma_summary_stats(self):
         G = ciw.dists.Gamma(0.6, 1.2)
         expected_mean = 0.6 * 1.2
-        self.assertAlmostEqual(G.mean, expected_mean)
-
-    def test_gamma_variance(self):
-        G = ciw.dists.Gamma(0.6, 1.2)
         expected_variance = 0.6 * (1.2 ** 2)
-        self.assertAlmostEqual(G.variance, expected_variance)
-
-       
-    def test_gamma_sd_median_range(self):
-        G = ciw.dists.Gamma(0.6, 1.2)
-        self.assertAlmostEqual(G.sd, math.sqrt(G.variance))
+        self.assertEqual(G.sd, math.sqrt(G.variance))
         self.assertTrue(math.isnan(G.median))
         self.assertTrue(math.isinf(G.upper_limit))
         self.assertEqual(G.lower_limit, 0.0)
-
-
 
     def test_lognormal_dist_object(self):
         Ln = ciw.dists.Lognormal(0.8, 0.2)
@@ -571,22 +529,17 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nl.simulation.service_times[Nl.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number]['Customer']._sample() >= 0.0)
 
-    def test_lognormal_mean_and_variance(self):
+    def test_lognormal_summary_stats(self):
         mu = 0.7
         sigma = 0.4
         L = ciw.dists.Lognormal(mu, sigma)
 
-        expected_mean = __import__("math").exp(mu + (sigma ** 2) / 2)
-        expected_variance = (__import__("math").exp(sigma ** 2) - 1) * __import__("math").exp(2 * mu + sigma ** 2)
-
-        self.assertAlmostEqual(L.mean, expected_mean, places=6)
-        self.assertAlmostEqual(L.variance, expected_variance, places=6)
-
-    
-    def test_lognormal_sd_median_range(self):
-        L = ciw.dists.Lognormal(0.8, 0.2)
-        self.assertAlmostEqual(L.sd, math.sqrt(L.variance))
-        self.assertAlmostEqual(L.median, math.exp(0.8))
+        expected_mean = math.exp(mu + (sigma ** 2) / 2)
+        expected_variance = (math.exp(sigma ** 2) - 1) * math.exp(2 * mu + sigma ** 2)
+        self.assertEqual(L.mean, expected_mean)
+        self.assertEqual(L.variance, expected_variance)
+        self.assertEqual(L.sd, math.sqrt(L.variance))
+        self.assertEqual(L.median, math.exp(0.7))
         self.assertTrue(math.isinf(L.upper_limit))
         self.assertEqual(L.lower_limit, 0.0)
 
@@ -642,25 +595,17 @@ class TestSampling(unittest.TestCase):
                 Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0
             )
 
-    def test_weibull_mean(self):
+    def test_weibull_summary_stats(self):
         W = ciw.dists.Weibull(0.8, 0.9)
         expected_mean = 0.8 * math.gamma(1 + 1 / 0.9)
-        self.assertAlmostEqual(W.mean, expected_mean)
-
-    def test_weibull_variance(self):
-        W = ciw.dists.Weibull(0.8, 0.9)
         g1 = math.gamma(1 + 1 / 0.9)
         g2 = math.gamma(1 + 2 / 0.9)
         expected_variance = (0.8 ** 2) * (g2 - g1 ** 2)
-        self.assertAlmostEqual(W.variance, expected_variance)
-
-    def test_weibull_sd_median_range(self):
-        W = ciw.dists.Weibull(0.9, 0.8)
-        self.assertAlmostEqual(W.sd, math.sqrt(W.variance))
-        self.assertAlmostEqual(W.median, 0.9 * (math.log(2.0) ** (1.0 / 0.8)))
+        self.assertEqual(W.variance, expected_variance)
+        self.assertEqual(W.sd, math.sqrt(W.variance))
+        self.assertEqual(W.median, 0.8 * (math.log(2) ** (1.0 / 0.9)))
         self.assertTrue(math.isinf(W.upper_limit))
         self.assertEqual(W.lower_limit, 0.0)
-
 
     def test_normal_dist_object(self):
         N = ciw.dists.Normal(0.5, 0.1)
@@ -712,35 +657,23 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
     
-    def test_normal_truncated_mean_and_variance(self):
-    
-
-        dist = ciw.dists.Normal(5.0, 1.0)
-
-        mu = dist._mean
-        sd = dist._sd
+    def test_normal_truncated_summary_stats(self):
+        N = ciw.dists.Normal(5.0, 1.0)
+        mu = N._mean
+        sd = N._sd
         z = mu / sd
         phi = (1 / sqrt(2 * pi)) * exp(-0.5 * z**2)
         Phi = 0.5 * (1 + erf(z / sqrt(2)))
-
         expected_mean = mu + sd * (phi / Phi)
         expected_variance = sd**2 * (1 - z * (phi / Phi) - (phi / Phi)**2)
-
-        self.assertAlmostEqual(dist.mean, expected_mean, places=6)
-        self.assertAlmostEqual(dist.variance, expected_variance, places=6)
-
-
-    
-    def test_normal_trunc_sd_median_range(self):
-        N = ciw.dists.Normal(0.5, 0.1)
-        self.assertAlmostEqual(N.sd, math.sqrt(N.variance))
-        z = 0.5 / 0.1
+        self.assertEqual(N.mean, expected_mean)
+        self.assertEqual(N.variance, expected_variance)
+        self.assertEqual(N.sd, math.sqrt(N.variance))
         target = 1.0 - 0.5 * norm.cdf(z)
-        expected_med = 0.5 + 0.1 * norm.ppf(target)
-        self.assertAlmostEqual(N.median, expected_med)
+        expected_med = mu + sd * norm.ppf(target)
+        self.assertEqual(N.median, expected_med)
         self.assertTrue(math.isinf(N.upper_limit))
         self.assertEqual(N.lower_limit, 0.0)
-
 
     def test_empirical_dist_object(self):
         Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
@@ -798,32 +731,25 @@ class TestSampling(unittest.TestCase):
                 in set(my_empirical_dist)
             )
 
-    def test_empirical_mean(self):
+    def test_empirical_summary_stats(self):
         values = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
-        E = ciw.dists.Empirical(values)
+        Em = ciw.dists.Empirical(values)
         expected_mean = sum(values) / len(values)
-        self.assertAlmostEqual(E.mean, expected_mean)
-
-    def test_empirical_variance(self):
-        values = [8.0, 8.0, 8.0, 8.8, 8.8, 12.3]
-        E = ciw.dists.Empirical(values)
+        self.assertEqual(Em.mean, expected_mean)
         mean = sum(values) / len(values)
         expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
-        self.assertAlmostEqual(E.variance, expected_variance)
-
-    def test_empirical_sd_median_range(self):
-        Em = ciw.dists.Empirical([8.0, 8.0, 8.0, 8.8, 8.8, 12.3])
-        self.assertAlmostEqual(Em.sd, math.sqrt(Em.variance))
-        self.assertAlmostEqual(Em.median, (8.0 + 8.8) / 2.0)
+        self.assertEqual(Em.variance, expected_variance)
+        self.assertEqual(Em.sd, math.sqrt(Em.variance))
+        self.assertEqual(Em.median, (8.0 + 8.8) / 2.0)
         self.assertEqual(Em.upper_limit, 12.3)
         self.assertEqual(Em.lower_limit, 8.0)
 
-    def test_empirical_median_even(self):
+    def test_empirical_median(self):
+        # even
         Em = ciw.dists.Empirical([1, 2, 3, 6])
-        self.assertAlmostEqual(Em.median, 2.5)
-        self.assertAlmostEqual(Em.mean, 3)
-
-    def test_empirical_median_odd(self):
+        self.assertEqual(Em.median, 2.5)
+        self.assertEqual(Em.mean, 3)
+        # odd
         values = [5.0, 7.0, 9.0]  
         E = ciw.dists.Empirical(values)
         self.assertEqual(E.median, 7.0) 
@@ -887,24 +813,15 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number]['Customer']._sample() in set(cust_vals))
 
 
-    def test_pmf_mean(self):
+    def test_pmf_summary_stats(self):
         values = [3.7, 3.8, 4.1]
         probs = [0.2, 0.5, 0.3]
         P = ciw.dists.Pmf(values, probs)
         expected_mean = sum(v * p for v, p in zip(values, probs))
-        self.assertAlmostEqual(P.mean, expected_mean)
-
-    def test_pmf_variance(self):
-        values = [3.7, 3.8, 4.1]
-        probs = [0.2, 0.5, 0.3]
-        P = ciw.dists.Pmf(values, probs)
-        mean = sum(v * p for v, p in zip(values, probs))
-        expected_variance = sum(p * (v - mean) ** 2 for v, p in zip(values, probs))
-        self.assertAlmostEqual(P.variance, expected_variance)
-
-    def test_pmf_sd_median_range(self):
-        P = ciw.dists.Pmf([3.7, 3.8, 4.1], [0.2, 0.5, 0.3])
-        self.assertAlmostEqual(P.sd, math.sqrt(P.variance))
+        self.assertEqual(P.mean, expected_mean)
+        expected_variance = sum(p * (v - expected_mean) ** 2 for v, p in zip(values, probs))
+        self.assertEqual(P.variance, expected_variance)
+        self.assertEqual(P.sd, math.sqrt(P.variance))
         self.assertEqual(P.median, 3.8)
         self.assertEqual(P.upper_limit, 4.1)
         self.assertEqual(P.lower_limit, 3.7)
@@ -915,7 +832,6 @@ class TestSampling(unittest.TestCase):
         P.values = [1.0, 2.0, 3.0]
         P.probs = [0.1, 0.1, 0.1]  # sum = 0.3, so cumulative never reaches 0.5
         self.assertEqual(P.median, 3.0)  
-
 
 
     def test_custom_dist_object(self):
@@ -1140,25 +1056,28 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(inter_arrivals, expected_inter_arrival_times[1:])
         self.assertEqual(services, expected_service_times)
 
-    def test_sequential_mean(self):
+    def test_sequential_summary_stats(self):
         values = [0.9, 0.7, 0.5, 0.3, 0.1]
         S = ciw.dists.Sequential(values)
         expected_mean = sum(values) / len(values)
-        self.assertAlmostEqual(S.mean, expected_mean)
+        self.assertEqual(S.mean, expected_mean)
+        expected_variance = sum((x - expected_mean) ** 2 for x in values) / len(values)
+        self.assertEqual(S.variance, expected_variance)
+        self.assertEqual(S.sd, math.sqrt(S.variance))
+        self.assertEqual(S.median, 0.5)
+        self.assertEqual(S.upper_limit, 0.9)
+        self.assertEqual(S.lower_limit, 0.1)
 
-    def test_sequential_variance(self):
-        values = [0.9, 0.7, 0.5, 0.3, 0.1]
+        values = [0.7, 0.5, 0.3, 0.1]
         S = ciw.dists.Sequential(values)
-        mean = sum(values) / len(values)
-        expected_variance = sum((x - mean) ** 2 for x in values) / len(values)
-        self.assertAlmostEqual(S.variance, expected_variance)
-
-    def test_sequential_sd_median_range(self):
-        S = ciw.dists.Sequential([0.2, 0.4, 0.6, 0.8])
-        self.assertAlmostEqual(S.sd, math.sqrt(S.variance))
-        self.assertAlmostEqual(S.median, 0.5)
-        self.assertEqual(S.upper_limit, 0.8)
-        self.assertEqual(S.lower_limit, 0.2)
+        expected_mean = sum(values) / len(values)
+        self.assertEqual(S.mean, expected_mean)
+        expected_variance = sum((x - expected_mean) ** 2 for x in values) / len(values)
+        self.assertEqual(S.variance, expected_variance)
+        self.assertEqual(S.sd, math.sqrt(S.variance))
+        self.assertEqual(S.median, 0.4)
+        self.assertEqual(S.upper_limit, 0.7)
+        self.assertEqual(S.lower_limit, 0.1)
 
 
     def test_combining_distributions(self):
@@ -1277,7 +1196,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Ex_div_Dt), "CombinedDistribution")
         self.assertEqual(str(Ex_div_Sq), "CombinedDistribution")
 
-    def test_combined_add(self):
+    def test_combined_add_summary_stats(self):
         # A: N(5, sd=1) -> mean=5, var=1
         # B: N(2, sd=0.5) -> mean=2, var=0.25
         A = ciw.dists.Normal(5.0, 1.0)
@@ -1286,22 +1205,20 @@ class TestSampling(unittest.TestCase):
         C = A + B
         expected_mean = A.mean + B.mean                     # 5 + 2 = 7
         expected_var  = A.variance + B.variance             # 1 + 0.25 = 1.25
-        self.assertAlmostEqual(C.mean, expected_mean)
-        self.assertAlmostEqual(C.variance, expected_var)
+        self.assertEqual(C.mean, expected_mean)
+        self.assertEqual(C.variance, expected_var)
 
-
-    def test_combined_sub(self):
+    def test_combined_sub_summary_stats(self):
         A = ciw.dists.Normal(5.0, 1.0)
         B = ciw.dists.Normal(2.0, 0.5)
 
         C = A - B
         expected_mean = A.mean - B.mean                     # 5 - 2 = 3
         expected_var  = A.variance + B.variance             # 1 + 0.25 = 1.25
-        self.assertAlmostEqual(C.mean, expected_mean)
-        self.assertAlmostEqual(C.variance, expected_var)
+        self.assertEqual(C.mean, expected_mean)
+        self.assertEqual(C.variance, expected_var)
 
-
-    def test_combined_mul(self):
+    def test_combined_mul_summary_stats(self):
         # Product moments (independent):
         # E[AB] = mA mB
         # Var(AB) = vA vB + mB^2 vA + mA^2 vB
@@ -1315,11 +1232,10 @@ class TestSampling(unittest.TestCase):
             + (B.mean ** 2) * A.variance                 # 4 * 1 = 4
             + (A.mean ** 2) * B.variance                 # 25 * 0.25 = 6.25
         )                                                # total = 10.5
-        self.assertAlmostEqual(C.mean, expected_mean)
-        self.assertAlmostEqual(C.variance, expected_var)
+        self.assertEqual(C.mean, expected_mean)
+        self.assertEqual(C.variance, expected_var)
 
-
-    def test_combined_div(self):
+    def test_combined_div_summary_stats(self):
         # Division uses the delta-method approximation implemented in your properties:
         # E[A/B] = mA / mB
         # Var(A/B) = vA / mB^2 + (mA^2 * vB) / mB^4   (requires mB != 0)
@@ -1332,19 +1248,14 @@ class TestSampling(unittest.TestCase):
             A.variance / (B.mean ** 2)  # 1 / 4 = 0.25
             + (A.mean ** 2) * B.variance / (B.mean ** 4) # 25 * 0.25 / 16 = 0.390625
         ) # total = 0.640625
-        self.assertAlmostEqual(C.mean, expected_mean)
-        self.assertAlmostEqual(C.variance, expected_var)
+        self.assertEqual(C.mean, expected_mean)
+        self.assertEqual(C.variance, expected_var)
 
-
-    def test_combined_distribution_sd_median_range(self):
-        Dt = ciw.dists.Deterministic(5.0)
-        Sq = ciw.dists.Sequential([1.0, 2.0, 3.0, 4.0])
-        C = Dt + Sq
-        self.assertAlmostEqual(C.sd, math.sqrt(C.variance))
-        self.assertTrue(math.isnan(C.median))
-        self.assertTrue(math.isnan(C.upper_limit))
-        self.assertTrue(math.isnan(C.lower_limit))
-
+    def test_combined_div_by_zero(self):
+        A = ciw.dists.Normal(5, 1)
+        B = ciw.dists.Deterministic(0)
+        C = A / B
+        self.assertTrue(math.isnan(C.mean))
 
     def test_mixture_distributions(self):
         ciw.seed(0)
@@ -1376,44 +1287,27 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(str(Mixted_eq), 'MixtureDistribution')
         self.assertEqual(meq_samples, meq_expected)
 
-    def test_mixture_mean(self):
+    def test_mixture_summary_stats(self):
         c1 = ciw.dists.Normal(0.0, 1.0)  
         c2 = ciw.dists.Normal(3.0, 2.0)  
         probs = [0.6, 0.4]
-
         M = ciw.dists.MixtureDistribution([c1, c2], probs)
 
         expected_mean = probs[0] * c1.mean + probs[1] * c2.mean
-        self.assertAlmostEqual(M.mean, expected_mean)
-
-
-    def test_mixture_variance(self):
-        c1 = ciw.dists.Normal(0.0, 1.0)  
-        c2 = ciw.dists.Normal(3.0, 2.0)  
-        probs = [0.6, 0.4]
-
-        M = ciw.dists.MixtureDistribution([c1, c2], probs)
-
-        expected_mean = probs[0] * c1.mean + probs[1] * c2.mean
+        self.assertEqual(M.mean, expected_mean)
         expected_variance = (
             probs[0] * (c1.variance + c1.mean ** 2) +
             probs[1] * (c2.variance + c2.mean ** 2)
         ) - expected_mean ** 2
+        self.assertEqual(M.variance, expected_variance)
 
-        self.assertAlmostEqual(M.variance, expected_variance)
-
-    def test_mixture_sd_median_range(self):
         D = ciw.dists.Deterministic(3.0)
         U = ciw.dists.Uniform(2.0, 4.0)
         M = ciw.dists.MixtureDistribution([D, U], [0.5, 0.5])
-        self.assertAlmostEqual(M.sd, math.sqrt(M.variance))
+        self.assertEqual(M.sd, math.sqrt(M.variance))
         self.assertTrue(math.isnan(M.median))
         self.assertTrue(M.upper_limit, 4.0)
         self.assertTrue(M.lower_limit, 2.0)
-
-
-
-
 
     def test_state_dependent_distribution(self):
         N = ciw.create_network(
@@ -1534,8 +1428,7 @@ class TestSampling(unittest.TestCase):
         # We would expect this to be  `num_phases` / `rate` = 7 / 5 = 1.4
         self.assertEqual(round(sum(many_samples) / 1000, 4), 1.4057)
 
-    def test_phasetype_mean_and_variance(self):
-
+    def test_phasetype_summary_stats(self):
         initial_state = [0.3, 0.7, 0.0]
         absorbing_matrix = [
             [-5, 3, 2],
@@ -1543,7 +1436,6 @@ class TestSampling(unittest.TestCase):
             [0, 0, 0]
         ]
         Ph = ciw.dists.PhaseType(initial_state, absorbing_matrix)
-
         # Extract transient generator Q and initial vector alpha
         Q = np.array(absorbing_matrix)[:-1, :-1]        # Top-left 2x2 submatrix
         alpha = np.array(initial_state[:-1])            # First 2 entries
@@ -1560,20 +1452,8 @@ class TestSampling(unittest.TestCase):
         expected_variance = expected_second_moment - expected_mean ** 2
 
         # Assertions
-        self.assertAlmostEqual(Ph.mean, expected_mean, places=6)
-        self.assertAlmostEqual(Ph.variance, expected_variance, places=6)
-
-    def test_phasetype_family_sd_median_range(self):
-        Er = ciw.dists.Erlang(5, 7)
-        Hx = ciw.dists.HyperExponential([4, 7, 2], [0.3, 0.1, 0.6])
-        Cx = ciw.dists.Coxian([5, 4, 7, 2], [0.2, 0.5, 0.3, 1.0])
-        for D in [Er, Hx, Cx]:
-            self.assertAlmostEqual(D.sd, math.sqrt(D.variance))
-            self.assertTrue(math.isnan(D.median))
-            self.assertTrue(D.upper_limit, float('inf'))
-            self.assertEqual(D.lower_limit, 0.0)
-
-
+        self.assertEqual(Ph.mean, expected_mean)
+        self.assertEqual(Ph.variance, expected_variance)
 
     def test_sampling_erlang_dist(self):
         N = ciw.create_network(
@@ -1618,17 +1498,17 @@ class TestSampling(unittest.TestCase):
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
 
-    def test_erlang_mean_and_variance(self):
+    def test_erlang_summary_stats(self):
         rate = 5.0
         k = 7
         Er = ciw.dists.Erlang(rate, k)
-
         expected_mean = k / rate
         expected_variance = k / (rate ** 2)
-
-        self.assertAlmostEqual(Er.mean, expected_mean, places=6)
-        self.assertAlmostEqual(Er.variance, expected_variance, places=6)
-
+        self.assertEqual(Er.mean, expected_mean)
+        self.assertEqual(Er.variance, expected_variance)
+        self.assertTrue(math.isnan(Er.median))
+        self.assertEqual(Er.lower_limit, 0)
+        self.assertEqual(Er.upper_limit, float('inf'))
 
     def test_hyperexponential_dist_object(self):
         Hx = ciw.dists.HyperExponential([5, 7, 2, 1], [0.4, 0.1, 0.3, 0.2])
@@ -1702,8 +1582,7 @@ class TestSampling(unittest.TestCase):
         expected = [0.12, 0.04, 0.43, 0.05, 0.5]
         self.assertEqual(samples, expected)
 
-
-    def test_hyperexponential_mean_and_variance(self):
+    def test_hyperexponential_summary_stats(self):
         rates = [5, 2, 10]
         probs = [0.3, 0.5, 0.2]
         Hx = ciw.dists.HyperExponential(rates, probs)
@@ -1711,9 +1590,11 @@ class TestSampling(unittest.TestCase):
         expected_mean = sum(p / r for p, r in zip(probs, rates))
         expected_variance = sum(2 * p / (r ** 2) for p, r in zip(probs, rates)) - expected_mean ** 2
 
-        self.assertAlmostEqual(Hx.mean, expected_mean, places=6)
-        self.assertAlmostEqual(Hx.variance, expected_variance, places=6)
-
+        self.assertEqual(Hx.mean, expected_mean)
+        self.assertEqual(Hx.variance, expected_variance)
+        self.assertTrue(math.isnan(Hx.median))
+        self.assertEqual(Hx.lower_limit, 0)
+        self.assertEqual(Hx.upper_limit, float('inf'))
 
     def test_hypererlang_dist_object(self):
         Hg = ciw.dists.HyperErlang([5, 7, 2], [0.5, 0.3, 0.2], [3, 2, 5])
@@ -1805,23 +1686,21 @@ class TestSampling(unittest.TestCase):
         expected = [0.25, 0.22, 3.46, 3.07, 1.69]
         self.assertEqual(samples, expected)
 
-        
-    def test_hypererlang_mean_and_variance(self):
+    def test_hypererlang_summary_stats(self):
         rates   = [5, 2, 10]
         probs   = [0.3, 0.5, 0.2]
         lengths = [3, 2, 4]   # k_i (number of Erlang phases per branch)
-
         He = ciw.dists.HyperErlang(rates=rates, probs=probs, phase_lengths=lengths)
-
-       
         expected_mean = sum(p * k / r for p, r, k in zip(probs, rates, lengths))
         expected_second_moment = sum(
             p * (k * (k + 1)) / (r ** 2) for p, r, k in zip(probs, rates, lengths)
         )
         expected_variance = expected_second_moment - expected_mean ** 2
-
-        self.assertAlmostEqual(He.mean, expected_mean, places=6)
-        self.assertAlmostEqual(He.variance, expected_variance, places=6)
+        self.assertEqual(He.mean, expected_mean)
+        self.assertEqual(He.variance, expected_variance)
+        self.assertTrue(math.isnan(He.median))
+        self.assertEqual(He.lower_limit, 0)
+        self.assertEqual(He.upper_limit, float('inf'))
 
 
 
@@ -1900,7 +1779,7 @@ class TestSampling(unittest.TestCase):
         expected = [1.09, 0.77, 0.81, 0.08, 0.43]
         self.assertEqual(samples, expected)
 
-    def test_coxian_mean_and_variance(self):
+    def test_coxian_summary_stats(self):
         rates = [5, 4, 7, 2]
         probs = [0.2, 0.5, 0.3, 1.0]  # Prob of absorbing at each phase
         Cx = ciw.dists.Coxian(rates, probs)
@@ -1916,9 +1795,11 @@ class TestSampling(unittest.TestCase):
         second_moment = float(2 * alpha @ invQ @ invQ @ ones)
         expected_variance = second_moment - expected_mean ** 2
 
-        self.assertAlmostEqual(Cx.mean, expected_mean, places=6)
-        self.assertAlmostEqual(Cx.variance, expected_variance, places=6)
-
+        self.assertEqual(Cx.mean, expected_mean)
+        self.assertEqual(Cx.variance, expected_variance)
+        self.assertTrue(math.isnan(Cx.median))
+        self.assertEqual(Cx.lower_limit, 0)
+        self.assertEqual(Cx.upper_limit, float('inf'))
 
     def test_poissoninterval_dist_object(self):
         ciw.seed(5)
@@ -2191,15 +2072,12 @@ class TestSampling(unittest.TestCase):
         expected = [0.2694, 0.4268, 0.701, 0.011, 0.239, 0.0966, 0.1567, 0.0834, 0.291, 0.006,]
         self.assertEqual(samples, expected)
 
-
-
     def test_poisson_dist_object(self):
         Po = ciw.dists.Poisson(1.5)
         ciw.seed(5)
         samples = [Po._sample() for _ in range(10)]
         expected = [3, 0, 1, 0, 0, 2, 4, 2, 1, 1]
         self.assertEqual(samples, expected)
-
         self.assertRaises(ValueError, ciw.dists.Poisson, -1.5)
 
     def test_sampling_poisson_dist(self):
@@ -2218,15 +2096,16 @@ class TestSampling(unittest.TestCase):
         expected = [3, 0, 1, 0, 0, 2, 4, 2, 1, 1]
         self.assertEqual(samples, expected)
 
-    def test_poisson_mean(self):
+    def test_poisson_summary_stats(self):
         P = ciw.dists.Poisson(1.5)
         self.assertEqual(P.mean, 1.5)
-
-    def test_poisson_variance(self):
-        P = ciw.dists.Poisson(1.5)
         self.assertEqual(P.variance, 1.5)
+        self.assertEqual(P.sd, math.sqrt(P.variance))
+        self.assertEqual(P.median, 1)
+        self.assertEqual(P.lower_limit, 0)
+        self.assertEqual(P.upper_limit, float("inf"))
 
-    def test_poissonintervals_sd_median_range(self):
+    def test_poissonintervals_summary_stats(self):
         Pi = ciw.dists.PoissonIntervals(
             rates=[5, 1.5, 3],
             endpoints=[3.2, 7.9, 10],
@@ -2237,42 +2116,6 @@ class TestSampling(unittest.TestCase):
         self.assertTrue(math.isnan(Pi.median))
         self.assertTrue(math.isinf(Pi.upper_limit))
         self.assertEqual(Pi.lower_limit, 0.0)
-
-    def test_poisson_sd_median_range(self):
-        Po = ciw.dists.Poisson(1.5)
-        self.assertAlmostEqual(Po.sd, math.sqrt(Po.variance))
-        lam = 1.5
-        k = 0
-        pmf = math.exp(-lam)
-        cum = pmf
-        while cum < 0.5:
-            k += 1
-            pmf *= lam / k
-            cum += pmf
-        self.assertEqual(Po.median, k)
-        self.assertEqual(Po.lower_limit, 0)
-        self.assertEqual(Po.upper_limit, float("inf"))
-
-    def test_poissonintervals_mean_guard_when_total_rate_zero(self):
-        """
-        Triggers: LambdaP <= 0.0 branch in PoissonIntervals.mean
-        Using all-zero rates makes total expected arrivals per cycle zero,
-        so mean should be +inf (guard path executes).
-        """
-        Pi = ciw.dists.PoissonIntervals(
-            rates=[0.0, 0.0],            
-            endpoints=[1.0, 2.0],
-            max_sample_date=5.0,
-        )
-        self.assertTrue(math.isinf(Pi.mean))
-
-    
-    def test_poissonintervals_mean_simple(self):
-        rates = [2.0, 3.0]
-        endpoints = [1.0, 3.0]   # deltas = [1, 2], P=3, LambdaP=2*1 + 3*2 = 8
-        Pi = ciw.dists.PoissonIntervals(rates, endpoints, max_sample_date=6.0)
-        self.assertAlmostEqual(Pi.mean, 3.0 / 8.0, places=7)
-
 
     def test_geometric_dist_object(self):
         Ge = ciw.dists.Geometric(0.3)
@@ -2299,16 +2142,15 @@ class TestSampling(unittest.TestCase):
         expected = [6, 3, 4, 2, 1, 2, 2, 1, 1, 3]
         self.assertEqual(samples, expected)
 
-    def test_geometric_mean(self):
+    def test_geometric_summary_stats(self):
         G = ciw.dists.Geometric(0.3)
         expected_mean = 1 / 0.3
-        self.assertAlmostEqual(G.mean, expected_mean)
-
-    def test_geometric_variance(self):
-        G = ciw.dists.Geometric(0.3)
+        self.assertEqual(G.mean, expected_mean)
         expected_variance = (1 - 0.3) / (0.3 ** 2)
-        self.assertAlmostEqual(G.variance, expected_variance)
-
+        self.assertEqual(G.variance, expected_variance)
+        self.assertTrue(math.isinf(G.upper_limit))
+        self.assertEqual(G.lower_limit, 0)
+        self.assertEqual(G.median, 2)
 
     def test_binomial_dist_object(self):
         Bi = ciw.dists.Binomial(20, 0.4)
@@ -2338,34 +2180,18 @@ class TestSampling(unittest.TestCase):
         expected = [10, 10, 8, 7, 5, 7, 7, 4, 4, 15]
         self.assertEqual(samples, expected)
 
-    def test_binomial_mean(self):
+    def test_binomial_summary_stats(self):
         B = ciw.dists.Binomial(20, 0.4)
         expected_mean = 20 * 0.4
         self.assertEqual(B.mean, expected_mean)
-
-    def test_binomial_variance(self):
-        B = ciw.dists.Binomial(20, 0.4)
         expected_variance = 20 * 0.4 * (1 - 0.4)
         self.assertEqual(B.variance, expected_variance)
-
-    def test_binomial_sd_median_range(self):
-        Bi = ciw.dists.Binomial(20, 0.4)
-        self.assertAlmostEqual(Bi.sd, math.sqrt(Bi.variance))
-        n, p = 20, 0.4
-        k = 0
-        pmf = (1 - p) ** n
-        cum = pmf
-        while cum < 0.5 and k < n:
-            k += 1
-            pmf *= (n - (k - 1)) / k * (p / (1.0 - p))
-            cum += pmf
-        self.assertEqual(Bi.median, k)
-        self.assertEqual(Bi.lower_limit, 0)
-        self.assertTrue(math.isinf(Bi.upper_limit))
-
+        self.assertEqual(B.median, 8)
+        self.assertEqual(B.lower_limit, 0)
+        self.assertTrue(math.isinf(B.upper_limit))
 
     def test_base_distribution_properties(self):
-        """Test base Distribution class default properties for 100% coverage"""
+        """Test base Distribution class default properties"""
         base = ciw.dists.Distribution()
         self.assertTrue(math.isnan(base.mean))
         self.assertTrue(math.isnan(base.variance))
@@ -2402,16 +2228,54 @@ class TestSampling(unittest.TestCase):
         self.assertTrue(math.isnan(mixture.upper_limit))
         self.assertTrue(math.isnan(mixture.lower_limit))
 
-    def test_geometric_limits_coverage(self):
-        """Test Geometric distribution limits for coverage"""
-        G = ciw.dists.Geometric(0.3)
-        self.assertTrue(math.isinf(G.upper_limit))
-        self.assertEqual(G.lower_limit, 0)
+    def test_comparing_theoretical_to_observed(self):
+        ciw.seed(0)
+        Un = ciw.dists.Uniform(0.41, 2.75)
+        Dt = ciw.dists.Deterministic(1.1)
+        Tr = ciw.dists.Triangular(1.1, 2.2, 3.3)
+        Ex = ciw.dists.Exponential(0.8)
+        Ga = ciw.dists.Gamma(3.1, 0.2)
+        No = ciw.dists.Normal(50.5, 2.6)
+        No_trunc = ciw.dists.Normal(1, 2)
+        Ln = ciw.dists.Lognormal(0.35, 0.16)
+        Wb = ciw.dists.Weibull(88.6, 99.1)
+        Em = ciw.dists.Empirical([3.3, 3.3, 4.4, 3.3, 4.4])
+        Sq = ciw.dists.Sequential([3.3, 3.3, 4.4, 3.3, 4.4])
+        Pf = ciw.dists.Pmf([1.1, 2.2, 3.3], [0.31, 0.21, 0.48])
+        Ph = ciw.dists.PhaseType([1, 0, 0], [[-3, 2, 1], [1, -5, 4], [0, 0, 0]])
+        Er = ciw.dists.Erlang(4.5, 8)
+        Hx = ciw.dists.HyperExponential([7, 12, 5], [0.3, 0.1, 0.6])
+        He = ciw.dists.HyperErlang([8, 15, 9], [0.3, 0.1, 0.6], [2, 2, 7])
+        Cx = ciw.dists.Coxian([4, 7, 2], [0.3, 0.2, 1.0])
+        Pi = ciw.dists.PoissonIntervals(rates=[10, 4.5, 7], endpoints=[3.2, 7.9, 10], max_sample_date=4000)
+        Po = ciw.dists.Poisson(rate=0.6)
+        Ge = ciw.dists.Geometric(prob=0.49)
+        Bi = ciw.dists.Binomial(n=12, prob=0.8)
 
-    def test_geometric_median_coverage(self):
-        """Test Geometric median to hit line 1144"""
-        G = ciw.dists.Geometric(0.3)
-        median = G.median
-        # Just verify it returns a valid number (could be negative due to formula)
-        self.assertIsInstance(median, (int, float))
-        # Don't assert it's positive since the formula might give unexpected results
+        params_set = [
+            (Un, 10000, 2),
+            (Dt, 500, 5),
+            (Tr, 10000, 2),
+            (Ex, 15000, 1),
+            (Ga, 10000, 1),
+            (No, 10000, 1),
+            (No_trunc, 10000, 1),
+            (Ln, 10000, 2),
+            (Wb, 10000, 1),
+            (Em, 10000, 2),
+            (Sq, 10000, 2),
+            (Pf, 10000, 1),
+            (Ph, 10000, 2),
+            (Er, 10000, 1),
+            (Hx, 13000, 2),
+            (He, 12000, 2),
+            (Cx, 15000, 2),
+            (Pi, 15000, 2),
+            (Po, 20000, 2),
+            (Ge, 17000, 1),
+            (Bi, 10000, 1)
+        ]
+        for params in tqdm.tqdm(params_set):
+            ciw.seed(0)
+            D, n, places = params
+            compare_theoretical_to_observed(D=D, n=n, places=places, self=self)
