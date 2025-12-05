@@ -47,7 +47,7 @@ To define this with a list of lists, we can use::
     ...     number_of_servers=[3, 3, 3],
     ...     routing=[
     ...         [0.0, 0.3, 0.7],
-    ...         [0.0, 0.0, 0.1],
+    ...         [0.0, 0.0, 1.0],
     ...         [0.0, 0.0, 0.2]
     ...     ]
     ... )
