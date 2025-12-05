@@ -339,10 +339,7 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(T.variance, expected_variance)
         self.assertEqual(T.sd, math.sqrt(expected_variance))
         mid = (a + b) / 2.0
-        if c >= mid:
-            expected_median = a + math.sqrt((b - a) * (c - a) / 2.0)
-        else:
-            expected_median = b - math.sqrt((b - a) * (b - c) / 2.0)
+        expected_median = b - math.sqrt((b - a) * (b - c) / 2.0)
         self.assertEqual(T.median, expected_median)
         self.assertEqual(T.upper_limit, b)
         self.assertEqual(T.lower_limit, a)
@@ -2209,14 +2206,6 @@ class TestSampling(unittest.TestCase):
     def test_mixture_nan_limits(self):
         """Test MixtureDistribution NaN limit handling"""
         class NaNDist(ciw.dists.Distribution):
-            def sample(self, t=None, ind=None): 
-                return 1.0
-            @property
-            def mean(self): 
-                return 1.0
-            @property
-            def variance(self): 
-                return 1.0
             @property
             def upper_limit(self): 
                 return float('nan')
