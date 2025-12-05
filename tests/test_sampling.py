@@ -3,7 +3,7 @@ import ciw
 import math
 from math import sqrt, exp, pi, erf
 import numpy as np
-from scipy.stats import norm
+import statistics as st
 from csv import reader
 from random import random, choice
 from hypothesis import given
@@ -669,8 +669,9 @@ class TestSampling(unittest.TestCase):
         self.assertEqual(N.mean, expected_mean)
         self.assertEqual(N.variance, expected_variance)
         self.assertEqual(N.sd, math.sqrt(N.variance))
-        target = 1.0 - 0.5 * norm.cdf(z)
-        expected_med = mu + sd * norm.ppf(target)
+        Norm = st.NormalDist(0, 1)
+        target = 1.0 - 0.5 * Norm.cdf(z)
+        expected_med = mu + sd * Norm.inv_cdf(target)
         self.assertEqual(N.median, expected_med)
         self.assertTrue(math.isinf(N.upper_limit))
         self.assertEqual(N.lower_limit, 0.0)
