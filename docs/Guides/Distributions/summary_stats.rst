@@ -1,4 +1,4 @@
-.. _set-dists:
+.. _dist-stats:
 
 ===============================================
 How to Access Distributions' Summary Statistics
