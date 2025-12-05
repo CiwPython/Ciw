@@ -32,7 +32,7 @@ class Simulation(object):
         server_class=None,
     ):
         """
-        Initialise an instance of the simualation.
+        Initialise a simulation instance.
         """
         self.current_time = 0.0
         self.network = network
