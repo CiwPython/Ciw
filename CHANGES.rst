@@ -1,6 +1,9 @@
 History
 -------
 
++ **3.2.7 (2025-12-05)**
+    + All distribution objects have attributes corresponding to their summary stats: mean, median, variance, standard deviation, upper and lower limits.
+
 + **3.2.6 (2025-06-13)**
     + Add the `include_incomplete` keyword tot he `get_all_records` method to allow for collection of incomplete data records.
 
