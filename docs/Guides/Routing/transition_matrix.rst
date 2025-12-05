@@ -73,7 +73,7 @@ To define with with a routing object we can make use of the built-in :code:`Tran
     ...     routing=ciw.routing.TransitionMatrix(
     ...         transition_matrix=[
     ...             [0.0, 0.3, 0.7],
-    ...             [0.0, 0.0, 0.1],
+    ...             [0.0, 0.0, 1.0],
     ...             [0.0, 0.0, 0.2]
     ...         ]
     ...     )
