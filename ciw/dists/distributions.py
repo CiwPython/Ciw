@@ -17,7 +17,7 @@ from random import (
 from typing import List, NoReturn
 
 import numpy as np
-from scipy.stats import norm
+import statistics as st
 
 from ciw.auxiliary import *
 from ciw.individual import Individual
@@ -416,8 +416,9 @@ class Normal(Distribution):
     def median(self):
         # Truncated below at 0 
         z = self._mean / self._sd
-        target = 1.0 - 0.5 * norm.cdf(z)
-        return self._mean + self._sd * norm.ppf(target)
+        Norm = st.NormalDist(0, 1)
+        target = 1.0 - 0.5 * Norm.cdf(z)
+        return self._mean + self._sd * Norm.inv_cdf(target)
 
     @property
     def upper_limit(self):
