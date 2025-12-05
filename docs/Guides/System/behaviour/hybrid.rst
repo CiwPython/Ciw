@@ -101,7 +101,7 @@ Therefore, to link the SD component and the discrete event simulation, we will m
     class HybridNode(ciw.Node):
         def release(self, next_individual_index, next_node):
             super().release(next_individual_index, next_node)
-            self.simulation.SD.solve(t=self.get_now(), L=self.number_of_individuals)
+            self.simulation.SD.solve(t=self.now, L=self.number_of_individuals)
     
     
     class HybridSimulation(ciw.Simulation):
