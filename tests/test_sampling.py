@@ -1205,6 +1205,8 @@ class TestSampling(unittest.TestCase):
         expected_var  = A.variance + B.variance             # 1 + 0.25 = 1.25
         self.assertEqual(C.mean, expected_mean)
         self.assertEqual(C.variance, expected_var)
+        self.assertEqual(C.upper_limit, float('inf'))
+        self.assertEqual(C.lower_limit, 0)
 
     def test_combined_sub_summary_stats(self):
         A = ciw.dists.Normal(5.0, 1.0)
@@ -1215,6 +1217,8 @@ class TestSampling(unittest.TestCase):
         expected_var  = A.variance + B.variance             # 1 + 0.25 = 1.25
         self.assertEqual(C.mean, expected_mean)
         self.assertEqual(C.variance, expected_var)
+        self.assertTrue(math.isnan(C.upper_limit))
+        self.assertTrue(math.isnan(C.lower_limit))
 
     def test_combined_mul_summary_stats(self):
         # Product moments (independent):

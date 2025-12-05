@@ -150,6 +150,18 @@ class CombinedDistribution(Distribution):
                 return float('nan')
             return (v1 / (m2 ** 2)) + ((m1 ** 2) * v2) / (m2 ** 4)
 
+    @property
+    def upper_limit(self):
+        if self.operator == add:
+            return self.d1.upper_limit + self.d2.upper_limit
+        return float('nan')
+
+    @property
+    def lower_limit(self):
+        if self.operator == add:
+            return self.d1.lower_limit + self.d2.lower_limit
+        return float('nan')
+
 
 class Uniform(Distribution):
     """
