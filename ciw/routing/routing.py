@@ -142,13 +142,13 @@ class FlexibleProcessBased(ProcessBased):
         if self.choice == 'jsq':
             temp_router = JoinShortestQueue(destinations=subset)
             temp_router.initialise(self.simulation, None)
-            nd = temp_router.next_node(ind)
-            return nd.id_number
+            next_node = temp_router.next_node(ind)
+            return next_node.id_number
         if self.choice == 'lb':
             temp_router = LoadBalancing(destinations=subset)
             temp_router.initialise(self.simulation, None)
-            nd = temp_router.next_node(ind)
-            return nd.id_number
+            next_node = temp_router.next_node(ind)
+            return next_node.id_number
 
     def update_individual_route(self, ind, next_node_id):
         """
@@ -228,10 +228,10 @@ class Probabilistic(NodeRouting):
     def error_check_at_initialise(self):
         if len(self.probs) != len(self.destinations):
             raise ValueError("Routing probabilities should correspond to destinations, and so should be lists of the same length.")
-        if not set(self.destinations).issubset(set([nd.id_number for nd in self.simulation.nodes[1:]])):
+        if not set(self.destinations).issubset(set([node.id_number for node in self.simulation.nodes[1:]])):
             raise ValueError("Routing destinations should be a subset of the nodes in the network.")
 
-    def next_node(self, ind):
+    def next_node(self, individual):
         """
         Probabilistically chooses the next node from the destinations.
         """
@@ -289,7 +289,7 @@ class JoinShortestQueue(NodeRouting):
         self.tie_break = tie_break
 
     def error_check_at_initialise(self):
-        if not set(self.destinations).issubset(set([nd.id_number for nd in self.simulation.nodes[1:]])):
+        if not set(self.destinations).issubset(set([node.id_number for node in self.simulation.nodes[1:]])):
             raise ValueError("Routing destinations should be a subset of the nodes in the network.")
 
     def get_queue_size(self, node_index):
@@ -345,7 +345,7 @@ class Cycle(NodeRouting):
         self.generator = itertools.cycle(self.cycle)
 
     def error_check_at_initialise(self):
-        if not set(self.cycle).issubset(set([nd.id_number for nd in self.simulation.nodes[1:]])):
+        if not set(self.cycle).issubset(set([node.id_number for node in self.simulation.nodes[1:]])):
             raise ValueError("Routing destinations should be a subset of the nodes in the network.")
 
     def next_node(self, ind):

@@ -88,7 +88,7 @@ Capacitated Process Sharing
 ---------------------------
 
 A *capacitated processor sharing queue*, or an R-PS queue ([XL09]_), is another generalisation of a processor sharing queue.
-It has parameter :math:`R`, a threshold where if the number of customers exceeds it, service switches to processor sharing shared amongs :math:`R` processors. That is when there are :math:`R` or less customers, each customer is served independently with rate 1; when there are :math:`n > R` customers, each customer is served with rate :math:`R/n`.
+It has parameter :math:`R`, a threshold where if the number of customers exceeds it, service switches to processor sharing shared among :math:`R` processors. That is when there are :math:`R` or less customers, each customer is served independently with rate 1; when there are :math:`n > R` customers, each customer is served with rate :math:`R/n`.
 
 With capacitated processor sharing queues, we can set the threshold :math:`R` by setting a :code:`ps_threshold` in the network object.
 

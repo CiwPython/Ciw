@@ -34,13 +34,13 @@ class NoDetection:
 
     def action_at_blockage(self, individual, next_node):
         """
-        The action takn at the 'block_individual' method of the node.
+        The action taken at the 'block_individual' method of the node.
         """
         pass
 
-    def action_at_detatch_server(self, server):
+    def action_at_detach_server(self, server):
         """
-        The action taken at the 'detatch_server' method of the node.
+        The action taken at the 'detach_server' method of the node.
         """
         pass
 
@@ -102,7 +102,7 @@ class StateDigraph(NoDetection):
         The action taken at the 'attach_server' method of the node:
           - If new customer joins server, and they're server is still
             blocking a customer, then that edge needs to remain.
-            However it was removed at the action_at_detatch_server, so
+            However it was removed at the action_at_detach_server, so
             it needs to be added back in.
         """
         for blq in node.blocked_queue:
@@ -122,10 +122,10 @@ class StateDigraph(NoDetection):
         for svr in next_node.servers:
             self.statedigraph.add_edge(str(individual.server), str(svr))
 
-    def action_at_detatch_server(self, server):
+    def action_at_detach_server(self, server):
         """
-        The action taken at the 'detatch_server' method of the node:
-          - Remove any edges of servers who have been detatched.
+        The action taken at the 'detach_server' method of the node:
+          - Remove any edges of servers who have been detached.
         """
         self.statedigraph.remove_edges_from(
             list(self.statedigraph.in_edges(str(server)))

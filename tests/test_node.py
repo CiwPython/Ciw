@@ -500,7 +500,7 @@ class TestNode(unittest.TestCase):
         N1.blocked_queue = [(1, 1), (2, 100)]
         N1.len_blocked_queue = 2
         rel_ind = N1.individuals[0].pop(0)
-        N1.detatch_server(rel_ind.server, rel_ind)
+        N1.detach_server(rel_ind.server, rel_ind)
 
         Q.current_time = 110
         N1.release_blocked_individual()
@@ -1033,7 +1033,7 @@ class TestNode(unittest.TestCase):
 
         def custom_server_priority(srv, ind):
             """
-            A custom server priority function that priortises server 1 for
+            A custom server priority function that prioritises server 1 for
             customer class 0 and server 2 for customer class 1.
             """
             if ind.customer_class == 'Class 0':

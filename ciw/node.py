@@ -388,11 +388,11 @@ class Node(object):
                 )
                 self.preempt(individual_to_preempt, individual)
 
-    def detatch_server(self, server, individual):
+    def detach_server(self, server, individual):
         """
         Detaches a server from an individual, and vice versa.
         """
-        self.simulation.deadlock_detector.action_at_detatch_server(server)
+        self.simulation.deadlock_detector.action_at_detach_server(server)
         server.cust = False
         server.busy = False
         individual.server = False
@@ -515,16 +515,16 @@ class Node(object):
         """
         return original + increment
 
-    def kill_server(self, srvr):
+    def kill_server(self, server):
         """
         Kills a server when they go off duty.
         """
-        srvr.total_time = self.increment_time(self.next_event_date, -srvr.start_date)
-        self.overtime.append(self.increment_time(self.next_event_date, -srvr.shift_end))
-        self.all_servers_busy.append(srvr.busy_time)
-        self.all_servers_total.append(srvr.total_time)
-        indx = self.servers.index(srvr)
-        del self.servers[indx]
+        server.total_time = self.increment_time(self.next_event_date, -server.start_date)
+        self.overtime.append(self.increment_time(self.next_event_date, -server.shift_end))
+        self.all_servers_busy.append(server.busy_time)
+        self.all_servers_total.append(server.total_time)
+        index = self.servers.index(server)
+        del self.servers[index]
 
     def next_node(self, ind):
         """
@@ -558,7 +558,7 @@ class Node(object):
             individual_to_preempt.time_left = individual_to_preempt.service_end_date - self.now
             individual_to_preempt.service_time = self.priority_preempt
             individual_to_preempt.service_end_date = False
-            self.detatch_server(server, individual_to_preempt)
+            self.detach_server(server, individual_to_preempt)
             self.decide_class_change(individual_to_preempt)
         self.attach_server(server, next_individual)
         next_individual.service_start_date = self.now
@@ -573,7 +573,7 @@ class Node(object):
           - find the individual to release
           - remove from queue
           - record relevant information to data record
-          - detatch individual from server
+          - detach individual from server
           - write record
           - update state tracker
           - begin service of any waiting customers
@@ -590,7 +590,7 @@ class Node(object):
         newly_free_server = None
         if not isinf(self.c) and not self.slotted:
             newly_free_server = next_individual.server
-            self.detatch_server(newly_free_server, next_individual)
+            self.detach_server(newly_free_server, next_individual)
         if self.slotted:
             next_individual.server = False
         self.reset_individual_attributes(next_individual)

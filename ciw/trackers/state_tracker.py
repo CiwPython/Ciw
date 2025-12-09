@@ -258,7 +258,7 @@ class GroupedNodePopulation(StateTracker):
         Pre-initialises the object with keyword `observed_nodes`
         """
         self.groups = groups
-        self.observed_nodes = [nd for group in groups for nd in group] 
+        self.observed_nodes = [node for group in groups for node in group]
 
     def initialise(self, simulation):
         """

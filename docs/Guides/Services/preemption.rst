@@ -49,7 +49,7 @@ In order to implement pre-emptive or non-pre-emptive schedules, the :code:`ciw.S
     number_of_servers=[
         ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption=False),      # non-preemptive
         ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resample"), # preemptive and resamples service time
-        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="restart"),  # preemptive and restarts origional service time
+        ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="restart"),  # preemptive and restarts original service time
         ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="resume"),   # preemptive and continues services where left off
         ciw.Schedule(numbers_of_servers=[2, 0, 1], shift_end_dates=[10, 30, 100], preemption="reroute")   # preemptive and sends the individual to another node
     ]

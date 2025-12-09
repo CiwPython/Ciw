@@ -47,7 +47,7 @@ And so relevant data can be gathered using list comprehension::
     >>> sum(waiting_times) / len(waiting_times)
     0.3989747...
 
-For easier manipulation, use in conjuction with `Pandas <https://pandas.pydata.org/>`_ is recommended, allowing for easier filtering, grouping, and summary statistics calculations. Lists of data records convert to Pandas data frames smoothly:
+For easier manipulation, use in conjunction with `Pandas <https://pandas.pydata.org/>`_ is recommended, allowing for easier filtering, grouping, and summary statistics calculations. Lists of data records convert to Pandas data frames smoothly:
 
     >>> import pandas as pd
     >>> recs_pd = pd.DataFrame(recs)

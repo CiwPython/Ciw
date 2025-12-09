@@ -1479,11 +1479,11 @@ class TestStateProbabilities(unittest.TestCase):
 
     def test_compare_state_probabilities_to_analytical(self):
         # Example: λ = 1, μ = 3
-        lamda = 1
+        rate_lambda = 1
         mu = 3
         ciw.seed(0)
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            arrival_distributions=[ciw.dists.Exponential(rate_lambda)],
             service_distributions=[ciw.dists.Exponential(mu)],
             number_of_servers=[1],
         )
@@ -1493,7 +1493,7 @@ class TestStateProbabilities(unittest.TestCase):
             observation_period=(500, 20000)
         )
 
-        vec = [(lamda / mu) ** i for i in sorted(state_probs.keys())]
+        vec = [(rate_lambda / mu) ** i for i in sorted(state_probs.keys())]
         expected_probs = [v / sum(vec) for v in vec]
 
         for state in state_probs:
@@ -1511,11 +1511,11 @@ class TestStateProbabilities(unittest.TestCase):
         self.assertEqual(round(error_squared, 4), 0)
 
         # Example: λ = 1, μ = 4
-        lamda = 1
+        rate_lambda = 1
         mu = 4
         ciw.seed(0)
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            arrival_distributions=[ciw.dists.Exponential(rate_lambda)],
             service_distributions=[ciw.dists.Exponential(mu)],
             number_of_servers=[1],
         )
@@ -1525,7 +1525,7 @@ class TestStateProbabilities(unittest.TestCase):
             observation_period=(500, 20000)
         )
 
-        vec = [(lamda / mu) ** i for i in sorted(state_probs.keys())]
+        vec = [(rate_lambda / mu) ** i for i in sorted(state_probs.keys())]
         expected_probs = [v / sum(vec) for v in vec]
 
         for state in state_probs:
@@ -1543,11 +1543,11 @@ class TestStateProbabilities(unittest.TestCase):
         self.assertEqual(round(error_squared, 4), 0)
 
         # Example: λ = 1, μ = 5
-        lamda = 1
+        rate_lambda = 1
         mu = 5
         ciw.seed(0)
         N = ciw.create_network(
-            arrival_distributions=[ciw.dists.Exponential(lamda)],
+            arrival_distributions=[ciw.dists.Exponential(rate_lambda)],
             service_distributions=[ciw.dists.Exponential(mu)],
             number_of_servers=[1],
         )
@@ -1557,7 +1557,7 @@ class TestStateProbabilities(unittest.TestCase):
             observation_period=(500, 20000)
         )
 
-        vec = [(lamda / mu) ** i for i in sorted(state_probs.keys())]
+        vec = [(rate_lambda / mu) ** i for i in sorted(state_probs.keys())]
         expected_probs = [v / sum(vec) for v in vec]
 
         for state in state_probs:

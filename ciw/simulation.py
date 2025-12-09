@@ -117,11 +117,11 @@ class Simulation(object):
         Adds the simulation object as an attribute of the distribution objects
         """
         for clss in self.network.customer_class_names:
-            for nd in range(self.network.number_of_nodes):
-                if self.inter_arrival_times[nd + 1][clss] is not None:
-                    self.inter_arrival_times[nd + 1][clss].simulation = self
-                    self.service_times[nd + 1][clss].simulation = self
-                    self.batch_sizes[nd + 1][clss].simulation = self
+            for node_index in range(self.network.number_of_nodes):
+                if self.inter_arrival_times[node_index + 1][clss] is not None:
+                    self.inter_arrival_times[node_index + 1][clss].simulation = self
+                    self.service_times[node_index + 1][clss].simulation = self
+                    self.batch_sizes[node_index + 1][clss].simulation = self
 
     def find_and_initialise_routers(self):
         """
@@ -139,12 +139,12 @@ class Simulation(object):
         """
         mindate = float("Inf")
         next_active_nodes = []
-        for nd in self.active_nodes:
-            if nd.next_event_date < mindate:
-                mindate = nd.next_event_date
-                next_active_nodes = [nd]
-            elif nd.next_event_date == mindate:
-                next_active_nodes.append(nd)
+        for active_node in self.active_nodes:
+            if active_node.next_event_date < mindate:
+                mindate = active_node.next_event_date
+                next_active_nodes = [active_node]
+            elif active_node.next_event_date == mindate:
+                next_active_nodes.append(active_node)
         if len(next_active_nodes) > 1:
             return random_choice(next_active_nodes)
         return next_active_nodes[0]
@@ -199,7 +199,7 @@ class Simulation(object):
                 self.NodeTypes = [node_class for _ in range(self.network.number_of_nodes)]
             else:
                 if len(node_class) != self.network.number_of_nodes:
-                    raise ValueError("Ensure consistant number of nodes is used throughout.")
+                    raise ValueError("Ensure consistent number of nodes is used throughout.")
                 self.NodeTypes = node_class
         else:
             self.NodeTypes = [Node for _ in range(self.network.number_of_nodes)]
@@ -340,6 +340,6 @@ class Simulation(object):
         the end of the simulation run. Finds the overall
         server utilisation for each node.
         """
-        for nd in self.transitive_nodes:
-            nd.wrap_up_servers(current_time)
-            nd.find_server_utilisation()
+        for transitive_node in self.transitive_nodes:
+            transitive_node.wrap_up_servers(current_time)
+            transitive_node.find_server_utilisation()

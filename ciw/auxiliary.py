@@ -61,7 +61,7 @@ def flatten_list(list_of_lists):
 
 def no_routing(ind):
     """
-    Process-based routing fucntion that sends the customer straight
+    Process-based routing function that sends the customer straight
     to exit node. It is a placeholder for when NoArrivals is used.
     """
     return []

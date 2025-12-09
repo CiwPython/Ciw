@@ -201,7 +201,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nu = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(
                 ul <= Nu.simulation.service_times[Nu.id_number]['Customer']._sample() <= uh
             )
@@ -264,7 +264,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nd = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertEqual(Nd.simulation.service_times[Nd.id_number]['Customer']._sample(), d)
             self.assertEqual(
                 Nd.simulation.inter_arrival_times[Nd.id_number]['Customer']._sample(), d
@@ -326,7 +326,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nt = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(tl <= Nt.simulation.service_times[Nt.id_number]['Customer']._sample() <= th)
             self.assertTrue(tl <= Nt.simulation.inter_arrival_times[Nt.id_number]['Customer']._sample() <= th)
 
@@ -396,7 +396,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Ne = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(
                 Ne.simulation.service_times[Ne.id_number]['Customer']._sample() >= 0.0
             )
@@ -461,7 +461,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Ng = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(
                 Ng.simulation.service_times[Ng.id_number]['Customer']._sample() >= 0.0
             )
@@ -522,7 +522,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nl = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(Nl.simulation.service_times[Nl.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nl.simulation.inter_arrival_times[Nl.id_number]['Customer']._sample() >= 0.0)
 
@@ -584,7 +584,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nw = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(
                 Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0
             )
@@ -650,7 +650,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nw = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
     
@@ -719,7 +719,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nem = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(
                 Nem.simulation.service_times[Nem.id_number]['Customer']._sample()
                 in set([7.0, 7.1, 7.2, 7.3, 7.7, 7.8])
@@ -806,7 +806,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nc = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(Nc.simulation.service_times[Nc.id_number]['Customer']._sample() in set(cust_vals))
             self.assertTrue(Nc.simulation.inter_arrival_times[Nc.id_number]['Customer']._sample() in set(cust_vals))
 
@@ -1265,28 +1265,28 @@ class TestSampling(unittest.TestCase):
         D5 = ciw.dists.Deterministic(5.0)
         D8 = ciw.dists.Deterministic(8.0)
 
-        Mixted_100 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1, 0, 0])
-        m100_samples = [Mixted_100.sample() for _ in range(10)]
+        mixture_distribution_100 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1, 0, 0])
+        m100_samples = [mixture_distribution_100.sample() for _ in range(10)]
         m100_expected = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        self.assertEqual(str(Mixted_100), 'MixtureDistribution')
+        self.assertEqual(str(mixture_distribution_100), 'MixtureDistribution')
         self.assertEqual(m100_samples, m100_expected)
 
-        Mixted_010 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 1, 0])
-        m010_samples = [Mixted_010.sample() for _ in range(10)]
+        mixture_distribution_010 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 1, 0])
+        m010_samples = [mixture_distribution_010.sample() for _ in range(10)]
         m010_expected = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
-        self.assertEqual(str(Mixted_010), 'MixtureDistribution')
+        self.assertEqual(str(mixture_distribution_010), 'MixtureDistribution')
         self.assertEqual(m010_samples, m010_expected)
 
-        Mixted_001 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 0, 1])
-        m001_samples = [Mixted_001.sample() for _ in range(10)]
+        mixture_distribution_001 = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[0, 0, 1])
+        m001_samples = [mixture_distribution_001.sample() for _ in range(10)]
         m001_expected = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
-        self.assertEqual(str(Mixted_001), 'MixtureDistribution')
+        self.assertEqual(str(mixture_distribution_001), 'MixtureDistribution')
         self.assertEqual(m001_samples, m001_expected)
 
-        Mixted_eq = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1/3, 1/3, 1/3])
-        meq_samples = [Mixted_eq.sample() for _ in range(10)]
+        mixture_distribution = ciw.dists.MixtureDistribution(dists=[D1, D5, D8], probs=[1/3, 1/3, 1/3])
+        meq_samples = [mixture_distribution.sample() for _ in range(10)]
         meq_expected = [5, 8, 1, 8, 5, 1, 8, 5, 8, 8]
-        self.assertEqual(str(Mixted_eq), 'MixtureDistribution')
+        self.assertEqual(str(mixture_distribution), 'MixtureDistribution')
         self.assertEqual(meq_samples, meq_expected)
 
     def test_mixture_summary_stats(self):
@@ -1496,7 +1496,7 @@ class TestSampling(unittest.TestCase):
         )
         Q = ciw.Simulation(N)
         Nw = Q.transitive_nodes[0]
-        for itr in range(10):  # Because repition happens in the simulation
+        for itr in range(10):  # Because repetition happens in the simulation
             self.assertTrue(Nw.simulation.service_times[Nw.id_number]['Customer']._sample() >= 0.0)
             self.assertTrue(Nw.simulation.inter_arrival_times[Nw.id_number]['Customer']._sample() >= 0.0)
 

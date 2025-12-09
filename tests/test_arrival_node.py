@@ -415,14 +415,14 @@ class TestArrivalNode(unittest.TestCase):
         Q = ciw.Simulation(N)
         N = Q.transitive_nodes[0]
 
-        observerd_inds = []
+        observed_individuals = []
         for _ in range(20):
-            observerd_inds.append(len(N.all_individuals))
+            observed_individuals.append(len(N.all_individuals))
             Q.nodes[0].have_event()
 
         # Numbers of individuals should only increase by 1 or by 5
         self.assertEqual(
-            observerd_inds,
+            observed_individuals,
             [0, 1, 6, 11, 12, 13, 14, 15, 20, 25, 30, 35, 40, 41, 42, 43, 48, 49, 54, 55],
         )
 

@@ -88,8 +88,8 @@ class Network(object):
             set([clss.priority_class for clss in customer_classes.values()])
         )
         self.priority_class_mapping = {clss: customer_classes[clss].priority_class for clss in customer_classes.keys()}
-        for nd_id, node in enumerate(self.service_centres):
-            if all(clss.reneging_time_distributions[nd_id] == None for clss in self.customer_classes.values()):
+        for node_identifier, node in enumerate(self.service_centres):
+            if all(clss.reneging_time_distributions[node_identifier] == None for clss in self.customer_classes.values()):
                 node.reneging = False
             else:
                 node.reneging = True

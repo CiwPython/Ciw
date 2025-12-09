@@ -240,7 +240,7 @@ class TestSimulation(unittest.TestCase):
         Q3 = ciw.Simulation(N)
         Q3.simulate_until_max_customers(10, method="Arrive")
         self.assertEqual(Q3.nodes[0].number_of_individuals, 10)
-        all_inds = sum([len(nd.all_individuals) for nd in Q3.nodes[1:]])
+        all_inds = sum([len(nodes.all_individuals) for nodes in Q3.nodes[1:]])
         rejected_records = Q3.get_all_records(only=["rejection"])
         number_of_losses = len(rejected_records)
         self.assertEqual(all_inds, 10)
@@ -1575,19 +1575,19 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(2.7)
         recs = Q.get_all_records()
 
-        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
-        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
-        self.assertEqual([r.destination for r in nd_1], [-1, -1, -1, 2, -1])
-        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+        node_1_records = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_1_records], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in node_1_records], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in node_1_records], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in node_1_records], [-1, -1, -1, 2, -1])
+        self.assertEqual([r.record_type for r in node_1_records], ['service', 'service', 'service', 'interrupted service', 'service'])
 
-        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [2.1])
-        self.assertEqual([round(r.service_time, 5) for r in nd_2], [0.5])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [2.6])
-        self.assertEqual([r.destination for r in nd_2], [-1])
-        self.assertEqual([r.record_type for r in nd_2], ['service'])
+        node_2_records = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_2_records], [2.1])
+        self.assertEqual([round(r.service_time, 5) for r in node_2_records], [0.5])
+        self.assertEqual([round(r.exit_date, 5) for r in node_2_records], [2.6])
+        self.assertEqual([r.destination for r in node_2_records], [-1])
+        self.assertEqual([r.record_type for r in node_2_records], ['service'])
 
         """
         Class 0 arrive to Node 1 every 0.7, service lasts 0.2
@@ -1631,19 +1631,19 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(2.7)
         recs = Q.get_all_records()
 
-        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
-        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
-        self.assertEqual([r.destination for r in nd_1], [2, 2, 2, 2, 2])
-        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+        node_1_records = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_1_records], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in node_1_records], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in node_1_records], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in node_1_records], [2, 2, 2, 2, 2])
+        self.assertEqual([r.record_type for r in node_1_records], ['service', 'service', 'service', 'interrupted service', 'service'])
 
-        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [0.9, 1.2, 1.6, 2.1, 2.3])
-        self.assertEqual([round(r.service_time, 5) for r in nd_2], [0.1, 0.1, 0.1, 0.1, 0.1])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [1.0, 1.3, 1.7, 2.2, 2.4])
-        self.assertEqual([r.destination for r in nd_2], [-1, -1, -1, -1, -1])
-        self.assertEqual([r.record_type for r in nd_2], ['service', 'service', 'service', 'service', 'service'])
+        node_2_records = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_2_records], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([round(r.service_time, 5) for r in node_2_records], [0.1, 0.1, 0.1, 0.1, 0.1])
+        self.assertEqual([round(r.exit_date, 5) for r in node_2_records], [1.0, 1.3, 1.7, 2.2, 2.4])
+        self.assertEqual([r.destination for r in node_2_records], [-1, -1, -1, -1, -1])
+        self.assertEqual([r.record_type for r in node_2_records], ['service', 'service', 'service', 'service', 'service'])
 
     def test_reroute_preemption_classpriorities_process_based(self):
         """
@@ -1691,19 +1691,19 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(2.7)
         recs = Q.get_all_records()
 
-        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
-        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
-        self.assertEqual([r.destination for r in nd_1], [2, 2, 2, 2, 2])
-        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+        node_1_records = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_1_records], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in node_1_records], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in node_1_records], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in node_1_records], [2, 2, 2, 2, 2])
+        self.assertEqual([r.record_type for r in node_1_records], ['service', 'service', 'service', 'interrupted service', 'service'])
 
-        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [0.9, 1.2, 1.6, 2.1, 2.3])
-        self.assertEqual([round(r.service_time, 5) for r in nd_2], [0.1, 0.1, 0.1, 0.1, 0.1])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [1.0, 1.3, 1.7, 2.2, 2.4])
-        self.assertEqual([r.destination for r in nd_2], [-1, -1, -1, -1, -1])
-        self.assertEqual([r.record_type for r in nd_2], ['service', 'service', 'service', 'service', 'service'])
+        node_2_records = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_2_records], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([round(r.service_time, 5) for r in node_2_records], [0.1, 0.1, 0.1, 0.1, 0.1])
+        self.assertEqual([round(r.exit_date, 5) for r in node_2_records], [1.0, 1.3, 1.7, 2.2, 2.4])
+        self.assertEqual([r.destination for r in node_2_records], [-1, -1, -1, -1, -1])
+        self.assertEqual([r.record_type for r in node_2_records], ['service', 'service', 'service', 'service', 'service'])
 
     def test_rerouting_ignores_queue_capacities(self):
         """
@@ -1766,19 +1766,19 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(3.3)
         recs = Q.get_all_records()
 
-        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)[:5]
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [0.7, 1.0, 1.4, 2.0, 2.1])
-        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.2, 0.2, 0.2, 0.2, 0.2])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [0.9, 1.2, 1.6, 2.1, 2.3])
-        self.assertEqual([r.destination for r in nd_1], [-1, -1, -1, 2, -1])
-        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service'])
+        node_1_records = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)[:5]
+        self.assertEqual([round(r.arrival_date, 5) for r in node_1_records], [0.7, 1.0, 1.4, 2.0, 2.1])
+        self.assertEqual([round(r.service_time, 5) for r in node_1_records], [0.2, 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual([round(r.exit_date, 5) for r in node_1_records], [0.9, 1.2, 1.6, 2.1, 2.3])
+        self.assertEqual([r.destination for r in node_1_records], [-1, -1, -1, 2, -1])
+        self.assertEqual([r.record_type for r in node_1_records], ['service', 'service', 'service', 'interrupted service', 'service'])
 
-        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)[:5]
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [0.6, 1.2, 1.8, 2.1, 2.4])
-        self.assertEqual([str(round(r.service_time, 5)) for r in nd_2], ['0.7', 'nan', '0.7', '0.7', 'nan'])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [1.3, 1.2, 2.5, 3.2, 2.4])
-        self.assertEqual([str(r.destination) for r in nd_2], ['-1', 'nan', '-1', '-1', 'nan'])
-        self.assertEqual([r.record_type for r in nd_2], ['service', 'rejection', 'service', 'service', 'rejection'])
+        node_2_records = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)[:5]
+        self.assertEqual([round(r.arrival_date, 5) for r in node_2_records], [0.6, 1.2, 1.8, 2.1, 2.4])
+        self.assertEqual([str(round(r.service_time, 5)) for r in node_2_records], ['0.7', 'nan', '0.7', '0.7', 'nan'])
+        self.assertEqual([round(r.exit_date, 5) for r in node_2_records], [1.3, 1.2, 2.5, 3.2, 2.4])
+        self.assertEqual([str(r.destination) for r in node_2_records], ['-1', 'nan', '-1', '-1', 'nan'])
+        self.assertEqual([r.record_type for r in node_2_records], ['service', 'rejection', 'service', 'service', 'rejection'])
 
     def test_reroute_at_shift_change(self):
         """
@@ -1823,19 +1823,19 @@ class TestSimulation(unittest.TestCase):
         Q.simulate_until_max_time(7.5)
 
         recs = Q.get_all_records()
-        nd_1 = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_1], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0])
-        self.assertEqual([round(r.service_time, 5) for r in nd_1], [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_1], [1.4, 2.4, 3.4, 4.2, 6.5, 6.9, 7.4])
-        self.assertEqual([r.destination for r in nd_1], [-1, -1, -1, 2, -1, -1, -1])
-        self.assertEqual([r.record_type for r in nd_1], ['service', 'service', 'service', 'interrupted service', 'service', 'service', 'service'])
+        node_1_records = sorted([r for r in recs if r.node == 1], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_1_records], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0])
+        self.assertEqual([round(r.service_time, 5) for r in node_1_records], [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4])
+        self.assertEqual([round(r.exit_date, 5) for r in node_1_records], [1.4, 2.4, 3.4, 4.2, 6.5, 6.9, 7.4])
+        self.assertEqual([r.destination for r in node_1_records], [-1, -1, -1, 2, -1, -1, -1])
+        self.assertEqual([r.record_type for r in node_1_records], ['service', 'service', 'service', 'interrupted service', 'service', 'service', 'service'])
 
-        nd_2 = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
-        self.assertEqual([round(r.arrival_date, 5) for r in nd_2], [4.2])
-        self.assertEqual([round(r.service_time, 5) for r in nd_2], [1.0])
-        self.assertEqual([round(r.exit_date, 5) for r in nd_2], [5.2])
-        self.assertEqual([r.destination for r in nd_2], [-1])
-        self.assertEqual([r.record_type for r in nd_2], ['service'])
+        node_2_records = sorted([r for r in recs if r.node == 2], key=lambda r: r.arrival_date)
+        self.assertEqual([round(r.arrival_date, 5) for r in node_2_records], [4.2])
+        self.assertEqual([round(r.service_time, 5) for r in node_2_records], [1.0])
+        self.assertEqual([round(r.exit_date, 5) for r in node_2_records], [5.2])
+        self.assertEqual([r.destination for r in node_2_records], [-1])
+        self.assertEqual([r.record_type for r in node_2_records], ['service'])
 
 
 class TestServiceDisciplines(unittest.TestCase):

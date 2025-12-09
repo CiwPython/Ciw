@@ -4,7 +4,7 @@
 How to Access Distributions' Summary Statistics
 ===============================================
 
-Every distribution object in Ciw has attributes giving summary statisics for the distributions. These are:
+Every distribution object in Ciw has attributes giving summary statistics for the distributions. These are:
 
 + Mean
 + Median

@@ -112,8 +112,7 @@ Here they keyword argument :code:`max_sample_date` is date where no samples will
     >>> [round(d, 3) for d in Pi.dates]
     [0.0, 2.274, 2.533, 3.259, 3.303, 3.405, 3.421, 3.477, 3.511, 3.583, 3.784, 6.724, 7.251, 7.282, 7.505, 7.618, 7.756, 7.91]
 
-Here in the interval (0, 3) 2 arrivals were sampled (expected value 3); in the interval (3, 4) 8 arrivals were sampled (expected value 8); in the interval (4, 7) 1 arrival was samples (expected value 3); and in the interval (7, 8) 6 arrivals were sampled (expected value 10); and in the interval (8, 10) 0 arrival was sampled (expeced value 2
-).
+Here in the interval (0, 3) 2 arrivals were sampled (expected value 3); in the interval (3, 4) 8 arrivals were sampled (expected value 8); in the interval (4, 7) 1 arrival was samples (expected value 3); and in the interval (7, 8) 6 arrivals were sampled (expected value 10); and in the interval (8, 10) 0 arrival was sampled (expected value 2).
 
 The distribution's :code:`sample()` method sampled the scheduled inter-arrival times for these dates::
 

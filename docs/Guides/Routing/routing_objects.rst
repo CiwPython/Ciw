@@ -30,7 +30,7 @@ Consider a four node system:
   + At node 3 customers can either repeat service there with probability 0.25, or leave the system;
   + At node 4, all customers leave the system.
 
-We can construct a network routing object for this by choosing a set of node routing obejects from the list above. We place them in a list and use the :code:`routers` keyword to create the network object. In this case, the network object would be::
+We can construct a network routing object for this by choosing a set of node routing objects from the list above. We place them in a list and use the :code:`routers` keyword to create the network object. In this case, the network object would be::
 
     >>> import ciw
     >>> R = ciw.routing.NetworkRouting(
@@ -55,7 +55,7 @@ This network object can then be used to create a network::
 Notes
 ~~~~~
 
-+ Note that a the :code:`routing` keywork when creating a network object requires a network routing object, *not* a node routing object. This is true even when there is only one node in the network.
++ Note that the :code:`routing` parameter of :code:`ciw.create_network` requires a network routing object, *not* a node routing object. This is true even when there is only one node in the network.
 + Note also that, similar to the use of most other keywords when creating a network object, that routing can be customer class dependent.
 
 For example, a one node network with two customer classes, both classes having different routing::

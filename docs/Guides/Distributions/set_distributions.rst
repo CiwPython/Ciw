@@ -4,7 +4,7 @@
 How to Set Arrival & Service Distributions
 ==========================================
 
-Ciw offeres a variety of inter-arrival and service time distributions.
+Ciw offers a variety of inter-arrival and service time distributions.
 A full list can be found :ref:`here <refs-dists>`.
 They are objects, that are defined in the :code:`Network` with the :code:`'arrival_distributions'` and :code:`'service_distributions'` keywords.
 
@@ -48,7 +48,7 @@ The system uses the following eight distribution objects:
 + :code:`ciw.dists.Exponential(rate=6.0)`:
    + Sample from the `exponential <https://en.wikipedia.org/wiki/Exponential_distribution>`_ distribution with parameter :math:`\lambda = 6.0`. Expected mean of 0.1666...
 + :code:`ciw.dists.Uniform(lower=0.1, upper=0.7)`:
-   + Sample any number between 0.1 and 0.7 with equal probablity. Expected mean of 0.4.
+   + Sample any number between 0.1 and 0.7 with equal probability. Expected mean of 0.4.
 + :code:`ciw.dists.Lognormal(mean=-1, sd=0.5)`:
    + Sample from the `lognormal <https://en.wikipedia.org/wiki/Log-normal_distribution>`_ distribution with parameters :math:`\mu = -1` and :math:`\sigma = 0.5`. Expected mean of 0.4724...
 + :code:`ciw.dists.Triangular(lower=0.2, mode=0.3, upper=0.7)`:

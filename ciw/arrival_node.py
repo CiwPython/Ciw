@@ -30,8 +30,8 @@ class ArrivalNode:
         self.number_accepted_individuals_per_class = {clss: 0 for clss in self.simulation.network.customer_class_names}
         self.system_capacity = self.simulation.network.system_capacity
         self.event_dates_dict = {
-            nd + 1: {clss: False for clss in self.simulation.network.customer_class_names
-            } for nd in range(self.simulation.network.number_of_nodes)
+            node + 1: {clss: False for clss in self.simulation.network.customer_class_names
+            } for node in range(self.simulation.network.number_of_nodes)
         }
 
     def initialise(self):
@@ -66,12 +66,12 @@ class ArrivalNode:
         minnd = None
         minclss = None
         mindate = float("Inf")
-        for nd in self.event_dates_dict:
-            for clss in self.event_dates_dict[nd]:
-                if self.event_dates_dict[nd][clss] < mindate:
-                    minnd = nd
+        for node in self.event_dates_dict:
+            for clss in self.event_dates_dict[node]:
+                if self.event_dates_dict[node][clss] < mindate:
+                    minnd = node
                     minclss = clss
-                    mindate = self.event_dates_dict[nd][clss]
+                    mindate = self.event_dates_dict[node][clss]
         self.next_node = minnd
         self.next_class = minclss
         self.next_event_date = mindate
@@ -79,7 +79,7 @@ class ArrivalNode:
     def have_event(self):
         """
         Finds a batch size. Creates that many Individuals and send
-        them to the relevent node. Then updates the event_dates_dict.
+        them to the relevant node. Then updates the event_dates_dict.
         """
         batch = self.batch_size(self.next_node, self.next_class)
         for _ in range(batch):
@@ -114,25 +114,25 @@ class ArrivalNode:
         Initialises the next event dates dictionary
         with random times for each node and class.
         """
-        for nd in self.event_dates_dict:
-            for clss in self.event_dates_dict[nd]:
-                if self.simulation.inter_arrival_times[nd][clss] is not None:
-                    self.event_dates_dict[nd][clss] = self.inter_arrival(nd, clss)
+        for node in self.event_dates_dict:
+            for clss in self.event_dates_dict[node]:
+                if self.simulation.inter_arrival_times[node][clss] is not None:
+                    self.event_dates_dict[node][clss] = self.inter_arrival(node, clss)
                 else:
-                    self.event_dates_dict[nd][clss] = float("inf")
+                    self.event_dates_dict[node][clss] = float("inf")
 
-    def inter_arrival(self, nd, clss):
+    def inter_arrival(self, node, customer_class):
         """
         Samples the inter-arrival time for next class and node.
         """
-        return self.simulation.inter_arrival_times[nd][clss]._sample(t=self.simulation.current_time)
+        return self.simulation.inter_arrival_times[node][customer_class]._sample(t=self.simulation.current_time)
 
-    def batch_size(self, nd, clss):
+    def batch_size(self, node, customer_class):
         """
         Samples the batch size for next class and node.
         Raises error if a positive integer is not sampled.
         """
-        batch = self.simulation.batch_sizes[nd][clss]._sample(t=self.simulation.current_time)
+        batch = self.simulation.batch_sizes[node][customer_class]._sample(t=self.simulation.current_time)
         if isinstance(batch, int) and batch >= 0:
             return batch
         raise ValueError("Batch sizes must be positive integers.")

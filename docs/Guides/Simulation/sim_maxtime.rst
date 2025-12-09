@@ -30,6 +30,6 @@ We will see there there have been three arrivals at dates 7, 14 and 21, but only
     [7.0, 14.0]
     >>> Q.current_time
     22.0
-    >>> [nd.next_event_date for nd in Q.nodes]
+    >>> [node.next_event_date for node in Q.nodes]
     [28.0, 23.0, inf]
 

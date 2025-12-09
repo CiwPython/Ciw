@@ -4,10 +4,11 @@ import doctest
 import os
 import unittest
 import sys
-from typing import Any
 
 
-def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: Any) -> unittest.TestSuite:
+def load_tests(
+    loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: object
+) -> unittest.TestSuite:
     """
     Discover and add all reStructuredText (.rst) doctest files within the current directory tree to the test suite.
 
@@ -17,7 +18,7 @@ def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: 
         The test loader instance used to load the tests.
     tests : unittest.TestSuite
         The existing test suite to which doctest suites will be added.
-    ignorex : Any
+    ignorex : object
         A placeholder parameter (typically unused) required by the unittest framework.
 
     Returns
@@ -45,8 +46,7 @@ def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: 
             if f.endswith(".rst"):
                 tests.addTests(
                     doctest.DocFileSuite(
-                        os.path.join(root, f),
-                        optionflags=doctest.ELLIPSIS
+                        os.path.join(root, f), optionflags=doctest.ELLIPSIS
                     )
                 )
     return tests
@@ -55,4 +55,3 @@ def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, ignorex: 
 if __name__ == "__main__":
     if sys.version_info >= (3, 6):
         unittest.main()
-

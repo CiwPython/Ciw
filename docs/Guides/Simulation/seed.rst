@@ -5,7 +5,7 @@ How to Set a Seed
 =================
 
 To ensure reproducibility of results users can set a seed for all the random number streams that Ciw uses.
-This can be done using the Ciw functon :code:`ciw.seed`::
+This can be done using the Ciw function :code:`ciw.seed`::
     
     >>> import ciw
     >>> ciw.seed(5)

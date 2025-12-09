@@ -24,7 +24,7 @@ from ciw.individual import Individual
 
 class Distribution(object):
     """
-    A general distribution from which all other distirbutions will inherit.
+    A general distribution from which all other distributions will inherit.
     """
     def __repr__(self):
         return "Distribution"
@@ -34,7 +34,7 @@ class Distribution(object):
 
     def _sample(self, t=None, ind=None):
         """
-        Performs vaildity checks before sampling.
+        Performs validity checks before sampling.
         """
         s = self.sample(t=t, ind=ind)
         if (isinstance(s, float) or isinstance(s, int)) and s >= 0:
@@ -176,7 +176,7 @@ class Uniform(Distribution):
             raise ValueError("Uniform distribution must sample positive numbers only.")
         if upper < lower:
             raise ValueError(
-                "Uniform distirbution upper bound should be >= lower bound."
+                "Uniform distribution upper bound should be >= lower bound."
             )
         self.lower = lower
         self.upper = upper
@@ -692,9 +692,9 @@ class PhaseType(Distribution):
     A distribution defined by an initial vector and an absorbing Markov chain
 
     Takes:
-      - `initial_state`   the intial probabilities of being in each state
-      - `absorbing_matrix` the martix representation of the absorbing Markov
-        chain, with the final state the absorbing state
+      - `initial_state`   the initial probabilities of being in each state.
+      - `absorbing_matrix` the matrix representation of the absorbing Markov
+        chain, with the final state the absorbing state.
     """
 
     def __init__(self, initial_state, absorbing_matrix): 
@@ -910,7 +910,7 @@ class HyperErlang(PhaseType):
 
 class Coxian(PhaseType):
     """
-    A shortcut for the Coxian distribuion, using the PhaseType distribution
+    A shortcut for the Coxian distribution, using the PhaseType distribution
 
     Takes:
       - `rates` a vector of rates for each phase
@@ -1141,7 +1141,7 @@ class Binomial(Distribution):
             )
         if not isinstance(n, int) or n <= 0:
             raise ValueError(
-                "The number of trials of the Binomial distirbution must be a positive integer."
+                "The number of trials of the Binomial distribution must be a positive integer."
             )
         self.n = n
         self.prob = prob

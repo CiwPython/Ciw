@@ -1,7 +1,7 @@
 .. _system-capacity:
 
 ===================================================
-How to Set a Maximium Capacity for the Whole System
+How to Set a Maximum Capacity for the Whole System
 ===================================================
 
 We have seen that :ref:`node capacities<tutorial-iii>` can define restricted queueing networks. Ciw also allows for a whole system capacity to be set. When a system capacity is set, when the total number of customers present in *all* the nodes of the system is equal to the system capacity, then newly arriving customers will be rejected. Once the total number of customers drops back below the system capacity, then customers will be accepted into the system again.

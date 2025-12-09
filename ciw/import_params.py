@@ -95,16 +95,16 @@ def create_network_from_dictionary(params_input):
                         class_change_time_distributions[clss1][clss2] = params['class_change_time_distributions'][clss1][clss2]
 
     nodes, classes = [], {}
-    for nd in range(number_of_nodes):
+    for node_index in range(number_of_nodes):
         nodes.append(
             ServiceCentre(
-                params['number_of_servers'][nd],
-                params["queue_capacities"][nd],
-                class_change_matrices[nd],
-                preempt_priorities[nd],
-                params["ps_thresholds"][nd],
-                params["server_priority_functions"][nd],
-                params["service_disciplines"][nd],
+                params['number_of_servers'][node_index],
+                params["queue_capacities"][node_index],
+                class_change_matrices[node_index],
+                preempt_priorities[node_index],
+                params["ps_thresholds"][node_index],
+                params["server_priority_functions"][node_index],
+                params["service_disciplines"][node_index],
             )
         )
     for clss_name in params['customer_class_names']:
@@ -195,7 +195,7 @@ def validify_dictionary(params):
     Raises errors if there is something wrong with the
     parameters dictionary.
     """
-    consistant_num_classes = (
+    consistent_num_classes = (
         params["number_of_classes"]
         == len(params["arrival_distributions"])
         == len(params["service_distributions"])
@@ -203,9 +203,9 @@ def validify_dictionary(params):
         == len(params["batching_distributions"])
         == len(params["reneging_time_distributions"])
     )
-    if not consistant_num_classes:
-        raise ValueError("Ensure consistant number of classes is used throughout.")
-    consistant_class_names = (
+    if not consistent_num_classes:
+        raise ValueError("Ensure consistent number of classes is used throughout.")
+    consistent_class_names = (
         set(params["arrival_distributions"])
         == set(params["service_distributions"])
         == set(params["routing"])
@@ -217,8 +217,8 @@ def validify_dictionary(params):
         == len(params["batching_distributions"])
         == len(params["reneging_time_distributions"])
     )
-    if not consistant_class_names:
-        raise ValueError("Ensure consistant names for customer classes.")
+    if not consistent_class_names:
+        raise ValueError("Ensure consistent names for customer classes.")
     num_nodes_count = (
         [params["number_of_nodes"]]
         + [len(obs) for obs in params["arrival_distributions"].values()]
@@ -230,7 +230,7 @@ def validify_dictionary(params):
         + [len(params["queue_capacities"])]
     )
     if len(set(num_nodes_count)) != 1:
-        raise ValueError("Ensure consistant number of nodes is used throughout.")
+        raise ValueError("Ensure consistent number of nodes is used throughout.")
     neg_numservers = any(
         [(isinstance(obs, int) and obs < 0) for obs in params["number_of_servers"]]
     )
@@ -254,13 +254,13 @@ def validify_dictionary(params):
         num_nodes = len(params["class_change_matrices"]) == params["number_of_nodes"]
         if not num_nodes:
             raise ValueError("Ensure correct nodes used in class_change_matrices.")
-        for nd in params["class_change_matrices"]:
-            for row in nd.values():
+        for node in params["class_change_matrices"]:
+            for row in node.values():
                 if sum(row.values()) > 1.0 or min(row.values()) < 0.0 or max(row.values()) > 1.0:
                     raise ValueError("Ensure that class change matrix is valid.")
         class_change_names = set([k for matrix in params['class_change_matrices'] for k in matrix.keys()])
         if not class_change_names.issubset(set(params['arrival_distributions'])):
-            raise ValueError("Ensure consistant names for customer classes.")
+            raise ValueError("Ensure consistent names for customer classes.")
     
     if "class_change_time_distributions" in params:
         class_change_from_names = set(list(params['class_change_time_distributions'].keys()))
@@ -273,7 +273,7 @@ def validify_dictionary(params):
         )
         if wrong_class_names:
             raise ValueError(
-                "Ensure consistant customer classes used in class_change_time_distributions."
+                "Ensure consistent customer classes used in class_change_time_distributions."
             )
 
     if not isinstance(params['system_capacity'], int) and params['system_capacity'] != float('inf'):

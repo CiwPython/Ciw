@@ -125,7 +125,7 @@ class TestScheduling(unittest.TestCase):
         N.servers[0].offduty = True
         self.assertEqual([obs.busy for obs in N.servers], [True, False])
         self.assertEqual([obs.offduty for obs in N.servers], [True, False])
-        N.detatch_server(N.servers[0], ind)
+        N.detach_server(N.servers[0], ind)
         self.assertEqual([str(obs) for obs in N.servers], ["Server 3 at Node 1"])
 
     def test_add_new_servers_method(self):

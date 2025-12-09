@@ -116,7 +116,7 @@ class Slotted(Schedule):
         """
         if not capacitated:
             if preemption is not False:
-                raise ValueError("Pre-emption options not availale for non-capacitated slots.")
+                raise ValueError("Pre-emption options not available for non-capacitated slots.")
         if preemption not in [False, 'resume', 'restart', 'resample']:
             raise ValueError("Pre-emption options should be either 'resume', 'restart', 'resample', or False.")
         if not isinstance(offset, float):

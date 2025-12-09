@@ -11,7 +11,7 @@ class ExactNode(Node):
 
     This class inherits from the Node class, and
     implements a more precise version of addition to
-    fix discrepencies with floating point numbers.
+    fix discrepancies with floating point numbers.
     """
     
     @property
@@ -42,7 +42,7 @@ class ExactArrivalNode(ArrivalNode):
     """Node with exact numerical time precision.
 
     Inherits from the ArrivalNode class, implements a
-    more precise version of addition to fix discrepencies
+    more precise version of addition to fix discrepancies
     with floating point numbers.
     """
 
@@ -50,18 +50,18 @@ class ExactArrivalNode(ArrivalNode):
         """Increment the original time by the increment."""
         return Decimal(str(original)) + Decimal(str(increment))
 
-    def inter_arrival(self, nd, clss) -> Decimal:
+    def inter_arrival(self, node, clss) -> Decimal:
         """Samples the inter-arrival time for next class and node.
 
         Parameters
         ----------
-        nd (Node): Next node.
+        node (Node): Next node.
         clss (Individual): Individual class to be selected next.
 
         """
         return Decimal(
             str(
-                self.simulation.inter_arrival_times[nd][clss]._sample(
+                self.simulation.inter_arrival_times[node][clss]._sample(
                     self.simulation.current_time
                 )
             )

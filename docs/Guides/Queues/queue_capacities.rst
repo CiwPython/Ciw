@@ -7,7 +7,7 @@ How to Set Maximium Queue Capacities
 A maximum queueing capacity can be set for each node. This means that once the number of people waiting at that node reaches the capacity, then that node cannot receive any more customers until some individuals leave the node. This affects newly arriving customers and customers transitioning from another node differently:
 
 + Newly arriving customers who wish to enter the node once capacity is reached are *rejected*. They instead leave the system immediately, and have a data record written that records this rejection (:ref:`see below<rejection-records>`).
-+ Customers wishing to transition to the node after finishing service at another node are blocked (:ref:`see below<blocking-mechanism>`). This means thet remain at their original node, with a server whi is unable to begin another customer's service, until space becomes available.
++ Customers wishing to transition to the node after finishing service at another node are blocked (:ref:`see below<blocking-mechanism>`). This means that they remain at their original node, with a server which is unable to begin another customer's service, until space becomes available.
 
 In order to implement this, we use the :code:`queue_capacities` keyworks when creating the network::
 
