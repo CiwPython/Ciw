@@ -47,7 +47,7 @@ Notice that we set a different seed every time, so each trial will yield differe
     >>> average_waits
     [3.91950..., 4.34163..., 4.61779..., 5.33537..., 5.06224..., 2.90274..., 4.93209..., 17.95093..., 4.06136..., 3.14126...]
 
-We can see that the range of waits are quite high, between 1.6 and 7.5.
+We can see that the mean waiting times across these trials vary quite widely, from about 2.9 to 18.0 minutes.
 This shows that running a single trial wouldn't have given us a very confident answer.
 We can take the mean result over the trials to get a more confident answer::
 
